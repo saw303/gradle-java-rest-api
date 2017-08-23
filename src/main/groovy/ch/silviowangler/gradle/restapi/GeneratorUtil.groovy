@@ -158,7 +158,7 @@ class GeneratorUtil {
     }
 
     static File generatorInput(Project project) {
-        return new File(project.buildDir, 'oslspecs')
+        return new File(project.buildDir, 'rest-api-specs')
     }
 
     private static String readVersion(String versionString) {

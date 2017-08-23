@@ -26,6 +26,7 @@ package ch.silviowangler.gradle.restapi
 import com.squareup.javapoet.ClassName
 import groovy.io.FileType
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
@@ -34,6 +35,8 @@ import spock.lang.Specification
 import spock.lang.Stepwise
 
 import java.nio.charset.Charset
+
+import static ch.silviowangler.gradle.restapi.Consts.TASK_GROUP_REST_API
 
 @Stepwise
 class RestApiPluginSpec extends Specification {
@@ -62,10 +65,21 @@ class RestApiPluginSpec extends Specification {
         project.apply plugin: RestApiPlugin.PLUGIN_ID
     }
 
-    void "Das Plugin stellt einen Task zur Verfügung"() {
+    void "The plugin provides the following tasks"() {
 
         expect:
-        project.tasks.generateRestArtefacts instanceof GenerateRestApiTask
+        project.tasks.findAll { Task task -> task.group ==  TASK_GROUP_REST_API }.size() == 3
+
+        project.tasks.generateRestArtifacts instanceof GenerateRestApiTask
+        project.tasks.generateRestArtifacts.group == TASK_GROUP_REST_API
+
+        and:
+        project.tasks.extractSpecs instanceof  ExtractRestApiSpecsTask
+        project.tasks.extractSpecs.group == TASK_GROUP_REST_API
+
+        and:
+        project.tasks.cleanRestArtifacts instanceof CleanRestApiTask
+        project.tasks.cleanRestArtifacts.group == TASK_GROUP_REST_API
 
         and:
         project.extensions.restApi != null
@@ -82,7 +96,7 @@ class RestApiPluginSpec extends Specification {
         project.restApi.objectResourceModelMapping = customFieldModelMapping
 
         and:
-        GenerateRestApiTask task = project.tasks.generateRestArtefacts
+        GenerateRestApiTask task = project.tasks.generateRestArtifacts
 
         when:
         task.exec()
@@ -112,7 +126,7 @@ class RestApiPluginSpec extends Specification {
         assertJavaFile('org.acme.rest.v1', 'PartnerPostResourceModel')
 
         when:
-        CleanRestApiTask cleanTask = project.tasks.cleanRestArtefacts
+        CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts
 
         and:
         cleanTask.cleanUp()
@@ -140,7 +154,7 @@ class RestApiPluginSpec extends Specification {
         project.restApi.responseEncoding = Charset.forName('UTF-8')
 
         and:
-        GenerateRestApiTask task = project.tasks.generateRestArtefacts
+        GenerateRestApiTask task = project.tasks.generateRestArtifacts
 
         when:
         task.exec()
@@ -181,7 +195,7 @@ class RestApiPluginSpec extends Specification {
         assertJavaFile('org.acme.rest.v1', 'RootGetResourceModel', 'land')
 
         when:
-        CleanRestApiTask cleanTask = project.tasks.cleanRestArtefacts
+        CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts
 
         and:
         cleanTask.cleanUp()
@@ -208,7 +222,7 @@ class RestApiPluginSpec extends Specification {
         project.restApi.responseEncoding = Charset.forName('UTF-8')
 
         and:
-        GenerateRestApiTask task = project.tasks.generateRestArtefacts
+        GenerateRestApiTask task = project.tasks.generateRestArtifacts
 
         when:
         task.exec()
@@ -236,7 +250,7 @@ class RestApiPluginSpec extends Specification {
         assertJavaFile('org.acme.rest.v1', 'RootResourceImpl', 'root')
 
         when:
-        CleanRestApiTask cleanTask = project.tasks.cleanRestArtefacts
+        CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts
 
         and:
         cleanTask.cleanUp()
@@ -262,7 +276,7 @@ class RestApiPluginSpec extends Specification {
         project.restApi.objectResourceModelMapping = customFieldModelMapping
 
         and:
-        GenerateRestApiTask task = project.tasks.generateRestArtefacts
+        GenerateRestApiTask task = project.tasks.generateRestArtifacts
 
         when:
         task.exec()
@@ -290,7 +304,7 @@ class RestApiPluginSpec extends Specification {
         assertJavaFile('org.acme.rest.v1', 'PartnersearchGetResourceModel', 'collectionGet')
 
         when:
-        CleanRestApiTask cleanTask = project.tasks.cleanRestArtefacts
+        CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts
 
         and:
         cleanTask.cleanUp()

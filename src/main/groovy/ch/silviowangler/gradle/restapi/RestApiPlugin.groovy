@@ -25,7 +25,11 @@ package ch.silviowangler.gradle.restapi
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.artifacts.Configuration
+
+import static ch.silviowangler.gradle.restapi.Consts.CONFIGUATION_REST_API
+import static ch.silviowangler.gradle.restapi.Consts.TASK_GROUP_REST_API
 
 /**
  * This is the main plugin file. Put a description of your plugin here.
@@ -37,29 +41,29 @@ class RestApiPlugin implements Plugin<Project> {
 
     void apply(Project project) {
 
-        def resources = project.container(Resource)
-
         project.apply(plugin: 'java')
 
         def extension = new RestApiExtension(project)
         project.extensions.add('restApi', extension)
 
-        project.task('cleanRestArtefacts', type: CleanRestApiTask, group: 'OSL Rest')
-        project.task('extractSpecs', type: ExtractRestApiSpecsTask, group: 'OSL Rest')
-        project.task('generateRestArtefacts', type: GenerateRestApiTask, group: 'OSL Rest')
 
-        project.clean.dependsOn project.cleanRestArtefacts
-        project.generateRestArtefacts.dependsOn project.extractSpecs
-        project.compileJava.dependsOn project.generateRestArtefacts
+        Task clean = project.task('cleanRestArtifacts', type: CleanRestApiTask, group: TASK_GROUP_REST_API)
+        Task extract = project.task('extractSpecs', type: ExtractRestApiSpecsTask, group: TASK_GROUP_REST_API)
+        Task generate = project.task('generateRestArtifacts', type: GenerateRestApiTask, group: TASK_GROUP_REST_API)
+
+        project.clean.dependsOn clean
+        extract.dependsOn extract
+        project.compileJava.dependsOn generate
+
         project.compileJava.options.encoding = 'UTF-8'
         project.compileTestJava.options.encoding = 'UTF-8'
 
-        project.sourceSets.main.java.srcDir { project.osl.generatorOutput }
+        project.sourceSets.main.java.srcDir { project.restApi.generatorOutput }
 
-        Configuration oslSpecificationConfiguration = project.configurations.findByName('oslSpecification')
+        Configuration restApiSpecification = project.configurations.findByName(CONFIGUATION_REST_API)
 
-        if (!oslSpecificationConfiguration) {
-            oslSpecificationConfiguration = project.configurations.create('oslSpecification')
+        if (!restApiSpecification) {
+            restApiSpecification = project.configurations.create(CONFIGUATION_REST_API)
         }
     }
 }

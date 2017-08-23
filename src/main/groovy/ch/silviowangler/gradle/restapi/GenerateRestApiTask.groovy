@@ -78,9 +78,9 @@ class GenerateRestApiTask extends AbstractTask {
 
         def jsonSlurper = new JsonSlurper(type: JsonParserType.INDEX_OVERLAY) // use JsonFastParser
 
-        RestApiExtension oslRestExtension = project.restApi
+        RestApiExtension restApiExtension = project.restApi
 
-        final String basePackageName = oslRestExtension.packageName
+        final String basePackageName = restApiExtension.packageName
 
         List<File> rootOptionsFile = []
         getOptionsSource().eachFile(FileType.FILES, { f -> if (f.name ==~ /root\..*\.json/) rootOptionsFile << f })
@@ -106,11 +106,11 @@ class GenerateRestApiTask extends AbstractTask {
             writeToFileSystem(currentPackageName, resourceInterface, getRootOutputDir())
             amountOfGeneratedJavaSourceFiles++
 
-            def file = new File(oslRestExtension.generatorImplOutput, "${currentPackageName.replaceAll('\\.', fileSeparator)}${fileSeparator}${GeneratorUtil.createResourceImplementationName(rootFile)}.java")
+            def file = new File(restApiExtension.generatorImplOutput, "${currentPackageName.replaceAll('\\.', fileSeparator)}${fileSeparator}${GeneratorUtil.createResourceImplementationName(rootFile)}.java")
 
             if (!file.exists()) {
                 TypeSpec resourceImpl = buildResourceImpl(rootFile, jsonObject)
-                writeToFileSystem(currentPackageName, resourceImpl, oslRestExtension.generatorImplOutput)
+                writeToFileSystem(currentPackageName, resourceImpl, restApiExtension.generatorImplOutput)
                 amountOfGeneratedJavaSourceFiles++
             }
 
@@ -175,13 +175,13 @@ class GenerateRestApiTask extends AbstractTask {
             writeToFileSystem(currentPackageName, resourceInterface, getRootOutputDir())
             amountOfGeneratedJavaSourceFiles++
 
-            def file = new File(oslRestExtension.generatorImplOutput, "${currentPackageName.replaceAll('\\.', fileSeparator)}${fileSeparator}${GeneratorUtil.createResourceImplementationName(optionsFile)}.java")
+            def file = new File(restApiExtension.generatorImplOutput, "${currentPackageName.replaceAll('\\.', fileSeparator)}${fileSeparator}${GeneratorUtil.createResourceImplementationName(optionsFile)}.java")
 
             if (!file.exists()) {
                 amountOfGeneratedJavaSourceFiles++
                 TypeSpec resourceImpl = buildResourceImpl(optionsFile, jsonObject)
-                writeToFileSystem(currentPackageName, resourceImpl, oslRestExtension.generatorImplOutput)
-                logger.lifecycle('Writing implementation {} to {}', file.name, oslRestExtension.generatorImplOutput)
+                writeToFileSystem(currentPackageName, resourceImpl, restApiExtension.generatorImplOutput)
+                logger.lifecycle('Writing implementation {} to {}', file.name, restApiExtension.generatorImplOutput)
             } else {
                 logger.lifecycle('Resource implementation {} exists. Skipping this one', file.name)
             }

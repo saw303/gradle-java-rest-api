@@ -44,11 +44,11 @@ class ExtractRestApiSpecsTask extends AbstractTask {
     @TaskAction
     void extract() {
 
-        Configuration oslConfiguration = project.configurations.findByName('oslSpecification')
+        Configuration configuration = project.configurations.findByName(Consts.CONFIGUATION_REST_API)
 
-        if (oslConfiguration && !oslConfiguration.files.isEmpty()) {
+        if (configuration && !configuration.files.isEmpty()) {
 
-            Set<File> files = oslConfiguration.files
+            Set<File> files = configuration.files
 
             for (File file in files) {
                 project.copy {
