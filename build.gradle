@@ -8,15 +8,21 @@ buildscript {
 
     dependencies {
         classpath "gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.13.1"
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
     }
 
 }
 
 apply plugin: "com.github.hierynomus.license"
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'maven-publish'
 
 repositories {
     jcenter()
 }
+
+version = '0.9.0'
+sourceCompatibility = 1.8
 
 dependencies {
     compile localGroovy()
@@ -28,7 +34,7 @@ dependencies {
     }
 
     compile "com.squareup:javapoet:${javaPoetVersion}"
-    compile "com.google.guava:guava:$guavaVersion"
+    compile "com.google.guava:guava:${guavaVersion}"
 }
 
 license {
@@ -39,4 +45,63 @@ license {
     ext.email = 'silvio.wangler@gmail.com'
 
     excludes(["**/*.json", "**/*.java.txt"])
+}
+
+bintray {
+    user = project.hasProperty('bintrayUser') ? bintrayUser : System.getenv('BINTRAY_USER')
+    key = project.hasProperty('bintrayKey') ? bintrayKey : System.getenv('BINTRAY_KEY')
+
+    pkg {
+        repo = 'gradle-plugins'
+        name = 'gradle-java-rest-api'
+        userOrg = 'saw303'
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/saw303/gradle-java-rest-api.git'
+
+        version {
+            name = project.version
+        }
+    }
+
+    publications = ['MyPublication']
+}
+
+def pomConfig = {
+    licenses {
+        license {
+            name "MIT"
+            url "https://en.wikipedia.org/wiki/MIT_License"
+            distribution "repo"
+        }
+    }
+    developers {
+        developer {
+            id "saw303"
+            name "Silvio Wangler"
+            email "silvio.wangler@gmail.com"
+        }
+    }
+
+    scm {
+        url "https://github.com/saw303/gradle-java-rest-api.git"
+    }
+}
+
+publishing {
+    publications {
+        MyPublication(MavenPublication) {
+            from components.java
+            groupId 'ch.silviowangler.gradle'
+            artifactId 'gradle-java-rest-api'
+            version project.version
+
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('description', 'Gradle plugin to generate REST APIs for JAX-RS or Spring-Boot projects')
+                root.appendNode('name', 'Silvio Wangler')
+                root.appendNode('url', 'https://github.com/saw303/gradle-java-rest-api')
+                root.children().last() + pomConfig
+            }
+        }
+    }
 }
