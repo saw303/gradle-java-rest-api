@@ -21,8 +21,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 @Generated(
-    value = "ch.silviowangler.restapi",
-    comments = "Specification filename: partner.v1.json"
+    comments = "Specification filename: partner.v1.json",
+    value = "ch.silviowangler.restapi"
 )
 @Path("/v1/partner")
 public interface PartnerResource {

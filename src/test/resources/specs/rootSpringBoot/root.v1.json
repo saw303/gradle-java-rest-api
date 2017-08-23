@@ -1,8 +1,8 @@
 {
   "general": {
-    "description": "Das ist die Root Resource der Version 1.0.0",
+    "description": "This is the root resource of API version 1.0.0",
     "version": "1.0.0",
-    "x-route": "/:version"
+    "x-route": "/api/:version"
   },
   "verbs": [
     {
@@ -26,15 +26,15 @@
           "comment": "",
           "responseExample": "{...}",
           "isDefault": true,
-          "mimetype": "application/ch.silviowangler.land"
+          "mimetype": "application/ch.silviowangler.root"
         }
       ],
       "parameters": [],
       "permissions": [
         {
-          "name": "mitarbeiter",
+          "name": "user",
           "mode": "all",
-          "comment": "Jeder darf nach Land suchen"
+          "comment": "Root Ressource of API Version 1"
         }
       ]
     }
@@ -72,24 +72,7 @@
       "readonly": false,
       "filterable": false,
       "alias": [],
-      "x-comment": "Name des Landes"
-    },
-    {
-      "name": "draft",
-      "type": "bool",
-      "options": null,
-      "mandatory": [],
-      "min": null,
-      "max": null,
-      "multiple": false,
-      "defaultValue": true,
-      "protected": [],
-      "visible": true,
-      "sortable": false,
-      "readonly": false,
-      "filterable": false,
-      "alias": [],
-      "x-comment": "Name des Landes"
+      "x-comment": "Name"
     }
   ],
   "subresources": [],

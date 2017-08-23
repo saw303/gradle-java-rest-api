@@ -32,13 +32,11 @@ import org.junit.Rule
 import org.junit.rules.TemporaryFolder
 import spock.lang.Shared
 import spock.lang.Specification
-import spock.lang.Stepwise
 
 import java.nio.charset.Charset
 
 import static ch.silviowangler.gradle.restapi.Consts.TASK_GROUP_REST_API
 
-@Stepwise
 class RestApiPluginSpec extends Specification {
 
     Project project = ProjectBuilder.builder().build()
@@ -68,13 +66,13 @@ class RestApiPluginSpec extends Specification {
     void "The plugin provides the following tasks"() {
 
         expect:
-        project.tasks.findAll { Task task -> task.group ==  TASK_GROUP_REST_API }.size() == 3
+        project.tasks.findAll { Task task -> task.group == TASK_GROUP_REST_API }.size() == 3
 
         project.tasks.generateRestArtifacts instanceof GenerateRestApiTask
         project.tasks.generateRestArtifacts.group == TASK_GROUP_REST_API
 
         and:
-        project.tasks.extractSpecs instanceof  ExtractRestApiSpecsTask
+        project.tasks.extractSpecs instanceof ExtractRestApiSpecsTask
         project.tasks.extractSpecs.group == TASK_GROUP_REST_API
 
         and:
@@ -85,7 +83,7 @@ class RestApiPluginSpec extends Specification {
         project.extensions.restApi != null
     }
 
-    void "Das Plugin generiert Java 8 kompatiblen Source Code"() {
+    void "The plugin generates valid Java 8 code"() {
 
         given:
         project.restApi.generatorOutput = temporaryFolder.getRoot()
@@ -140,6 +138,65 @@ class RestApiPluginSpec extends Specification {
         then:
         javaFiles.isEmpty()
     }
+
+    //@PendingFeature
+    void "The plugin generates valid Java 8 code for Spring Boot"() {
+        given:
+        project.restApi.generatorOutput = temporaryFolder.getRoot()
+        project.restApi.generatorImplOutput = temporaryFolder.getRoot()
+        project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/rootSpringBoot")
+        project.restApi.packageName = 'ch.silviowangler.restapi.v1'
+        project.restApi.generateDateAttribute = false
+        project.restApi.objectResourceModelMapping = customFieldModelMapping
+        project.restApi.springBoot = true
+
+        and:
+        GenerateRestApiTask task = project.tasks.generateRestArtifacts
+
+        and:
+        def path = project.restApi.packageName.replaceAll('\\.', '/')
+
+        when:
+        task.exec()
+
+        and:
+        def javaFiles = []
+        temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+            if (it.name.endsWith('.java')) javaFiles << it
+        })
+
+        then:
+        new File(temporaryFolder.getRoot(), path).exists()
+
+        and:
+        javaFiles.size() == 3
+
+        and:
+        javaFiles.collect {
+            it.parent == new File(temporaryFolder.getRoot(), path)
+        }.size() == javaFiles.size()
+
+        and: 'resource validieren'
+        assertJavaFile("${project.restApi.packageName}/api", 'RootResource', 'rootSpringBoot')
+        assertJavaFile("${project.restApi.packageName}/api", 'RootResourceImpl', 'rootSpringBoot')
+        assertJavaFile("${project.restApi.packageName}/api", 'RootGetResourceModel', 'rootSpringBoot')
+
+        when:
+        CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts
+
+        and:
+        cleanTask.cleanUp()
+
+        and:
+        javaFiles.clear()
+        temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+            if (it.name.endsWith('.java')) javaFiles << it
+        })
+
+        then:
+        javaFiles.isEmpty()
+    }
+
 
     void "Typ-Definitionen in root.json werden berücksichtigt"() {
 
@@ -210,7 +267,7 @@ class RestApiPluginSpec extends Specification {
         javaFiles.isEmpty()
     }
 
-    void "Ein nicht spezifiziertes Verb kann explizit ausgelassen werden"() {
+    void "Not specified verbs are explicitly excluded"() {
 
         given:
         project.restApi.generatorOutput = temporaryFolder.getRoot()

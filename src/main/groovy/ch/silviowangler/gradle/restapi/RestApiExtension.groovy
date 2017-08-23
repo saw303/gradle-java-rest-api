@@ -23,9 +23,7 @@
  */
 package ch.silviowangler.gradle.restapi
 
-import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
-import org.gradle.util.ConfigureUtil
 
 import java.nio.charset.Charset
 
@@ -43,6 +41,7 @@ class RestApiExtension {
     Closure objectResourceModelMapping = { resource, field -> throw new RuntimeException("No object resource model mapping for field ${field.name} and resource ${description}") }
     boolean generateDateAttribute = true
     boolean enableSecurity = false
+    boolean springBoot = false
     Charset responseEncoding
 
     RestApiExtension(Project project) {
