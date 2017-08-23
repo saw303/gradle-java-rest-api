@@ -67,13 +67,6 @@ bintray {
 }
 
 def pomConfig = {
-    licenses {
-        license {
-            name "MIT"
-            url "https://en.wikipedia.org/wiki/MIT_License"
-            distribution "repo"
-        }
-    }
     developers {
         developer {
             id "saw303"
@@ -100,6 +93,12 @@ publishing {
                 root.appendNode('description', 'Gradle plugin to generate REST APIs for JAX-RS or Spring-Boot projects')
                 root.appendNode('name', 'Silvio Wangler')
                 root.appendNode('url', 'https://github.com/saw303/gradle-java-rest-api')
+
+                def l = root.appendNode('licenses').appendNode('license')
+                l.appendNode('name', 'MIT')
+                l.appendNode('url', 'https://en.wikipedia.org/wiki/MIT_License')
+                l.appendNode('distribution', 'repo')
+
                 root.children().last() + pomConfig
             }
         }
