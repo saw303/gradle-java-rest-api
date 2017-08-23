@@ -1,0 +1,203 @@
+{
+  "general": {
+    "name": "land.ort",
+    "description": "Ort",
+    "version": "1.0.0",
+    "lifecycle": {
+      "deprecated": false,
+      "info": "Diese Version ist noch immer gültig"
+    },
+    "searchable": true,
+    "countable": false,
+    "x-route": "/:version/laender/:land/orte/:entity"
+  },
+  "verbs": [
+    {
+      "verb": "GET_ENTITY",
+      "rel": "Ort laden",
+      "responseStates": [
+        {
+          "code": 200,
+          "message": "200 Ok",
+          "comment": "content in response body"
+        },
+        {
+          "code": 503,
+          "message": "503 Service Unavailable",
+          "comment": "Backend server eventually not reachable or to slow"
+        }
+      ],
+      "representations": [
+        {
+          "name": "json",
+          "comment": "",
+          "responseExample": "{...}",
+          "isDefault": true,
+          "mimetype": "application/ch.silviowangler.ort"
+        },
+        {
+          "name": "jpeg",
+          "comment": "",
+          "responseExample": "{...}",
+          "isDefault": true,
+          "mimetype": "image/jpeg"
+        }
+      ],
+      "options": [],
+      "permissions": []
+    },
+    {
+      "verb": "GET_COLLECTION",
+      "rel": "Orte holen",
+      "collectionLimit": 19,
+      "maxCollectionLimit": 101,
+      "responseStates": [
+        {
+          "code": 200,
+          "message": "200 Ok",
+          "comment": "content in response body"
+        },
+        {
+          "code": 503,
+          "message": "503 Service Unavailable",
+          "comment": "Backend server eventually not reachable or to slow"
+        }
+      ],
+      "representations": [
+        {
+          "name": "json",
+          "comment": "",
+          "responseExample": "{...}",
+          "isDefault": true,
+          "mimetype": "application/ch.silviowangler.ort.collection"
+        }
+      ],
+
+      "options": [],
+      "permissions": []
+    },
+    {
+      "verb": "PUT",
+      "rel": "Ort ändern",
+      "responseStates": [
+        {
+          "code": 200,
+          "message": "200 Ok",
+          "comment": "content in response body"
+        },
+        {
+          "code": 503,
+          "message": "503 Service Unavailable",
+          "comment": "Backend server eventually not reachable or to slow"
+        }
+      ],
+      "representations": [
+        {
+          "name": "json",
+          "comment": "",
+          "responseExample": "{...}",
+          "isDefault": true,
+          "mimetype": "application/json"
+        }
+      ],
+      "options": [],
+      "permissions": []
+    },
+    {
+      "verb": "POST",
+      "rel": "Ort ändern",
+      "responseStates": [
+        {
+          "code": 200,
+          "message": "200 Ok",
+          "comment": "content in response body"
+        },
+        {
+          "code": 503,
+          "message": "503 Service Unavailable",
+          "comment": "Backend server eventually not reachable or to slow"
+        }
+      ],
+      "representations": [
+        {
+          "name": "json",
+          "comment": "",
+          "responseExample": "{...}",
+          "isDefault": true,
+          "mimetype": "application/json"
+        }
+      ],
+      "options": [],
+      "permissions": []
+    },
+    {
+      "verb": "DELETE_ENTITY",
+      "rel": "Ort löschen",
+      "responseStates": [
+        {
+          "code": 200,
+          "message": "200 Ok",
+          "comment": "content in response body"
+        },
+        {
+          "code": 503,
+          "message": "503 Service Unavailable",
+          "comment": "Backend server eventually not reachable or to slow"
+        }
+      ],
+      "representations": [
+        {
+          "name": "json",
+          "comment": "",
+          "responseExample": "{...}",
+          "isDefault": true,
+          "mimetype": "application/json"
+        }
+      ],
+      "options": [],
+      "permissions": []
+    }
+  ],
+  "fields": [
+    {
+      "name": "id",
+      "type": "uuid",
+      "options": null,
+      "mandatory": [
+        "PUT"
+      ],
+      "min": null,
+      "max": null,
+      "multiple": false,
+      "defaultValue": null,
+      "protected": [],
+      "visible": true,
+      "sortable": false,
+      "readonly": false,
+      "filterable": false,
+      "alias": [],
+      "x-comment": "VOKey"
+    },
+    {
+      "name": "name",
+      "type": "string",
+      "options": null,
+      "mandatory": [
+        "PUT", "POST"
+      ],
+      "min": null,
+      "max": null,
+      "multiple": false,
+      "defaultValue": null,
+      "protected": [],
+      "visible": true,
+      "sortable": false,
+      "readonly": false,
+      "filterable": false,
+      "alias": [],
+      "x-comment": "Ort"
+    }
+  ],
+  "parameters": [],
+  "subresources": []
+}

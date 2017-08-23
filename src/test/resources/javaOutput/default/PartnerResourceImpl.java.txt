@@ -1,0 +1,27 @@
+package org.acme.rest.v1;
+
+import ch.silviowangler.rest.model.FilterModel;
+import ch.silviowangler.rest.types.IdType;
+import java.util.Collection;
+
+public class PartnerResourceImpl implements PartnerResource {
+  @Override
+  public Collection<PartnerGetResourceModel> getCollection(FilterModel filter, String q) {
+    throw new RuntimeException("Not yet implemented");
+  }
+
+  @Override
+  public PartnerGetResourceModel getEntity(String id) {
+    throw new RuntimeException("Not yet implemented");
+  }
+
+  @Override
+  public IdType createEntity(PartnerPostResourceModel model) {
+    throw new RuntimeException("Not yet implemented");
+  }
+
+  @Override
+  public IdType updateEntity(PartnerPutResourceModel model, String id) {
+    throw new RuntimeException("Not yet implemented");
+  }
+}

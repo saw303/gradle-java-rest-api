@@ -1,0 +1,42 @@
+apply plugin: 'groovy'
+
+buildscript {
+    repositories {
+        jcenter()
+        maven { url "https://repo.grails.org/grails/core" }
+    }
+
+    dependencies {
+        classpath "gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.13.1"
+    }
+
+}
+
+apply plugin: "com.github.hierynomus.license"
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile localGroovy()
+    compile gradleApi()
+    testCompile gradleTestKit()
+
+    testCompile("org.spockframework:spock-core:${spockVersion}") {
+        exclude group: 'org.codehaus.groovy', module: 'groovy-all'
+    }
+
+    compile "com.squareup:javapoet:${javaPoetVersion}"
+    compile "com.google.guava:guava:$guavaVersion"
+}
+
+license {
+    header = file("${rootDir}/LICENSE-SHORT")
+
+    ext.year = Calendar.getInstance().get(Calendar.YEAR)
+    ext.name = 'Silvio Wangler'
+    ext.email = 'silvio.wangler@gmail.com'
+
+    excludes(["**/*.json", "**/*.java.txt"])
+}

@@ -1,0 +1,167 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2017 - 2017 Silvio Wangler (silvio.wangler@gmail.com)
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+package ch.silviowangler.gradle.restapi
+
+import ch.silviowangler.gradle.restapi.util.SupportedDataTypes
+import com.google.common.base.CaseFormat
+import com.squareup.javapoet.ClassName
+import com.squareup.javapoet.ParameterizedTypeName
+import com.squareup.javapoet.TypeName
+import org.gradle.api.Project
+
+import javax.activation.UnsupportedDataTypeException
+
+/**
+ * Created by Silvio Wangler on 25/01/16.
+ */
+class GeneratorUtil {
+
+    private final static String RESOURCE_MODEL = "RM"
+    private final static String RESOURCE_FORM_DATA = "RFM"
+    private final static String RESOURCE = "R"
+    private final static String RESOURCE_IMPLEMENTATION = "RI"
+
+    private static String createTypeName(File file, String type) {
+        return createTypeName(file, type, '')
+    }
+
+    private static String createTypeName(File file, String type, String verb) {
+
+        String postfix
+
+        if (type == RESOURCE_MODEL) postfix = 'ResourceModel'
+        else if (type == RESOURCE_FORM_DATA) postfix = 'FormData'
+        else if (type == RESOURCE) postfix = 'Resource'
+        else if (type == RESOURCE_IMPLEMENTATION) postfix = 'ResourceImpl'
+        else throw new IllegalArgumentException("Unknown param value ${type}")
+
+
+        def filenameWithoutExtension = file.name.replace('.json', '').replaceAll('\\.v\\d', '')
+
+        if (filenameWithoutExtension.contains('.')) {
+            String[] split = filenameWithoutExtension.split('\\.')
+            filenameWithoutExtension = split[split.length - 1]
+        }
+
+        return "${filenameWithoutExtension[0].toUpperCase()}${filenameWithoutExtension[1..filenameWithoutExtension.length() - 1]}${verb}${postfix}"
+    }
+
+    static String createResourceModelName(final File file, final String verb = "Get") {
+        createTypeName(file, RESOURCE_MODEL, verb)
+    }
+
+    static String createResourceName(final File file) {
+        createTypeName(file, RESOURCE)
+    }
+
+    static String createResourceFormDataName(final File file) {
+        createTypeName(file, RESOURCE_FORM_DATA)
+    }
+
+    static String createResourceImplementationName(final File file) {
+        createTypeName(file, RESOURCE_IMPLEMENTATION)
+    }
+
+    private static Map<String, ClassName> supportedDatatypes = [
+            'date'    : SupportedDataTypes.DATE.className,
+            'datetime': SupportedDataTypes.DATETIME.className,
+            'decimal' : SupportedDataTypes.DECIMAL.className,
+            'int'     : SupportedDataTypes.INT.className,
+            'double'  : SupportedDataTypes.DOUBLE.className,
+            'float'   : SupportedDataTypes.DOUBLE.className,
+            'bool'    : SupportedDataTypes.BOOL.className,
+            'flag'    : SupportedDataTypes.FLAG.className,
+            'string'  : SupportedDataTypes.STRING.className,
+            'uuid'    : SupportedDataTypes.UUID.className,
+            'object'  : SupportedDataTypes.OBJECT.className,
+            'money'   : SupportedDataTypes.MONEY.className
+    ]
+
+    static void addClassName(String typeName, ClassName className) {
+
+        if (supportedDatatypes.containsKey(typeName)) {
+            return
+        }
+        supportedDatatypes.put(typeName, className)
+    }
+
+    static ClassName translateToJava(final String jsonType) {
+        if (isSupportedDatatype(jsonType)) return supportedDatatypes[jsonType]
+
+        throw new UnsupportedDataTypeException(jsonType)
+    }
+
+    static boolean isSupportedDatatype(final String jsonType) {
+        supportedDatatypes.containsKey(jsonType)
+    }
+
+    static String verb(final String verb) {
+        String v = verb
+        if (verb.contains('_')) {
+            v = verb.split('_')[0]
+        }
+        return "${v[0].toUpperCase()}${v[1..v.length() - 1].toLowerCase()}"
+    }
+
+    static TypeName getReturnType(Project project, File optionsFile, String verb, boolean collection = false, String packageName) {
+
+
+        if (verb == 'Get') {
+            if (collection) {
+                return ParameterizedTypeName.get(ClassName.get(Collection.class), ClassName.get(packageName, GeneratorUtil.createResourceModelName(optionsFile, verb)))
+            } else {
+                return ClassName.get(packageName, GeneratorUtil.createResourceModelName(optionsFile, verb))
+            }
+        } else if (verb == 'Put' || verb == 'Post') {
+            return AnnotationTypes.RESTAPI_IDTYPE.className
+        } else if (verb == 'Delete') {
+            return AnnotationTypes.JAX_RS_RESPONSE.className
+        }
+    }
+
+    static String createClassname(String value) {
+        return CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, value)
+    }
+
+    static String composePackageName(Object json) {
+        String version = readVersion(json.general.version)
+        String route = json.general.'x-route'.replace(':version', version)
+
+        def tokens = route.split('\\/').findAll { r -> !r.startsWith(':') && r.length() > 0 }
+
+        if (tokens.size() <= 1) {
+            return version
+        } else {
+            return "${tokens[0..(tokens.size() - 2)].join('.')}"
+        }
+    }
+
+    static File generatorInput(Project project) {
+        return new File(project.buildDir, 'oslspecs')
+    }
+
+    private static String readVersion(String versionString) {
+        return "v${versionString.split('\\.')[0]}"
+    }
+}

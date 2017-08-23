@@ -1,0 +1,104 @@
+{
+  "general": {
+    "description": "Dummy Login für Demoapp",
+    "version": "1.0.0",
+    "icon": "contact",
+    "lifecycle": {
+      "deprecated": false,
+      "info": "Diese Version ist noch immer gültig"
+    },
+    "x-route": "/:version/demoapp/login/:entity",
+    "x-MimeTypePOST": "application/vnd.ch.silviowangler.demoapp.login"
+  },
+  "verbs": [
+    {
+      "verb": "POST",
+      "rel": "Neuer Login Kontext anfordern",
+      "responseStates": [
+        {
+          "code": 200,
+          "message": "200 Ok",
+          "comment": "content in response body"
+        },
+        {
+          "code": 503,
+          "message": "503 Service Unavailable",
+          "comment": "Backend server eventually not reachable or to slow"
+        }
+      ],
+      "defaultRepresentation": "json",
+      "representations": [
+        {
+          "name": "json",
+          "comment": "",
+          "responseExample": "{...}",
+          "isDefault": true,
+          "mimetype": "application/json"
+        }
+      ],
+      "options": [
+      ],
+      "permissions": [
+        {
+          "name": "mitarbeiter",
+          "mode": "all",
+          "comment": "Jeder darf nach Kontaktmittel hinzufügen"
+        }
+      ]
+    }
+  ],
+  "fields": [
+    {
+      "name": "id",
+      "type": "uuid",
+      "options": null,
+      "mandatory": [],
+      "min": null,
+      "max": null,
+      "multiple": false,
+      "defaultValue": null,
+      "protected": [
+        false
+      ],
+      "visible": true,
+      "sortable": true,
+      "scopeable": true,
+      "x-comment": "VOKey"
+    },
+    {
+      "name": "dummyDescription",
+      "type": "string",
+      "options": null,
+      "mandatory": [],
+      "min": null,
+      "max": null,
+      "multiple": false,
+      "defaultValue": null,
+      "protected": [
+        false
+      ],
+      "visible": true,
+      "sortable": true,
+      "scopeable": true,
+      "x-comment": "Dummy Beschreibung"
+    },
+    {
+      "name": "iconCode",
+      "type": "string",
+      "options": null,
+      "mandatory": [],
+      "min": null,
+      "max": null,
+      "multiple": false,
+      "defaultValue": null,
+      "protected": [
+        true
+      ],
+      "visible": true,
+      "sortable": false,
+      "scopeable": false,
+      "x-comment": "Icon der Ressource"
+    }
+  ],
+  "subresources": []
+}

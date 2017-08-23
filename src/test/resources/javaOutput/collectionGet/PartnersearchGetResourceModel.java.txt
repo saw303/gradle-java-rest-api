@@ -1,0 +1,76 @@
+package org.acme.rest.v1;
+
+import java.io.Serializable;
+import java.util.Objects;
+import javax.annotation.Generated;
+
+@Generated(
+    value = "ch.silviowangler.restapi",
+    comments = "Specification filename: partnersearch.v1.json"
+)
+public class PartnersearchGetResourceModel implements Serializable {
+  public static final String TYPE = "application/ch.silviowangler.partner.collection";
+
+  private String id;
+
+  private String name;
+
+  private String vorname;
+
+  private String partnerNummer;
+
+  private String partnerTyp;
+
+  public String getId() {
+    return this.id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public String getName() {
+    return this.name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public String getVorname() {
+    return this.vorname;
+  }
+
+  public void setVorname(String vorname) {
+    this.vorname = vorname;
+  }
+
+  public String getPartnerNummer() {
+    return this.partnerNummer;
+  }
+
+  public void setPartnerNummer(String partnerNummer) {
+    this.partnerNummer = partnerNummer;
+  }
+
+  public String getPartnerTyp() {
+    return this.partnerTyp;
+  }
+
+  public void setPartnerTyp(String partnerTyp) {
+    this.partnerTyp = partnerTyp;
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    if (! (other instanceof PartnersearchGetResourceModel)) return false;
+    PartnersearchGetResourceModel that = (PartnersearchGetResourceModel) other;
+    return Objects.equals(getId(), that.getId()) && Objects.equals(getName(), that.getName()) && Objects.equals(getVorname(), that.getVorname()) && Objects.equals(getPartnerNummer(), that.getPartnerNummer()) && Objects.equals(getPartnerTyp(), that.getPartnerTyp());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(getId(), getName(), getVorname(), getPartnerNummer(), getPartnerTyp());
+  }
+}

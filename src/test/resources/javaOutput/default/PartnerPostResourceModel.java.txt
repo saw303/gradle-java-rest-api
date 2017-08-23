@@ -1,0 +1,128 @@
+package org.acme.rest.v1;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.Locale;
+import java.util.Objects;
+import javax.annotation.Generated;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import org.javamoney.moneta.Money;
+
+@Generated(
+    value = "ch.silviowangler.restapi",
+    comments = "Specification filename: partner.v1.json"
+)
+public class PartnerPostResourceModel implements Serializable {
+  public static final String TYPE = "application/ch.silviowangler.partner";
+
+  private String id;
+
+  @NotNull
+  private String name;
+
+  private String vorname = "unbekannt";
+
+  private String titel;
+
+  private LocalDate geburtsdatum = LocalDate.now();
+
+  @Size(
+      min = 0,
+      max = 400
+  )
+  private BigDecimal gewicht;
+
+  private Money lohn;
+
+  private OffsetDateTime uhrzeit;
+
+  private Locale sprache;
+
+  public String getId() {
+    return this.id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public String getName() {
+    return this.name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public String getVorname() {
+    return this.vorname;
+  }
+
+  public void setVorname(String vorname) {
+    this.vorname = vorname;
+  }
+
+  public String getTitel() {
+    return this.titel;
+  }
+
+  public void setTitel(String titel) {
+    this.titel = titel;
+  }
+
+  public LocalDate getGeburtsdatum() {
+    return this.geburtsdatum;
+  }
+
+  public void setGeburtsdatum(LocalDate geburtsdatum) {
+    this.geburtsdatum = geburtsdatum;
+  }
+
+  public BigDecimal getGewicht() {
+    return this.gewicht;
+  }
+
+  public void setGewicht(BigDecimal gewicht) {
+    this.gewicht = gewicht;
+  }
+
+  public Money getLohn() {
+    return this.lohn;
+  }
+
+  public void setLohn(Money lohn) {
+    this.lohn = lohn;
+  }
+
+  public OffsetDateTime getUhrzeit() {
+    return this.uhrzeit;
+  }
+
+  public void setUhrzeit(OffsetDateTime uhrzeit) {
+    this.uhrzeit = uhrzeit;
+  }
+
+  public Locale getSprache() {
+    return this.sprache;
+  }
+
+  public void setSprache(Locale sprache) {
+    this.sprache = sprache;
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    if (! (other instanceof PartnerPostResourceModel)) return false;
+    PartnerPostResourceModel that = (PartnerPostResourceModel) other;
+    return Objects.equals(getId(), that.getId()) && Objects.equals(getName(), that.getName()) && Objects.equals(getVorname(), that.getVorname()) && Objects.equals(getTitel(), that.getTitel()) && Objects.equals(getGeburtsdatum(), that.getGeburtsdatum()) && Objects.equals(getGewicht(), that.getGewicht()) && Objects.equals(getLohn(), that.getLohn()) && Objects.equals(getUhrzeit(), that.getUhrzeit()) && Objects.equals(getSprache(), that.getSprache());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(getId(), getName(), getVorname(), getTitel(), getGeburtsdatum(), getGewicht(), getLohn(), getUhrzeit(), getSprache());
+  }
+}

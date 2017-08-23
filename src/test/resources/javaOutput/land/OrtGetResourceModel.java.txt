@@ -1,0 +1,46 @@
+package org.acme.rest.v1.laender;
+
+import java.io.Serializable;
+import java.util.Objects;
+import javax.annotation.Generated;
+
+@Generated(
+    value = "ch.silviowangler.restapi",
+    comments = "Specification filename: land.ort.v1.json"
+)
+public class OrtGetResourceModel implements Serializable {
+  public static final String TYPE = "application/ch.silviowangler.ort";
+
+  private String id;
+
+  private String name;
+
+  public String getId() {
+    return this.id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public String getName() {
+    return this.name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    if (! (other instanceof OrtGetResourceModel)) return false;
+    OrtGetResourceModel that = (OrtGetResourceModel) other;
+    return Objects.equals(getId(), that.getId()) && Objects.equals(getName(), that.getName());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(getId(), getName());
+  }
+}
