@@ -8,21 +8,35 @@ buildscript {
 
     dependencies {
         classpath "gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.13.1"
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.0'
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.17.0'
     }
 
 }
 
-apply plugin: "com.github.hierynomus.license"
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'maven-publish'
 
-repositories {
-    jcenter()
+version = '0.9.0'
+
+allprojects {
+
+    apply from: "${rootDir}/gradle/java.gradle"
+
+    apply plugin: 'com.github.ben-manes.versions'
+    apply plugin: "com.github.hierynomus.license"
+
+    license {
+        header = file("${rootDir}/LICENSE-SHORT")
+
+        ext.year = Calendar.getInstance().get(Calendar.YEAR)
+        ext.name = 'Silvio Wangler'
+        ext.email = 'silvio.wangler@gmail.com'
+
+        excludes(["**/*.json", "**/*.java.txt"])
+    }
 }
 
-version = '0.9.0'
-sourceCompatibility = 1.8
 
 dependencies {
     compile localGroovy()
@@ -35,17 +49,12 @@ dependencies {
 
     compile "com.squareup:javapoet:${javaPoetVersion}"
     compile "com.google.guava:guava:${guavaVersion}"
+    compile "com.google.code.gson:gson:${gsonVersion}"
+
+    compile project(':json-model')
 }
 
-license {
-    header = file("${rootDir}/LICENSE-SHORT")
 
-    ext.year = Calendar.getInstance().get(Calendar.YEAR)
-    ext.name = 'Silvio Wangler'
-    ext.email = 'silvio.wangler@gmail.com'
-
-    excludes(["**/*.json", "**/*.java.txt"])
-}
 
 bintray {
     user = project.hasProperty('bintrayUser') ? bintrayUser : System.getenv('BINTRAY_USER')

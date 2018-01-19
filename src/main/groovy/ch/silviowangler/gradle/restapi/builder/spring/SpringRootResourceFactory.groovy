@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2016 - 2017 Silvio Wangler (silvio.wangler@gmail.com)
+ * Copyright (c) 2016 - 2018 Silvio Wangler (silvio.wangler@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,12 +23,12 @@
  */
 package ch.silviowangler.gradle.restapi.builder.spring
 
-import ch.silviowangler.gradle.restapi.builder.AbstractResourceBuilder
-import ch.silviowangler.gradle.restapi.builder.RootResourceBuilder
+import ch.silviowangler.gradle.restapi.AnnotationTypes
+import ch.silviowangler.gradle.restapi.builder.AbstractRootResourceBuilder
 import com.squareup.javapoet.TypeSpec
 import org.gradle.api.Project
 
-class SpringRootResourceFactory extends AbstractResourceBuilder implements RootResourceBuilder {
+class SpringRootResourceFactory extends AbstractRootResourceBuilder {
 
     Project project
     TypeSpec.Builder rootResourceBuilder
@@ -39,13 +39,15 @@ class SpringRootResourceFactory extends AbstractResourceBuilder implements RootR
     }
 
     @Override
-    TypeSpec buildResource(File optionsFile, Object jsonObject) {
+    TypeSpec buildRootResource(File optionsFile) {
 
         withSpecification(optionsFile)
 
-        rootResourceBuilder = buildInterfaceBase()
+        rootResourceBuilder = interfaceBaseInstance()
 
-        rootResourceBuilder.addAnnotation(createGeneratedAnnotation())
+        rootResourceBuilder.addAnnotation(createAnnotation(AnnotationTypes.SPRING_REQUEST_MAPPING.getClassName(), [value: getPath()]))
+
+        generateResourceMethods()
 
         // generated annotation
 

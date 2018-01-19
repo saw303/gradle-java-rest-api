@@ -1,15 +1,13 @@
 package ch.silviowangler.restapi.v1.api;
 
-import org.springframework.web.bind.annotation.*;
-
 import javax.annotation.Generated;
-import java.util.List;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-@RequestMapping("/api/v1")
 @Generated(
     comments = "Specification filename: root.v1.json",
     value = "ch.silviowangler.restapi"
 )
+@RequestMapping("/api/v1")
 public interface RootResource {
 
     @RequestMapping(method = RequestMethod.OPTIONS)

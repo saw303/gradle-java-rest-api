@@ -1,7 +1,7 @@
 /**
  * MIT License
  * <p>
- * Copyright (c) 2016 - 2017 Silvio Wangler (silvio.wangler@gmail.com)
+ * Copyright (c) 2016 - 2018 Silvio Wangler (silvio.wangler@gmail.com)
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,9 +23,12 @@
  */
 package ch.silviowangler.gradle.restapi.builder;
 
+import ch.silviowangler.gradle.restapi.GenerateRestApiTask;
 import ch.silviowangler.gradle.restapi.GeneratorUtil;
 import ch.silviowangler.gradle.restapi.RestApiExtension;
 import ch.silviowangler.gradle.restapi.RestApiPlugin;
+import ch.silviowangler.rest.contract.model.v1.ResourceContract;
+import ch.silviowangler.rest.contract.model.v1.Verb;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import org.gradle.api.Project;
@@ -33,8 +36,7 @@ import org.gradle.api.Project;
 import java.io.File;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static ch.silviowangler.gradle.restapi.AnnotationTypes.JAVAX_GENERATED;
 
@@ -45,6 +47,8 @@ public interface ResourceBuilder {
     ResourceBuilder withSpecification(File file);
 
     File getSpecification();
+
+    ResourceContract getModel();
 
     default String resourceName(File specification) {
         return GeneratorUtil.createResourceName(specification);
@@ -80,5 +84,34 @@ public interface ResourceBuilder {
             builder.addMember(entry.getKey(), param, entry.getValue());
         }
         return builder.build();
+    }
+
+    void generateResourceMethods();
+
+    default boolean containsGetEntity(ResourceContract resourceContract) {
+        return fetchVerb(resourceContract, GenerateRestApiTask.GET_ENTITY).isPresent();
+    }
+
+    default boolean containsGetCollection(ResourceContract resourceContract) {
+        return fetchVerb(resourceContract, GenerateRestApiTask.GET_COLLECTION).isPresent();
+    }
+
+    default boolean containsPost(ResourceContract resourceContract) {
+        return fetchVerb(resourceContract, GenerateRestApiTask.POST).isPresent();
+    }
+
+    default boolean containsPut(ResourceContract resourceContract) {
+        return fetchVerb(resourceContract, GenerateRestApiTask.PUT).isPresent();
+    }
+
+    default boolean containsDeleteEntity(ResourceContract resourceContract) {
+        return fetchVerb(resourceContract, GenerateRestApiTask.DELETE_ENTITY).isPresent();
+    }
+
+    default Optional<Verb> fetchVerb(ResourceContract resourceContract, String verbStringValue) {
+
+        Objects.requireNonNull(verbStringValue, "verbStringValue must not be null");
+        List<Verb> verbs = resourceContract.getVerbs();
+        return verbs.stream().filter(verb -> verbStringValue.equals(verb.getVerb())).findFirst();
     }
 }

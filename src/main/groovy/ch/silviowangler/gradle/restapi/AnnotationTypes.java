@@ -1,7 +1,7 @@
 /**
  * MIT License
  *
- * Copyright (c) 2016 - 2017 Silvio Wangler (silvio.wangler@gmail.com)
+ * Copyright (c) 2016 - 2018 Silvio Wangler (silvio.wangler@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -51,7 +51,8 @@ public enum AnnotationTypes {
   JAVAX_VALIDATION_NOT_NULL(ClassName.get("javax.validation.constraints", "NotNull")),
   JAVAX_VALIDATION_VALID(ClassName.get("javax.validation", "Valid")),
   JAVAX_GENERATED(ClassName.get("javax.annotation", "Generated")),
-  JAVA_OVERRIDE(ClassName.get("java.lang", "Override"));
+    JAVA_OVERRIDE(ClassName.get("java.lang", "Override")),
+    SPRING_REQUEST_MAPPING(ClassName.get("org.springframework.web.bind.annotation", "RequestMapping"));
 
 
   private ClassName className;

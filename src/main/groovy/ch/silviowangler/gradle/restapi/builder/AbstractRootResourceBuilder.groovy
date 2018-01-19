@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  *
  * Copyright (c) 2016 - 2018 Silvio Wangler (silvio.wangler@gmail.com)
@@ -21,11 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package ch.silviowangler.gradle.restapi;
+package ch.silviowangler.gradle.restapi.builder
 
-public class Consts {
+import ch.silviowangler.gradle.restapi.LinkParser
 
-    public static String CONFIGUATION_REST_API = "restApiSpecification";
+abstract class AbstractRootResourceBuilder extends AbstractResourceBuilder implements RootResourceBuilder {
 
-    public static String TASK_GROUP_REST_API = "REST API";
+    String getPath() {
+        return new LinkParser(model.general.'x-route', model.general.version.split("\\.")[0]).toBasePath()
+    }
+
+    @Override
+    void generateResourceMethods() {
+
+        // generate options handler method
+
+        super.generateResourceMethods()
+    }
 }

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2016 - 2017 Silvio Wangler (silvio.wangler@gmail.com)
+ * Copyright (c) 2016 - 2018 Silvio Wangler (silvio.wangler@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -83,6 +83,64 @@ class RestApiPluginSpec extends Specification {
         project.extensions.restApi != null
     }
 
+
+    void "The plugin generates valid Java 8 code for Spring Boot"() {
+        given:
+        project.restApi.generatorOutput = temporaryFolder.getRoot()
+        project.restApi.generatorImplOutput = temporaryFolder.getRoot()
+        project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/rootSpringBoot")
+        project.restApi.packageName = 'ch.silviowangler.restapi.v1'
+        project.restApi.generateDateAttribute = false
+        project.restApi.objectResourceModelMapping = customFieldModelMapping
+        project.restApi.springBoot = true
+
+        and:
+        GenerateRestApiTask task = project.tasks.generateRestArtifacts
+
+        and:
+        String path = project.restApi.packageName.replaceAll('\\.', '/')
+
+        when:
+        task.exec()
+
+        and:
+        def javaFiles = []
+        temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+            if (it.name.endsWith('.java')) javaFiles << it
+        })
+
+        then:
+        new File(temporaryFolder.getRoot(), path).exists()
+
+        and:
+        javaFiles.size() == 3
+
+        and:
+        javaFiles.collect {
+            it.parent == new File(temporaryFolder.getRoot(), path)
+        }.size() == javaFiles.size()
+
+        and: 'resource validieren'
+        assertJavaFile("${project.restApi.packageName}/api", 'RootResource', 'rootSpringBoot')
+        assertJavaFile("${project.restApi.packageName}/api", 'RootResourceImpl', 'rootSpringBoot')
+        assertJavaFile("${project.restApi.packageName}/api", 'RootGetResourceModel', 'rootSpringBoot')
+
+        when:
+        CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts
+
+        and:
+        cleanTask.cleanUp()
+
+        and:
+        javaFiles.clear()
+        temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+            if (it.name.endsWith('.java')) javaFiles << it
+        })
+
+        then:
+        javaFiles.isEmpty()
+    }
+
     void "The plugin generates valid Java 8 code"() {
 
         given:
@@ -122,64 +180,6 @@ class RestApiPluginSpec extends Specification {
         assertJavaFile('org.acme.rest.v1', 'PartnerGetResourceModel')
         assertJavaFile('org.acme.rest.v1', 'PartnerPutResourceModel')
         assertJavaFile('org.acme.rest.v1', 'PartnerPostResourceModel')
-
-        when:
-        CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts
-
-        and:
-        cleanTask.cleanUp()
-
-        and:
-        javaFiles.clear()
-        temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
-            if (it.name.endsWith('.java')) javaFiles << it
-        })
-
-        then:
-        javaFiles.isEmpty()
-    }
-
-    //@PendingFeature
-    void "The plugin generates valid Java 8 code for Spring Boot"() {
-        given:
-        project.restApi.generatorOutput = temporaryFolder.getRoot()
-        project.restApi.generatorImplOutput = temporaryFolder.getRoot()
-        project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/rootSpringBoot")
-        project.restApi.packageName = 'ch.silviowangler.restapi.v1'
-        project.restApi.generateDateAttribute = false
-        project.restApi.objectResourceModelMapping = customFieldModelMapping
-        project.restApi.springBoot = true
-
-        and:
-        GenerateRestApiTask task = project.tasks.generateRestArtifacts
-
-        and:
-        def path = project.restApi.packageName.replaceAll('\\.', '/')
-
-        when:
-        task.exec()
-
-        and:
-        def javaFiles = []
-        temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
-            if (it.name.endsWith('.java')) javaFiles << it
-        })
-
-        then:
-        new File(temporaryFolder.getRoot(), path).exists()
-
-        and:
-        javaFiles.size() == 3
-
-        and:
-        javaFiles.collect {
-            it.parent == new File(temporaryFolder.getRoot(), path)
-        }.size() == javaFiles.size()
-
-        and: 'resource validieren'
-        assertJavaFile("${project.restApi.packageName}/api", 'RootResource', 'rootSpringBoot')
-        assertJavaFile("${project.restApi.packageName}/api", 'RootResourceImpl', 'rootSpringBoot')
-        assertJavaFile("${project.restApi.packageName}/api", 'RootGetResourceModel', 'rootSpringBoot')
 
         when:
         CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts

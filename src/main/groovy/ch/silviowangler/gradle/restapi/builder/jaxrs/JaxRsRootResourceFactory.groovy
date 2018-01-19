@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2016 - 2017 Silvio Wangler (silvio.wangler@gmail.com)
+ * Copyright (c) 2016 - 2018 Silvio Wangler (silvio.wangler@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,8 +27,7 @@ import ch.silviowangler.gradle.restapi.AnnotationTypes
 import ch.silviowangler.gradle.restapi.GenerateRestApiTask
 import ch.silviowangler.gradle.restapi.GeneratorUtil
 import ch.silviowangler.gradle.restapi.LinkParser
-import ch.silviowangler.gradle.restapi.builder.AbstractResourceBuilder
-import ch.silviowangler.gradle.restapi.builder.RootResourceBuilder
+import ch.silviowangler.gradle.restapi.builder.AbstractRootResourceBuilder
 import com.squareup.javapoet.*
 import io.github.getify.minify.Minify
 import org.gradle.api.Project
@@ -39,7 +38,7 @@ import java.nio.charset.Charset
 import static ch.silviowangler.gradle.restapi.AnnotationTypes.*
 import static javax.lang.model.element.Modifier.*
 
-class JaxRsRootResourceFactory extends AbstractResourceBuilder implements RootResourceBuilder {
+class JaxRsRootResourceFactory extends AbstractRootResourceBuilder {
 
     Project project
     String currentPackageName
@@ -51,24 +50,24 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder implements RootRe
     }
 
     @Override
-    TypeSpec buildResource(File optionsFile, Object jsonObject) {
+    TypeSpec buildRootResource(File optionsFile) {
 
         withSpecification(optionsFile)
 
-        this.currentPackageName = "${project.restApi.packageName}.${GeneratorUtil.composePackageName(jsonObject)}".toString()
+        this.currentPackageName = "${project.restApi.packageName}.${GeneratorUtil.composePackageName(model)}".toString()
 
-        TypeSpec.Builder interfaceBuilder = buildInterfaceBase()
+        TypeSpec.Builder interfaceBuilder = interfaceBaseInstance()
 
-        LinkParser parser = new LinkParser(jsonObject.general.'x-route', jsonObject.general.version.split("\\.")[0])
+        LinkParser parser = new LinkParser(model.general.'x-route', model.general.version.split("\\.")[0])
 
 
         interfaceBuilder.addAnnotation(AnnotationSpec.builder(JAX_RS_PATH.className).addMember('value', '$S', parser.toBasePath()).build())
 
         // Collection get
 
-        if (containsGetCollection(jsonObject)) {
+        if (containsGetCollection(model)) {
 
-            def verb = fetchVerb(jsonObject, GenerateRestApiTask.GET_COLLECTION)
+            def verb = fetchVerb(model, GenerateRestApiTask.GET_COLLECTION)
 
             for (representation in verb.representations) {
 
@@ -80,7 +79,7 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder implements RootRe
                     collectionGetMethod = MethodSpec.methodBuilder("getCollection${representation.name[0].toUpperCase()}${representation.name.substring(1)}")
                 }
 
-                collectionGetMethod.addModifiers(Modifier.ABSTRACT, PUBLIC).returns(GeneratorUtil.getReturnType(project, optionsFile, 'Get', true, currentPackageName))
+                collectionGetMethod.addModifiers(ABSTRACT, PUBLIC).returns(GeneratorUtil.getReturnType(project, optionsFile, 'Get', true, currentPackageName))
                 collectionGetMethod.addAnnotation(AnnotationSpec.builder(JAX_RS_GET_VERB.className).build())
                 collectionGetMethod.addAnnotation(createProducesAnnotation())
                 collectionGetMethod.addAnnotation(AnnotationSpec.builder(JAX_RS_PATH.className).addMember('value', '$S', '').build())
@@ -107,7 +106,7 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder implements RootRe
                 )
 
                 // Parameters
-                jsonObject.verbs.find { it.verb == GenerateRestApiTask.GET_COLLECTION }.parameters.each { p ->
+                model.verbs.find { it.verb == GenerateRestApiTask.GET_COLLECTION }.parameters.each { p ->
                     collectionGetMethod.addParameter(
                             ParameterSpec.builder(GeneratorUtil.translateToJava(p.type), p.name).addAnnotation(AnnotationSpec.builder(JAX_RS_QUERY_PARAM.className).addMember('value', '$S', p.name).build()).build()
                     )
@@ -120,9 +119,9 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder implements RootRe
         }
 
         // Entity get
-        if (containsGetEntity(jsonObject)) {
+        if (containsGetEntity(model)) {
 
-            def verb = fetchVerb(jsonObject, GenerateRestApiTask.GET_ENTITY)
+            def verb = fetchVerb(model, GenerateRestApiTask.GET_ENTITY)
             for (representation in verb.representations) {
 
                 String mimetype = representation.name == 'json' ? 'application/json' : representation.mimetype
@@ -177,7 +176,7 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder implements RootRe
         }
 
 
-        if (containsPost(jsonObject)) {
+        if (containsPost(model)) {
             // POST mit Resource Model
             MethodSpec.Builder createEntityResourceModel = entityCreateMethod(parser, optionsFile, { builder ->
                 builder.addParameter(
@@ -188,7 +187,7 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder implements RootRe
                 )
                 builder.addAnnotation(AnnotationSpec.builder(JAX_RS_PATH.className).addMember('value', '$S', '').build())
 
-                def verb = fetchVerb(jsonObject, GenerateRestApiTask.POST)
+                def verb = fetchVerb(model, GenerateRestApiTask.POST)
                 if (isSecurityEnabled() && verb.permissions?.size() > 0) {
                     builder.addAnnotation(AnnotationSpec.builder(RESTAPI_JWT_ANNOTATION.className).build())
                 }
@@ -200,7 +199,7 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder implements RootRe
             interfaceBuilder.addMethod(buildMethodNotAllowedHandler('createEntity', JAX_RS_POST_VERB.className, parser.directEntity ? '' : '{id}').build())
         }
 
-        if (containsPut(jsonObject)) {
+        if (containsPut(model)) {
 
             // PUT mit Resource Model
             MethodSpec.Builder updateEntityResourceModel = entityUpdateMethod(parser, optionsFile, { builder ->
@@ -216,7 +215,7 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder implements RootRe
                     )
                 }
                 builder.addAnnotation(AnnotationSpec.builder(JAX_RS_PATH.className).addMember('value', '$S', parser.directEntity ? '' : '{id}').build())
-                def verb = fetchVerb(jsonObject, GenerateRestApiTask.PUT)
+                def verb = fetchVerb(model, GenerateRestApiTask.PUT)
                 if (isSecurityEnabled() && verb.permissions?.size() > 0) {
                     builder.addAnnotation(AnnotationSpec.builder(RESTAPI_JWT_ANNOTATION.className).build())
                 }
@@ -229,7 +228,7 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder implements RootRe
         }
 
         // DELETE
-        if (containsDeleteEntity(jsonObject)) {
+        if (containsDeleteEntity(model)) {
             MethodSpec.Builder entityDeleteMethod = MethodSpec.methodBuilder('deleteEntity').addModifiers(Modifier.ABSTRACT, PUBLIC).returns(GeneratorUtil.getReturnType(project, optionsFile, 'Delete', false, currentPackageName))
             entityDeleteMethod.addAnnotation(AnnotationSpec.builder(JAX_RS_DELETE_VERB.className).build())
             entityDeleteMethod.addAnnotation(createProducesAnnotation())
@@ -247,7 +246,7 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder implements RootRe
                 )
             }
 
-            def verb = fetchVerb(jsonObject, GenerateRestApiTask.DELETE_ENTITY)
+            def verb = fetchVerb(model, GenerateRestApiTask.DELETE_ENTITY)
             if (isSecurityEnabled() && verb.permissions?.size() > 0) {
                 entityDeleteMethod.addAnnotation(AnnotationSpec.builder(RESTAPI_JWT_ANNOTATION.className).build())
             }
@@ -296,29 +295,7 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder implements RootRe
         return interfaceBuilder.build()
     }
 
-    private boolean containsGetEntity(Object jsonObject) {
-        return fetchVerb(jsonObject, GenerateRestApiTask.GET_ENTITY) != null
-    }
 
-    private boolean containsGetCollection(Object jsonObject) {
-        return fetchVerb(jsonObject, GenerateRestApiTask.GET_COLLECTION) != null
-    }
-
-    private boolean containsPost(Object jsonObject) {
-        return fetchVerb(jsonObject, GenerateRestApiTask.POST) != null
-    }
-
-    private boolean containsPut(Object jsonObject) {
-        return fetchVerb(jsonObject, GenerateRestApiTask.PUT) != null
-    }
-
-    private boolean containsDeleteEntity(Object jsonObject) {
-        return fetchVerb(jsonObject, GenerateRestApiTask.DELETE_ENTITY) != null
-    }
-
-    private Object fetchVerb(Object jsonObject, String verb) {
-        return jsonObject.verbs.find { it.verb == verb }
-    }
 
     private AnnotationSpec createProducesAnnotation() {
         createProducesAnnotation('application/json')
