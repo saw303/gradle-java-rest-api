@@ -25,9 +25,13 @@ package ch.silviowangler.gradle.restapi.builder;
 
 import ch.silviowangler.rest.contract.model.v1.ResourceContract;
 import ch.silviowangler.rest.contract.model.v1.Verb;
+import com.google.gson.Gson;
 import com.squareup.javapoet.TypeSpec;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.Objects;
 import java.util.Optional;
 
 import static ch.silviowangler.gradle.restapi.GenerateRestApiTask.GET_ENTITY;
@@ -44,8 +48,18 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
     @Override
     public ResourceBuilder withSpecification(File file) {
-        this.specification = file;
-        this.resourceContract = new ResourceContract();
+        this.specification = Objects.requireNonNull(file, "file must not be null");
+
+        if (!file.exists()) {
+            throw new IllegalArgumentException(String.format("File %s does not exist", file.getAbsolutePath()));
+        }
+
+
+        try {
+            this.resourceContract = new Gson().fromJson(new FileReader(file), ResourceContract.class);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("Unable to transform JSON file " + file.getAbsolutePath() + " to Java model", e);
+        }
         return this;
     }
 
@@ -79,7 +93,5 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
             // do some
         });
 
-
-        System.out.println("");
     }
 }

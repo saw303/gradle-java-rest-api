@@ -34,7 +34,7 @@ public class ResourceContract implements Serializable {
     private GeneralDetails general;
     private List<Verb> verbs;
     private List<ResourceField> fields;
-    private List<ResourceContract> subresources;
+    private List<SubResource> subresources;
     private List<ResourceTypes> types;
 
     public GeneralDetails getGeneral() {
@@ -61,11 +61,11 @@ public class ResourceContract implements Serializable {
         this.fields = fields;
     }
 
-    public List<ResourceContract> getSubresources() {
+    public List<SubResource> getSubresources() {
         return subresources;
     }
 
-    public void setSubresources(List<ResourceContract> subresources) {
+    public void setSubresources(List<SubResource> subresources) {
         this.subresources = subresources;
     }
 

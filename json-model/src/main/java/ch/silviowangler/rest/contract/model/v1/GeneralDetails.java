@@ -23,6 +23,8 @@
  */
 package ch.silviowangler.rest.contract.model.v1;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 
 /**
@@ -32,6 +34,7 @@ public class GeneralDetails implements Serializable {
 
     private String description;
     private String version;
+    @SerializedName("x-route")
     private String xRoute;
 
     public String getDescription() {

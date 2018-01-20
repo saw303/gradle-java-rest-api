@@ -24,6 +24,7 @@
 package ch.silviowangler.rest.contract.model.v1;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author Silvio Wangler
@@ -33,9 +34,9 @@ public class ResourceField implements Serializable {
     private String name;
     private String type;
     private String options;
-    private String mandatory;
-    private String min;
-    private String max;
+    private List<Boolean> mandatory;
+    private Object min;
+    private Object max;
     private String multiple;
     private Object defaultValue;
     private String shield;
@@ -43,7 +44,7 @@ public class ResourceField implements Serializable {
     private boolean sortable;
     private boolean readonly;
     private boolean filterable;
-    private String alias;
+    private List<String> alias;
     private String xComment;
 
     public String getName() {
@@ -70,27 +71,27 @@ public class ResourceField implements Serializable {
         this.options = options;
     }
 
-    public String getMandatory() {
+    public List<Boolean> getMandatory() {
         return mandatory;
     }
 
-    public void setMandatory(String mandatory) {
+    public void setMandatory(List<Boolean> mandatory) {
         this.mandatory = mandatory;
     }
 
-    public String getMin() {
+    public Object getMin() {
         return min;
     }
 
-    public void setMin(String min) {
+    public void setMin(Object min) {
         this.min = min;
     }
 
-    public String getMax() {
+    public Object getMax() {
         return max;
     }
 
-    public void setMax(String max) {
+    public void setMax(Object max) {
         this.max = max;
     }
 
@@ -150,11 +151,11 @@ public class ResourceField implements Serializable {
         this.filterable = filterable;
     }
 
-    public String getAlias() {
+    public List<String> getAlias() {
         return alias;
     }
 
-    public void setAlias(String alias) {
+    public void setAlias(List<String> alias) {
         this.alias = alias;
     }
 
