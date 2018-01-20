@@ -50,6 +50,11 @@ class JaxRsRootResourceFactory extends AbstractRootResourceBuilder {
     }
 
     @Override
+    protected void createOptionsMethod() {
+
+    }
+
+    @Override
     TypeSpec buildRootResource(File optionsFile) {
 
         withSpecification(optionsFile)

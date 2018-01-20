@@ -32,9 +32,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.Objects;
-import java.util.Optional;
 
-import static ch.silviowangler.gradle.restapi.GenerateRestApiTask.GET_ENTITY;
 import static javax.lang.model.element.Modifier.PUBLIC;
 
 /**
@@ -53,7 +51,6 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
         if (!file.exists()) {
             throw new IllegalArgumentException(String.format("File %s does not exist", file.getAbsolutePath()));
         }
-
 
         try {
             this.resourceContract = new Gson().fromJson(new FileReader(file), ResourceContract.class);
@@ -87,11 +84,9 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
     @Override
     public void generateResourceMethods() {
 
-        Optional<Verb> getEntityVerb = fetchVerb(this.resourceContract, GET_ENTITY);
+        for (Verb verb : getModel().getVerbs()) {
 
-        getEntityVerb.ifPresent(getEntity -> {
-            // do some
-        });
+        }
 
     }
 }
