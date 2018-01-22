@@ -2,6 +2,7 @@ package ch.silviowangler.gradle.restapi.builder
 
 import ch.silviowangler.gradle.restapi.GenerateRestApiTask
 import ch.silviowangler.rest.contract.model.v1.ResourceContract
+import com.squareup.javapoet.AnnotationSpec
 import org.gradle.api.Project
 import spock.lang.Specification
 import spock.lang.Subject
@@ -19,6 +20,16 @@ class AbstractResourceBuilderSpec extends Specification {
 
         @Override
         Project getProject() {
+            throw new RuntimeException("Not available")
+        }
+
+        @Override
+        AnnotationSpec getQueryParamAnnotation(String paramName) {
+            throw new RuntimeException("Not available")
+        }
+
+        @Override
+        Iterable<AnnotationSpec> getResourceMethodAnnotations(boolean applyId) {
             throw new RuntimeException("Not available")
         }
     }

@@ -32,5 +32,7 @@ public interface RootResourceBuilder extends ResourceBuilder {
 
     RootResourceBuilder withProject(Project project);
 
+    RootResourceBuilder withCurrentPackageName(String packageName);
+
     TypeSpec buildRootResource(File optionsFile);
 }

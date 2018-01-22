@@ -23,7 +23,6 @@
  */
 package ch.silviowangler.gradle.restapi.builder;
 
-import ch.silviowangler.gradle.restapi.LinkParser;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import io.github.getify.minify.Minify;
@@ -35,11 +34,10 @@ import static javax.lang.model.element.Modifier.*;
 
 public abstract class AbstractRootResourceBuilder extends AbstractResourceBuilder implements RootResourceBuilder {
 
-    public String getPath() {
-        return new LinkParser(
-                getModel().getGeneral().getxRoute(),
-                getModel().getGeneral().getVersion().split("\\.")[0]
-        ).toBasePath();
+    @Override
+    public RootResourceBuilder withCurrentPackageName(String packageName) {
+        super.withCurrentPackageName(packageName);
+        return this;
     }
 
     @Override

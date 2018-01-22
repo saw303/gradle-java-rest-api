@@ -144,6 +144,7 @@ class GeneratorUtil {
         return CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, value)
     }
 
+
     static String composePackageName(Object json) {
         String version = readVersion(json.general.version)
         String route = json.general.'x-route'.replace(':version', version)

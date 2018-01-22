@@ -24,6 +24,7 @@
 package ch.silviowangler.gradle.restapi.builder.spring;
 
 import ch.silviowangler.gradle.restapi.builder.AbstractRootResourceBuilder;
+import ch.silviowangler.rest.contract.model.v1.Verb;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
@@ -31,12 +32,12 @@ import com.squareup.javapoet.TypeSpec;
 import org.gradle.api.Project;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static ch.silviowangler.gradle.restapi.AnnotationTypes.*;
-import static javax.lang.model.element.Modifier.DEFAULT;
-import static javax.lang.model.element.Modifier.PUBLIC;
 
 public class SpringRootResourceFactory extends AbstractRootResourceBuilder {
 
@@ -64,12 +65,9 @@ public class SpringRootResourceFactory extends AbstractRootResourceBuilder {
         Map<String, Object> args = new HashMap<>();
         args.put("value", getPath());
 
-        rootResourceBuilder.addAnnotation(createAnnotation(SPRING_REQUEST_MAPPING.getClassName(), args));
+        rootResourceBuilder.addAnnotation(createAnnotation(SPRING_REQUEST_MAPPING, args));
 
         generateResourceMethods();
-
-
-
 
 
         // generated annotation
@@ -93,14 +91,41 @@ public class SpringRootResourceFactory extends AbstractRootResourceBuilder {
 
     @Override
     protected void createOptionsMethod() {
-        MethodSpec.Builder optionsMethod = MethodSpec.methodBuilder("getOptions").addModifiers(PUBLIC, DEFAULT).returns(ClassName.get(String.class));
 
-        optionsMethod.addAnnotation(AnnotationSpec.builder(SPRING_REQUEST_MAPPING.getClassName()).addMember("method", "$T.OPTIONS", SPRING_REQUEST_METHOD.getClassName()).build());
-        optionsMethod.addAnnotation(AnnotationSpec.builder(SPRING_RESPONSE_BODY.getClassName()).build());
-        //optionsMethod.addAnnotation(createProducesAnnotation())
+        Verb verb = new Verb();
+        verb.setVerb("OPTIONS");
+
+        setCurrentVerb(verb);
+        MethodSpec.Builder optionsMethod = createInterfaceMethod("getOptions", ClassName.get(String.class));
 
         optionsMethod.addStatement("return OPTIONS_CONTENT");
 
         interfaceBaseInstance().addMethod(optionsMethod.build());
+        setCurrentVerb(null);
+    }
+
+    @Override
+    public AnnotationSpec getQueryParamAnnotation(String paramName) {
+        return AnnotationSpec.builder(SPRING_REQUEST_PARAM.getClassName())
+                .addMember("value", "$S", paramName).build();
+    }
+
+    @Override
+    public Iterable<AnnotationSpec> getResourceMethodAnnotations(boolean applyId) {
+        List<AnnotationSpec> annotations = new ArrayList<>();
+
+        String httpMethod = getHttpMethod();
+
+        AnnotationSpec.Builder builder = AnnotationSpec.builder(SPRING_REQUEST_MAPPING.getClassName());
+
+        builder.addMember("method", "$T." + httpMethod.toUpperCase(), SPRING_REQUEST_METHOD.getClassName());
+        if (applyId) {
+            builder.addMember("path", "$S", "/{id}");
+        }
+
+        annotations.add(builder.build());
+        annotations.add(createAnnotation(SPRING_RESPONSE_BODY));
+
+        return annotations;
     }
 }

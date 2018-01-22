@@ -386,4 +386,13 @@ class JaxRsRootResourceFactory extends AbstractRootResourceBuilder {
         createModifyingMethod(parser, JAX_RS_PUT_VERB.className, optionsFile, closure)
     }
 
+    @Override
+    AnnotationSpec getQueryParamAnnotation(String paramName) {
+        throw new RuntimeException("Not available")
+    }
+
+    @Override
+    Iterable<AnnotationSpec> getResourceMethodAnnotations(boolean applyId) {
+        throw new RuntimeException("Not available")
+    }
 }

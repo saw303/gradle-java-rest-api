@@ -23,14 +23,10 @@
  */
 package ch.silviowangler.gradle.restapi.builder;
 
-import ch.silviowangler.gradle.restapi.GenerateRestApiTask;
-import ch.silviowangler.gradle.restapi.GeneratorUtil;
-import ch.silviowangler.gradle.restapi.RestApiExtension;
-import ch.silviowangler.gradle.restapi.RestApiPlugin;
+import ch.silviowangler.gradle.restapi.*;
 import ch.silviowangler.rest.contract.model.v1.ResourceContract;
 import ch.silviowangler.rest.contract.model.v1.Verb;
-import com.squareup.javapoet.AnnotationSpec;
-import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.*;
 import org.gradle.api.Project;
 
 import java.io.File;
@@ -39,6 +35,7 @@ import java.time.ZonedDateTime;
 import java.util.*;
 
 import static ch.silviowangler.gradle.restapi.AnnotationTypes.JAVAX_GENERATED;
+import static javax.lang.model.element.Modifier.*;
 
 public interface ResourceBuilder {
 
@@ -46,12 +43,20 @@ public interface ResourceBuilder {
 
     ResourceBuilder withSpecification(File file);
 
+    String getCurrentPackageName();
+
+    ResourceBuilder withCurrentPackageName(String packageName);
+
     File getSpecification();
 
     ResourceContract getModel();
 
-    default String resourceName(File specification) {
-        return GeneratorUtil.createResourceName(specification);
+    default String resourceName() {
+        return GeneratorUtil.createResourceName(getSpecification());
+    }
+
+    default TypeName resourceModelName() {
+        return GeneratorUtil.getReturnType(getProject(), getSpecification(), "Get", false, getCurrentPackageName());
     }
 
     default AnnotationSpec createGeneratedAnnotation() {
@@ -61,18 +66,26 @@ public interface ResourceBuilder {
         map.put("value", RestApiPlugin.PLUGIN_ID);
         map.put("comments", "Specification filename: " + getSpecification().getName());
 
-        RestApiExtension restApiExtension = getProject().getExtensions().getByType(RestApiExtension.class);
+        RestApiExtension restApiExtension = getRestApiExtension();
 
-        if (restApiExtension.getGenerateDateAttribute()) {
+        if (restApiExtension.isGenerateDateAttribute()) {
             ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
             map.put("date", utc.toString());
         }
 
-        return createAnnotation(JAVAX_GENERATED.getClassName(), map);
+        return createAnnotation(JAVAX_GENERATED, map);
     }
 
-    default AnnotationSpec createAnnotation(ClassName className, Map<String, Object> attributes) {
-        AnnotationSpec.Builder builder = AnnotationSpec.builder(className);
+    default RestApiExtension getRestApiExtension() {
+        return getProject().getExtensions().getByType(RestApiExtension.class);
+    }
+
+    default AnnotationSpec createAnnotation(AnnotationTypes className) {
+        return createAnnotation(className, new HashMap<>());
+    }
+
+    default AnnotationSpec createAnnotation(AnnotationTypes className, Map<String, Object> attributes) {
+        AnnotationSpec.Builder builder = AnnotationSpec.builder(className.getClassName());
 
         for (Map.Entry<String, Object> entry : attributes.entrySet()) {
 
@@ -114,4 +127,40 @@ public interface ResourceBuilder {
         List<Verb> verbs = resourceContract.getVerbs();
         return verbs.stream().filter(verb -> verbStringValue.equals(verb.getVerb())).findFirst();
     }
+
+    default MethodSpec.Builder createInterfaceMethod(String methodName, TypeName returnType) {
+        return createInterfaceMethod(methodName, returnType, new HashMap<>());
+    }
+
+
+    default MethodSpec.Builder createInterfaceMethod(String methodName, TypeName returnType, Map<String, ClassName> params) {
+        MethodSpec.Builder methodBuilder = MethodSpec
+                .methodBuilder(methodName)
+                .returns(returnType)
+                .addModifiers(PUBLIC);
+
+
+        methodBuilder.addAnnotations(getResourceMethodAnnotations(!"getOptions".equals(methodName)));
+
+
+        if ("getOptions".equals(methodName)) {
+            methodBuilder.addModifiers(DEFAULT);
+        } else {
+            methodBuilder.addModifiers(ABSTRACT);
+        }
+
+        params.forEach((key, value) -> {
+
+            ParameterSpec parameter = ParameterSpec.builder(value, key)
+                    .addAnnotation(getQueryParamAnnotation(key)).build();
+
+            methodBuilder.addParameter(parameter);
+
+        });
+        return methodBuilder;
+    }
+
+    AnnotationSpec getQueryParamAnnotation(String paramName);
+
+    Iterable<AnnotationSpec> getResourceMethodAnnotations(boolean applyId);
 }

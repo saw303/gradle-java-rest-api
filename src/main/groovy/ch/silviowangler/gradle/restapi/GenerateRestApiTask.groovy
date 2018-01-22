@@ -106,7 +106,7 @@ class GenerateRestApiTask extends AbstractTask {
 
             RootResourceBuilder rootResourceBuilder = RootResourceBuilderFactory.getRootResourceBuilder(project.restApi)
 
-            TypeSpec rootResourceInterface = rootResourceBuilder.withProject(project).buildRootResource(rootFile)
+            TypeSpec rootResourceInterface = rootResourceBuilder.withProject(project).withCurrentPackageName(currentPackageName).buildRootResource(rootFile)
             writeToFileSystem(currentPackageName, rootResourceInterface, getRootOutputDir())
             amountOfGeneratedJavaSourceFiles++
 

@@ -1,8 +1,9 @@
-package ch.silviowangler.restapi.v1.api;
+package org.acme.rest.v1;
 
 import javax.annotation.Generated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Generated(
@@ -21,7 +22,10 @@ public interface RootResource {
     return OPTIONS_CONTENT;
   }
 
-    @GetMapping("/{id}")
-    @ResponseBody
-    RootGetResourceModel getEntity(String id);
+  @RequestMapping(
+      method = RequestMethod.GET,
+      path = "/{id}"
+  )
+  @ResponseBody
+  RootGetResourceModel getEntity(@RequestParam("id") String id);
 }

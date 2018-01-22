@@ -89,7 +89,7 @@ class RestApiPluginSpec extends Specification {
         project.restApi.generatorOutput = temporaryFolder.getRoot()
         project.restApi.generatorImplOutput = temporaryFolder.getRoot()
         project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/rootSpringBoot")
-        project.restApi.packageName = 'ch.silviowangler.restapi.v1'
+        project.restApi.packageName = 'org.acme.rest.v1'
         project.restApi.generateDateAttribute = false
         project.restApi.objectResourceModelMapping = customFieldModelMapping
         project.restApi.springBoot = true

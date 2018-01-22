@@ -23,14 +23,19 @@
  */
 package ch.silviowangler.gradle.restapi.builder;
 
+import ch.silviowangler.gradle.restapi.GenerateRestApiTask;
+import ch.silviowangler.gradle.restapi.LinkParser;
 import ch.silviowangler.rest.contract.model.v1.ResourceContract;
 import ch.silviowangler.rest.contract.model.v1.Verb;
 import com.google.gson.Gson;
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeSpec;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import static javax.lang.model.element.Modifier.PUBLIC;
@@ -43,6 +48,26 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
     private File specification;
     private ResourceContract resourceContract;
     private TypeSpec.Builder interfaceBuilder;
+    private Verb currentVerb;
+    private String currentPackageName;
+
+    public Verb getCurrentVerb() {
+        return currentVerb;
+    }
+
+    protected void setCurrentVerb(Verb currentVerb) {
+        this.currentVerb = currentVerb;
+    }
+
+    public String getCurrentPackageName() {
+        return currentPackageName;
+    }
+
+    @Override
+    public ResourceBuilder withCurrentPackageName(String packageName) {
+        this.currentPackageName = packageName;
+        return this;
+    }
 
     @Override
     public ResourceBuilder withSpecification(File file) {
@@ -74,7 +99,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
     protected TypeSpec.Builder interfaceBaseInstance() {
 
         if (this.interfaceBuilder == null) {
-            this.interfaceBuilder = TypeSpec.interfaceBuilder(resourceName(this.specification))
+            this.interfaceBuilder = TypeSpec.interfaceBuilder(resourceName())
                     .addModifiers(PUBLIC)
                     .addAnnotation(createGeneratedAnnotation());
         }
@@ -86,6 +111,65 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
         for (Verb verb : getModel().getVerbs()) {
 
+
+            this.currentVerb = verb;
+
+            if (GenerateRestApiTask.GET_ENTITY.equals(verb.getVerb())) {
+
+                Map<String, ClassName> params = new HashMap<>();
+
+                params.put("id", ClassName.get(String.class));
+
+
+                interfaceBaseInstance().addMethod(
+
+                        createInterfaceMethod(
+                                "getEntity",
+                                resourceModelName(),
+                                params
+                        ).build()
+                );
+
+            } else if (GenerateRestApiTask.GET_COLLECTION.equals(verb.getVerb())) {
+
+            } else if (GenerateRestApiTask.POST.equals(verb.getVerb())) {
+
+            } else if (GenerateRestApiTask.PUT.equals(verb.getVerb())) {
+
+            } else if (GenerateRestApiTask.DELETE_COLLECTION.equals(verb.getVerb())) {
+
+            } else if (GenerateRestApiTask.DELETE_ENTITY.equals(verb.getVerb())) {
+
+            } else {
+                throw new IllegalArgumentException(String.format("Verb %s is unknown", verb.getVerb()));
+            }
+            this.currentVerb = null;
+        }
+    }
+
+    protected String getPath() {
+        return new LinkParser(
+                getModel().getGeneral().getxRoute(),
+                getModel().getGeneral().getVersion().split("\\.")[0]
+        ).toBasePath();
+    }
+
+    protected String getHttpMethod() {
+
+        String v = Objects.requireNonNull(currentVerb).getVerb();
+
+        if (GenerateRestApiTask.GET_ENTITY.equals(v) || GenerateRestApiTask.GET_COLLECTION.equals(v)) {
+            return "GET";
+        } else if (GenerateRestApiTask.DELETE_ENTITY.equals(v) || GenerateRestApiTask.DELETE_COLLECTION.equals(v)) {
+            return "DELETE";
+        } else if (GenerateRestApiTask.PUT.equals(v)) {
+            return "PUT";
+        } else if (GenerateRestApiTask.POST.equals(v)) {
+            return "POST";
+        } else if ("OPTIONS".equals(v)) {
+            return "OPTIONS";
+        } else {
+            throw new IllegalArgumentException("Unknown verb " + v);
         }
 
     }
