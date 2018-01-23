@@ -27,6 +27,7 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import io.github.getify.minify.Minify;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
@@ -41,10 +42,12 @@ public abstract class AbstractRootResourceBuilder extends AbstractResourceBuilde
     }
 
     @Override
-    public void generateResourceMethods() {
+    public RootResourceBuilder withSpecification(File file) {
+        super.withSpecification(file);
+        return this;
+    }
 
-        // generate options handler method
-
+    public void generateResourceMethodsWithOptions() {
 
         String content;
         try {
@@ -58,7 +61,7 @@ public abstract class AbstractRootResourceBuilder extends AbstractResourceBuilde
         FieldSpec.Builder fieldBuilder = FieldSpec.builder(ClassName.get(String.class), "OPTIONS_CONTENT").addModifiers(PUBLIC, STATIC, FINAL)
                 .initializer("$N", "\"" + content + "\"");
 
-        interfaceBaseInstance().addField(fieldBuilder.build());
+        this.typeBuilder.addField(fieldBuilder.build());
 
         createOptionsMethod();
 

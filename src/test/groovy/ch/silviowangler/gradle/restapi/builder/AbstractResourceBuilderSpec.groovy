@@ -1,5 +1,6 @@
 package ch.silviowangler.gradle.restapi.builder
 
+import ch.silviowangler.gradle.restapi.AnnotationTypes
 import ch.silviowangler.gradle.restapi.GenerateRestApiTask
 import ch.silviowangler.rest.contract.model.v1.ResourceContract
 import com.squareup.javapoet.AnnotationSpec
@@ -30,6 +31,11 @@ class AbstractResourceBuilderSpec extends Specification {
 
         @Override
         Iterable<AnnotationSpec> getResourceMethodAnnotations(boolean applyId) {
+            throw new RuntimeException("Not available")
+        }
+
+        @Override
+        protected AnnotationTypes getPathVariableAnnotationType() {
             throw new RuntimeException("Not available")
         }
     }

@@ -23,7 +23,9 @@
  */
 package ch.silviowangler.gradle.restapi.builder.spring;
 
+import ch.silviowangler.gradle.restapi.AnnotationTypes;
 import ch.silviowangler.gradle.restapi.builder.AbstractRootResourceBuilder;
+import ch.silviowangler.gradle.restapi.builder.ArtifactType;
 import ch.silviowangler.rest.contract.model.v1.Verb;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
@@ -31,7 +33,6 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 import org.gradle.api.Project;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,10 +57,9 @@ public class SpringRootResourceFactory extends AbstractRootResourceBuilder {
     }
 
     @Override
-    public TypeSpec buildRootResource(File optionsFile) {
-
-        withSpecification(optionsFile);
-
+    public TypeSpec buildRootResource() {
+        reset();
+        setArtifactType(ArtifactType.RESOURCE);
         rootResourceBuilder = interfaceBaseInstance();
 
         Map<String, Object> args = new HashMap<>();
@@ -67,26 +67,22 @@ public class SpringRootResourceFactory extends AbstractRootResourceBuilder {
 
         rootResourceBuilder.addAnnotation(createAnnotation(SPRING_REQUEST_MAPPING, args));
 
-        generateResourceMethods();
-
-
-        // generated annotation
-
-        // options
-
-        // collection get
-
-        // entity get
-
-        // put
-
-        // post
-
-        // entity delete
-
-        // collection delete
-
+        generateResourceMethodsWithOptions();
         return rootResourceBuilder.build();
+    }
+
+    @Override
+    public TypeSpec buildResourceImpl() {
+        reset();
+        setArtifactType(ArtifactType.RESOURCE_IMPL);
+        TypeSpec.Builder builder = classBaseInstance();
+
+        builder.addAnnotation(createAnnotation(SPRING_REST_CONTROLLER));
+
+        builder.addSuperinterface(ClassName.get(getCurrentPackageName(), resourceName()));
+
+        super.generateResourceMethods();
+        return builder.build();
     }
 
     @Override
@@ -96,7 +92,7 @@ public class SpringRootResourceFactory extends AbstractRootResourceBuilder {
         verb.setVerb("OPTIONS");
 
         setCurrentVerb(verb);
-        MethodSpec.Builder optionsMethod = createInterfaceMethod("getOptions", ClassName.get(String.class));
+        MethodSpec.Builder optionsMethod = createMethod("getOptions", ClassName.get(String.class));
 
         optionsMethod.addStatement("return OPTIONS_CONTENT");
 
@@ -127,5 +123,10 @@ public class SpringRootResourceFactory extends AbstractRootResourceBuilder {
         annotations.add(createAnnotation(SPRING_RESPONSE_BODY));
 
         return annotations;
+    }
+
+    @Override
+    protected AnnotationTypes getPathVariableAnnotationType() {
+        return SPRING_REQUEST_PARAM;
     }
 }

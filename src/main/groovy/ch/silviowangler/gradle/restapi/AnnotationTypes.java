@@ -55,6 +55,8 @@ public enum AnnotationTypes {
     SPRING_REQUEST_MAPPING(ClassName.get("org.springframework.web.bind.annotation", "RequestMapping")),
     SPRING_REQUEST_PARAM(ClassName.get("org.springframework.web.bind.annotation", "RequestParam")),
     SPRING_REQUEST_METHOD(ClassName.get("org.springframework.web.bind.annotation", "RequestMethod")),
+    SPRING_REST_CONTROLLER(ClassName.get("org.springframework.web.bind.annotation", "RestController")),
+    SPRING_RESPONSE_ENTITY(ClassName.get("org.springframework.http", "ResponseEntity")),
     SPRING_RESPONSE_BODY(ClassName.get("org.springframework.web.bind.annotation", "ResponseBody"));
 
 

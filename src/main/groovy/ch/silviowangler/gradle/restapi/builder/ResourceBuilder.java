@@ -23,18 +23,23 @@
  */
 package ch.silviowangler.gradle.restapi.builder;
 
-import ch.silviowangler.gradle.restapi.*;
+import ch.silviowangler.gradle.restapi.AnnotationTypes;
+import ch.silviowangler.gradle.restapi.GeneratorUtil;
+import ch.silviowangler.gradle.restapi.RestApiExtension;
+import ch.silviowangler.gradle.restapi.RestApiPlugin;
 import ch.silviowangler.rest.contract.model.v1.ResourceContract;
-import ch.silviowangler.rest.contract.model.v1.Verb;
 import com.squareup.javapoet.*;
 import org.gradle.api.Project;
 
 import java.io.File;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import static ch.silviowangler.gradle.restapi.AnnotationTypes.JAVAX_GENERATED;
+import static ch.silviowangler.gradle.restapi.AnnotationTypes.JAVA_OVERRIDE;
 import static javax.lang.model.element.Modifier.*;
 
 public interface ResourceBuilder {
@@ -49,14 +54,20 @@ public interface ResourceBuilder {
 
     File getSpecification();
 
+    ArtifactType getArtifactType();
+
     ResourceContract getModel();
 
     default String resourceName() {
         return GeneratorUtil.createResourceName(getSpecification());
     }
 
+    default String resourceImplName() {
+        return GeneratorUtil.createResourceImplementationName(getSpecification());
+    }
+
     default TypeName resourceModelName() {
-        return GeneratorUtil.getReturnType(getProject(), getSpecification(), "Get", false, getCurrentPackageName());
+        return GeneratorUtil.getReturnType(getSpecification(), "Get", false, getCurrentPackageName());
     }
 
     default AnnotationSpec createGeneratedAnnotation() {
@@ -101,58 +112,47 @@ public interface ResourceBuilder {
 
     void generateResourceMethods();
 
-    default boolean containsGetEntity(ResourceContract resourceContract) {
-        return fetchVerb(resourceContract, GenerateRestApiTask.GET_ENTITY).isPresent();
+    default MethodSpec.Builder createMethod(String methodName, TypeName returnType) {
+        return createMethod(methodName, returnType, new HashMap<>());
     }
 
-    default boolean containsGetCollection(ResourceContract resourceContract) {
-        return fetchVerb(resourceContract, GenerateRestApiTask.GET_COLLECTION).isPresent();
-    }
-
-    default boolean containsPost(ResourceContract resourceContract) {
-        return fetchVerb(resourceContract, GenerateRestApiTask.POST).isPresent();
-    }
-
-    default boolean containsPut(ResourceContract resourceContract) {
-        return fetchVerb(resourceContract, GenerateRestApiTask.PUT).isPresent();
-    }
-
-    default boolean containsDeleteEntity(ResourceContract resourceContract) {
-        return fetchVerb(resourceContract, GenerateRestApiTask.DELETE_ENTITY).isPresent();
-    }
-
-    default Optional<Verb> fetchVerb(ResourceContract resourceContract, String verbStringValue) {
-
-        Objects.requireNonNull(verbStringValue, "verbStringValue must not be null");
-        List<Verb> verbs = resourceContract.getVerbs();
-        return verbs.stream().filter(verb -> verbStringValue.equals(verb.getVerb())).findFirst();
-    }
-
-    default MethodSpec.Builder createInterfaceMethod(String methodName, TypeName returnType) {
-        return createInterfaceMethod(methodName, returnType, new HashMap<>());
-    }
+    default MethodSpec.Builder createMethod(String methodName, TypeName returnType, Map<String, ClassName> params) {
+        MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(methodName);
 
 
-    default MethodSpec.Builder createInterfaceMethod(String methodName, TypeName returnType, Map<String, ClassName> params) {
-        MethodSpec.Builder methodBuilder = MethodSpec
-                .methodBuilder(methodName)
-                .returns(returnType)
-                .addModifiers(PUBLIC);
+        if ("getCollection".equals(methodName)) {
+            methodBuilder.returns(ParameterizedTypeName.get(ClassName.get(Collection.class), returnType));
+        } else {
+            methodBuilder.returns(returnType);
+        }
 
+        methodBuilder.addModifiers(PUBLIC);
 
-        methodBuilder.addAnnotations(getResourceMethodAnnotations(!"getOptions".equals(methodName)));
-
+        if (ArtifactType.RESOURCE.equals(getArtifactType())) {
+            methodBuilder.addAnnotations(getResourceMethodAnnotations(!"getOptions".equals(methodName)));
+        } else if (ArtifactType.RESOURCE_IMPL.equals(getArtifactType())) {
+            methodBuilder.addAnnotation(AnnotationSpec.builder(JAVA_OVERRIDE.getClassName()).build());
+        }
 
         if ("getOptions".equals(methodName)) {
             methodBuilder.addModifiers(DEFAULT);
         } else {
-            methodBuilder.addModifiers(ABSTRACT);
+            if (ArtifactType.RESOURCE.equals(getArtifactType())) {
+                methodBuilder.addModifiers(ABSTRACT);
+            } else {
+                methodBuilder.addModifiers(PUBLIC);
+                methodBuilder.addStatement("throw new RuntimeException(\"Not yet implemented\")");
+            }
         }
 
         params.forEach((key, value) -> {
 
-            ParameterSpec parameter = ParameterSpec.builder(value, key)
-                    .addAnnotation(getQueryParamAnnotation(key)).build();
+            ParameterSpec.Builder builder = ParameterSpec.builder(value, key);
+
+            if (ArtifactType.RESOURCE.equals(getArtifactType())) {
+                builder.addAnnotation(getQueryParamAnnotation(key));
+            }
+            ParameterSpec parameter = builder.build();
 
             methodBuilder.addParameter(parameter);
 

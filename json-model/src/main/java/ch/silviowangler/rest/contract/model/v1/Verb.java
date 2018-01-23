@@ -24,6 +24,7 @@
 package ch.silviowangler.rest.contract.model.v1;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,8 +34,9 @@ public class Verb implements Serializable {
 
     private String verb;
     private String rel;
-    private List<ResponseState> responseStates;
-    private List<Representation> representations;
+    private List<ResponseState> responseStates = new ArrayList<>();
+    private List<Representation> representations = new ArrayList<>();
+    private List<ResourceField> parameters = new ArrayList<>();
 
     public String getVerb() {
         return verb;
@@ -66,5 +68,13 @@ public class Verb implements Serializable {
 
     public void setRepresentations(List<Representation> representations) {
         this.representations = representations;
+    }
+
+    public List<ResourceField> getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(List<ResourceField> parameters) {
+        this.parameters = parameters;
     }
 }

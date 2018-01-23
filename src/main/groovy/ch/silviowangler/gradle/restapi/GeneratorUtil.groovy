@@ -124,7 +124,7 @@ class GeneratorUtil {
         return "${v[0].toUpperCase()}${v[1..v.length() - 1].toLowerCase()}"
     }
 
-    static TypeName getReturnType(Project project, File optionsFile, String verb, boolean collection = false, String packageName) {
+    static TypeName getReturnType(File optionsFile, String verb, boolean collection = false, String packageName) {
 
 
         if (verb == 'Get') {
@@ -143,7 +143,6 @@ class GeneratorUtil {
     static String createClassname(String value) {
         return CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, value)
     }
-
 
     static String composePackageName(Object json) {
         String version = readVersion(json.general.version)

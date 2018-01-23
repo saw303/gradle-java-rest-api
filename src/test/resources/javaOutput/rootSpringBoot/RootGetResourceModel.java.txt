@@ -1,4 +1,4 @@
-package org.acme.rest.v1;
+package org.acme.rest.v1.api;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -9,13 +9,11 @@ import javax.annotation.Generated;
     comments = "Specification filename: root.v1.json"
 )
 public class RootGetResourceModel implements Serializable {
-  public static final String TYPE = "application/ch.silviowangler.land";
+  public static final String TYPE = "application/ch.silviowangler.root";
 
   private String id;
 
   private String name;
-
-  private Boolean draft = Boolean.TRUE;
 
   public String getId() {
     return this.id;
@@ -33,24 +31,16 @@ public class RootGetResourceModel implements Serializable {
     this.name = name;
   }
 
-  public Boolean getDraft() {
-    return this.draft;
-  }
-
-  public void setDraft(Boolean draft) {
-    this.draft = draft;
-  }
-
   @Override
   public boolean equals(Object other) {
     if (this == other) return true;
     if (! (other instanceof RootGetResourceModel)) return false;
     RootGetResourceModel that = (RootGetResourceModel) other;
-    return Objects.equals(getId(), that.getId()) && Objects.equals(getName(), that.getName()) && Objects.equals(getDraft(), that.getDraft());
+    return Objects.equals(getId(), that.getId()) && Objects.equals(getName(), that.getName());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(getId(), getName(), getDraft());
+    return Objects.hash(getId(), getName());
   }
 }

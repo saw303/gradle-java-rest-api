@@ -106,14 +106,18 @@ class GenerateRestApiTask extends AbstractTask {
 
             RootResourceBuilder rootResourceBuilder = RootResourceBuilderFactory.getRootResourceBuilder(project.restApi)
 
-            TypeSpec rootResourceInterface = rootResourceBuilder.withProject(project).withCurrentPackageName(currentPackageName).buildRootResource(rootFile)
+            TypeSpec rootResourceInterface = rootResourceBuilder.withProject(project)
+                    .withSpecification(rootFile)
+                    .withCurrentPackageName(currentPackageName)
+                    .buildRootResource()
+
             writeToFileSystem(currentPackageName, rootResourceInterface, getRootOutputDir())
             amountOfGeneratedJavaSourceFiles++
 
             def file = new File(restApiExtension.generatorImplOutput, "${currentPackageName.replaceAll('\\.', fileSeparator)}${fileSeparator}${GeneratorUtil.createResourceImplementationName(rootFile)}.java")
 
             if (!file.exists()) {
-                TypeSpec resourceImpl = buildResourceImpl(rootFile, jsonObject)
+                TypeSpec resourceImpl = rootResourceBuilder.buildResourceImpl()
                 writeToFileSystem(currentPackageName, resourceImpl, restApiExtension.generatorImplOutput)
                 amountOfGeneratedJavaSourceFiles++
             }
@@ -176,7 +180,12 @@ class GenerateRestApiTask extends AbstractTask {
             }
 
             RootResourceBuilder rootResourceBuilder = RootResourceBuilderFactory.getRootResourceBuilder(project.restApi)
-            TypeSpec resourceInterface = rootResourceBuilder.withProject(project).buildRootResource(optionsFile)
+            TypeSpec resourceInterface = rootResourceBuilder
+                    .withCurrentPackageName(currentPackageName)
+                    .withProject(project)
+                    .withSpecification(optionsFile)
+                    .buildRootResource()
+
             writeToFileSystem(currentPackageName, resourceInterface, getRootOutputDir())
             amountOfGeneratedJavaSourceFiles++
 
@@ -299,7 +308,7 @@ class GenerateRestApiTask extends AbstractTask {
                     collectionGetMethod = MethodSpec.methodBuilder("getCollection${representation.name[0].toUpperCase()}${representation.name.substring(1)}")
                 }
 
-                collectionGetMethod.addModifiers(PUBLIC).returns(GeneratorUtil.getReturnType(project, optionsFile, 'Get', true, currentPackageName))
+                collectionGetMethod.addModifiers(PUBLIC).returns(GeneratorUtil.getReturnType(optionsFile, 'Get', true, currentPackageName))
                 collectionGetMethod.addAnnotation(AnnotationSpec.builder(JAVA_OVERRIDE.className).build())
 
                 for (String pathVar in parser.pathVariables) {
@@ -345,7 +354,7 @@ class GenerateRestApiTask extends AbstractTask {
                 entityGet = MethodSpec.methodBuilder(methodName).addModifiers(PUBLIC)
 
                 if (representation.name == 'json') {
-                    entityGet.returns(GeneratorUtil.getReturnType(project, optionsFile, 'Get', currentPackageName))
+                    entityGet.returns(GeneratorUtil.getReturnType(optionsFile, 'Get', currentPackageName))
                 } else {
                     entityGet.returns(AnnotationTypes.JAX_RS_RESPONSE.className)
                 }
@@ -401,7 +410,7 @@ class GenerateRestApiTask extends AbstractTask {
         if (containsDeleteEntity(jsonObject)) {
             // DELETE
 
-            MethodSpec.Builder entityDelete = MethodSpec.methodBuilder('deleteEntity').addModifiers(PUBLIC).returns(GeneratorUtil.getReturnType(project, optionsFile, 'Delete', false, currentPackageName))
+            MethodSpec.Builder entityDelete = MethodSpec.methodBuilder('deleteEntity').addModifiers(PUBLIC).returns(GeneratorUtil.getReturnType(optionsFile, 'Delete', false, currentPackageName))
             entityDelete.addAnnotation(AnnotationSpec.builder(JAVA_OVERRIDE.className).build())
 
             for (String pathVar in parser.pathVariables) {
@@ -431,7 +440,7 @@ class GenerateRestApiTask extends AbstractTask {
         String methodName = httpVerb.simpleName() == POST ? 'createEntity' : 'updateEntity'
         String verb = httpVerb.simpleName() == POST ? 'Post' : 'Put'
 
-        MethodSpec.Builder createEntityMethodBuilder = MethodSpec.methodBuilder(methodName).addModifiers(Modifier.ABSTRACT, PUBLIC).returns(GeneratorUtil.getReturnType(project, optionsFile, verb, currentPackageName))
+        MethodSpec.Builder createEntityMethodBuilder = MethodSpec.methodBuilder(methodName).addModifiers(Modifier.ABSTRACT, PUBLIC).returns(GeneratorUtil.getReturnType(optionsFile, verb, currentPackageName))
         createEntityMethodBuilder.addAnnotation(AnnotationSpec.builder(httpVerb).build())
         createEntityMethodBuilder.addAnnotation(createProducesAnnotation())
 
@@ -450,7 +459,7 @@ class GenerateRestApiTask extends AbstractTask {
         String methodName = httpVerb.simpleName() == POST ? 'createEntity' : 'updateEntity'
         String verb = httpVerb.simpleName() == POST ? 'Post' : 'Put'
 
-        MethodSpec.Builder createEntityMethodBuilder = MethodSpec.methodBuilder(methodName).addModifiers(PUBLIC).returns(GeneratorUtil.getReturnType(project, optionsFile, verb, currentPackageName))
+        MethodSpec.Builder createEntityMethodBuilder = MethodSpec.methodBuilder(methodName).addModifiers(PUBLIC).returns(GeneratorUtil.getReturnType(optionsFile, verb, currentPackageName))
         createEntityMethodBuilder.addAnnotation(AnnotationSpec.builder(JAVA_OVERRIDE.className).build())
 
         for (String pathVar in parser.pathVariables) {

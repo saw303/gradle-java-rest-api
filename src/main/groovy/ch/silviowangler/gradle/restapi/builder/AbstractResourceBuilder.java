@@ -23,20 +23,22 @@
  */
 package ch.silviowangler.gradle.restapi.builder;
 
+import ch.silviowangler.gradle.restapi.AnnotationTypes;
 import ch.silviowangler.gradle.restapi.GenerateRestApiTask;
+import ch.silviowangler.gradle.restapi.GeneratorUtil;
 import ch.silviowangler.gradle.restapi.LinkParser;
 import ch.silviowangler.rest.contract.model.v1.ResourceContract;
 import ch.silviowangler.rest.contract.model.v1.Verb;
 import com.google.gson.Gson;
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeSpec;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import static javax.lang.model.element.Modifier.PUBLIC;
 
@@ -47,9 +49,11 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
     private File specification;
     private ResourceContract resourceContract;
-    private TypeSpec.Builder interfaceBuilder;
+    protected TypeSpec.Builder typeBuilder;
     private Verb currentVerb;
     private String currentPackageName;
+
+    private ArtifactType artifactType;
 
     public Verb getCurrentVerb() {
         return currentVerb;
@@ -61,6 +65,14 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
     public String getCurrentPackageName() {
         return currentPackageName;
+    }
+
+    public ArtifactType getArtifactType() {
+        return artifactType;
+    }
+
+    public void setArtifactType(ArtifactType artifactType) {
+        this.artifactType = artifactType;
     }
 
     @Override
@@ -98,39 +110,73 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
     protected TypeSpec.Builder interfaceBaseInstance() {
 
-        if (this.interfaceBuilder == null) {
-            this.interfaceBuilder = TypeSpec.interfaceBuilder(resourceName())
+        if (this.typeBuilder == null) {
+            this.typeBuilder = TypeSpec.interfaceBuilder(resourceName())
                     .addModifiers(PUBLIC)
                     .addAnnotation(createGeneratedAnnotation());
         }
-        return this.interfaceBuilder;
+        return this.typeBuilder;
     }
+
+    protected void reset() {
+        this.artifactType = null;
+        this.typeBuilder = null;
+    }
+
+    protected TypeSpec.Builder classBaseInstance() {
+
+        if (this.typeBuilder == null) {
+            this.typeBuilder = TypeSpec.classBuilder(resourceImplName()).addModifiers(PUBLIC);
+        }
+        return this.typeBuilder;
+    }
+
+    protected abstract AnnotationTypes getPathVariableAnnotationType();
 
     @Override
     public void generateResourceMethods() {
 
+        Collections.sort(getModel().getVerbs(), Comparator.comparing(Verb::getVerb));
+
         for (Verb verb : getModel().getVerbs()) {
 
-
+            Map<String, ClassName> params = new HashMap<>();
             this.currentVerb = verb;
 
-            if (GenerateRestApiTask.GET_ENTITY.equals(verb.getVerb())) {
+            if (GenerateRestApiTask.GET_COLLECTION.equals(verb.getVerb())) {
 
-                Map<String, ClassName> params = new HashMap<>();
+                verb.getParameters().forEach(p -> params.put(p.getName(), GeneratorUtil.translateToJava(p.getType())));
 
-                params.put("id", ClassName.get(String.class));
-
-
-                interfaceBaseInstance().addMethod(
-
-                        createInterfaceMethod(
-                                "getEntity",
+                this.typeBuilder.addMethod(
+                        createMethod(
+                                "getCollection",
                                 resourceModelName(),
                                 params
                         ).build()
                 );
 
-            } else if (GenerateRestApiTask.GET_COLLECTION.equals(verb.getVerb())) {
+            } else if (GenerateRestApiTask.GET_ENTITY.equals(verb.getVerb())) {
+
+
+                MethodSpec.Builder getEntity = createMethod(
+                        "getEntity",
+                        resourceModelName(),
+                        params
+                );
+
+                ParameterSpec.Builder param = ParameterSpec.builder(ClassName.get(String.class), "id");
+
+                if (getArtifactType().equals(ArtifactType.RESOURCE)) {
+
+                    Map attrs = new HashMap<>();
+                    attrs.put("value", "id");
+
+                    param.addAnnotation(
+                            createAnnotation(getPathVariableAnnotationType(), attrs)
+                    ).build();
+                }
+                getEntity.addParameter(param.build());
+                this.typeBuilder.addMethod(getEntity.build());
 
             } else if (GenerateRestApiTask.POST.equals(verb.getVerb())) {
 
