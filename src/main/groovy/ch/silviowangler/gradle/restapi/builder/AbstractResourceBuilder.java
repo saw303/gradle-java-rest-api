@@ -27,13 +27,15 @@ import ch.silviowangler.gradle.restapi.AnnotationTypes;
 import ch.silviowangler.gradle.restapi.GenerateRestApiTask;
 import ch.silviowangler.gradle.restapi.GeneratorUtil;
 import ch.silviowangler.gradle.restapi.LinkParser;
+import ch.silviowangler.rest.contract.model.v1.GeneralDetails;
 import ch.silviowangler.rest.contract.model.v1.ResourceContract;
 import ch.silviowangler.rest.contract.model.v1.Verb;
-import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeSpec;
+import gson.GeneralDetailsDeserializer;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -90,7 +92,10 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
         }
 
         try {
-            this.resourceContract = new Gson().fromJson(new FileReader(file), ResourceContract.class);
+            this.resourceContract = new GsonBuilder()
+                    .registerTypeAdapter(GeneralDetails.class, new GeneralDetailsDeserializer())
+                    .create().fromJson(new FileReader(file), ResourceContract.class);
+
         } catch (FileNotFoundException e) {
             throw new RuntimeException("Unable to transform JSON file " + file.getAbsolutePath() + " to Java model", e);
         }
@@ -242,6 +247,5 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
         } else {
             throw new IllegalArgumentException("Unknown verb " + v);
         }
-
     }
 }

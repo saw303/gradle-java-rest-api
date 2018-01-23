@@ -35,10 +35,6 @@ allprojects {
 
         excludes(["**/*.json", "**/*.java.txt"])
     }
-
-    dependencies {
-        compile "com.google.code.gson:gson:${gsonVersion}"
-    }
 }
 
 
@@ -53,6 +49,7 @@ dependencies {
 
     compile "com.squareup:javapoet:${javaPoetVersion}"
     compile "com.google.guava:guava:${guavaVersion}"
+    compile "com.google.code.gson:gson:${gsonVersion}"
 
 
     compile project(':json-model')

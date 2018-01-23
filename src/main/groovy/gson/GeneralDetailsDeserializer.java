@@ -21,41 +21,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package ch.silviowangler.rest.contract.model.v1;
+package gson;
 
+import ch.silviowangler.rest.contract.model.v1.GeneralDetails;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 
-import java.io.Serializable;
+import java.lang.reflect.Type;
 
 /**
  * @author Silvio Wangler
  */
-public class GeneralDetails implements Serializable {
+public class GeneralDetailsDeserializer implements JsonDeserializer<GeneralDetails> {
+    @Override
+    public GeneralDetails deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+        GeneralDetails generalDetails = new GeneralDetails();
 
-    private String description;
-    private String version;
-    private String xRoute;
+        generalDetails.setDescription(json.getAsJsonObject().get("description").getAsString());
+        generalDetails.setVersion(json.getAsJsonObject().get("version").getAsString());
+        generalDetails.setxRoute(json.getAsJsonObject().get("x-route").getAsString());
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-    public String getxRoute() {
-        return xRoute;
-    }
-
-    public void setxRoute(String xRoute) {
-        this.xRoute = xRoute;
+        return generalDetails;
     }
 }
