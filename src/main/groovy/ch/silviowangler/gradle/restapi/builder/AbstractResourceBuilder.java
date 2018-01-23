@@ -1,18 +1,18 @@
 /**
  * MIT License
- * <p>
+ *
  * Copyright (c) 2016 - 2018 Silvio Wangler (silvio.wangler@gmail.com)
- * <p>
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * <p>
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * <p>
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -140,6 +140,8 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
         for (Verb verb : getModel().getVerbs()) {
 
+            MethodSpec.Builder methodBuilder;
+
             Map<String, ClassName> params = new HashMap<>();
             this.currentVerb = verb;
 
@@ -147,18 +149,16 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
                 verb.getParameters().forEach(p -> params.put(p.getName(), GeneratorUtil.translateToJava(p.getType())));
 
-                this.typeBuilder.addMethod(
-                        createMethod(
-                                "getCollection",
-                                resourceModelName(),
-                                params
-                        ).build()
+                methodBuilder = createMethod(
+                        "getCollection",
+                        resourceModelName(),
+                        params
                 );
 
             } else if (GenerateRestApiTask.GET_ENTITY.equals(verb.getVerb())) {
 
 
-                MethodSpec.Builder getEntity = createMethod(
+                methodBuilder = createMethod(
                         "getEntity",
                         resourceModelName(),
                         params
@@ -175,21 +175,46 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
                             createAnnotation(getPathVariableAnnotationType(), attrs)
                     ).build();
                 }
-                getEntity.addParameter(param.build());
-                this.typeBuilder.addMethod(getEntity.build());
+                methodBuilder.addParameter(param.build());
+
 
             } else if (GenerateRestApiTask.POST.equals(verb.getVerb())) {
 
+                methodBuilder = createMethod(
+                        "createEntity",
+                        resourceModelName(),
+                        params
+                );
+
             } else if (GenerateRestApiTask.PUT.equals(verb.getVerb())) {
+
+                methodBuilder = createMethod(
+                        "updateEntity",
+                        resourceModelName(),
+                        params
+                );
 
             } else if (GenerateRestApiTask.DELETE_COLLECTION.equals(verb.getVerb())) {
 
+                methodBuilder = createMethod(
+                        "deleteCollection",
+                        resourceModelName(),
+                        params
+                );
+
             } else if (GenerateRestApiTask.DELETE_ENTITY.equals(verb.getVerb())) {
+
+                methodBuilder = createMethod(
+                        "deleteEntity",
+                        resourceModelName(),
+                        params
+                );
 
             } else {
                 throw new IllegalArgumentException(String.format("Verb %s is unknown", verb.getVerb()));
             }
             this.currentVerb = null;
+            this.typeBuilder.addMethod(methodBuilder.build());
         }
     }
 
@@ -213,7 +238,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
         } else if (GenerateRestApiTask.POST.equals(v)) {
             return "POST";
         } else if ("OPTIONS".equals(v)) {
-            return "OPTIONS";
+            return v;
         } else {
             throw new IllegalArgumentException("Unknown verb " + v);
         }

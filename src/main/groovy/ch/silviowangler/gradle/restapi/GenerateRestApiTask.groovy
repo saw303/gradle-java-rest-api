@@ -205,6 +205,15 @@ class GenerateRestApiTask extends AbstractTask {
     }
 
     private void writeToFileSystem(String packageName, TypeSpec typeSpec, File outputDir) {
+
+        Objects.requireNonNull(packageName, "Package name must be present")
+        Objects.requireNonNull(typeSpec, "Type spec must be present")
+        Objects.requireNonNull(outputDir, "output dir must be present")
+
+        if (!outputDir.canWrite()) {
+            throw new IllegalStateException("I must have permission to write to ${outputDir.absolutePath}")
+        }
+
         JavaFile javaFile = JavaFile.builder(packageName, typeSpec).skipJavaLangImports(true).build()
 
         logger.info("Writing {} ...", typeSpec)

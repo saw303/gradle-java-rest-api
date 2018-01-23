@@ -44,7 +44,7 @@ allprojects {
 
 dependencies {
     compile localGroovy()
-    compile gradleApi()
+    compileOnly gradleApi()
     testCompile gradleTestKit()
 
     testCompile("org.spockframework:spock-core:${spockVersion}") {
