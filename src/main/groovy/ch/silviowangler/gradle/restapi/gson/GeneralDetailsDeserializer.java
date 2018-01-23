@@ -24,10 +24,7 @@
 package ch.silviowangler.gradle.restapi.gson;
 
 import ch.silviowangler.rest.contract.model.v1.GeneralDetails;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
+import com.google.gson.*;
 
 import java.lang.reflect.Type;
 
@@ -39,9 +36,10 @@ public class GeneralDetailsDeserializer implements JsonDeserializer<GeneralDetai
     public GeneralDetails deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         GeneralDetails generalDetails = new GeneralDetails();
 
-        generalDetails.setDescription(json.getAsJsonObject().get("description").getAsString());
-        generalDetails.setVersion(json.getAsJsonObject().get("version").getAsString());
-        generalDetails.setxRoute(json.getAsJsonObject().get("x-route").getAsString());
+        JsonObject jsonObject = json.getAsJsonObject();
+        generalDetails.setDescription(jsonObject.get("description").getAsString());
+        generalDetails.setVersion(jsonObject.get("version").getAsString());
+        generalDetails.setxRoute(jsonObject.get("x-route").getAsString());
 
         return generalDetails;
     }
