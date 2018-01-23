@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package gson;
+package ch.silviowangler.gradle.restapi.gson;
 
 import ch.silviowangler.rest.contract.model.v1.GeneralDetails;
 import com.google.gson.JsonDeserializationContext;

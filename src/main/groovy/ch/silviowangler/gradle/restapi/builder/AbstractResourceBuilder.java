@@ -27,6 +27,7 @@ import ch.silviowangler.gradle.restapi.AnnotationTypes;
 import ch.silviowangler.gradle.restapi.GenerateRestApiTask;
 import ch.silviowangler.gradle.restapi.GeneratorUtil;
 import ch.silviowangler.gradle.restapi.LinkParser;
+import ch.silviowangler.gradle.restapi.gson.GeneralDetailsDeserializer;
 import ch.silviowangler.rest.contract.model.v1.GeneralDetails;
 import ch.silviowangler.rest.contract.model.v1.ResourceContract;
 import ch.silviowangler.rest.contract.model.v1.Verb;
@@ -35,7 +36,6 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeSpec;
-import gson.GeneralDetailsDeserializer;
 
 import java.io.File;
 import java.io.FileNotFoundException;
