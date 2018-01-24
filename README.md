@@ -1,3 +1,3 @@
 # Gradle REST API Plugin
 
-Build status [![Build Status](https://travis-ci.org/saw303/gradle-java-rest-api.svg?branch=master)](https://travis-ci.org/saw303/gradle-java-rest-api)
+Build status [![CircleCI](https://circleci.com/gh/saw303/gradle-java-rest-api/tree/master.svg?style=svg)](https://circleci.com/gh/saw303/gradle-java-rest-api/tree/master)
