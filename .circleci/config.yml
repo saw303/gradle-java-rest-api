@@ -40,3 +40,8 @@ jobs:
 
       # run tests!
       - run: gradle test
+
+notify:
+  webhooks:
+    # A list of hook hashes, containing the URL field
+    - url: https://requestb.in/1nnzstb1
