@@ -1,6 +1,9 @@
 package org.acme.rest.v1.api;
 
 import javax.annotation.Generated;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,7 +18,8 @@ public interface RootResource {
   String OPTIONS_CONTENT = "{\"general\":{\"description\":\"This is the root resource of API version 1.0.0\",\"version\":\"1.0.0\",\"x-route\":\"/api/:version\"},\"verbs\":[{\"verb\":\"GET_ENTITY\",\"rel\":\"entity\",\"responseStates\":[{\"code\":200,\"message\":\"200 Ok\",\"comment\":\"content in response body\"},{\"code\":503,\"message\":\"503 Service Unavailable\",\"comment\":\"Backend server eventually not reachable or to slow\"}],\"representations\":[{\"name\":\"json\",\"comment\":\"\",\"responseExample\":\"{...}\",\"isDefault\":true,\"mimetype\":\"application/ch.silviowangler.root\"}],\"parameters\":[],\"permissions\":[{\"name\":\"user\",\"mode\":\"all\",\"comment\":\"Root Ressource of API Version 1\"}]}],\"fields\":[{\"name\":\"id\",\"type\":\"uuid\",\"options\":null,\"mandatory\":[],\"min\":null,\"max\":null,\"multiple\":false,\"defaultValue\":null,\"protected\":[],\"visible\":true,\"sortable\":false,\"readonly\":false,\"filterable\":false,\"alias\":[],\"x-comment\":\"id\"},{\"name\":\"name\",\"type\":\"string\",\"options\":null,\"mandatory\":[],\"min\":null,\"max\":null,\"multiple\":false,\"defaultValue\":null,\"protected\":[],\"visible\":true,\"sortable\":false,\"readonly\":false,\"filterable\":false,\"alias\":[],\"x-comment\":\"Name\"}],\"subresources\":[],\"types\":[]}";
 
   @RequestMapping(
-      method = RequestMethod.OPTIONS
+      method = RequestMethod.OPTIONS,
+      produces = MediaType.APPLICATION_JSON_UTF8_VALUE
   )
   @ResponseBody
   default String getOptions() {
@@ -24,8 +28,45 @@ public interface RootResource {
 
   @RequestMapping(
       method = RequestMethod.GET,
-      path = "/{id}"
+      path = "/{id}",
+      produces = MediaType.APPLICATION_JSON_UTF8_VALUE
   )
   @ResponseBody
   RootGetResourceModel getEntity(@RequestParam("id") String id);
+
+  @RequestMapping(
+      method = RequestMethod.POST,
+      produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+  )
+  @ResponseBody
+  default ResponseEntity createEntityAutoAnswer() {
+    return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
+  }
+
+  @RequestMapping(
+      method = RequestMethod.DELETE,
+      produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+  )
+  @ResponseBody
+  default ResponseEntity deleteCollectionAutoAnswer() {
+    return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
+  }
+
+  @RequestMapping(
+      method = RequestMethod.GET,
+      produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+  )
+  @ResponseBody
+  default ResponseEntity getCollectionAutoAnswer() {
+    return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
+  }
+
+  @RequestMapping(
+      method = RequestMethod.PUT,
+      produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+  )
+  @ResponseBody
+  default ResponseEntity updateEntityAutoAnswer() {
+    return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
+  }
 }

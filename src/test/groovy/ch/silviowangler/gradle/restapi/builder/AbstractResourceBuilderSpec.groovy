@@ -27,6 +27,8 @@ import ch.silviowangler.gradle.restapi.AnnotationTypes
 import ch.silviowangler.gradle.restapi.GenerateRestApiTask
 import ch.silviowangler.rest.contract.model.v1.ResourceContract
 import com.squareup.javapoet.AnnotationSpec
+import com.squareup.javapoet.ClassName
+import com.squareup.javapoet.MethodSpec
 import org.gradle.api.Project
 import spock.lang.Specification
 import spock.lang.Subject
@@ -59,6 +61,16 @@ class AbstractResourceBuilderSpec extends Specification {
 
         @Override
         protected AnnotationTypes getPathVariableAnnotationType() {
+            throw new RuntimeException("Not available")
+        }
+
+        @Override
+        void generateMethodNotAllowedStatement(MethodSpec.Builder builder) {
+            throw new RuntimeException("Not available")
+        }
+
+        @Override
+        ClassName getMethodNowAllowedReturnType() {
             throw new RuntimeException("Not available")
         }
     }

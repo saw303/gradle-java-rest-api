@@ -1,0 +1,6 @@
+dependencies {
+
+    compile project(':rest-model')
+
+    compileOnly "org.springframework:spring-webmvc:${springVersion}"
+}

@@ -112,6 +112,18 @@ public interface ResourceBuilder {
 
     void generateResourceMethods();
 
+    void generateMethodNotAllowedStatement(MethodSpec.Builder builder);
+
+    ClassName getMethodNowAllowedReturnType();
+
+    default MethodSpec.Builder createMethodNotAllowedHandler(String methodName) {
+        MethodSpec.Builder builder = createMethod(methodName, getMethodNowAllowedReturnType(), new HashMap<>());
+
+        generateMethodNotAllowedStatement(builder);
+
+        return builder;
+    }
+
     default MethodSpec.Builder createMethod(String methodName, TypeName returnType) {
         return createMethod(methodName, returnType, new HashMap<>());
     }
@@ -128,12 +140,13 @@ public interface ResourceBuilder {
         methodBuilder.addModifiers(PUBLIC);
 
         if (ArtifactType.RESOURCE.equals(getArtifactType())) {
-            methodBuilder.addAnnotations(getResourceMethodAnnotations(!"getOptions".equals(methodName)));
+            Iterable<AnnotationSpec> annotations = getResourceMethodAnnotations(!"getOptions".equals(methodName) && !isDefaultMethodNotAllowed(methodName));
+            methodBuilder.addAnnotations(annotations);
         } else if (ArtifactType.RESOURCE_IMPL.equals(getArtifactType())) {
             methodBuilder.addAnnotation(AnnotationSpec.builder(JAVA_OVERRIDE.getClassName()).build());
         }
 
-        if ("getOptions".equals(methodName)) {
+        if ("getOptions".equals(methodName) || isDefaultMethodNotAllowed(methodName)) {
             methodBuilder.addModifiers(DEFAULT);
         } else {
             if (ArtifactType.RESOURCE.equals(getArtifactType())) {
@@ -157,6 +170,10 @@ public interface ResourceBuilder {
 
         });
         return methodBuilder;
+    }
+
+    default boolean isDefaultMethodNotAllowed(String methodName) {
+        return methodName.endsWith("AutoAnswer") && ArtifactType.RESOURCE.equals(getArtifactType());
     }
 
     AnnotationSpec getQueryParamAnnotation(String paramName);

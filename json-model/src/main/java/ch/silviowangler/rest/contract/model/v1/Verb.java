@@ -38,6 +38,13 @@ public class Verb implements Serializable {
     private List<Representation> representations = new ArrayList<>();
     private List<ResourceField> parameters = new ArrayList<>();
 
+    public Verb() {
+    }
+
+    public Verb(String verb) {
+        this.verb = verb;
+    }
+
     public String getVerb() {
         return verb;
     }

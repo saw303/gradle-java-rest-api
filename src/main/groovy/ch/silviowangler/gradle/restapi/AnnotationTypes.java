@@ -57,6 +57,8 @@ public enum AnnotationTypes {
     SPRING_REQUEST_METHOD(ClassName.get("org.springframework.web.bind.annotation", "RequestMethod")),
     SPRING_REST_CONTROLLER(ClassName.get("org.springframework.web.bind.annotation", "RestController")),
     SPRING_RESPONSE_ENTITY(ClassName.get("org.springframework.http", "ResponseEntity")),
+    SPRING_HTTP_STATUS(ClassName.get("org.springframework.http", "HttpStatus")),
+    SPRING_HTTP_MEDIA_TYPE(ClassName.get("org.springframework.http", "MediaType")),
     SPRING_RESPONSE_BODY(ClassName.get("org.springframework.web.bind.annotation", "ResponseBody"));
 
 

@@ -150,9 +150,9 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
             Map<String, ClassName> params = new HashMap<>();
             this.currentVerb = verb;
 
-            if (GenerateRestApiTask.GET_COLLECTION.equals(verb.getVerb())) {
+            verb.getParameters().forEach(p -> params.put(p.getName(), GeneratorUtil.translateToJava(p.getType())));
 
-                verb.getParameters().forEach(p -> params.put(p.getName(), GeneratorUtil.translateToJava(p.getType())));
+            if (GenerateRestApiTask.GET_COLLECTION.equals(verb.getVerb())) {
 
                 methodBuilder = createMethod(
                         "getCollection",
@@ -173,7 +173,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
                 if (getArtifactType().equals(ArtifactType.RESOURCE)) {
 
-                    Map attrs = new HashMap<>();
+                    Map<String, Object> attrs = new HashMap<>();
                     attrs.put("value", "id");
 
                     param.addAnnotation(
@@ -221,6 +221,71 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
             this.currentVerb = null;
             this.typeBuilder.addMethod(methodBuilder.build());
         }
+
+
+        if (ArtifactType.RESOURCE.equals(getArtifactType())) {
+            generatedDefaultMethodNotAllowedHandlersForMissingVerbs();
+        }
+
+    }
+
+    private void generatedDefaultMethodNotAllowedHandlersForMissingVerbs() {
+
+
+        if (!hasPostVerb()) {
+            this.currentVerb = new Verb(GenerateRestApiTask.POST);
+            this.typeBuilder.addMethod(createMethodNotAllowedHandler("createEntityAutoAnswer").build());
+        }
+
+        if (!hasDeleteCollectionVerb()) {
+            this.currentVerb = new Verb(GenerateRestApiTask.DELETE_COLLECTION);
+            this.typeBuilder.addMethod(createMethodNotAllowedHandler("deleteCollectionAutoAnswer").build());
+        } else if (!hasDeleteEntityVerb()) {
+            this.currentVerb = new Verb(GenerateRestApiTask.DELETE_ENTITY);
+            this.typeBuilder.addMethod(createMethodNotAllowedHandler("deleteEntityAutoAnswer").build());
+        }
+
+        if (!hasGetCollectionVerb()) {
+            this.currentVerb = new Verb(GenerateRestApiTask.GET_COLLECTION);
+            this.typeBuilder.addMethod(createMethodNotAllowedHandler("getCollectionAutoAnswer").build());
+        } else if (!hasGetEntityVerb()) {
+            this.currentVerb = new Verb(GenerateRestApiTask.GET_ENTITY);
+            this.typeBuilder.addMethod(createMethodNotAllowedHandler("getEntityAutoAnswer").build());
+        }
+
+        if (!hasPutVerb()) {
+            this.currentVerb = new Verb(GenerateRestApiTask.PUT);
+            this.typeBuilder.addMethod(createMethodNotAllowedHandler("updateEntityAutoAnswer").build());
+        }
+        this.currentVerb = null;
+    }
+
+    private boolean hasGetEntityVerb() {
+        return hasVerb(GenerateRestApiTask.GET_ENTITY);
+    }
+
+    private boolean hasGetCollectionVerb() {
+        return hasVerb(GenerateRestApiTask.GET_COLLECTION);
+    }
+
+    private boolean hasPostVerb() {
+        return hasVerb(GenerateRestApiTask.POST);
+    }
+
+    private boolean hasPutVerb() {
+        return hasVerb(GenerateRestApiTask.PUT);
+    }
+
+    private boolean hasDeleteCollectionVerb() {
+        return hasVerb(GenerateRestApiTask.DELETE_COLLECTION);
+    }
+
+    private boolean hasDeleteEntityVerb() {
+        return hasVerb(GenerateRestApiTask.DELETE_ENTITY);
+    }
+
+    private boolean hasVerb(String verb) {
+        return getModel().getVerbs().stream().filter(v -> verb.equals(v.getVerb())).findAny().isPresent();
     }
 
     protected String getPath() {
@@ -232,7 +297,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
     protected String getHttpMethod() {
 
-        String v = Objects.requireNonNull(currentVerb).getVerb();
+        String v = Objects.requireNonNull(getCurrentVerb()).getVerb();
 
         if (GenerateRestApiTask.GET_ENTITY.equals(v) || GenerateRestApiTask.GET_COLLECTION.equals(v)) {
             return "GET";

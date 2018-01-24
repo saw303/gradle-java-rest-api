@@ -1,3 +1,5 @@
 rootProject.name = 'gradle-java-rest-api'
 
 include 'json-model'
+include 'rest-model'
+include 'rest-api-spring'

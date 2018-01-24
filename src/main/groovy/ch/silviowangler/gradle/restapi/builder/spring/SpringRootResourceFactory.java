@@ -118,6 +118,8 @@ public class SpringRootResourceFactory extends AbstractRootResourceBuilder {
         if (applyId) {
             builder.addMember("path", "$S", "/{id}");
         }
+        //builder.addMember("consumes", "$T.APPLICATION_JSON", SPRING_HTTP_MEDIA_TYPE.getClassName());
+        builder.addMember("produces", "$T.APPLICATION_JSON_UTF8_VALUE", SPRING_HTTP_MEDIA_TYPE.getClassName());
 
         annotations.add(builder.build());
         annotations.add(createAnnotation(SPRING_RESPONSE_BODY));
@@ -128,5 +130,16 @@ public class SpringRootResourceFactory extends AbstractRootResourceBuilder {
     @Override
     protected AnnotationTypes getPathVariableAnnotationType() {
         return SPRING_REQUEST_PARAM;
+    }
+
+    @Override
+    public void generateMethodNotAllowedStatement(MethodSpec.Builder builder) {
+        //new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED)
+        builder.addStatement("return new $T<>($T.METHOD_NOT_ALLOWED)", getMethodNowAllowedReturnType(), SPRING_HTTP_STATUS.getClassName());
+    }
+
+    @Override
+    public ClassName getMethodNowAllowedReturnType() {
+        return SPRING_RESPONSE_ENTITY.getClassName();
     }
 }

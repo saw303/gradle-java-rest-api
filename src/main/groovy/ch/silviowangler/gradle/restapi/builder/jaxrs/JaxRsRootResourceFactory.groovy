@@ -199,4 +199,14 @@ class JaxRsRootResourceFactory extends AbstractRootResourceBuilder {
     protected AnnotationTypes getPathVariableAnnotationType() {
         return JAX_RS_PATH_PARAM
     }
+
+    @Override
+    void generateMethodNotAllowedStatement(MethodSpec.Builder builder) {
+        builder.addStatement('return $T.status(405).build()', JAX_RS_RESPONSE.className)
+    }
+
+    @Override
+    ClassName getMethodNowAllowedReturnType() {
+        return JAX_RS_RESPONSE.className
+    }
 }
