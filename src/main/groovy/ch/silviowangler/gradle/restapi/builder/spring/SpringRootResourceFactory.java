@@ -42,6 +42,7 @@ import static ch.silviowangler.gradle.restapi.AnnotationTypes.*;
 
 public class SpringRootResourceFactory extends AbstractRootResourceBuilder {
 
+    public static final ClassName CLASS_NAME = ClassName.get(String.class);
     private Project project;
     private TypeSpec.Builder rootResourceBuilder;
 
@@ -67,7 +68,7 @@ public class SpringRootResourceFactory extends AbstractRootResourceBuilder {
 
         rootResourceBuilder.addAnnotation(createAnnotation(SPRING_REQUEST_MAPPING, args));
 
-        generateResourceMethodsWithOptions();
+        generateResourceMethods();
         return rootResourceBuilder.build();
     }
 
@@ -92,7 +93,7 @@ public class SpringRootResourceFactory extends AbstractRootResourceBuilder {
         verb.setVerb("OPTIONS");
 
         setCurrentVerb(verb);
-        MethodSpec.Builder optionsMethod = createMethod("getOptions", ClassName.get(String.class));
+        MethodSpec.Builder optionsMethod = createMethod("getOptions", CLASS_NAME);
 
         optionsMethod.addStatement("return OPTIONS_CONTENT");
 

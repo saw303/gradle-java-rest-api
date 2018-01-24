@@ -73,6 +73,11 @@ class AbstractResourceBuilderSpec extends Specification {
         ClassName getMethodNowAllowedReturnType() {
             throw new RuntimeException("Not available")
         }
+
+        @Override
+        protected void createOptionsMethod() {
+            throw new RuntimeException("Not available")
+        }
     }
 
     void "A resource file must not be null nor must not exist"() {

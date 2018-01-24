@@ -1,18 +1,18 @@
 /**
  * MIT License
- *
+ * <p>
  * Copyright (c) 2016 - 2018 Silvio Wangler (silvio.wangler@gmail.com)
- *
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * <p>
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -32,17 +32,17 @@ import ch.silviowangler.rest.contract.model.v1.GeneralDetails;
 import ch.silviowangler.rest.contract.model.v1.ResourceContract;
 import ch.silviowangler.rest.contract.model.v1.Verb;
 import com.google.gson.GsonBuilder;
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.ParameterSpec;
-import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.*;
+import io.github.getify.minify.Minify;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.*;
 
-import static javax.lang.model.element.Modifier.PUBLIC;
+import static javax.lang.model.element.Modifier.*;
 
 /**
  * @author Silvio Wangler
@@ -138,8 +138,29 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
     protected abstract AnnotationTypes getPathVariableAnnotationType();
 
+    protected abstract void createOptionsMethod();
+
     @Override
     public void generateResourceMethods() {
+
+        if (isResourceInterface()) {
+
+            String content;
+            try {
+                content = new String(Files.readAllBytes(getSpecification().toPath()));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            content = Minify.minify(content).replaceAll("\"", "\\\\\"");
+
+            FieldSpec.Builder fieldBuilder = FieldSpec.builder(ClassName.get(String.class), "OPTIONS_CONTENT").addModifiers(PUBLIC, STATIC, FINAL)
+                    .initializer("$N", "\"" + content + "\"");
+
+            this.typeBuilder.addField(fieldBuilder.build());
+
+            createOptionsMethod();
+        }
 
         Collections.sort(getModel().getVerbs(), Comparator.comparing(Verb::getVerb));
 
@@ -223,10 +244,14 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
         }
 
 
-        if (ArtifactType.RESOURCE.equals(getArtifactType())) {
+        if (isResourceInterface()) {
             generatedDefaultMethodNotAllowedHandlersForMissingVerbs();
         }
 
+    }
+
+    protected boolean isResourceInterface() {
+        return ArtifactType.RESOURCE.equals(getArtifactType());
     }
 
     private void generatedDefaultMethodNotAllowedHandlersForMissingVerbs() {

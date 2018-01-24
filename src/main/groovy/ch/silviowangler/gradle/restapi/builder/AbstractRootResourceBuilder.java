@@ -23,15 +23,7 @@
  */
 package ch.silviowangler.gradle.restapi.builder;
 
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.FieldSpec;
-import io.github.getify.minify.Minify;
-
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-
-import static javax.lang.model.element.Modifier.*;
 
 public abstract class AbstractRootResourceBuilder extends AbstractResourceBuilder implements RootResourceBuilder {
 
@@ -47,26 +39,5 @@ public abstract class AbstractRootResourceBuilder extends AbstractResourceBuilde
         return this;
     }
 
-    public void generateResourceMethodsWithOptions() {
 
-        String content;
-        try {
-            content = new String(Files.readAllBytes(getSpecification().toPath()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        content = Minify.minify(content).replaceAll("\"", "\\\\\"");
-
-        FieldSpec.Builder fieldBuilder = FieldSpec.builder(ClassName.get(String.class), "OPTIONS_CONTENT").addModifiers(PUBLIC, STATIC, FINAL)
-                .initializer("$N", "\"" + content + "\"");
-
-        this.typeBuilder.addField(fieldBuilder.build());
-
-        createOptionsMethod();
-
-        super.generateResourceMethods();
-    }
-
-    protected abstract void createOptionsMethod();
 }

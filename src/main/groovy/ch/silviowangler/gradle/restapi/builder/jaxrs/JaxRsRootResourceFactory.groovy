@@ -29,6 +29,7 @@ import ch.silviowangler.gradle.restapi.GeneratorUtil
 import ch.silviowangler.gradle.restapi.LinkParser
 import ch.silviowangler.gradle.restapi.builder.AbstractRootResourceBuilder
 import ch.silviowangler.gradle.restapi.builder.ArtifactType
+import ch.silviowangler.rest.contract.model.v1.Verb
 import com.squareup.javapoet.*
 import org.gradle.api.Project
 
@@ -55,7 +56,19 @@ class JaxRsRootResourceFactory extends AbstractRootResourceBuilder {
 
     @Override
     protected void createOptionsMethod() {
+        Verb verb = new Verb()
+        verb.setVerb("OPTIONS")
 
+        setCurrentVerb(verb)
+        MethodSpec.Builder optionsMethod = createMethod("getOptions", JAX_RS_RESPONSE.className)
+
+        optionsMethod.addAnnotation(
+                createAnnotation(JAX_RS_OPTIONS_VERB)
+        )
+        optionsMethod.addStatement('return $T.ok(OPTIONS_CONTENT).build()', JAX_RS_RESPONSE.className)
+
+        interfaceBaseInstance().addMethod(optionsMethod.build())
+        setCurrentVerb(null)
     }
 
     @Override
@@ -69,7 +82,8 @@ class JaxRsRootResourceFactory extends AbstractRootResourceBuilder {
 
         builder.addAnnotation(createAnnotation(JAX_RS_PATH, args))
 
-        generateResourceMethodsWithOptions()
+        generateResourceMethods()
+
         return builder.build()
     }
 
