@@ -24,21 +24,18 @@
 package ch.silviowangler.gradle.restapi.builder.jaxrs
 
 import ch.silviowangler.gradle.restapi.AnnotationTypes
-import ch.silviowangler.gradle.restapi.GenerateRestApiTask
-import ch.silviowangler.gradle.restapi.GeneratorUtil
-import ch.silviowangler.gradle.restapi.LinkParser
 import ch.silviowangler.gradle.restapi.builder.AbstractRootResourceBuilder
 import ch.silviowangler.gradle.restapi.builder.ArtifactType
 import ch.silviowangler.rest.contract.model.v1.Verb
-import com.squareup.javapoet.*
+import com.squareup.javapoet.AnnotationSpec
+import com.squareup.javapoet.ClassName
+import com.squareup.javapoet.MethodSpec
+import com.squareup.javapoet.TypeSpec
 import org.gradle.api.Project
 
-import javax.lang.model.element.Modifier
 import java.nio.charset.Charset
 
 import static ch.silviowangler.gradle.restapi.AnnotationTypes.*
-import static javax.lang.model.element.Modifier.DEFAULT
-import static javax.lang.model.element.Modifier.PUBLIC
 
 class JaxRsRootResourceFactory extends AbstractRootResourceBuilder {
 
@@ -136,44 +133,6 @@ class JaxRsRootResourceFactory extends AbstractRootResourceBuilder {
             }
             builder.addAnnotation(annotationBuilder.build())
         }
-    }
-
-    private MethodSpec.Builder buildMethodNotAllowedHandler(String methodName, ClassName verb, String pathValue) {
-        MethodSpec.Builder entityDeleteMethod = MethodSpec.methodBuilder(methodName).addModifiers(PUBLIC, DEFAULT).returns(JAX_RS_RESPONSE.className)
-
-        entityDeleteMethod.addAnnotation(AnnotationSpec.builder(verb).build())
-        entityDeleteMethod.addAnnotation(createProducesAnnotation())
-        entityDeleteMethod.addAnnotation(AnnotationSpec.builder(JAX_RS_PATH.className).addMember('value', '$S', pathValue).build())
-
-        entityDeleteMethod.addStatement("return Response.status(405).build()")
-        entityDeleteMethod
-    }
-
-    private MethodSpec.Builder entityCreateMethod(LinkParser parser, File optionsFile, Closure closure) {
-        createModifyingMethod(parser, JAX_RS_POST_VERB.className, optionsFile, closure)
-    }
-
-    private MethodSpec.Builder createModifyingMethod(LinkParser parser, ClassName httpVerb, File optionsFile, Closure closure) {
-
-        String methodName = httpVerb.simpleName() == GenerateRestApiTask.POST ? 'createEntity' : 'updateEntity'
-        String verb = httpVerb.simpleName() == GenerateRestApiTask.POST ? 'Post' : 'Put'
-
-        MethodSpec.Builder createEntityMethodBuilder = MethodSpec.methodBuilder(methodName).addModifiers(Modifier.ABSTRACT, PUBLIC).returns(GeneratorUtil.getReturnType(optionsFile, verb, currentPackageName))
-        createEntityMethodBuilder.addAnnotation(AnnotationSpec.builder(httpVerb).build())
-        createEntityMethodBuilder.addAnnotation(createProducesAnnotation())
-
-        for (String pathVar in parser.pathVariables) {
-            createEntityMethodBuilder.addParameter(
-                    ParameterSpec.builder(String, pathVar).addAnnotation(AnnotationSpec.builder(JAX_RS_PATH_PARAM.className).addMember('value', '$S', pathVar).build()).build()
-            )
-        }
-
-        closure.call(createEntityMethodBuilder)
-        createEntityMethodBuilder
-    }
-
-    private MethodSpec.Builder entityUpdateMethod(LinkParser parser, File optionsFile, Closure closure) {
-        createModifyingMethod(parser, JAX_RS_PUT_VERB.className, optionsFile, closure)
     }
 
     @Override
