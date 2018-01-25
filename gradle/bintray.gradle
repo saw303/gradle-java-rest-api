@@ -1,0 +1,62 @@
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'maven-publish'
+
+bintray {
+    user = project.hasProperty('bintrayUser') ? bintrayUser : System.getenv('BINTRAY_USER')
+    key = project.hasProperty('bintrayKey') ? bintrayKey : System.getenv('BINTRAY_KEY')
+
+    pkg {
+        repo = 'gradle-plugins'
+        name = 'gradle-java-rest-api'
+        userOrg = 'saw303'
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/saw303/gradle-java-rest-api.git'
+
+        version {
+            name = project.version
+            desc = "Release ${project.version}"
+            released = new Date()
+        }
+    }
+
+    publications = ['MyPublication']
+}
+
+def pomConfig = {
+    developers {
+        developer {
+            id "saw303"
+            name "Silvio Wangler"
+            email "silvio.wangler@gmail.com"
+        }
+    }
+
+    scm {
+        url "https://github.com/saw303/gradle-java-rest-api.git"
+    }
+}
+
+publishing {
+    publications {
+        MyPublication(MavenPublication) {
+            from components.java
+            groupId 'ch.silviowangler.rest'
+            artifactId project.name
+            version project.version
+
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('description', project.pomDescription)
+                root.appendNode('name', 'Silvio Wangler')
+                root.appendNode('url', 'https://github.com/saw303/gradle-java-rest-api')
+
+                def l = root.appendNode('licenses').appendNode('license')
+                l.appendNode('name', 'MIT')
+                l.appendNode('url', 'https://en.wikipedia.org/wiki/MIT_License')
+                l.appendNode('distribution', 'repo')
+
+                root.children().last() + pomConfig
+            }
+        }
+    }
+}

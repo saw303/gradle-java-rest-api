@@ -12,21 +12,24 @@ buildscript {
 
 }
 
-apply plugin: 'com.jfrog.bintray'
-apply plugin: 'maven-publish'
 
 apply from: "${rootDir}/gradle/groovy.gradle"
 
-version = '0.9.0'
-
-
+ext {
+    pomDescription = 'Gradle plugin to generate REST APIs for JAX-RS or Spring-Boot projects'
+}
 
 allprojects {
 
+    version = '1.0.0'
+
     apply from: "${rootDir}/gradle/java.gradle"
+    apply from: "${rootDir}/gradle/bintray.gradle"
 
     apply plugin: 'com.github.ben-manes.versions'
     apply plugin: "com.github.hierynomus.license"
+
+
 
     license {
         header = file("${rootDir}/LICENSE-SHORT")
@@ -54,64 +57,4 @@ dependencies {
     compile "com.squareup:javapoet:${javaPoetVersion}"
     compile "com.google.guava:guava:${guavaVersion}"
     compile "com.google.code.gson:gson:${gsonVersion}"
-}
-
-
-
-bintray {
-    user = project.hasProperty('bintrayUser') ? bintrayUser : System.getenv('BINTRAY_USER')
-    key = project.hasProperty('bintrayKey') ? bintrayKey : System.getenv('BINTRAY_KEY')
-
-    pkg {
-        repo = 'gradle-plugins'
-        name = 'gradle-java-rest-api'
-        userOrg = 'saw303'
-        licenses = ['MIT']
-        vcsUrl = 'https://github.com/saw303/gradle-java-rest-api.git'
-
-        version {
-            name = project.version
-        }
-    }
-
-    publications = ['MyPublication']
-}
-
-def pomConfig = {
-    developers {
-        developer {
-            id "saw303"
-            name "Silvio Wangler"
-            email "silvio.wangler@gmail.com"
-        }
-    }
-
-    scm {
-        url "https://github.com/saw303/gradle-java-rest-api.git"
-    }
-}
-
-publishing {
-    publications {
-        MyPublication(MavenPublication) {
-            from components.java
-            groupId 'ch.silviowangler.gradle'
-            artifactId 'gradle-java-rest-api'
-            version project.version
-
-            pom.withXml {
-                def root = asNode()
-                root.appendNode('description', 'Gradle plugin to generate REST APIs for JAX-RS or Spring-Boot projects')
-                root.appendNode('name', 'Silvio Wangler')
-                root.appendNode('url', 'https://github.com/saw303/gradle-java-rest-api')
-
-                def l = root.appendNode('licenses').appendNode('license')
-                l.appendNode('name', 'MIT')
-                l.appendNode('url', 'https://en.wikipedia.org/wiki/MIT_License')
-                l.appendNode('distribution', 'repo')
-
-                root.children().last() + pomConfig
-            }
-        }
-    }
 }

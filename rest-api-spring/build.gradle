@@ -4,3 +4,7 @@ dependencies {
 
     compileOnly "org.springframework:spring-webmvc:${springVersion}"
 }
+
+ext {
+    pomDescription = 'Add ons for the Spring platform'
+}
