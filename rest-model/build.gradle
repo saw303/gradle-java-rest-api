@@ -1,3 +1,8 @@
 ext {
     pomDescription = 'Java model for the REST interfaces'
 }
+
+dependencies {
+    compile "org.slf4j:slf4j-api:${slf4jVersion}"
+    compile "com.google.code.gson:gson:${gsonVersion}"
+}
