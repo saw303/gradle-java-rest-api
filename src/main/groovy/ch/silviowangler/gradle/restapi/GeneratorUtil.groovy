@@ -138,6 +138,9 @@ class GeneratorUtil {
         } else if (verb == 'Delete') {
             return AnnotationTypes.JAX_RS_RESPONSE.className
         }
+        else {
+            throw new RuntimeException("Unknown verb ${verb}")
+        }
     }
 
     static String createClassname(String value) {

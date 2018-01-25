@@ -60,7 +60,7 @@ class AbstractResourceBuilderSpec extends Specification {
         }
 
         @Override
-        protected AnnotationTypes getPathVariableAnnotationType() {
+        AnnotationTypes getPathVariableAnnotationType() {
             throw new RuntimeException("Not available")
         }
 

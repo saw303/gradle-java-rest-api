@@ -142,7 +142,6 @@ class RestApiPluginSpec extends Specification {
         javaFiles.isEmpty()
     }
 
-    @PendingFeature
     void "The plugin generates valid Java 8 code"() {
 
         given:

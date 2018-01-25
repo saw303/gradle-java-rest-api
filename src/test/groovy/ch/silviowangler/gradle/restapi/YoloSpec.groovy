@@ -21,21 +21,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package ch.silviowangler.gradle.restapi.builder;
+package ch.silviowangler.gradle.restapi
 
-import java.io.File;
+import com.squareup.javapoet.ClassName
+import com.squareup.javapoet.MethodSpec
+import spock.lang.Specification
 
-public abstract class AbstractRootResourceBuilder extends AbstractResourceBuilder implements RootResourceBuilder {
+import javax.lang.model.element.Modifier
 
-    @Override
-    public RootResourceBuilder withCurrentPackageName(String packageName) {
-        super.withCurrentPackageName(packageName);
-        return this;
-    }
 
-    @Override
-    public RootResourceBuilder withSpecification(File file) {
-        super.withSpecification(file);
-        return this;
+/**
+ * @author Silvio Wangler
+ */
+class YoloSpec extends Specification {
+
+    void "djhfk"() {
+
+        given:
+        MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder("sayHello")
+                .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT).returns(ClassName.get(String))
+
+        and:
+        MethodSpec method = methodBuilder.build()
+
+        expect:
+        method.toString() == '''public abstract java.lang.String sayHello();
+'''
     }
 }

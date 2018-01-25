@@ -53,6 +53,16 @@ public interface RootResource {
   }
 
   @RequestMapping(
+      method = RequestMethod.DELETE,
+      path = "/{id}",
+      produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+  )
+  @ResponseBody
+  default ResponseEntity deleteEntityAutoAnswer(@RequestParam("id") String id) {
+    return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
+  }
+
+  @RequestMapping(
       method = RequestMethod.GET,
       produces = MediaType.APPLICATION_JSON_UTF8_VALUE
   )
@@ -63,10 +73,11 @@ public interface RootResource {
 
   @RequestMapping(
       method = RequestMethod.PUT,
+      path = "/{id}",
       produces = MediaType.APPLICATION_JSON_UTF8_VALUE
   )
   @ResponseBody
-  default ResponseEntity updateEntityAutoAnswer() {
+  default ResponseEntity updateEntityAutoAnswer(@RequestParam("id") String id) {
     return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
   }
 }

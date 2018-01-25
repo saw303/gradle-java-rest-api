@@ -1,18 +1,18 @@
 /**
  * MIT License
- *
+ * <p>
  * Copyright (c) 2016 - 2018 Silvio Wangler (silvio.wangler@gmail.com)
- *
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * <p>
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -136,8 +136,6 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
         return this.typeBuilder;
     }
 
-    protected abstract AnnotationTypes getPathVariableAnnotationType();
-
     protected abstract void createOptionsMethod();
 
     @Override
@@ -168,6 +166,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
             MethodSpec.Builder methodBuilder;
 
+
             Map<String, ClassName> params = new HashMap<>();
             this.currentVerb = verb;
 
@@ -177,7 +176,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
                 methodBuilder = createMethod(
                         "getCollection",
-                        resourceModelName(),
+                        resourceMethodReturnType("Get"),
                         params
                 );
 
@@ -186,11 +185,46 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
                 methodBuilder = createMethod(
                         "getEntity",
-                        resourceModelName(),
+                        resourceMethodReturnType("Get"),
                         params
                 );
 
-                ParameterSpec.Builder param = ParameterSpec.builder(ClassName.get(String.class), "id");
+                methodBuilder.addParameter(generateIdParam());
+
+
+            } else if (GenerateRestApiTask.POST.equals(verb.getVerb())) {
+
+                methodBuilder = createMethod(
+                        "createEntity",
+                        resourceMethodReturnType("Post"),
+                        params
+                );
+
+                ParameterSpec.Builder param = ParameterSpec.builder(resourceModelName("Post"), "model");
+                if (getArtifactType().equals(ArtifactType.RESOURCE)) {
+                    param.addAnnotation(
+                            createAnnotation(AnnotationTypes.JAVAX_VALIDATION_VALID)
+                    ).build();
+                }
+                methodBuilder.addParameter(param.build());
+
+            } else if (GenerateRestApiTask.PUT.equals(verb.getVerb())) {
+
+                methodBuilder = createMethod(
+                        "updateEntity",
+                        resourceMethodReturnType("Put"),
+                        params
+                );
+
+                ParameterSpec.Builder param = ParameterSpec.builder(resourceModelName("Put"), "model");
+                if (getArtifactType().equals(ArtifactType.RESOURCE)) {
+                    param.addAnnotation(
+                            createAnnotation(AnnotationTypes.JAVAX_VALIDATION_VALID)
+                    ).build();
+                }
+                methodBuilder.addParameter(param.build());
+
+                param = ParameterSpec.builder(ClassName.get(String.class), "id");
 
                 if (getArtifactType().equals(ArtifactType.RESOURCE)) {
 
@@ -204,27 +238,11 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
                 methodBuilder.addParameter(param.build());
 
 
-            } else if (GenerateRestApiTask.POST.equals(verb.getVerb())) {
-
-                methodBuilder = createMethod(
-                        "createEntity",
-                        resourceModelName(),
-                        params
-                );
-
-            } else if (GenerateRestApiTask.PUT.equals(verb.getVerb())) {
-
-                methodBuilder = createMethod(
-                        "updateEntity",
-                        resourceModelName(),
-                        params
-                );
-
             } else if (GenerateRestApiTask.DELETE_COLLECTION.equals(verb.getVerb())) {
 
                 methodBuilder = createMethod(
                         "deleteCollection",
-                        resourceModelName(),
+                        resourceMethodReturnType("Delete"),
                         params
                 );
 
@@ -232,7 +250,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
                 methodBuilder = createMethod(
                         "deleteEntity",
-                        resourceModelName(),
+                        resourceMethodReturnType("Delete"),
                         params
                 );
 
@@ -250,6 +268,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
     }
 
+
     protected boolean isResourceInterface() {
         return ArtifactType.RESOURCE.equals(getArtifactType());
     }
@@ -265,7 +284,9 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
         if (!hasDeleteCollectionVerb()) {
             this.currentVerb = new Verb(GenerateRestApiTask.DELETE_COLLECTION);
             this.typeBuilder.addMethod(createMethodNotAllowedHandler("deleteCollectionAutoAnswer").build());
-        } else if (!hasDeleteEntityVerb()) {
+        }
+
+        if (!hasDeleteEntityVerb()) {
             this.currentVerb = new Verb(GenerateRestApiTask.DELETE_ENTITY);
             this.typeBuilder.addMethod(createMethodNotAllowedHandler("deleteEntityAutoAnswer").build());
         }

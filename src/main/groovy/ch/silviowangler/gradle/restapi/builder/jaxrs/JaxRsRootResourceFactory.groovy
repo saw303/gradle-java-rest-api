@@ -62,6 +62,9 @@ class JaxRsRootResourceFactory extends AbstractRootResourceBuilder {
         optionsMethod.addAnnotation(
                 createAnnotation(JAX_RS_OPTIONS_VERB)
         )
+        optionsMethod.addAnnotation(
+                createAnnotation(JAX_RS_PATH, [value: ''])
+        )
         optionsMethod.addStatement('return $T.ok(OPTIONS_CONTENT).build()', JAX_RS_RESPONSE.className)
 
         interfaceBaseInstance().addMethod(optionsMethod.build())
@@ -169,7 +172,7 @@ class JaxRsRootResourceFactory extends AbstractRootResourceBuilder {
     }
 
     @Override
-    protected AnnotationTypes getPathVariableAnnotationType() {
+    AnnotationTypes getPathVariableAnnotationType() {
         return JAX_RS_PATH_PARAM
     }
 

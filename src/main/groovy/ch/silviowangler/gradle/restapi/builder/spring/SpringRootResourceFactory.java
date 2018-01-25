@@ -129,7 +129,7 @@ public class SpringRootResourceFactory extends AbstractRootResourceBuilder {
     }
 
     @Override
-    protected AnnotationTypes getPathVariableAnnotationType() {
+    public AnnotationTypes getPathVariableAnnotationType() {
         return SPRING_REQUEST_PARAM;
     }
 
