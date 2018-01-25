@@ -24,32 +24,20 @@
 package ch.silviowangler.gradle.restapi.builder.jaxrs
 
 import ch.silviowangler.gradle.restapi.AnnotationTypes
-import ch.silviowangler.gradle.restapi.builder.AbstractRootResourceBuilder
+import ch.silviowangler.gradle.restapi.builder.AbstractResourceBuilder
 import ch.silviowangler.gradle.restapi.builder.ArtifactType
 import ch.silviowangler.rest.contract.model.v1.Verb
 import com.squareup.javapoet.AnnotationSpec
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.MethodSpec
 import com.squareup.javapoet.TypeSpec
-import org.gradle.api.Project
 
 import java.nio.charset.Charset
 
 import static ch.silviowangler.gradle.restapi.AnnotationTypes.*
 
-class JaxRsRootResourceFactory extends AbstractRootResourceBuilder {
+class JaxRsRootResourceFactory extends AbstractResourceBuilder {
 
-    Project project
-
-    JaxRsRootResourceFactory withProject(Project project) {
-        this.project = project
-        return this
-    }
-
-    @Override
-    Project getProject() {
-        this.project
-    }
 
     @Override
     protected void createOptionsMethod() {
@@ -106,37 +94,7 @@ class JaxRsRootResourceFactory extends AbstractRootResourceBuilder {
         AnnotationSpec.builder(JAX_RS_PRODUCES.className).addMember('value', '{ $S }', mimetype).build()
     }
 
-    private boolean isSecurityEnabled() {
-        return project.restApi.enableSecurity
-    }
 
-    private void addCachingAnnotation(MethodSpec.Builder builder, def jsonObject) {
-
-        if (jsonObject.caching) {
-
-            def annotationBuilder = AnnotationSpec.builder(RESTAPI_CACHING_ANNOTATION.className)
-            if (jsonObject.caching.'no-cache' != null) {
-                annotationBuilder.addMember('noCache', '$L', jsonObject.caching.'no-cache' as Boolean)
-            }
-
-            if (jsonObject.caching.private != null) {
-                annotationBuilder.addMember('isPrivate', '$L', jsonObject.caching.private as Boolean)
-            }
-
-            if (jsonObject.caching.'max-age' != null) {
-                annotationBuilder.addMember('maxAge', '$L', jsonObject.caching.'max-age' as Long)
-            }
-
-            if (jsonObject.caching.Expires != null) {
-                annotationBuilder.addMember('expires', '$L', jsonObject.caching.Expires as Long)
-            }
-
-            if (jsonObject.caching.ETag != null) {
-                annotationBuilder.addMember('eTag', '$L', jsonObject.caching.ETag as Boolean)
-            }
-            builder.addAnnotation(annotationBuilder.build())
-        }
-    }
 
     @Override
     AnnotationSpec getQueryParamAnnotation(String paramName) {

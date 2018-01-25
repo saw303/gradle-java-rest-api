@@ -42,11 +42,11 @@ class GeneratorUtil {
     private final static String RESOURCE = "R"
     private final static String RESOURCE_IMPLEMENTATION = "RI"
 
-    private static String createTypeName(File file, String type) {
-        return createTypeName(file, type, '')
+    private static String createTypeName(String fileName, String type) {
+        return createTypeName(fileName, type, '')
     }
 
-    private static String createTypeName(File file, String type, String verb) {
+    private static String createTypeName(String fileName, String type, String verb) {
 
         String postfix
 
@@ -57,7 +57,7 @@ class GeneratorUtil {
         else throw new IllegalArgumentException("Unknown param value ${type}")
 
 
-        def filenameWithoutExtension = file.name.replace('.json', '').replaceAll('\\.v\\d', '')
+        def filenameWithoutExtension = fileName.replace('.json', '').replaceAll('\\.v\\d', '')
 
         if (filenameWithoutExtension.contains('.')) {
             String[] split = filenameWithoutExtension.split('\\.')
@@ -67,20 +67,20 @@ class GeneratorUtil {
         return "${filenameWithoutExtension[0].toUpperCase()}${filenameWithoutExtension[1..filenameWithoutExtension.length() - 1]}${verb}${postfix}"
     }
 
-    static String createResourceModelName(final File file, final String verb = "Get") {
-        createTypeName(file, RESOURCE_MODEL, verb)
+    static String createResourceModelName(String fileName, final String verb = "Get") {
+        createTypeName(fileName, RESOURCE_MODEL, verb)
     }
 
-    static String createResourceName(final File file) {
-        createTypeName(file, RESOURCE)
+    static String createResourceName(String fileName) {
+        createTypeName(fileName, RESOURCE)
     }
 
-    static String createResourceFormDataName(final File file) {
-        createTypeName(file, RESOURCE_FORM_DATA)
+    static String createResourceFormDataName(String fileName) {
+        createTypeName(fileName, RESOURCE_FORM_DATA)
     }
 
-    static String createResourceImplementationName(final File file) {
-        createTypeName(file, RESOURCE_IMPLEMENTATION)
+    static String createResourceImplementationName(String fileName) {
+        createTypeName(fileName, RESOURCE_IMPLEMENTATION)
     }
 
     private static Map<String, ClassName> supportedDatatypes = [
@@ -95,16 +95,9 @@ class GeneratorUtil {
             'string'  : SupportedDataTypes.STRING.className,
             'uuid'    : SupportedDataTypes.UUID.className,
             'object'  : SupportedDataTypes.OBJECT.className,
-            'money'   : SupportedDataTypes.MONEY.className
+            'money'   : SupportedDataTypes.MONEY.className,
+            'locale'   : SupportedDataTypes.MONEY.className
     ]
-
-    static void addClassName(String typeName, ClassName className) {
-
-        if (supportedDatatypes.containsKey(typeName)) {
-            return
-        }
-        supportedDatatypes.put(typeName, className)
-    }
 
     static ClassName translateToJava(final String jsonType) {
         if (isSupportedDatatype(jsonType)) return supportedDatatypes[jsonType]
@@ -124,14 +117,15 @@ class GeneratorUtil {
         return "${v[0].toUpperCase()}${v[1..v.length() - 1].toLowerCase()}"
     }
 
-    static TypeName getReturnType(File optionsFile, String verb, boolean collection = false, String packageName) {
+    static TypeName getReturnType(String fileName, String verb, boolean collection = false, String packageName) {
 
 
         if (verb == 'Get') {
+            def resourceModelName = GeneratorUtil.createResourceModelName(fileName, verb)
             if (collection) {
-                return ParameterizedTypeName.get(ClassName.get(Collection.class), ClassName.get(packageName, GeneratorUtil.createResourceModelName(optionsFile, verb)))
+                return ParameterizedTypeName.get(ClassName.get(Collection.class), ClassName.get(packageName, resourceModelName))
             } else {
-                return ClassName.get(packageName, GeneratorUtil.createResourceModelName(optionsFile, verb))
+                return ClassName.get(packageName, resourceModelName)
             }
         } else if (verb == 'Put' || verb == 'Post') {
             return AnnotationTypes.RESTAPI_IDTYPE.className
@@ -147,24 +141,7 @@ class GeneratorUtil {
         return CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, value)
     }
 
-    static String composePackageName(Object json) {
-        String version = readVersion(json.general.version)
-        String route = json.general.'x-route'.replace(':version', version)
-
-        def tokens = route.split('\\/').findAll { r -> !r.startsWith(':') && r.length() > 0 }
-
-        if (tokens.size() <= 1) {
-            return version
-        } else {
-            return "${tokens[0..(tokens.size() - 2)].join('.')}"
-        }
-    }
-
     static File generatorInput(Project project) {
         return new File(project.buildDir, 'rest-api-specs')
-    }
-
-    private static String readVersion(String versionString) {
-        return "v${versionString.split('\\.')[0]}"
     }
 }

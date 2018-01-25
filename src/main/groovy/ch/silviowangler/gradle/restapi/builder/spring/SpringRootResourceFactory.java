@@ -24,14 +24,13 @@
 package ch.silviowangler.gradle.restapi.builder.spring;
 
 import ch.silviowangler.gradle.restapi.AnnotationTypes;
-import ch.silviowangler.gradle.restapi.builder.AbstractRootResourceBuilder;
+import ch.silviowangler.gradle.restapi.builder.AbstractResourceBuilder;
 import ch.silviowangler.gradle.restapi.builder.ArtifactType;
 import ch.silviowangler.rest.contract.model.v1.Verb;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
-import org.gradle.api.Project;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,36 +39,25 @@ import java.util.Map;
 
 import static ch.silviowangler.gradle.restapi.AnnotationTypes.*;
 
-public class SpringRootResourceFactory extends AbstractRootResourceBuilder {
+public class SpringRootResourceFactory extends AbstractResourceBuilder {
 
     public static final ClassName CLASS_NAME = ClassName.get(String.class);
-    private Project project;
-    private TypeSpec.Builder rootResourceBuilder;
 
-    @Override
-    public SpringRootResourceFactory withProject(Project project) {
-        this.project = project;
-        return this;
-    }
-
-    @Override
-    public Project getProject() {
-        return project;
-    }
+    private TypeSpec.Builder resourceBuilder;
 
     @Override
     public TypeSpec buildRootResource() {
         reset();
         setArtifactType(ArtifactType.RESOURCE);
-        rootResourceBuilder = interfaceBaseInstance();
+        resourceBuilder = interfaceBaseInstance();
 
         Map<String, Object> args = new HashMap<>();
         args.put("value", getPath());
 
-        rootResourceBuilder.addAnnotation(createAnnotation(SPRING_REQUEST_MAPPING, args));
+        resourceBuilder.addAnnotation(createAnnotation(SPRING_REQUEST_MAPPING, args));
 
         generateResourceMethods();
-        return rootResourceBuilder.build();
+        return resourceBuilder.build();
     }
 
     @Override

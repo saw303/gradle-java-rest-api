@@ -27,20 +27,15 @@ import ch.silviowangler.gradle.restapi.AnnotationTypes;
 import ch.silviowangler.gradle.restapi.GenerateRestApiTask;
 import ch.silviowangler.gradle.restapi.GeneratorUtil;
 import ch.silviowangler.gradle.restapi.LinkParser;
-import ch.silviowangler.gradle.restapi.gson.GeneralDetailsDeserializer;
-import ch.silviowangler.rest.contract.model.v1.GeneralDetails;
-import ch.silviowangler.rest.contract.model.v1.ResourceContract;
-import ch.silviowangler.rest.contract.model.v1.Verb;
-import com.google.gson.GsonBuilder;
+import ch.silviowangler.rest.contract.model.v1.*;
+import com.google.common.base.CaseFormat;
 import com.squareup.javapoet.*;
 import io.github.getify.minify.Minify;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.nio.file.Files;
+import javax.lang.model.element.Modifier;
+import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static javax.lang.model.element.Modifier.*;
 
@@ -49,11 +44,11 @@ import static javax.lang.model.element.Modifier.*;
  */
 public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
-    private File specification;
-    private ResourceContract resourceContract;
+    private ResourceContractContainer resourceContractContainer;
     protected TypeSpec.Builder typeBuilder;
     private Verb currentVerb;
     private String currentPackageName;
+    private boolean printTimestamp = true;
 
     private ArtifactType artifactType;
 
@@ -78,39 +73,27 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
     }
 
     @Override
+    public ResourceBuilder withResourceContractContainer(ResourceContractContainer resourceContract) {
+        this.resourceContractContainer = resourceContract;
+        return this;
+    }
+
+    @Override
+    public ResourceBuilder withTimestampInGeneratedAnnotation(boolean val) {
+        printTimestamp = val;
+        return this;
+    }
+
+    @Override
     public ResourceBuilder withCurrentPackageName(String packageName) {
         this.currentPackageName = packageName;
         return this;
     }
 
-    @Override
-    public ResourceBuilder withSpecification(File file) {
-        this.specification = Objects.requireNonNull(file, "file must not be null");
-
-        if (!file.exists()) {
-            throw new IllegalArgumentException(String.format("File %s does not exist", file.getAbsolutePath()));
-        }
-
-        try {
-            this.resourceContract = new GsonBuilder()
-                    .registerTypeAdapter(GeneralDetails.class, new GeneralDetailsDeserializer())
-                    .create().fromJson(new FileReader(file), ResourceContract.class);
-
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException("Unable to transform JSON file " + file.getAbsolutePath() + " to Java model", e);
-        }
-        return this;
-    }
-
 
     @Override
-    public ResourceContract getModel() {
-        return this.resourceContract;
-    }
-
-    @Override
-    public File getSpecification() {
-        return this.specification;
+    public ResourceContractContainer getResourceContractContainer() {
+        return this.resourceContractContainer;
     }
 
     protected TypeSpec.Builder interfaceBaseInstance() {
@@ -118,9 +101,26 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
         if (this.typeBuilder == null) {
             this.typeBuilder = TypeSpec.interfaceBuilder(resourceName())
                     .addModifiers(PUBLIC)
-                    .addAnnotation(createGeneratedAnnotation());
+                    .addAnnotation(createGeneratedAnnotation(printTimestamp));
         }
         return this.typeBuilder;
+    }
+
+    protected TypeSpec.Builder resourceTypeBaseInstance(String name) {
+        TypeSpec.Builder builder = TypeSpec
+                .classBuilder(CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, name) + "Type")
+                .addModifiers(PUBLIC)
+                .addSuperinterface(ClassName.get(Serializable.class));
+        return this.typeBuilder = builder;
+    }
+
+    protected TypeSpec.Builder resourceModelBaseInstance(Verb verb) {
+        TypeSpec.Builder builder = TypeSpec.classBuilder(resourceModelName(verb))
+                .addModifiers(PUBLIC)
+                .addAnnotation(createGeneratedAnnotation(printTimestamp))
+                .addSuperinterface(Serializable.class);
+
+        return builder;
     }
 
     protected void reset() {
@@ -143,13 +143,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
         if (isResourceInterface()) {
 
-            String content;
-            try {
-                content = new String(Files.readAllBytes(getSpecification().toPath()));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
+            String content = getResourceContractContainer().getResourceContractPlainText();
             content = Minify.minify(content).replaceAll("\"", "\\\\\"");
 
             FieldSpec.Builder fieldBuilder = FieldSpec.builder(ClassName.get(String.class), "OPTIONS_CONTENT").addModifiers(PUBLIC, STATIC, FINAL)
@@ -160,9 +154,10 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
             createOptionsMethod();
         }
 
-        Collections.sort(getModel().getVerbs(), Comparator.comparing(Verb::getVerb));
+        List<Verb> verbs = getResourceContractContainer().getResourceContract().getVerbs();
+        Collections.sort(verbs, Comparator.comparing(Verb::getVerb));
 
-        for (Verb verb : getModel().getVerbs()) {
+        for (Verb verb : verbs) {
 
             MethodSpec.Builder methodBuilder;
 
@@ -176,7 +171,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
                 methodBuilder = createMethod(
                         "getCollection",
-                        resourceMethodReturnType("Get"),
+                        resourceMethodReturnType(verb),
                         params
                 );
 
@@ -185,7 +180,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
                 methodBuilder = createMethod(
                         "getEntity",
-                        resourceMethodReturnType("Get"),
+                        resourceMethodReturnType(verb),
                         params
                 );
 
@@ -196,11 +191,11 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
                 methodBuilder = createMethod(
                         "createEntity",
-                        resourceMethodReturnType("Post"),
+                        resourceMethodReturnType(verb),
                         params
                 );
 
-                ParameterSpec.Builder param = ParameterSpec.builder(resourceModelName("Post"), "model");
+                ParameterSpec.Builder param = ParameterSpec.builder(resourceModelName(verb), "model");
                 if (getArtifactType().equals(ArtifactType.RESOURCE)) {
                     param.addAnnotation(
                             createAnnotation(AnnotationTypes.JAVAX_VALIDATION_VALID)
@@ -212,11 +207,11 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
                 methodBuilder = createMethod(
                         "updateEntity",
-                        resourceMethodReturnType("Put"),
+                        resourceMethodReturnType(verb),
                         params
                 );
 
-                ParameterSpec.Builder param = ParameterSpec.builder(resourceModelName("Put"), "model");
+                ParameterSpec.Builder param = ParameterSpec.builder(resourceModelName(verb), "model");
                 if (getArtifactType().equals(ArtifactType.RESOURCE)) {
                     param.addAnnotation(
                             createAnnotation(AnnotationTypes.JAVAX_VALIDATION_VALID)
@@ -242,7 +237,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
                 methodBuilder = createMethod(
                         "deleteCollection",
-                        resourceMethodReturnType("Delete"),
+                        resourceMethodReturnType(verb),
                         params
                 );
 
@@ -250,7 +245,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
                 methodBuilder = createMethod(
                         "deleteEntity",
-                        resourceMethodReturnType("Delete"),
+                        resourceMethodReturnType(verb),
                         params
                 );
 
@@ -331,13 +326,13 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
     }
 
     private boolean hasVerb(String verb) {
-        return getModel().getVerbs().stream().filter(v -> verb.equals(v.getVerb())).findAny().isPresent();
+        return getResourceContractContainer().getResourceContract().getVerbs().stream().filter(v -> verb.equals(v.getVerb())).findAny().isPresent();
     }
 
     protected String getPath() {
         return new LinkParser(
-                getModel().getGeneral().getxRoute(),
-                getModel().getGeneral().getVersion().split("\\.")[0]
+                getResourceContractContainer().getResourceContract().getGeneral().getxRoute(),
+                getResourceContractContainer().getResourceContract().getGeneral().getVersion().split("\\.")[0]
         ).toBasePath();
     }
 
@@ -358,5 +353,146 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
         } else {
             throw new IllegalArgumentException("Unknown verb " + v);
         }
+    }
+
+    @Override
+    public Set<TypeSpec> buildResourceTypes(Set<ClassName> types) {
+
+        ResourceContract resourceContract = getResourceContractContainer().getResourceContract();
+        List<ResourceTypes> contractTypes = resourceContract.getTypes();
+        Set<TypeSpec> specTypes = new HashSet<>(types.size());
+
+        for (ResourceTypes type : contractTypes) {
+            TypeSpec.Builder builder = resourceTypeBaseInstance(type.getName());
+
+            for (ResourceTypeField field : type.getFields()) {
+
+                TypeName fieldType = getFieldType(types, field.getType());
+
+                builder.addField(FieldSpec.builder(fieldType, field.getName(), PRIVATE).build());
+
+                // Getter/Setters schreiben
+                MethodSpec.Builder getterBuilder = MethodSpec.methodBuilder("get" + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, field.getName()))
+                        .returns(fieldType).addModifiers(Modifier.PUBLIC).addStatement("return this.$L", field.getName());
+
+                builder.addMethod(getterBuilder.build());
+                MethodSpec.Builder setterBuilder = MethodSpec.methodBuilder("set" + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, field.getName()))
+                        .returns(TypeName.VOID)
+                        .addModifiers(PUBLIC)
+                        .addParameter(ParameterSpec.builder(fieldType, field.getName()).build())
+                        .addStatement("this.$L = $L", field.getName(), field.getName());
+                builder.addMethod(setterBuilder.build());
+            }
+
+
+            specTypes.add(builder.build());
+        }
+        return specTypes;
+    }
+
+    @Override
+    public Set<TypeSpec> buildResourceModels(Set<ClassName> types) {
+        ResourceContract resourceContract = getResourceContractContainer().getResourceContract();
+        List<Verb> verbs = resourceContract.getVerbs();
+        Set<TypeSpec> specTypes = new HashSet<>(verbs.size());
+
+
+        Verb verbGet = verbs.stream().filter(v -> v.getVerb().equals(GET_ENTITY)).findAny().orElse(verbs.get(0));
+
+        List<ResourceField> fields = resourceContract.getFields().stream().filter(f -> f.isVisible()).collect(Collectors.toList());
+
+        List<String> fieldNames = fields.stream().filter(f -> f.isVisible()).map(ResourceField::getName).collect(Collectors.toList());
+
+        List<String> getters = fieldNames.stream().map(name -> "get" + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, name))
+                .collect(Collectors.toList());
+
+        for (Verb verb : verbs) {
+
+            ClassName resourceModelName = resourceModelName(verb);
+            TypeSpec.Builder builder = resourceModelBaseInstance(verb);
+            String mimeType = verbGet.getRepresentations().stream().filter(r -> "json".equals(r.getName())).findAny().get().getMimetype();
+
+            builder.addField(
+                    FieldSpec.builder(String.class, "TYPE")
+                            .addModifiers(PUBLIC, FINAL, STATIC)
+                            .initializer("$S", mimeType)
+                            .build()
+            );
+
+            for (ResourceField field : fields) {
+                TypeName fieldType = getFieldType(types, field.getType());
+
+                if (field.isMultiple()) {
+                    ClassName list = ClassName.get(List.class);
+                    fieldType = ParameterizedTypeName.get(list, fieldType);
+                }
+
+                builder.addField(FieldSpec.builder(fieldType, field.getName(), PRIVATE).build());
+
+                // Getter/Setters schreiben
+                String methodName = CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, field.getName());
+                MethodSpec.Builder getterBuilder = MethodSpec.methodBuilder("get" + methodName)
+                        .returns(fieldType).addModifiers(Modifier.PUBLIC).addStatement("return this.$L", field.getName());
+
+                builder.addMethod(getterBuilder.build());
+                MethodSpec.Builder setterBuilder = MethodSpec.methodBuilder("set" + methodName)
+                        .returns(TypeName.VOID)
+                        .addModifiers(PUBLIC)
+                        .addParameter(ParameterSpec.builder(fieldType, field.getName()).build())
+                        .addStatement("this.$L = $L", field.getName(), field.getName());
+                builder.addMethod(setterBuilder.build());
+
+            }
+
+            // --> equals Methode überschreiben
+            String equalsParamName = "other";
+            String equalsCastVarName = "that";
+
+            MethodSpec.Builder equalsBuilder = MethodSpec.methodBuilder("equals")
+                    .addAnnotation(Override.class)
+                    .addModifiers(PUBLIC).addParameter(Object.class, equalsParamName).returns(TypeName.BOOLEAN);
+
+            equalsBuilder.addStatement("if (this == $L) return true", equalsParamName)
+                    .addStatement("if (! ($L instanceof $T)) return false", equalsParamName, resourceModelName)
+                    .addStatement("$T $L = ($T) $L", resourceModelName, equalsCastVarName, resourceModelName, equalsParamName);
+
+
+            String code = getters.stream().map(getter -> "$T.equals(" + getter + "(), " + equalsCastVarName + "." + getter + "())")
+                    .collect(Collectors.joining(" && "));
+
+            equalsBuilder.addStatement("return " + code, Collections.nCopies(getters.size(), Objects.class).toArray());
+
+            builder.addMethod(equalsBuilder.build());
+
+
+            // --> hashCode Methode überschreiben
+            MethodSpec.Builder hashCodeBuilder = MethodSpec.methodBuilder("hashCode")
+                    .addAnnotation(Override.class)
+                    .addModifiers(PUBLIC).returns(TypeName.INT);
+
+            code = "$T.hash(" + fieldNames.stream().collect(Collectors.joining(", ")) + ")";
+
+            hashCodeBuilder.addStatement("return " + code, Objects.class);
+
+            builder.addMethod(hashCodeBuilder.build());
+
+            specTypes.add(builder.build());
+        }
+        return specTypes;
+    }
+
+    public TypeName getFieldType(Set<ClassName> types, String fieldType) {
+        TypeName type;
+        try {
+            type = GeneratorUtil.translateToJava(fieldType);
+        } catch (Exception e) {
+            Optional<ClassName> any = types.stream().filter(t -> t.simpleName().equalsIgnoreCase(fieldType + "Type")).findAny();
+
+            if (!any.isPresent()) {
+                throw e;
+            }
+            type = any.get();
+        }
+        return type;
     }
 }

@@ -1,4 +1,4 @@
-/*
+/**
  * MIT License
  *
  * Copyright (c) 2016 - 2018 Silvio Wangler (silvio.wangler@gmail.com)
@@ -21,21 +21,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package ch.silviowangler.gradle.restapi.builder;
+package ch.silviowangler.rest.types;
 
-import java.io.File;
+import java.io.Serializable;
 
-public abstract class AbstractRootResourceBuilder extends AbstractResourceBuilder implements RootResourceBuilder {
+/**
+ * Java-Type, welcher angedacht ist, wann immer nur eine Id im Data-Part des Response erwartet wird. (POST/PUT)
+ *
+ * @author Marco Hofstetter
+ * @author Silvio Wangler
+ */
+public class IdType implements Serializable {
 
-    @Override
-    public RootResourceBuilder withCurrentPackageName(String packageName) {
-        super.withCurrentPackageName(packageName);
-        return this;
-    }
+  private String id;
 
-    @Override
-    public RootResourceBuilder withSpecification(File file) {
-        super.withSpecification(file);
-        return this;
-    }
+  public IdType() {
+    // JAX-RS
+  }
+
+  public IdType(String id) {
+    this.id = id;
+  }
+
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
 }

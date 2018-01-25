@@ -1,4 +1,4 @@
-package org.acme.rest.v1.api;
+package org.acme.rest.v1.api.v1;
 
 import javax.annotation.Generated;
 import org.springframework.http.HttpStatus;

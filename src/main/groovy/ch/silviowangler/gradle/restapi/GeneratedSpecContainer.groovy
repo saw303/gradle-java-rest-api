@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  *
  * Copyright (c) 2016 - 2018 Silvio Wangler (silvio.wangler@gmail.com)
@@ -21,24 +21,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package ch.silviowangler.gradle.restapi.builder;
+package ch.silviowangler.gradle.restapi
 
-import com.squareup.javapoet.TypeSpec;
-import org.gradle.api.Project;
+import com.squareup.javapoet.TypeSpec
 
-import java.io.File;
+/**
+ * @author Silvio Wangler
+ */
+class GeneratedSpecContainer {
 
-public interface RootResourceBuilder extends ResourceBuilder {
+    String packageName
+    TypeSpec restInterface
+    TypeSpec restImplementation
+    Collection<TypeSpec> models
+    Collection<TypeSpec> types
 
-    RootResourceBuilder withProject(Project project);
 
-    @Override
-    RootResourceBuilder withCurrentPackageName(String packageName);
+    Iterable<TypeSpec> collectGeneratedTypes() {
 
-    @Override
-    RootResourceBuilder withSpecification(File file);
+        List<TypeSpec> all = []
 
-    TypeSpec buildRootResource();
+        all << restInterface
+        all.addAll(models)
+        all.addAll(types)
 
-    TypeSpec buildResourceImpl();
+        return all
+    }
 }

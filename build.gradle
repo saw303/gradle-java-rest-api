@@ -21,7 +21,7 @@ ext {
 
 allprojects {
 
-    version = '1.0.1'
+    version = '1.0.2'
 
     apply from: "${rootDir}/gradle/java.gradle"
     apply from: "${rootDir}/gradle/bintray.gradle"

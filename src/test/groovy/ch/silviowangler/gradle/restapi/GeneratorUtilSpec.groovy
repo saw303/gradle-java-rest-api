@@ -24,13 +24,12 @@
 package ch.silviowangler.gradle.restapi
 
 import com.squareup.javapoet.ClassName
-import groovy.json.JsonParserType
-import groovy.json.JsonSlurper
 import spock.lang.Specification
 import spock.lang.Unroll
 
 import java.time.LocalDate
 import java.time.OffsetDateTime
+
 /**
  * Created by Silvio Wangler on 25/01/16.
  */
@@ -39,10 +38,10 @@ class GeneratorUtilSpec extends Specification {
     void "Generate Classfile names"() {
 
         expect:
-        GeneratorUtil.createResourceFormDataName(file) == resourceFormData
-        GeneratorUtil.createResourceImplementationName(file) == resourceImpl
-        GeneratorUtil.createResourceModelName(file) == resourceModel
-        GeneratorUtil.createResourceName(file) == resourceClass
+        GeneratorUtil.createResourceFormDataName(file.name) == resourceFormData
+        GeneratorUtil.createResourceImplementationName(file.name) == resourceImpl
+        GeneratorUtil.createResourceModelName(file.name) == resourceModel
+        GeneratorUtil.createResourceName(file.name) == resourceClass
 
         where:
 
@@ -111,25 +110,5 @@ class GeneratorUtilSpec extends Specification {
         a | b || c
         1 | 1 || 2
         1 | 2 || 3
-    }
-
-    @Unroll
-    void "Expect packagename #packagename"() {
-
-        given:
-        def slurper = new JsonSlurper(type: JsonParserType.INDEX_OVERLAY)
-
-        expect:
-        GeneratorUtil.composePackageName(slurper.parse(json.getBytes())) == packagename
-
-        where:
-        json                                                                                                || packagename
-        '{"general": {"version": "1.0.0","x-route": "/:version/laender/:entity"}}'                          || 'v1'
-        '{"general": {"version": "1.0.0","x-route": "/v1/laender/:entity"}}'                                || 'v1'
-        '{"general": {"version": "1.1.0","x-route": "/:version/laender/:entity"}}'                          || 'v1'
-        '{"general": {"version": "1.1.1","x-route": "/:version/laender/:entity"}}'                          || 'v1'
-        '{"general": {"version": "1.0.0","x-route": "/:version/laender/:land/orte/:entity"}}'               || 'v1.laender'
-        '{"general": {"version": "1.0.0","x-route": "/:version/laender/:land/orte/:ort/strassen/:entity"}}' || 'v1.laender.orte'
-        '{"general": {"version": "2.0.0","x-route": "/:version/laender/:land/orte/:entity"}}'               || 'v2.laender'
     }
 }

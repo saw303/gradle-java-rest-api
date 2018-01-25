@@ -24,6 +24,7 @@
 package ch.silviowangler.rest.contract.model.v1;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -32,10 +33,10 @@ import java.util.List;
 public class ResourceContract implements Serializable {
 
     private GeneralDetails general;
-    private List<Verb> verbs;
-    private List<ResourceField> fields;
-    private List<SubResource> subresources;
-    private List<ResourceTypes> types;
+    private List<Verb> verbs = Collections.emptyList();
+    private List<ResourceField> fields = Collections.emptyList();
+    private List<SubResource> subresources = Collections.emptyList();
+    private List<ResourceTypes> types = Collections.emptyList();
 
     public GeneralDetails getGeneral() {
         return general;

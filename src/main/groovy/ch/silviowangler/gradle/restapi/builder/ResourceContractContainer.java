@@ -23,20 +23,32 @@
  */
 package ch.silviowangler.gradle.restapi.builder;
 
-import ch.silviowangler.gradle.restapi.RestApiExtension;
-import ch.silviowangler.gradle.restapi.builder.jaxrs.JaxRsRootResourceFactory;
-import ch.silviowangler.gradle.restapi.builder.spring.SpringRootResourceFactory;
+import ch.silviowangler.rest.contract.model.v1.ResourceContract;
 
-import java.util.Objects;
+/**
+ * @author Silvio Wangler
+ */
+public class ResourceContractContainer {
 
-public class RootResourceBuilderFactory {
+    private final ResourceContract resourceContract;
+    private final String resourceContractPlainText;
+    private final String sourceFileName;
 
-    public static ResourceBuilder getRootResourceBuilder(RestApiExtension restApiExtension) {
-
-        if (Objects.requireNonNull(restApiExtension).isSpringBoot()) {
-            return new SpringRootResourceFactory();
-        }
-        return new JaxRsRootResourceFactory();
+    public ResourceContractContainer(ResourceContract resourceContract, String resourceContractPlainText, String sourceFileName) {
+        this.resourceContract = resourceContract;
+        this.resourceContractPlainText = resourceContractPlainText;
+        this.sourceFileName = sourceFileName;
     }
 
+    public ResourceContract getResourceContract() {
+        return resourceContract;
+    }
+
+    public String getResourceContractPlainText() {
+        return resourceContractPlainText;
+    }
+
+    public String getSourceFileName() {
+        return sourceFileName;
+    }
 }

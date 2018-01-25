@@ -25,13 +25,10 @@ package ch.silviowangler.gradle.restapi.builder;
 
 import ch.silviowangler.gradle.restapi.AnnotationTypes;
 import ch.silviowangler.gradle.restapi.GeneratorUtil;
-import ch.silviowangler.gradle.restapi.RestApiExtension;
 import ch.silviowangler.gradle.restapi.RestApiPlugin;
-import ch.silviowangler.rest.contract.model.v1.ResourceContract;
+import ch.silviowangler.rest.contract.model.v1.Verb;
 import com.squareup.javapoet.*;
-import org.gradle.api.Project;
 
-import java.io.File;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -42,56 +39,74 @@ import static javax.lang.model.element.Modifier.*;
 
 public interface ResourceBuilder {
 
-    Project getProject();
-
-    ResourceBuilder withSpecification(File file);
+    String GET_COLLECTION = "GET_COLLECTION";
+    String GET_ENTITY = "GET_ENTITY";
+    String POST = "POST";
+    String PUT = "PUT";
+    String DELETE_ENTITY = "DELETE_ENTITY";
+    String DELETE_COLLECTION = "DELETE_COLLECTION";
 
     String getCurrentPackageName();
 
     ResourceBuilder withCurrentPackageName(String packageName);
 
-    File getSpecification();
-
     ArtifactType getArtifactType();
 
-    ResourceContract getModel();
+    ResourceContractContainer getResourceContractContainer();
+
+    TypeSpec buildRootResource();
+
+    TypeSpec buildResourceImpl();
 
     default String resourceName() {
-        return GeneratorUtil.createResourceName(getSpecification());
+        return GeneratorUtil.createResourceName(getResourceContractContainer().getSourceFileName());
     }
 
     default String resourceImplName() {
-        return GeneratorUtil.createResourceImplementationName(getSpecification());
+        return GeneratorUtil.createResourceImplementationName(getResourceContractContainer().getSourceFileName());
     }
 
 
-    default TypeName resourceMethodReturnType(String verb) {
-        return GeneratorUtil.getReturnType(getSpecification(), verb, false, getCurrentPackageName());
+    default TypeName resourceMethodReturnType(Verb verb) {
+
+        String v = toHttpMethod(verb);
+        return GeneratorUtil.getReturnType(getResourceContractContainer().getSourceFileName(), v, false, getCurrentPackageName());
     }
 
-    default TypeName resourceModelName(String verb) {
-        return ClassName.get(getCurrentPackageName(), GeneratorUtil.createResourceModelName(getSpecification(), verb));
+    default String toHttpMethod(Verb verb) {
+        String v;
+
+        if (GET_ENTITY.equals(verb.getVerb()) || GET_COLLECTION.equals(verb.getVerb())) {
+            v = "Get";
+        } else if (DELETE_ENTITY.equals(verb.getVerb()) || DELETE_COLLECTION.equals(verb.getVerb())) {
+            v = "Delete";
+        } else if (PUT.equals(verb.getVerb())) {
+            v = "Put";
+        } else if (POST.equals(verb.getVerb())) {
+            v = "Post";
+        } else {
+            throw new IllegalArgumentException("Unknown verb " + verb.getVerb());
+        }
+        return v;
     }
 
-    default AnnotationSpec createGeneratedAnnotation() {
+    default ClassName resourceModelName(Verb verb) {
+        return ClassName.get(getCurrentPackageName(), GeneratorUtil.createResourceModelName(getResourceContractContainer().getSourceFileName(), toHttpMethod(verb)));
+    }
+
+    default AnnotationSpec createGeneratedAnnotation(boolean printTimestamp) {
 
         Map<String, Object> map = new HashMap<>();
 
         map.put("value", RestApiPlugin.PLUGIN_ID);
-        map.put("comments", "Specification filename: " + getSpecification().getName());
+        map.put("comments", "Specification filename: " + getResourceContractContainer().getSourceFileName());
 
-        RestApiExtension restApiExtension = getRestApiExtension();
-
-        if (restApiExtension.isGenerateDateAttribute()) {
+        if (printTimestamp) {
             ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
             map.put("date", utc.toString());
         }
 
         return createAnnotation(JAVAX_GENERATED, map);
-    }
-
-    default RestApiExtension getRestApiExtension() {
-        return getProject().getExtensions().getByType(RestApiExtension.class);
     }
 
     default AnnotationSpec createAnnotation(AnnotationTypes className) {
@@ -217,4 +232,12 @@ public interface ResourceBuilder {
         }
         return param.build();
     }
+
+    ResourceBuilder withResourceContractContainer(ResourceContractContainer resourceContract);
+
+    ResourceBuilder withTimestampInGeneratedAnnotation(boolean val);
+
+    Set<TypeSpec> buildResourceTypes(Set<ClassName> types);
+
+    Set<TypeSpec> buildResourceModels(Set<ClassName> types);
 }

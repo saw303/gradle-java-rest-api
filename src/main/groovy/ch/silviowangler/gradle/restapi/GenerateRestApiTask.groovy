@@ -23,13 +23,10 @@
  */
 package ch.silviowangler.gradle.restapi
 
-import ch.silviowangler.gradle.restapi.builder.RootResourceBuilder
-import ch.silviowangler.gradle.restapi.builder.RootResourceBuilderFactory
+import ch.silviowangler.gradle.restapi.builder.SpecGenerator
 import ch.silviowangler.gradle.restapi.util.SupportedDataTypes
 import com.squareup.javapoet.*
 import groovy.io.FileType
-import groovy.json.JsonParserType
-import groovy.json.JsonSlurper
 import org.gradle.api.internal.AbstractTask
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.OutputDirectory
@@ -53,8 +50,6 @@ class GenerateRestApiTask extends AbstractTask {
     public static final String DELETE_ENTITY = 'DELETE_ENTITY'
     public static final String DELETE_COLLECTION = 'DELETE_COLLECTION'
 
-    String currentPackageName
-
     @InputDirectory
     File getOptionsSource() {
         if (project.restApi.optionsSource) {
@@ -77,131 +72,45 @@ class GenerateRestApiTask extends AbstractTask {
         int amountOfGeneratedJavaSourceFiles = 0
         final String fileSeparator = '/'
 
-        def jsonSlurper = new JsonSlurper(type: JsonParserType.INDEX_OVERLAY) // use JsonFastParser
-
         RestApiExtension restApiExtension = project.restApi
 
-        final String basePackageName = restApiExtension.packageName
-
-        List<File> rootOptionsFile = []
-        getOptionsSource().eachFile(FileType.FILES, { f -> if (f.name ==~ /root\..*\.json/) rootOptionsFile << f })
-
-        logger.lifecycle("Found ${rootOptionsFile.size()} root option files")
+        List<File> specs = []
+        getOptionsSource().eachFile(FileType.FILES, { f -> if (f.name.endsWith('.json')) specs << f })
 
 
-        for (File rootFile in rootOptionsFile) {
-            def jsonObject = jsonSlurper.parse rootFile, 'UTF-8'
+        Collections.sort(specs, new Comparator<File>() {
+            @Override
+            int compare(File o1, File o2) {
+                if (o1.name.startsWith("root")) return -1
 
-            currentPackageName = "${basePackageName}.${GeneratorUtil.composePackageName(jsonObject)}".toString()
+                return o1.name <=> o2.name
+            }
+        })
 
-            for (type in jsonObject.types) {
-                logger.lifecycle("Generating type '${type.name}'")
-                TypeSpec typeSpec = buildType(type)
+        logger.lifecycle("Found ${specs.size()} specification files")
 
-                GeneratorUtil.addClassName(type.name, ClassName.get(currentPackageName, GeneratorUtil.createClassname("${type.name}Type")))
+        for (File specFile in specs) {
 
-                writeToFileSystem(currentPackageName, typeSpec, getRootOutputDir())
+            GeneratedSpecContainer specContainer = SpecGenerator.generateType(specFile, project.restApi as RestApiExtension)
+
+            for (TypeSpec model in specContainer.collectGeneratedTypes()) {
                 amountOfGeneratedJavaSourceFiles++
+                writeToFileSystem(specContainer.packageName, model, getRootOutputDir())
             }
-
-            RootResourceBuilder rootResourceBuilder = RootResourceBuilderFactory.getRootResourceBuilder(project.restApi)
-
-            TypeSpec rootResourceInterface = rootResourceBuilder.withProject(project)
-                    .withSpecification(rootFile)
-                    .withCurrentPackageName(currentPackageName)
-                    .buildRootResource()
-
-            writeToFileSystem(currentPackageName, rootResourceInterface, getRootOutputDir())
-            amountOfGeneratedJavaSourceFiles++
-
-            def file = new File(restApiExtension.generatorImplOutput, "${currentPackageName.replaceAll('\\.', fileSeparator)}${fileSeparator}${GeneratorUtil.createResourceImplementationName(rootFile)}.java")
-
-            if (!file.exists()) {
-                TypeSpec resourceImpl = rootResourceBuilder.buildResourceImpl()
-                writeToFileSystem(currentPackageName, resourceImpl, restApiExtension.generatorImplOutput)
-                amountOfGeneratedJavaSourceFiles++
-            }
-
-            def representations = jsonObject.verbs.findAll { v ->
-                v.representations.find {
-                    it.name == 'json'
-                }
-            }
-
-            for (verb in representations) {
-
-                if ([GET_COLLECTION, DELETE_ENTITY, 'DELETE_COLLECTION'].contains(verb.verb)) continue
-
-                TypeSpec resourceModel = buildResourceModel(rootFile, jsonObject, GeneratorUtil.verb(verb.verb))
-                writeToFileSystem(currentPackageName, resourceModel, getRootOutputDir())
-                amountOfGeneratedJavaSourceFiles++
-            }
-
-        }
-
-        List<File> optionsFiles = []
-        getOptionsSource().eachFileRecurse(FileType.FILES, { f -> if (f.name.endsWith('.json') && !f.name.startsWith('root.')) optionsFiles << f })
-
-        if (!optionsFiles) {
-            def logMessage = "There are no .json files within directory ${getOptionsSource().absolutePath}"
-            logger.warn(logMessage)
-        }
-
-        logOptionsFiles(optionsFiles)
-
-        for (File optionsFile in optionsFiles) {
-
-            logger.debug("About to read json file ${optionsFile.name}")
-
-            def jsonObject = jsonSlurper.parse optionsFile, 'UTF-8'
-
-            currentPackageName = "${basePackageName}.${GeneratorUtil.composePackageName(jsonObject)}".toString()
-
-            def representations = jsonObject.verbs.findAll { v ->
-                v.representations.find {
-                    it.name == 'json'
-                }
-            }
-
-            for (verb in representations) {
-
-                TypeSpec resourceModel
-                // wenn die Ressource nur GET_COLLECTION definiert, dann soll das GET_ENTITY Model trotzdem erstellt werden
-                if (representations.find { it.verb == GET_COLLECTION } && !representations.find {
-                    it.verb == GET_ENTITY
-                }) {
-                    resourceModel = buildResourceModel(optionsFile, jsonObject, GeneratorUtil.verb(GET_ENTITY))
-                } else {
-                    if ([GET_COLLECTION, DELETE_ENTITY, DELETE_COLLECTION].contains(verb.verb)) continue
-                    resourceModel = buildResourceModel(optionsFile, jsonObject, GeneratorUtil.verb(verb.verb))
-                }
-                writeToFileSystem(currentPackageName, resourceModel, getRootOutputDir())
-                amountOfGeneratedJavaSourceFiles++
-            }
-
-            RootResourceBuilder rootResourceBuilder = RootResourceBuilderFactory.getRootResourceBuilder(project.restApi)
-            TypeSpec resourceInterface = rootResourceBuilder
-                    .withCurrentPackageName(currentPackageName)
-                    .withProject(project)
-                    .withSpecification(optionsFile)
-                    .buildRootResource()
-
-            writeToFileSystem(currentPackageName, resourceInterface, getRootOutputDir())
-            amountOfGeneratedJavaSourceFiles++
-
-            def file = new File(restApiExtension.generatorImplOutput, "${currentPackageName.replaceAll('\\.', fileSeparator)}${fileSeparator}${GeneratorUtil.createResourceImplementationName(optionsFile)}.java")
+            def file = new File(restApiExtension.generatorImplOutput, "${specContainer.packageName.replaceAll('\\.', fileSeparator)}${fileSeparator}${GeneratorUtil.createResourceImplementationName(specFile.name)}.java")
 
             if (!file.exists()) {
                 amountOfGeneratedJavaSourceFiles++
-                TypeSpec resourceImpl = buildResourceImpl(optionsFile, jsonObject)
-                writeToFileSystem(currentPackageName, resourceImpl, restApiExtension.generatorImplOutput)
+
+                writeToFileSystem(specContainer.packageName, specContainer.restImplementation, restApiExtension.generatorImplOutput)
                 logger.lifecycle('Writing implementation {} to {}', file.name, restApiExtension.generatorImplOutput)
             } else {
                 logger.lifecycle('Resource implementation {} exists. Skipping this one', file.name)
             }
+
         }
 
-        logger.lifecycle "Done generating REST artifacts in {} milliseconds. (Processed JSON {} files and generated {} Java source code files)", System.currentTimeMillis() - start, optionsFiles.size(), amountOfGeneratedJavaSourceFiles
+        logger.lifecycle "Done generating REST artifacts in {} milliseconds. (Processed JSON {} files and generated {} Java source code files)", System.currentTimeMillis() - start, specs.size(), amountOfGeneratedJavaSourceFiles
     }
 
     private void writeToFileSystem(String packageName, TypeSpec typeSpec, File outputDir) {
@@ -217,11 +126,15 @@ class GenerateRestApiTask extends AbstractTask {
         JavaFile javaFile = JavaFile.builder(packageName, typeSpec).skipJavaLangImports(true).build()
 
         logger.info("Writing {} ...", typeSpec)
-        if (getLogger().isDebugEnabled() || System.getProperty('adc.debug', 'false') != 'false') {
+        if (isWriteToConsoleEnabled()) {
             javaFile.writeTo(System.out)
         }
         logger.debug('Writing to {}', outputDir.absolutePath)
         javaFile.writeTo(outputDir)
+    }
+
+    private boolean isWriteToConsoleEnabled() {
+        getLogger().isDebugEnabled() || System.getProperty('silviowangler.rest-plugin.debug', 'false') != 'false'
     }
 
     private TypeSpec buildFields(Object jsonObject, TypeSpec.Builder typeSpecBuilder) {
@@ -339,7 +252,7 @@ class GenerateRestApiTask extends AbstractTask {
                 }
 
 
-                    collectionGetMethod.addStatement(returnStatement)
+                collectionGetMethod.addStatement(returnStatement)
 
 
                 classBuilder.addMethod(collectionGetMethod.build())
@@ -443,7 +356,6 @@ class GenerateRestApiTask extends AbstractTask {
     }
 
 
-
     private MethodSpec.Builder createModifyingMethod(LinkParser parser, ClassName httpVerb, File optionsFile, Closure closure) {
 
         String methodName = httpVerb.simpleName() == POST ? 'createEntity' : 'updateEntity'
@@ -482,7 +394,6 @@ class GenerateRestApiTask extends AbstractTask {
     }
 
 
-
     private TypeSpec buildType(Object jsonObject) {
         TypeSpec.Builder classBuilder = TypeSpec.classBuilder(GeneratorUtil.createClassname("${jsonObject.name}Type"))
                 .addModifiers(PUBLIC)
@@ -495,6 +406,7 @@ class GenerateRestApiTask extends AbstractTask {
     private TypeSpec buildResourceModel(File optionsFile, Object jsonObject, String verb) {
 
         String resourceModelName = GeneratorUtil.createResourceModelName(optionsFile, verb)
+
         TypeSpec.Builder classBuilder = TypeSpec.classBuilder(resourceModelName)
                 .addModifiers(PUBLIC)
                 .addAnnotation(createGeneratedAnnotation(optionsFile))

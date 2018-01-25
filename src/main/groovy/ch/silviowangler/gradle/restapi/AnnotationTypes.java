@@ -25,6 +25,8 @@ package ch.silviowangler.gradle.restapi;
 
 import com.squareup.javapoet.ClassName;
 
+import javax.annotation.Generated;
+
 /**
  * Created by Silvio Wangler on 26/01/16.
  */
@@ -50,8 +52,8 @@ public enum AnnotationTypes {
     JAVAX_VALIDATION_SIZE(ClassName.get("javax.validation.constraints", "Size")),
     JAVAX_VALIDATION_NOT_NULL(ClassName.get("javax.validation.constraints", "NotNull")),
     JAVAX_VALIDATION_VALID(ClassName.get("javax.validation", "Valid")),
-    JAVAX_GENERATED(ClassName.get("javax.annotation", "Generated")),
-    JAVA_OVERRIDE(ClassName.get("java.lang", "Override")),
+    JAVAX_GENERATED(ClassName.get(Generated.class)),
+    JAVA_OVERRIDE(ClassName.get(Override.class)),
     SPRING_REQUEST_MAPPING(ClassName.get("org.springframework.web.bind.annotation", "RequestMapping")),
     SPRING_REQUEST_PARAM(ClassName.get("org.springframework.web.bind.annotation", "RequestParam")),
     SPRING_REQUEST_METHOD(ClassName.get("org.springframework.web.bind.annotation", "RequestMethod")),

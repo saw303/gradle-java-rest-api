@@ -37,7 +37,7 @@ public class ResourceField implements Serializable {
     private List<Boolean> mandatory;
     private Object min;
     private Object max;
-    private String multiple;
+    private boolean multiple;
     private Object defaultValue;
     private String shield;
     private boolean visible;
@@ -95,11 +95,11 @@ public class ResourceField implements Serializable {
         this.max = max;
     }
 
-    public String getMultiple() {
+    public boolean isMultiple() {
         return multiple;
     }
 
-    public void setMultiple(String multiple) {
+    public void setMultiple(boolean multiple) {
         this.multiple = multiple;
     }
 

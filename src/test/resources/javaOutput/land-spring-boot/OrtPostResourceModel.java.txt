@@ -1,18 +1,20 @@
-package org.acme.rest.v1.api.v1;
+package org.acme.rest.v1.laender.orte;
 
 import java.io.Serializable;
 import java.util.Objects;
 import javax.annotation.Generated;
+import javax.validation.constraints.NotNull;
 
 @Generated(
-    comments = "Specification filename: root.v1.json",
+    comments = "Specification filename: land.ort.v1.json",
     value = "ch.silviowangler.restapi"
 )
-public class RootGetResourceModel implements Serializable {
-  public static final String TYPE = "application/ch.silviowangler.root";
+public class OrtPostResourceModel implements Serializable {
+  public static final String TYPE = "application/ch.silviowangler.ort";
 
   private String id;
 
+  @NotNull
   private String name;
 
   public String getId() {
@@ -34,13 +36,13 @@ public class RootGetResourceModel implements Serializable {
   @Override
   public boolean equals(Object other) {
     if (this == other) return true;
-    if (! (other instanceof RootGetResourceModel)) return false;
-    RootGetResourceModel that = (RootGetResourceModel) other;
+    if (! (other instanceof OrtPostResourceModel)) return false;
+    OrtPostResourceModel that = (OrtPostResourceModel) other;
     return Objects.equals(getId(), that.getId()) && Objects.equals(getName(), that.getName());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name);
+    return Objects.hash(getId(), getName());
   }
 }

@@ -1,4 +1,4 @@
-package org.acme.rest.v1.api.v1;
+package org.acme.rest.v1;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -9,7 +9,7 @@ import javax.annotation.Generated;
     value = "ch.silviowangler.restapi"
 )
 public class RootGetResourceModel implements Serializable {
-  public static final String TYPE = "application/ch.silviowangler.root";
+  public static final String TYPE = "application/ch.silviowangler.land";
 
   private String id;
 
@@ -41,6 +41,6 @@ public class RootGetResourceModel implements Serializable {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name);
+    return Objects.hash(getId(), getName());
   }
 }

@@ -28,6 +28,7 @@ import com.squareup.javapoet.ClassName;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.Locale;
 
 /**
  * @author Silvio Wangler
@@ -45,6 +46,7 @@ public enum SupportedDataTypes {
   STRING(ClassName.get(String.class)),
   UUID(ClassName.get(String.class)),
   OBJECT(ClassName.get(Object.class)),
+  LOCALE(ClassName.get(Locale.class)),
   MONEY(ClassName.get("org.javamoney.moneta","Money"));
 
   private ClassName className;
