@@ -2,14 +2,13 @@ package org.acme.rest.v1.laender.orte;
 
 import ch.silviowangler.rest.types.IdType;
 import java.util.Collection;
-import javax.ws.rs.core.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class OrtResourceImpl implements OrtResource {
   @Override
-  public Response deleteEntity() {
+  public ResponseEntity deleteEntity() {
     throw new RuntimeException("Not yet implemented");
   }
 

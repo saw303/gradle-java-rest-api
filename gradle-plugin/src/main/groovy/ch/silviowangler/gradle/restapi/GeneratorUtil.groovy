@@ -124,7 +124,7 @@ class GeneratorUtil {
             return PluginTypes.SPRING_RESPONSE_ENTITY.className
         }
 
-        return getReturnType(fileName, verb, collection, packageName)
+        return getReturnType(fileName, verb, collection, packageName, true)
     }
 
     static TypeName getJaxRsReturnType(String fileName, String verb, boolean collection = false, String packageName, Representation representation) {
@@ -135,7 +135,8 @@ class GeneratorUtil {
         return getReturnType(fileName, verb, collection, packageName)
     }
 
-    private static TypeName getReturnType(String fileName, String verb, boolean collection = false, String packageName) {
+    private
+    static TypeName getReturnType(String fileName, String verb, boolean collection = false, String packageName, boolean springBoot = false) {
 
         if (verb == 'Get') {
             def resourceModelName = GeneratorUtil.createResourceModelName(fileName, verb)
@@ -147,7 +148,7 @@ class GeneratorUtil {
         } else if (verb == 'Put' || verb == 'Post') {
             return PluginTypes.RESTAPI_IDTYPE.className
         } else if (verb == 'Delete') {
-            return PluginTypes.JAX_RS_RESPONSE.className
+            return springBoot ? PluginTypes.SPRING_RESPONSE_ENTITY.className : PluginTypes.JAX_RS_RESPONSE.className
         } else {
             throw new RuntimeException("Unknown verb ${verb}")
         }

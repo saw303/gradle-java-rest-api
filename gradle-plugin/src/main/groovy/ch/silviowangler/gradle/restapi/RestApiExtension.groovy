@@ -59,7 +59,7 @@ class RestApiExtension {
     void setOptionsSource(File optionsSource) {
 
         if (!optionsSource?.isDirectory()) {
-            throw new IllegalArgumentException("optionsSource must be a directory")
+            throw new IllegalArgumentException("optionsSource '${optionsSource.absolutePath}' must be a directory")
         }
         this.optionsSource = optionsSource
     }
