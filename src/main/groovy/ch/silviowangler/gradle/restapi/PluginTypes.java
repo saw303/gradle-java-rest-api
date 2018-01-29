@@ -30,7 +30,7 @@ import javax.annotation.Generated;
 /**
  * Created by Silvio Wangler on 26/01/16.
  */
-public enum AnnotationTypes {
+public enum PluginTypes {
 
     RESTAPI_IDTYPE(ClassName.get("ch.silviowangler.rest.types", "IdType")),
     RESTAPI_FILTERMODEL(ClassName.get("ch.silviowangler.rest.model", "FilterModel")),
@@ -56,6 +56,7 @@ public enum AnnotationTypes {
     JAVA_OVERRIDE(ClassName.get(Override.class)),
     SPRING_REQUEST_MAPPING(ClassName.get("org.springframework.web.bind.annotation", "RequestMapping")),
     SPRING_REQUEST_PARAM(ClassName.get("org.springframework.web.bind.annotation", "RequestParam")),
+    SPRING_PATH_VARIABLE(ClassName.get("org.springframework.web.bind.annotation", "PathVariable")),
     SPRING_REQUEST_METHOD(ClassName.get("org.springframework.web.bind.annotation", "RequestMethod")),
     SPRING_REST_CONTROLLER(ClassName.get("org.springframework.web.bind.annotation", "RestController")),
     SPRING_RESPONSE_ENTITY(ClassName.get("org.springframework.http", "ResponseEntity")),
@@ -66,7 +67,7 @@ public enum AnnotationTypes {
 
     private ClassName className;
 
-    AnnotationTypes(ClassName className) {
+    PluginTypes(ClassName className) {
         this.className = className;
     }
 

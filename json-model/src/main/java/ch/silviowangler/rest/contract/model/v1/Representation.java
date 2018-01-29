@@ -75,4 +75,9 @@ public class Representation implements Serializable {
     public void setMimetype(String mimetype) {
         this.mimetype = mimetype;
     }
+
+
+    public boolean isJson() {
+        return getName()!=null && getName().equals("json");
+    }
 }

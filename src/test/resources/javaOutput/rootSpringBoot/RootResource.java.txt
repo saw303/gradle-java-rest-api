@@ -4,9 +4,9 @@ import javax.annotation.Generated;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Generated(
@@ -32,7 +32,7 @@ public interface RootResource {
       produces = MediaType.APPLICATION_JSON_UTF8_VALUE
   )
   @ResponseBody
-  RootGetResourceModel getEntity(@RequestParam("id") String id);
+  RootGetResourceModel getEntity(@PathVariable("id") String id);
 
   @RequestMapping(
       method = RequestMethod.POST,
@@ -58,7 +58,7 @@ public interface RootResource {
       produces = MediaType.APPLICATION_JSON_UTF8_VALUE
   )
   @ResponseBody
-  default ResponseEntity deleteEntityAutoAnswer(@RequestParam("id") String id) {
+  default ResponseEntity deleteEntityAutoAnswer(@PathVariable("id") String id) {
     return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
   }
 
@@ -77,7 +77,7 @@ public interface RootResource {
       produces = MediaType.APPLICATION_JSON_UTF8_VALUE
   )
   @ResponseBody
-  default ResponseEntity updateEntityAutoAnswer(@RequestParam("id") String id) {
+  default ResponseEntity updateEntityAutoAnswer(@PathVariable("id") String id) {
     return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
   }
 }

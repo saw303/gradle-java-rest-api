@@ -1,38 +1,40 @@
 package org.acme.rest.v1.laender.orte;
 
-import ch.silviowangler.rest.model.FilterModel;
 import ch.silviowangler.rest.types.IdType;
 import java.util.Collection;
 import javax.ws.rs.core.Response;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RestController;
 
+@RestController
 public class OrtResourceImpl implements OrtResource {
   @Override
-  public Collection<OrtGetResourceModel> getCollection(String land, FilterModel filter) {
+  public Response deleteEntity() {
     throw new RuntimeException("Not yet implemented");
   }
 
   @Override
-  public OrtGetResourceModel getEntity(String land, String id) {
+  public Collection<OrtGetResourceModel> getCollection() {
     throw new RuntimeException("Not yet implemented");
   }
 
   @Override
-  public Response getEntityJpeg(String land, String id) {
+  public OrtGetResourceModel getEntity(String id) {
     throw new RuntimeException("Not yet implemented");
   }
 
   @Override
-  public IdType createEntity(String land, OrtPostResourceModel model) {
+  public ResponseEntity getEntityJpeg(String id) {
     throw new RuntimeException("Not yet implemented");
   }
 
   @Override
-  public IdType updateEntity(String land, OrtPutResourceModel model, String id) {
+  public IdType createEntity(OrtPostResourceModel model) {
     throw new RuntimeException("Not yet implemented");
   }
 
   @Override
-  public Response deleteEntity(String land, String id) {
+  public IdType updateEntity(OrtPutResourceModel model, String id) {
     throw new RuntimeException("Not yet implemented");
   }
 }

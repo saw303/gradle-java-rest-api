@@ -34,11 +34,12 @@ public class ResourceField implements Serializable {
     private String name;
     private String type;
     private String options;
-    private List<Boolean> mandatory;
+    private List<String> mandatory;
     private Object min;
     private Object max;
     private boolean multiple;
     private Object defaultValue;
+    // in JSON protected
     private String shield;
     private boolean visible;
     private boolean sortable;
@@ -71,11 +72,11 @@ public class ResourceField implements Serializable {
         this.options = options;
     }
 
-    public List<Boolean> getMandatory() {
+    public List<String> getMandatory() {
         return mandatory;
     }
 
-    public void setMandatory(List<Boolean> mandatory) {
+    public void setMandatory(List<String> mandatory) {
         this.mandatory = mandatory;
     }
 

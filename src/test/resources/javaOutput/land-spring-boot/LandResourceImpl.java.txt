@@ -1,13 +1,14 @@
 package org.acme.rest.v1.laender;
 
-import ch.silviowangler.rest.model.FilterModel;
 import ch.silviowangler.rest.types.IdType;
 import java.util.Collection;
-import javax.ws.rs.core.Response;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RestController;
 
+@RestController
 public class LandResourceImpl implements LandResource {
   @Override
-  public Collection<LandGetResourceModel> getCollection(FilterModel filter) {
+  public Collection<LandGetResourceModel> getCollection() {
     throw new RuntimeException("Not yet implemented");
   }
 
@@ -17,7 +18,7 @@ public class LandResourceImpl implements LandResource {
   }
 
   @Override
-  public Response getEntityPdf(String id) {
+  public ResponseEntity getEntityPdf(String id) {
     throw new RuntimeException("Not yet implemented");
   }
 

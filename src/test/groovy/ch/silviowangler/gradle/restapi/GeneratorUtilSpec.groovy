@@ -100,15 +100,4 @@ class GeneratorUtilSpec extends Specification {
         'DELETE_ENTITY'     || 'Delete'
         'DELETE_COLLECTION' || 'Delete'
     }
-
-    @Unroll
-    void "#a plus #b is equals #c"() {
-        expect:
-        a + b == c
-
-        where:
-        a | b || c
-        1 | 1 || 2
-        1 | 2 || 3
-    }
 }

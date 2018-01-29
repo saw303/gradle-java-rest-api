@@ -23,18 +23,21 @@
  */
 package ch.silviowangler.gradle.restapi.builder.jaxrs
 
-import ch.silviowangler.gradle.restapi.AnnotationTypes
+import ch.silviowangler.gradle.restapi.PluginTypes
+import ch.silviowangler.gradle.restapi.GeneratorUtil
 import ch.silviowangler.gradle.restapi.builder.AbstractResourceBuilder
 import ch.silviowangler.gradle.restapi.builder.ArtifactType
+import ch.silviowangler.rest.contract.model.v1.Representation
 import ch.silviowangler.rest.contract.model.v1.Verb
 import com.squareup.javapoet.AnnotationSpec
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.MethodSpec
+import com.squareup.javapoet.TypeName
 import com.squareup.javapoet.TypeSpec
 
 import java.nio.charset.Charset
 
-import static ch.silviowangler.gradle.restapi.AnnotationTypes.*
+import static ch.silviowangler.gradle.restapi.PluginTypes.*
 
 class JaxRsRootResourceFactory extends AbstractResourceBuilder {
 
@@ -102,7 +105,7 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder {
     }
 
     @Override
-    Iterable<AnnotationSpec> getResourceMethodAnnotations(boolean applyId) {
+    Iterable<AnnotationSpec> getResourceMethodAnnotations(boolean applyId, Representation representation) {
 
         List<AnnotationSpec> specs = []
 
@@ -130,7 +133,7 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder {
     }
 
     @Override
-    AnnotationTypes getPathVariableAnnotationType() {
+    PluginTypes getPathVariableAnnotationType() {
         return JAX_RS_PATH_PARAM
     }
 
@@ -142,5 +145,11 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder {
     @Override
     ClassName getMethodNowAllowedReturnType() {
         return JAX_RS_RESPONSE.className
+    }
+
+    @Override
+    TypeName resourceMethodReturnType(Verb verb, Representation representation) {
+        String v = toHttpMethod(verb)
+        return GeneratorUtil.getJaxRsReturnType(getResourceContractContainer().getSourceFileName(), v, false, getCurrentPackageName())
     }
 }

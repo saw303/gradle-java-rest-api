@@ -23,18 +23,20 @@
  */
 package ch.silviowangler.gradle.restapi.builder;
 
-import ch.silviowangler.gradle.restapi.AnnotationTypes;
+import ch.silviowangler.gradle.restapi.PluginTypes;
 import ch.silviowangler.gradle.restapi.GeneratorUtil;
 import ch.silviowangler.gradle.restapi.RestApiPlugin;
+import ch.silviowangler.rest.contract.model.v1.Representation;
 import ch.silviowangler.rest.contract.model.v1.Verb;
+import com.google.common.base.CaseFormat;
 import com.squareup.javapoet.*;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.*;
 
-import static ch.silviowangler.gradle.restapi.AnnotationTypes.JAVAX_GENERATED;
-import static ch.silviowangler.gradle.restapi.AnnotationTypes.JAVA_OVERRIDE;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_GENERATED;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAVA_OVERRIDE;
 import static javax.lang.model.element.Modifier.*;
 
 public interface ResourceBuilder {
@@ -67,11 +69,7 @@ public interface ResourceBuilder {
     }
 
 
-    default TypeName resourceMethodReturnType(Verb verb) {
-
-        String v = toHttpMethod(verb);
-        return GeneratorUtil.getReturnType(getResourceContractContainer().getSourceFileName(), v, false, getCurrentPackageName());
-    }
+    TypeName resourceMethodReturnType(Verb verb, Representation representation);
 
     default String toHttpMethod(Verb verb) {
         String v;
@@ -109,11 +107,11 @@ public interface ResourceBuilder {
         return createAnnotation(JAVAX_GENERATED, map);
     }
 
-    default AnnotationSpec createAnnotation(AnnotationTypes className) {
+    default AnnotationSpec createAnnotation(PluginTypes className) {
         return createAnnotation(className, new HashMap<>());
     }
 
-    default AnnotationSpec createAnnotation(AnnotationTypes className, Map<String, Object> attributes) {
+    default AnnotationSpec createAnnotation(PluginTypes className, Map<String, Object> attributes) {
         AnnotationSpec.Builder builder = AnnotationSpec.builder(className.getClassName());
 
         for (Map.Entry<String, Object> entry : attributes.entrySet()) {
@@ -135,22 +133,31 @@ public interface ResourceBuilder {
     ClassName getMethodNowAllowedReturnType();
 
     default MethodSpec.Builder createMethodNotAllowedHandler(String methodName) {
-        MethodSpec.Builder builder = createMethod(methodName, getMethodNowAllowedReturnType(), new HashMap<>());
+        Representation representation = new Representation();
+        representation.setName("json");
+        MethodSpec.Builder builder = createMethod(methodName, getMethodNowAllowedReturnType(), new HashMap<>(), representation);
 
         if (isIdGenerationRequired(methodName)) {
             builder.addParameter(generateIdParam());
         }
-
         generateMethodNotAllowedStatement(builder);
 
         return builder;
     }
 
     default MethodSpec.Builder createMethod(String methodName, TypeName returnType) {
-        return createMethod(methodName, returnType, new HashMap<>());
+        Representation representation = new Representation();
+        representation.setName("json");
+        return createMethod(methodName, returnType, new HashMap<>(), representation);
     }
 
-    default MethodSpec.Builder createMethod(String methodName, TypeName returnType, Map<String, ClassName> params) {
+    default MethodSpec.Builder createMethod(String methodName, TypeName returnType, Map<String, ClassName> params, Representation representation) {
+
+
+        if (!representation.getName().equals("json")) {
+            methodName += CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, representation.getName());
+        }
+
         MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(methodName);
 
         if ("getCollection".equals(methodName)) {
@@ -163,7 +170,7 @@ public interface ResourceBuilder {
 
 
         if (ArtifactType.RESOURCE.equals(getArtifactType())) {
-            Iterable<AnnotationSpec> annotations = getResourceMethodAnnotations(isIdGenerationRequired(methodName));
+            Iterable<AnnotationSpec> annotations = getResourceMethodAnnotations(isIdGenerationRequired(methodName), representation);
             methodBuilder.addAnnotations(annotations);
         } else if (ArtifactType.RESOURCE_IMPL.equals(getArtifactType())) {
             methodBuilder.addAnnotation(AnnotationSpec.builder(JAVA_OVERRIDE.getClassName()).build());
@@ -214,9 +221,9 @@ public interface ResourceBuilder {
 
     AnnotationSpec getQueryParamAnnotation(String paramName);
 
-    Iterable<AnnotationSpec> getResourceMethodAnnotations(boolean applyId);
+    Iterable<AnnotationSpec> getResourceMethodAnnotations(boolean applyId, Representation representation);
 
-    AnnotationTypes getPathVariableAnnotationType();
+    PluginTypes getPathVariableAnnotationType();
 
     default ParameterSpec generateIdParam() {
         ParameterSpec.Builder param = ParameterSpec.builder(ClassName.get(String.class), "id");

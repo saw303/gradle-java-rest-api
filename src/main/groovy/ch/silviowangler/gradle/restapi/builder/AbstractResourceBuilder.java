@@ -1,18 +1,18 @@
 /**
  * MIT License
- *
+ * <p>
  * Copyright (c) 2016 - 2018 Silvio Wangler (silvio.wangler@gmail.com)
- *
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * <p>
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -23,7 +23,7 @@
  */
 package ch.silviowangler.gradle.restapi.builder;
 
-import ch.silviowangler.gradle.restapi.AnnotationTypes;
+import ch.silviowangler.gradle.restapi.PluginTypes;
 import ch.silviowangler.gradle.restapi.GenerateRestApiTask;
 import ch.silviowangler.gradle.restapi.GeneratorUtil;
 import ch.silviowangler.gradle.restapi.LinkParser;
@@ -44,13 +44,13 @@ import static javax.lang.model.element.Modifier.*;
  */
 public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
-    private ResourceContractContainer resourceContractContainer;
     protected TypeSpec.Builder typeBuilder;
+    private ResourceContractContainer resourceContractContainer;
     private Verb currentVerb;
     private String currentPackageName;
     private boolean printTimestamp = true;
-
     private ArtifactType artifactType;
+
 
     public Verb getCurrentVerb() {
         return currentVerb;
@@ -161,99 +161,107 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
             MethodSpec.Builder methodBuilder;
 
-
             Map<String, ClassName> params = new HashMap<>();
             this.currentVerb = verb;
 
             verb.getParameters().forEach(p -> params.put(p.getName(), GeneratorUtil.translateToJava(p.getType())));
 
-            if (GenerateRestApiTask.GET_COLLECTION.equals(verb.getVerb())) {
+            for (Representation representation : verb.getRepresentations()) {
 
-                methodBuilder = createMethod(
-                        "getCollection",
-                        resourceMethodReturnType(verb),
-                        params
-                );
+                if (GenerateRestApiTask.GET_COLLECTION.equals(verb.getVerb())) {
 
-            } else if (GenerateRestApiTask.GET_ENTITY.equals(verb.getVerb())) {
+                    methodBuilder = createMethod(
+                            "getCollection",
+                            resourceMethodReturnType(verb, representation),
+                            params,
+                            representation
+                    );
 
-
-                methodBuilder = createMethod(
-                        "getEntity",
-                        resourceMethodReturnType(verb),
-                        params
-                );
-
-                methodBuilder.addParameter(generateIdParam());
+                } else if (GenerateRestApiTask.GET_ENTITY.equals(verb.getVerb())) {
 
 
-            } else if (GenerateRestApiTask.POST.equals(verb.getVerb())) {
+                    methodBuilder = createMethod(
+                            "getEntity",
+                            resourceMethodReturnType(verb,representation),
+                            params,
+                            representation
+                    );
 
-                methodBuilder = createMethod(
-                        "createEntity",
-                        resourceMethodReturnType(verb),
-                        params
-                );
+                    methodBuilder.addParameter(generateIdParam());
 
-                ParameterSpec.Builder param = ParameterSpec.builder(resourceModelName(verb), "model");
-                if (getArtifactType().equals(ArtifactType.RESOURCE)) {
-                    param.addAnnotation(
-                            createAnnotation(AnnotationTypes.JAVAX_VALIDATION_VALID)
-                    ).build();
+
+                } else if (GenerateRestApiTask.POST.equals(verb.getVerb())) {
+
+                    methodBuilder = createMethod(
+                            "createEntity",
+                            resourceMethodReturnType(verb, representation),
+                            params,
+                            representation
+                    );
+
+                    ParameterSpec.Builder param = ParameterSpec.builder(resourceModelName(verb), "model");
+                    if (getArtifactType().equals(ArtifactType.RESOURCE)) {
+                        param.addAnnotation(
+                                createAnnotation(PluginTypes.JAVAX_VALIDATION_VALID)
+                        ).build();
+                    }
+                    methodBuilder.addParameter(param.build());
+
+                } else if (GenerateRestApiTask.PUT.equals(verb.getVerb())) {
+
+                    methodBuilder = createMethod(
+                            "updateEntity",
+                            resourceMethodReturnType(verb, representation),
+                            params,
+                            representation
+                    );
+
+                    ParameterSpec.Builder param = ParameterSpec.builder(resourceModelName(verb), "model");
+                    if (getArtifactType().equals(ArtifactType.RESOURCE)) {
+                        param.addAnnotation(
+                                createAnnotation(PluginTypes.JAVAX_VALIDATION_VALID)
+                        ).build();
+                    }
+                    methodBuilder.addParameter(param.build());
+
+                    param = ParameterSpec.builder(ClassName.get(String.class), "id");
+
+                    if (getArtifactType().equals(ArtifactType.RESOURCE)) {
+
+                        Map<String, Object> attrs = new HashMap<>();
+                        attrs.put("value", "id");
+
+                        param.addAnnotation(
+                                createAnnotation(getPathVariableAnnotationType(), attrs)
+                        ).build();
+                    }
+                    methodBuilder.addParameter(param.build());
+
+
+                } else if (GenerateRestApiTask.DELETE_COLLECTION.equals(verb.getVerb())) {
+
+                    methodBuilder = createMethod(
+                            "deleteCollection",
+                            resourceMethodReturnType(verb, representation),
+                            params,
+                            representation
+                    );
+
+                } else if (GenerateRestApiTask.DELETE_ENTITY.equals(verb.getVerb())) {
+
+                    methodBuilder = createMethod(
+                            "deleteEntity",
+                            resourceMethodReturnType(verb, representation),
+                            params,
+                            representation
+                    );
+
+                } else {
+                    throw new IllegalArgumentException(String.format("Verb %s is unknown", verb.getVerb()));
                 }
-                methodBuilder.addParameter(param.build());
-
-            } else if (GenerateRestApiTask.PUT.equals(verb.getVerb())) {
-
-                methodBuilder = createMethod(
-                        "updateEntity",
-                        resourceMethodReturnType(verb),
-                        params
-                );
-
-                ParameterSpec.Builder param = ParameterSpec.builder(resourceModelName(verb), "model");
-                if (getArtifactType().equals(ArtifactType.RESOURCE)) {
-                    param.addAnnotation(
-                            createAnnotation(AnnotationTypes.JAVAX_VALIDATION_VALID)
-                    ).build();
-                }
-                methodBuilder.addParameter(param.build());
-
-                param = ParameterSpec.builder(ClassName.get(String.class), "id");
-
-                if (getArtifactType().equals(ArtifactType.RESOURCE)) {
-
-                    Map<String, Object> attrs = new HashMap<>();
-                    attrs.put("value", "id");
-
-                    param.addAnnotation(
-                            createAnnotation(getPathVariableAnnotationType(), attrs)
-                    ).build();
-                }
-                methodBuilder.addParameter(param.build());
-
-
-            } else if (GenerateRestApiTask.DELETE_COLLECTION.equals(verb.getVerb())) {
-
-                methodBuilder = createMethod(
-                        "deleteCollection",
-                        resourceMethodReturnType(verb),
-                        params
-                );
-
-            } else if (GenerateRestApiTask.DELETE_ENTITY.equals(verb.getVerb())) {
-
-                methodBuilder = createMethod(
-                        "deleteEntity",
-                        resourceMethodReturnType(verb),
-                        params
-                );
-
-            } else {
-                throw new IllegalArgumentException(String.format("Verb %s is unknown", verb.getVerb()));
+                this.typeBuilder.addMethod(methodBuilder.build());
             }
             this.currentVerb = null;
-            this.typeBuilder.addMethod(methodBuilder.build());
         }
 
 
@@ -372,23 +380,13 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
                 builder.addField(FieldSpec.builder(fieldType, field.getName(), PRIVATE).build());
 
                 // Getter/Setters schreiben
-                MethodSpec.Builder getterBuilder = MethodSpec.methodBuilder("get" + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, field.getName()))
-                        .returns(fieldType).addModifiers(Modifier.PUBLIC).addStatement("return this.$L", field.getName());
-
-                builder.addMethod(getterBuilder.build());
-                MethodSpec.Builder setterBuilder = MethodSpec.methodBuilder("set" + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, field.getName()))
-                        .returns(TypeName.VOID)
-                        .addModifiers(PUBLIC)
-                        .addParameter(ParameterSpec.builder(fieldType, field.getName()).build())
-                        .addStatement("this.$L = $L", field.getName(), field.getName());
-                builder.addMethod(setterBuilder.build());
+                writeGetterSetter(builder, fieldType, field.getName());
             }
-
-
             specTypes.add(builder.build());
         }
         return specTypes;
     }
+
 
     @Override
     public Set<TypeSpec> buildResourceModels(Set<ClassName> types) {
@@ -427,21 +425,16 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
                     fieldType = ParameterizedTypeName.get(list, fieldType);
                 }
 
-                builder.addField(FieldSpec.builder(fieldType, field.getName(), PRIVATE).build());
+                FieldSpec.Builder fieldBuilder = FieldSpec.builder(fieldType, field.getName(), PRIVATE);
+
+                if (field.getMandatory().stream().filter(v -> v.equalsIgnoreCase(verb.getVerb())).findAny().isPresent()) {
+                    fieldBuilder.addAnnotation(createAnnotation(PluginTypes.JAVAX_VALIDATION_NOT_NULL));
+                }
+
+                builder.addField(fieldBuilder.build());
 
                 // Getter/Setters schreiben
-                String methodName = CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, field.getName());
-                MethodSpec.Builder getterBuilder = MethodSpec.methodBuilder("get" + methodName)
-                        .returns(fieldType).addModifiers(Modifier.PUBLIC).addStatement("return this.$L", field.getName());
-
-                builder.addMethod(getterBuilder.build());
-                MethodSpec.Builder setterBuilder = MethodSpec.methodBuilder("set" + methodName)
-                        .returns(TypeName.VOID)
-                        .addModifiers(PUBLIC)
-                        .addParameter(ParameterSpec.builder(fieldType, field.getName()).build())
-                        .addStatement("this.$L = $L", field.getName(), field.getName());
-                builder.addMethod(setterBuilder.build());
-
+                writeGetterSetter(builder, fieldType, field.getName());
             }
 
             // --> equals Methode überschreiben
@@ -481,7 +474,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
         return specTypes;
     }
 
-    public TypeName getFieldType(Set<ClassName> types, String fieldType) {
+    private TypeName getFieldType(Set<ClassName> types, String fieldType) {
         TypeName type;
         try {
             type = GeneratorUtil.translateToJava(fieldType);
@@ -494,5 +487,19 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
             type = any.get();
         }
         return type;
+    }
+
+    private void writeGetterSetter(TypeSpec.Builder builder, TypeName fieldType, String name) {
+        String methodName = CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, name);
+        MethodSpec.Builder getterBuilder = MethodSpec.methodBuilder("get" + methodName)
+                .returns(fieldType).addModifiers(Modifier.PUBLIC).addStatement("return this.$L", name);
+
+        builder.addMethod(getterBuilder.build());
+        MethodSpec.Builder setterBuilder = MethodSpec.methodBuilder("set" + methodName)
+                .returns(TypeName.VOID)
+                .addModifiers(PUBLIC)
+                .addParameter(ParameterSpec.builder(fieldType, name).build())
+                .addStatement("this.$L = $L", name, name);
+        builder.addMethod(setterBuilder.build());
     }
 }

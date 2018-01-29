@@ -23,25 +23,24 @@
  */
 package ch.silviowangler.gradle.restapi.builder.spring;
 
-import ch.silviowangler.gradle.restapi.AnnotationTypes;
+import ch.silviowangler.gradle.restapi.GeneratorUtil;
+import ch.silviowangler.gradle.restapi.PluginTypes;
 import ch.silviowangler.gradle.restapi.builder.AbstractResourceBuilder;
 import ch.silviowangler.gradle.restapi.builder.ArtifactType;
+import ch.silviowangler.rest.contract.model.v1.Representation;
 import ch.silviowangler.rest.contract.model.v1.Verb;
-import com.squareup.javapoet.AnnotationSpec;
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static ch.silviowangler.gradle.restapi.AnnotationTypes.*;
+import static ch.silviowangler.gradle.restapi.PluginTypes.*;
 
 public class SpringRootResourceFactory extends AbstractResourceBuilder {
 
-    public static final ClassName CLASS_NAME = ClassName.get(String.class);
+    private static final ClassName STRING_CLASS = ClassName.get(String.class);
 
     private TypeSpec.Builder resourceBuilder;
 
@@ -81,7 +80,7 @@ public class SpringRootResourceFactory extends AbstractResourceBuilder {
         verb.setVerb("OPTIONS");
 
         setCurrentVerb(verb);
-        MethodSpec.Builder optionsMethod = createMethod("getOptions", CLASS_NAME);
+        MethodSpec.Builder optionsMethod = createMethod("getOptions", STRING_CLASS);
 
         optionsMethod.addStatement("return OPTIONS_CONTENT");
 
@@ -96,7 +95,7 @@ public class SpringRootResourceFactory extends AbstractResourceBuilder {
     }
 
     @Override
-    public Iterable<AnnotationSpec> getResourceMethodAnnotations(boolean applyId) {
+    public Iterable<AnnotationSpec> getResourceMethodAnnotations(boolean applyId, Representation representation) {
         List<AnnotationSpec> annotations = new ArrayList<>();
 
         String httpMethod = getHttpMethod();
@@ -104,31 +103,47 @@ public class SpringRootResourceFactory extends AbstractResourceBuilder {
         AnnotationSpec.Builder builder = AnnotationSpec.builder(SPRING_REQUEST_MAPPING.getClassName());
 
         builder.addMember("method", "$T." + httpMethod.toUpperCase(), SPRING_REQUEST_METHOD.getClassName());
+
         if (applyId) {
-            builder.addMember("path", "$S", "/{id}");
+            if (representation.isJson()) {
+                builder.addMember("path", "\"/{$L}\"", "id");
+            } else {
+                builder.addMember("path", "\"/{$L}.$L\"", "id", representation.getName());
+            }
         }
-        //builder.addMember("consumes", "$T.APPLICATION_JSON", SPRING_HTTP_MEDIA_TYPE.getClassName());
-        builder.addMember("produces", "$T.APPLICATION_JSON_UTF8_VALUE", SPRING_HTTP_MEDIA_TYPE.getClassName());
+
+        if (representation.isJson()) {
+            builder.addMember("produces", "$T.APPLICATION_JSON_UTF8_VALUE", SPRING_HTTP_MEDIA_TYPE.getClassName());
+        } else {
+            builder.addMember("produces", "$S", representation.getMimetype());
+        }
 
         annotations.add(builder.build());
-        annotations.add(createAnnotation(SPRING_RESPONSE_BODY));
 
+        if (representation.isJson()) {
+            annotations.add(createAnnotation(SPRING_RESPONSE_BODY));
+        }
         return annotations;
     }
 
     @Override
-    public AnnotationTypes getPathVariableAnnotationType() {
-        return SPRING_REQUEST_PARAM;
+    public PluginTypes getPathVariableAnnotationType() {
+        return SPRING_PATH_VARIABLE;
     }
 
     @Override
     public void generateMethodNotAllowedStatement(MethodSpec.Builder builder) {
-        //new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED)
         builder.addStatement("return new $T<>($T.METHOD_NOT_ALLOWED)", getMethodNowAllowedReturnType(), SPRING_HTTP_STATUS.getClassName());
     }
 
     @Override
     public ClassName getMethodNowAllowedReturnType() {
         return SPRING_RESPONSE_ENTITY.getClassName();
+    }
+
+    @Override
+    public TypeName resourceMethodReturnType(Verb verb, Representation representation) {
+        String v = toHttpMethod(verb);
+        return GeneratorUtil.getSpringBootReturnType(getResourceContractContainer().getSourceFileName(), v, false, getCurrentPackageName(), representation);
     }
 }

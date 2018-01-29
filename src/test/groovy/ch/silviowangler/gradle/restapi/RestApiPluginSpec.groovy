@@ -142,7 +142,7 @@ class RestApiPluginSpec extends Specification {
         javaFiles.isEmpty()
     }
 
-    @PendingFeature
+
     void "The plugin generates valid Java 8 code for Spring Boot and the Land/Ort specs"() {
 
         given:
@@ -188,7 +188,6 @@ class RestApiPluginSpec extends Specification {
         assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtResourceImpl', 'land-spring-boot')
         assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtGetResourceModel', 'land-spring-boot')
         assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtPutResourceModel', 'land-spring-boot')
-        assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtDeleteResourceModel', 'land-spring-boot')
         assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtPostResourceModel', 'land-spring-boot')
         assertJavaFile('org.acme.rest.v1', 'RootResource', 'land-spring-boot')
         assertJavaFile('org.acme.rest.v1', 'RootResourceImpl', 'land-spring-boot')

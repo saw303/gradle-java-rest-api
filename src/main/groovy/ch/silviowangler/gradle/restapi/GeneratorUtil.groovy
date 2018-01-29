@@ -24,6 +24,7 @@
 package ch.silviowangler.gradle.restapi
 
 import ch.silviowangler.gradle.restapi.util.SupportedDataTypes
+import ch.silviowangler.rest.contract.model.v1.Representation
 import com.google.common.base.CaseFormat
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.ParameterizedTypeName
@@ -96,7 +97,7 @@ class GeneratorUtil {
             'uuid'    : SupportedDataTypes.UUID.className,
             'object'  : SupportedDataTypes.OBJECT.className,
             'money'   : SupportedDataTypes.MONEY.className,
-            'locale'   : SupportedDataTypes.MONEY.className
+            'locale'  : SupportedDataTypes.MONEY.className
     ]
 
     static ClassName translateToJava(final String jsonType) {
@@ -117,8 +118,24 @@ class GeneratorUtil {
         return "${v[0].toUpperCase()}${v[1..v.length() - 1].toLowerCase()}"
     }
 
-    static TypeName getReturnType(String fileName, String verb, boolean collection = false, String packageName) {
+    static TypeName getSpringBootReturnType(String fileName, String verb, boolean collection = false, String packageName, Representation representation) {
 
+        if (representation.name != "json") {
+            return PluginTypes.SPRING_RESPONSE_ENTITY.className
+        }
+
+        return getReturnType(fileName, verb, collection, packageName)
+    }
+
+    static TypeName getJaxRsReturnType(String fileName, String verb, boolean collection = false, String packageName, Representation representation) {
+
+        if (representation.name != "json") {
+            return PluginTypes.JAX_RS_RESPONSE.className
+        }
+        return getReturnType(fileName, verb, collection, packageName)
+    }
+
+    private static TypeName getReturnType(String fileName, String verb, boolean collection = false, String packageName) {
 
         if (verb == 'Get') {
             def resourceModelName = GeneratorUtil.createResourceModelName(fileName, verb)
@@ -128,11 +145,10 @@ class GeneratorUtil {
                 return ClassName.get(packageName, resourceModelName)
             }
         } else if (verb == 'Put' || verb == 'Post') {
-            return AnnotationTypes.RESTAPI_IDTYPE.className
+            return PluginTypes.RESTAPI_IDTYPE.className
         } else if (verb == 'Delete') {
-            return AnnotationTypes.JAX_RS_RESPONSE.className
-        }
-        else {
+            return PluginTypes.JAX_RS_RESPONSE.className
+        } else {
             throw new RuntimeException("Unknown verb ${verb}")
         }
     }

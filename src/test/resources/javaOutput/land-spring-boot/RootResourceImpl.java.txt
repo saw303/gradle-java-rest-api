@@ -1,8 +1,11 @@
 package org.acme.rest.v1;
 
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
 public class RootResourceImpl implements RootResource {
   @Override
-  public RootGetResourceModel getEntity() {
+  public RootGetResourceModel getEntity(String id) {
     throw new RuntimeException("Not yet implemented");
   }
 }
