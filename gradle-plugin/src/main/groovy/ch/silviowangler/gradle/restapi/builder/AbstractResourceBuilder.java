@@ -391,7 +391,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
     @Override
     public Set<TypeSpec> buildResourceModels(Set<ClassName> types) {
         ResourceContract resourceContract = getResourceContractContainer().getResourceContract();
-        List<Verb> verbs = resourceContract.getVerbs();
+        List<Verb> verbs = resourceContract.getVerbs().stream().filter( v -> !v.getVerb().equals(DELETE_ENTITY)).collect(Collectors.toList());
         Set<TypeSpec> specTypes = new HashSet<>(verbs.size());
 
 

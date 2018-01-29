@@ -170,7 +170,7 @@ class RestApiPluginSpec extends Specification {
         new File(temporaryFolder.getRoot(), 'org/acme/rest').exists()
 
         and:
-        assertGeneratedFiles javaFiles, 15
+        assertGeneratedFiles javaFiles, 14
 
         and:
         javaFiles.collect {
@@ -180,18 +180,18 @@ class RestApiPluginSpec extends Specification {
         and: 'Ressourcen validieren'
         assertJavaFile('org.acme.rest.v1', 'CoordinatesType', 'land-spring-boot')
         assertJavaFile('org.acme.rest.v1.laender', 'LandGetResourceModel', 'land-spring-boot')
-        assertJavaFile('org.acme.rest.v1.laender', 'LandPutResourceModel', 'land-spring-boot')
         assertJavaFile('org.acme.rest.v1.laender', 'LandPostResourceModel', 'land-spring-boot')
+        assertJavaFile('org.acme.rest.v1.laender', 'LandPutResourceModel', 'land-spring-boot')
         assertJavaFile('org.acme.rest.v1.laender', 'LandResource', 'land-spring-boot')
         assertJavaFile('org.acme.rest.v1.laender', 'LandResourceImpl', 'land-spring-boot')
+        assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtGetResourceModel', 'land-spring-boot')
+        assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtPostResourceModel', 'land-spring-boot')
+        assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtPutResourceModel', 'land-spring-boot')
         assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtResource', 'land-spring-boot')
         assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtResourceImpl', 'land-spring-boot')
-        assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtGetResourceModel', 'land-spring-boot')
-        assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtPutResourceModel', 'land-spring-boot')
-        assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtPostResourceModel', 'land-spring-boot')
+        assertJavaFile('org.acme.rest.v1', 'RootGetResourceModel', 'land-spring-boot')
         assertJavaFile('org.acme.rest.v1', 'RootResource', 'land-spring-boot')
         assertJavaFile('org.acme.rest.v1', 'RootResourceImpl', 'land-spring-boot')
-        assertJavaFile('org.acme.rest.v1', 'RootGetResourceModel', 'land-spring-boot')
 
         when:
         CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts
@@ -455,10 +455,11 @@ class RestApiPluginSpec extends Specification {
     private void assertJavaFile(String packageName, String className, String testName) {
         final String ENCODING = 'UTF-8'
         File expectedJavaFile = new File(temporaryFolder.getRoot().absolutePath + '/' + packageName.replaceAll('\\.', '/'), "${className}.java")
-        File actualJavaFile = new File(getClass().getResource("/javaOutput/${testName}/${className}.java.txt").file)
+        URL resource = getClass().getResource("/javaOutput/${testName}/${className}.java.txt")
+        File actualJavaFile = resource ? new File(resource.file) : new File(className)
 
-        final String expectedJavaSourceCode = expectedJavaFile.getText(ENCODING)
-        final String actualJavaSourceCode = actualJavaFile.getText(ENCODING)
+        final String expectedJavaSourceCode = expectedJavaFile.exists() ? expectedJavaFile.getText(ENCODING) : "File ${expectedJavaFile.absolutePath} not found"
+        final String actualJavaSourceCode = actualJavaFile.exists() ? actualJavaFile.getText(ENCODING) : "File ${actualJavaFile.absolutePath} not found"
 
         assert expectedJavaSourceCode == actualJavaSourceCode
     }

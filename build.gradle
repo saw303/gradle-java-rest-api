@@ -22,8 +22,6 @@ subprojects {
     apply plugin: 'com.github.ben-manes.versions'
     apply plugin: "com.github.hierynomus.license"
 
-
-
     license {
         header = file("${rootDir}/LICENSE-SHORT")
 
