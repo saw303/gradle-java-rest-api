@@ -1,7 +1,7 @@
 buildscript {
     ext {
         springBootVersion = '2.0.0.M7'
-        restVersion = '1.0.3'
+        restVersion = '1.0.4'
     }
     repositories {
         mavenCentral()
@@ -44,7 +44,7 @@ dependencies {
 }
 
 restApi {
-    packageName = 'ch.silviowangler.rest.demo'
+    packageName = 'rest.demo.springboot'
     springBoot = true
     optionsSource = file('src/main/specs')
 }
