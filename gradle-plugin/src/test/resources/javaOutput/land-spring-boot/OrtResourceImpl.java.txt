@@ -1,5 +1,6 @@
 package org.acme.rest.v1.laender.orte;
 
+import ch.silviowangler.rest.NotYetImplementedException;
 import ch.silviowangler.rest.types.IdType;
 import java.util.Collection;
 import org.springframework.http.ResponseEntity;
@@ -9,31 +10,31 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrtResourceImpl implements OrtResource {
   @Override
   public ResponseEntity deleteEntity() {
-    throw new RuntimeException("Not yet implemented");
+    throw new NotYetImplementedException();
   }
 
   @Override
   public Collection<OrtGetResourceModel> getCollection() {
-    throw new RuntimeException("Not yet implemented");
+    throw new NotYetImplementedException();
   }
 
   @Override
   public OrtGetResourceModel getEntity(String id) {
-    throw new RuntimeException("Not yet implemented");
+    throw new NotYetImplementedException();
   }
 
   @Override
   public ResponseEntity getEntityJpeg(String id) {
-    throw new RuntimeException("Not yet implemented");
+    throw new NotYetImplementedException();
   }
 
   @Override
   public IdType createEntity(OrtPostResourceModel model) {
-    throw new RuntimeException("Not yet implemented");
+    throw new NotYetImplementedException();
   }
 
   @Override
   public IdType updateEntity(OrtPutResourceModel model, String id) {
-    throw new RuntimeException("Not yet implemented");
+    throw new NotYetImplementedException();
   }
 }

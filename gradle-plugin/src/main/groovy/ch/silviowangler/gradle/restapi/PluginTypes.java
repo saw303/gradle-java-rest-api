@@ -54,6 +54,7 @@ public enum PluginTypes {
     JAVAX_VALIDATION_VALID(ClassName.get("javax.validation", "Valid")),
     JAVAX_GENERATED(ClassName.get(Generated.class)),
     JAVA_OVERRIDE(ClassName.get(Override.class)),
+    PLUGIN_NOT_YET_IMPLEMENTED_EXCEPTION(ClassName.get("ch.silviowangler.rest", "NotYetImplementedException")),
     SPRING_REQUEST_MAPPING(ClassName.get("org.springframework.web.bind.annotation", "RequestMapping")),
     SPRING_REQUEST_PARAM(ClassName.get("org.springframework.web.bind.annotation", "RequestParam")),
     SPRING_PATH_VARIABLE(ClassName.get("org.springframework.web.bind.annotation", "PathVariable")),

@@ -183,7 +183,8 @@ public interface ResourceBuilder {
                 methodBuilder.addModifiers(ABSTRACT);
             } else {
                 methodBuilder.addModifiers(PUBLIC);
-                methodBuilder.addStatement("throw new RuntimeException(\"Not yet implemented\")");
+
+                methodBuilder.addStatement("throw new $T()", PluginTypes.PLUGIN_NOT_YET_IMPLEMENTED_EXCEPTION.getClassName());
             }
         }
 

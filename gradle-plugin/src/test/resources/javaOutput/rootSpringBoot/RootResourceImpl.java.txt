@@ -1,11 +1,12 @@
 package org.acme.rest.v1.api.v1;
 
+import ch.silviowangler.rest.NotYetImplementedException;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class RootResourceImpl implements RootResource {
   @Override
   public RootGetResourceModel getEntity(String id) {
-    throw new RuntimeException("Not yet implemented");
+    throw new NotYetImplementedException();
   }
 }

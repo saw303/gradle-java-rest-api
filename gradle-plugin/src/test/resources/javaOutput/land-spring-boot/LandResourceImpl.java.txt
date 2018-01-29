@@ -1,5 +1,6 @@
 package org.acme.rest.v1.laender;
 
+import ch.silviowangler.rest.NotYetImplementedException;
 import ch.silviowangler.rest.types.IdType;
 import java.util.Collection;
 import org.springframework.http.ResponseEntity;
@@ -9,26 +10,26 @@ import org.springframework.web.bind.annotation.RestController;
 public class LandResourceImpl implements LandResource {
   @Override
   public Collection<LandGetResourceModel> getCollection() {
-    throw new RuntimeException("Not yet implemented");
+    throw new NotYetImplementedException();
   }
 
   @Override
   public LandGetResourceModel getEntity(String id) {
-    throw new RuntimeException("Not yet implemented");
+    throw new NotYetImplementedException();
   }
 
   @Override
   public ResponseEntity getEntityPdf(String id) {
-    throw new RuntimeException("Not yet implemented");
+    throw new NotYetImplementedException();
   }
 
   @Override
   public IdType createEntity(LandPostResourceModel model) {
-    throw new RuntimeException("Not yet implemented");
+    throw new NotYetImplementedException();
   }
 
   @Override
   public IdType updateEntity(LandPutResourceModel model, String id) {
-    throw new RuntimeException("Not yet implemented");
+    throw new NotYetImplementedException();
   }
 }
