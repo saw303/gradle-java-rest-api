@@ -3,3 +3,7 @@
 out
 build
 .gradle
+
+
+demo-app-springboot/src/generated
+demo-app-springboot/src/main/java/**/*ResourceImpl.java

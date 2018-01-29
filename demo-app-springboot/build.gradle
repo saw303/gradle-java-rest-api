@@ -1,0 +1,51 @@
+buildscript {
+    ext {
+        springBootVersion = '2.0.0.M7'
+        restVersion = '1.0.1'
+    }
+    repositories {
+        mavenCentral()
+        maven { url "https://dl.bintray.com/saw303/gradle-plugins" }
+        maven { url "https://repo.spring.io/snapshot" }
+        maven { url "https://repo.spring.io/milestone" }
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath("ch.silviowangler.rest:gradle-java-rest-api:${restVersion}")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+apply plugin: 'ch.silviowangler.restapi'
+
+group = 'ch.silviowangler.rest'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    maven { url "https://dl.bintray.com/saw303/gradle-plugins" }
+    maven { url "https://repo.spring.io/snapshot" }
+    maven { url "https://repo.spring.io/milestone" }
+}
+
+
+dependencies {
+    compile('org.springframework.boot:spring-boot-starter-validation')
+    compile('org.springframework.boot:spring-boot-starter-web')
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+
+    // TODO include by plugin!!
+    compile("ch.silviowangler.rest:rest-api-spring:${restVersion}")
+}
+
+restApi {
+    packageName = 'ch.silviowangler.rest.demo'
+    springBoot = true
+    optionsSource = file('src/main/specs')
+}
+
