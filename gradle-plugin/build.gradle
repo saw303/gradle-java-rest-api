@@ -19,3 +19,12 @@ dependencies {
     compile "com.google.guava:guava:${guavaVersion}"
     compile "com.google.code.gson:gson:${gsonVersion}"
 }
+
+task checkVersion(type: Test) {
+    File file = file("${projectDir}/src/main/groovy/ch/silviowangler/gradle/restapi/RestApiPlugin.groovy")
+    String content = file.text
+
+    if (! content.contains("compile(\"ch.silviowangler.rest:rest-api-spring:${version}\")")) {
+        throw new RuntimeException("Wrong version in ${file.absolutePath}")
+    }
+}

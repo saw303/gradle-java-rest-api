@@ -65,5 +65,9 @@ class RestApiPlugin implements Plugin<Project> {
         if (!restApiSpecification) {
             restApiSpecification = project.configurations.create(CONFIGUATION_REST_API)
         }
+
+        project.dependencies {
+            compile("ch.silviowangler.rest:rest-api-spring:1.0.7")
+        }
     }
 }
