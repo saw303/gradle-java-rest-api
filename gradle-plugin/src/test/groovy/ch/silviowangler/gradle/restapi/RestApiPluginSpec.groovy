@@ -336,7 +336,6 @@ class RestApiPluginSpec extends Specification {
         javaFiles.isEmpty()
     }
 
-    @PendingFeature
     void "Not specified verbs are explicitly excluded"() {
 
         given:

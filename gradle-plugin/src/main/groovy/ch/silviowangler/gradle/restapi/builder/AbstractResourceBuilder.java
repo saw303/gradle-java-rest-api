@@ -515,7 +515,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
                     } else if (fieldType == SupportedDataTypes.DATETIME.getClassName()) {
                         fieldBuilder.initializer("$T.now()", ClassName.get(LocalDateTime.class));
                     } else if (fieldType == SupportedDataTypes.BOOL.getClassName()) {
-                        fieldBuilder.initializer("$T.$L", field.getDefaultValue().equals("true") ? "TRUE" : "FALSE");
+                        fieldBuilder.initializer("$T.$L", ClassName.get(Boolean.class), Boolean.TRUE.equals(field.getDefaultValue()) ? "TRUE" : "FALSE");
                     } else {
                         fieldBuilder.initializer("$S", field.getDefaultValue());
                     }
