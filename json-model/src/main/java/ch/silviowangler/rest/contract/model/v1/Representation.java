@@ -24,6 +24,7 @@
 package ch.silviowangler.rest.contract.model.v1;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * @author Silvio Wangler
@@ -76,8 +77,25 @@ public class Representation implements Serializable {
         this.mimetype = mimetype;
     }
 
-
     public boolean isJson() {
         return getName()!=null && getName().equals("json");
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Representation that = (Representation) o;
+        return standard == that.standard &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(comment, that.comment) &&
+                Objects.equals(responseExample, that.responseExample) &&
+                Objects.equals(mimetype, that.mimetype);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(name, comment, responseExample, standard, mimetype);
     }
 }

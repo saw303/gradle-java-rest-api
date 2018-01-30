@@ -1,4 +1,4 @@
-package org.acme.rest.v1;
+package org.acme.rest.v1.partner;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -10,8 +10,8 @@ import javax.annotation.Generated;
 import org.javamoney.moneta.Money;
 
 @Generated(
-    value = "ch.silviowangler.restapi",
-    comments = "Specification filename: partner.v1.json"
+    comments = "Specification filename: partner.v1.json",
+    value = "ch.silviowangler.restapi"
 )
 public class PartnerGetResourceModel implements Serializable {
   public static final String TYPE = "application/ch.silviowangler.partner";
@@ -126,6 +126,6 @@ public class PartnerGetResourceModel implements Serializable {
 
   @Override
   public int hashCode() {
-    return Objects.hash(getId(), getName(), getVorname(), getTitel(), getGeburtsdatum(), getGewicht(), getLohn(), getTags(), getLeistungsabrechnungspositionen(), getSprache());
+    return Objects.hash(id, name, vorname, titel, geburtsdatum, gewicht, lohn, tags, leistungsabrechnungspositionen, sprache);
   }
 }

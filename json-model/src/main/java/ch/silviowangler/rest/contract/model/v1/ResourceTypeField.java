@@ -24,6 +24,7 @@
 package ch.silviowangler.rest.contract.model.v1;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * @author Silvio Wangler
@@ -92,5 +93,25 @@ public class ResourceTypeField implements Serializable {
 
     public void setDefaultValue(String defaultValue) {
         this.defaultValue = defaultValue;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ResourceTypeField that = (ResourceTypeField) o;
+        return Objects.equals(name, that.name) &&
+                Objects.equals(type, that.type) &&
+                Objects.equals(options, that.options) &&
+                Objects.equals(min, that.min) &&
+                Objects.equals(max, that.max) &&
+                Objects.equals(multiple, that.multiple) &&
+                Objects.equals(defaultValue, that.defaultValue);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(name, type, options, min, max, multiple, defaultValue);
     }
 }

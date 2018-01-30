@@ -25,6 +25,7 @@ package ch.silviowangler.rest.contract.model.v1;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Silvio Wangler
@@ -35,8 +36,8 @@ public class ResourceField implements Serializable {
     private String type;
     private String options;
     private List<String> mandatory;
-    private Object min;
-    private Object max;
+    private Number min;
+    private Number max;
     private boolean multiple;
     private Object defaultValue;
     // in JSON protected
@@ -80,19 +81,19 @@ public class ResourceField implements Serializable {
         this.mandatory = mandatory;
     }
 
-    public Object getMin() {
+    public Number getMin() {
         return min;
     }
 
-    public void setMin(Object min) {
+    public void setMin(Number min) {
         this.min = min;
     }
 
-    public Object getMax() {
+    public Number getMax() {
         return max;
     }
 
-    public void setMax(Object max) {
+    public void setMax(Number max) {
         this.max = max;
     }
 
@@ -166,5 +167,33 @@ public class ResourceField implements Serializable {
 
     public void setxComment(String xComment) {
         this.xComment = xComment;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ResourceField that = (ResourceField) o;
+        return multiple == that.multiple &&
+                visible == that.visible &&
+                sortable == that.sortable &&
+                readonly == that.readonly &&
+                filterable == that.filterable &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(type, that.type) &&
+                Objects.equals(options, that.options) &&
+                Objects.equals(mandatory, that.mandatory) &&
+                Objects.equals(min, that.min) &&
+                Objects.equals(max, that.max) &&
+                Objects.equals(defaultValue, that.defaultValue) &&
+                Objects.equals(shield, that.shield) &&
+                Objects.equals(alias, that.alias) &&
+                Objects.equals(xComment, that.xComment);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(name, type, options, mandatory, min, max, multiple, defaultValue, shield, visible, sortable, readonly, filterable, alias, xComment);
     }
 }

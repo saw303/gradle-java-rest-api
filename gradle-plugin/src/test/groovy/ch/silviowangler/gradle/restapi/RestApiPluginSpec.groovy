@@ -209,8 +209,7 @@ class RestApiPluginSpec extends Specification {
         javaFiles.isEmpty()
     }
 
-    @PendingFeature
-    void "The plugin generates valid Java 8 code"() {
+    void "The plugin generates valid JAX-RS Java 8 code"() {
 
         given:
         project.restApi.generatorOutput = temporaryFolder.getRoot()
@@ -244,11 +243,11 @@ class RestApiPluginSpec extends Specification {
         }.size() == javaFiles.size()
 
         and: 'Ressourcen validieren'
-        assertJavaFile('org.acme.rest.v1', 'PartnerResource')
-        assertJavaFile('org.acme.rest.v1', 'PartnerResourceImpl')
-        assertJavaFile('org.acme.rest.v1', 'PartnerGetResourceModel')
-        assertJavaFile('org.acme.rest.v1', 'PartnerPutResourceModel')
-        assertJavaFile('org.acme.rest.v1', 'PartnerPostResourceModel')
+        assertJavaFile('org.acme.rest.v1.partner', 'PartnerResource')
+        assertJavaFile('org.acme.rest.v1.partner', 'PartnerResourceImpl')
+        assertJavaFile('org.acme.rest.v1.partner', 'PartnerGetResourceModel')
+        assertJavaFile('org.acme.rest.v1.partner', 'PartnerPutResourceModel')
+        assertJavaFile('org.acme.rest.v1.partner', 'PartnerPostResourceModel')
 
         when:
         CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts
@@ -465,7 +464,7 @@ class RestApiPluginSpec extends Specification {
     }
 
     private void assertGeneratedFiles(List<File> files, int amount) {
-        files.sort { it.name }.each { f -> println "There is file ${f.absolutePath}"}
+        files.sort { it.name }.each { f -> println "There is file ${f.absolutePath}" }
         assert files.size() == amount
     }
 }

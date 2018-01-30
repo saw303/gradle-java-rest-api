@@ -25,6 +25,7 @@ package ch.silviowangler.rest.contract.model.v1;
 
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * @author Silvio Wangler
@@ -57,5 +58,21 @@ public class GeneralDetails implements Serializable {
 
     public void setxRoute(String xRoute) {
         this.xRoute = xRoute;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        GeneralDetails that = (GeneralDetails) o;
+        return Objects.equals(description, that.description) &&
+                Objects.equals(version, that.version) &&
+                Objects.equals(xRoute, that.xRoute);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(description, version, xRoute);
     }
 }

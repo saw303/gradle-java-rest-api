@@ -26,6 +26,7 @@ package ch.silviowangler.rest.contract.model.v1;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Silvio Wangler
@@ -83,5 +84,23 @@ public class Verb implements Serializable {
 
     public void setParameters(List<ResourceField> parameters) {
         this.parameters = parameters;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Verb verb1 = (Verb) o;
+        return Objects.equals(verb, verb1.verb) &&
+                Objects.equals(rel, verb1.rel) &&
+                Objects.equals(responseStates, verb1.responseStates) &&
+                Objects.equals(representations, verb1.representations) &&
+                Objects.equals(parameters, verb1.parameters);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(verb, rel, responseStates, representations, parameters);
     }
 }

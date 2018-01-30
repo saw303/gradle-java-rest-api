@@ -1,4 +1,4 @@
-package org.acme.rest.v1;
+package org.acme.rest.v1.partner;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -7,13 +7,14 @@ import java.time.OffsetDateTime;
 import java.util.Locale;
 import java.util.Objects;
 import javax.annotation.Generated;
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import org.javamoney.moneta.Money;
 
 @Generated(
-    value = "ch.silviowangler.restapi",
-    comments = "Specification filename: partner.v1.json"
+    comments = "Specification filename: partner.v1.json",
+    value = "ch.silviowangler.restapi"
 )
 public class PartnerPutResourceModel implements Serializable {
   public static final String TYPE = "application/ch.silviowangler.partner";
@@ -33,10 +34,8 @@ public class PartnerPutResourceModel implements Serializable {
   private LocalDate geburtsdatum = LocalDate.now();
 
   @NotNull
-  @Size(
-      min = 0,
-      max = 400
-  )
+  @DecimalMin("0.0")
+  @DecimalMax("400.0")
   private BigDecimal gewicht;
 
   @NotNull
@@ -124,11 +123,11 @@ public class PartnerPutResourceModel implements Serializable {
     if (this == other) return true;
     if (! (other instanceof PartnerPutResourceModel)) return false;
     PartnerPutResourceModel that = (PartnerPutResourceModel) other;
-    return Objects.equals(getId(), that.getId()) && Objects.equals(getName(), that.getName()) && Objects.equals(getVorname(), that.getVorname()) && Objects.equals(getTitel(), that.getTitel()) && Objects.equals(getGeburtsdatum(), that.getGeburtsdatum()) && Objects.equals(getGewicht(), that.getGewicht()) && Objects.equals(getLohn(), that.getLohn()) && Objects.equals(getUhrzeit(), that.getUhrzeit()) && Objects.equals(getSprache(), that.getSprache());
+    return Objects.equals(getId(), that.getId()) && Objects.equals(getName(), that.getName()) && Objects.equals(getVorname(), that.getVorname()) && Objects.equals(getTitel(), that.getTitel()) && Objects.equals(getGeburtsdatum(), that.getGeburtsdatum()) && Objects.equals(getGewicht(), that.getGewicht()) && Objects.equals(getLohn(), that.getLohn()) && Objects.equals(getTags(), that.getTags()) && Objects.equals(getLeistungsabrechnungspositionen(), that.getLeistungsabrechnungspositionen()) && Objects.equals(getSprache(), that.getSprache());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(getId(), getName(), getVorname(), getTitel(), getGeburtsdatum(), getGewicht(), getLohn(), getUhrzeit(), getSprache());
+    return Objects.hash(id, name, vorname, titel, geburtsdatum, gewicht, lohn, tags, leistungsabrechnungspositionen, sprache);
   }
 }

@@ -97,7 +97,7 @@ class GeneratorUtil {
             'uuid'    : SupportedDataTypes.UUID.className,
             'object'  : SupportedDataTypes.OBJECT.className,
             'money'   : SupportedDataTypes.MONEY.className,
-            'locale'  : SupportedDataTypes.MONEY.className
+            'locale'  : SupportedDataTypes.LOCALE.className
     ]
 
     static ClassName translateToJava(final String jsonType) {

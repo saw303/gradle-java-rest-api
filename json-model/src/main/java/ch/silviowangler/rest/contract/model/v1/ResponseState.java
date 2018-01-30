@@ -24,6 +24,7 @@
 package ch.silviowangler.rest.contract.model.v1;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * @author Silvio Wangler
@@ -56,5 +57,21 @@ public class ResponseState implements Serializable {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ResponseState that = (ResponseState) o;
+        return code == that.code &&
+                Objects.equals(message, that.message) &&
+                Objects.equals(comment, that.comment);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(code, message, comment);
     }
 }

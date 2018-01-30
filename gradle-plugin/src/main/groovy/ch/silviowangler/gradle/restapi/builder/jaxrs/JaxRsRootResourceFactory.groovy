@@ -76,7 +76,13 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder {
 
     @Override
     TypeSpec buildResourceImpl() {
-        return null
+        reset()
+        setArtifactType(ArtifactType.RESOURCE_IMPL)
+        TypeSpec.Builder builder = classBaseInstance()
+        builder.addSuperinterface(ClassName.get(getCurrentPackageName(), resourceName()))
+
+        generateResourceMethods()
+        return builder.build()
     }
 
     private AnnotationSpec createProducesAnnotation() {
@@ -92,7 +98,6 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder {
         }
         AnnotationSpec.builder(JAX_RS_PRODUCES.className).addMember('value', '{ $S }', mimetype).build()
     }
-
 
 
     @Override
@@ -146,6 +151,6 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder {
     @Override
     TypeName resourceMethodReturnType(Verb verb, Representation representation) {
         String v = toHttpMethod(verb)
-        return GeneratorUtil.getJaxRsReturnType(getResourceContractContainer().getSourceFileName(), v, false, getCurrentPackageName())
+        return GeneratorUtil.getJaxRsReturnType(getResourceContractContainer().getSourceFileName(), v, false, getCurrentPackageName(), representation)
     }
 }

@@ -24,6 +24,7 @@
 package ch.silviowangler.rest.contract.model.v1;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * @author Silvio Wangler
@@ -83,5 +84,25 @@ public class SubResource implements Serializable {
 
     public void setExpandable(boolean expandable) {
         this.expandable = expandable;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SubResource that = (SubResource) o;
+        return expandable == that.expandable &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(type, that.type) &&
+                Objects.equals(rel, that.rel) &&
+                Objects.equals(href, that.href) &&
+                Objects.equals(method, that.method);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(name, type, rel, href, method, expandable);
     }
 }

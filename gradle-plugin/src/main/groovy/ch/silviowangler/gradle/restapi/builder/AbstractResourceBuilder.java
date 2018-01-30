@@ -1,18 +1,18 @@
 /**
  * MIT License
- *
+ * <p>
  * Copyright (c) 2016 - 2018 Silvio Wangler (silvio.wangler@gmail.com)
- *
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * <p>
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -27,6 +27,7 @@ import ch.silviowangler.gradle.restapi.GenerateRestApiTask;
 import ch.silviowangler.gradle.restapi.GeneratorUtil;
 import ch.silviowangler.gradle.restapi.LinkParser;
 import ch.silviowangler.gradle.restapi.PluginTypes;
+import ch.silviowangler.gradle.restapi.util.SupportedDataTypes;
 import ch.silviowangler.rest.contract.model.v1.*;
 import com.google.common.base.CaseFormat;
 import com.squareup.javapoet.*;
@@ -34,9 +35,12 @@ import io.github.getify.minify.Minify;
 
 import javax.lang.model.element.Modifier;
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ch.silviowangler.gradle.restapi.PluginTypes.*;
 import static javax.lang.model.element.Modifier.*;
 
 /**
@@ -182,7 +186,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
                     methodBuilder = createMethod(
                             "getEntity",
-                            resourceMethodReturnType(verb,representation),
+                            resourceMethodReturnType(verb, representation),
                             params,
                             representation
                     );
@@ -391,13 +395,16 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
     @Override
     public Set<TypeSpec> buildResourceModels(Set<ClassName> types) {
         ResourceContract resourceContract = getResourceContractContainer().getResourceContract();
-        List<Verb> verbs = resourceContract.getVerbs().stream().filter( v -> !v.getVerb().equals(DELETE_ENTITY)).collect(Collectors.toList());
+
+
+        List<String> excludeVerbs = Arrays.asList(DELETE_ENTITY, GET_COLLECTION);
+        List<Verb> verbs = resourceContract.getVerbs().stream().filter(v -> !excludeVerbs.contains(v.getVerb())).collect(Collectors.toList());
         Set<TypeSpec> specTypes = new HashSet<>(verbs.size());
 
 
         Verb verbGet = verbs.stream().filter(v -> v.getVerb().equals(GET_ENTITY)).findAny().orElse(verbs.get(0));
 
-        List<ResourceField> fields = resourceContract.getFields().stream().filter(f -> f.isVisible()).collect(Collectors.toList());
+        List<ResourceField> fields = resourceContract.getFields();
 
         List<String> fieldNames = fields.stream().filter(f -> f.isVisible()).map(ResourceField::getName).collect(Collectors.toList());
 
@@ -418,6 +425,10 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
             );
 
             for (ResourceField field : fields) {
+
+                if (!field.isVisible() && verb.equals(verbGet)) continue;
+                if (field.isReadonly() && !verb.equals(verbGet)) continue;
+
                 TypeName fieldType = getFieldType(types, field.getType());
 
                 if (field.isMultiple()) {
@@ -431,6 +442,48 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
                     fieldBuilder.addAnnotation(createAnnotation(PluginTypes.JAVAX_VALIDATION_NOT_NULL));
                 }
 
+                if (!verb.equals(verbGet) && field.getMin() instanceof Number && field.getMax() instanceof Number) {
+
+                    Number min = field.getMin();
+                    Number max = field.getMax();
+
+                    if (field.getType().equalsIgnoreCase("integer")) {
+                        fieldBuilder.addAnnotation(
+                                AnnotationSpec.builder(JAVAX_VALIDATION_SIZE.getClassName())
+                                        .addMember("min", "$N", min.intValue())
+                                        .addMember("max", "$N", max.intValue()).build()
+                        );
+                    }
+                    if (field.getType().equalsIgnoreCase("decimal")) {
+                        fieldBuilder.addAnnotation(
+                                AnnotationSpec.builder(JAVAX_VALIDATION_DECIMAL_MIN.getClassName())
+                                        .addMember("value", "$S", min.doubleValue()).build()
+                        );
+                        fieldBuilder.addAnnotation(
+                                AnnotationSpec.builder(JAVAX_VALIDATION_DECIMAL_MAX.getClassName())
+                                        .addMember("value", "$S", max.doubleValue()).build()
+                        );
+                    }
+
+                }
+
+
+                if (field.isMultiple()) {
+                    fieldBuilder.initializer("new java.util.ArrayList<>()");
+                } else if (field.getDefaultValue() != null) {
+
+                    if (fieldType == SupportedDataTypes.STRING.getClassName()) {
+                        fieldBuilder.initializer("$S", field.getDefaultValue());
+                    } else if (fieldType == SupportedDataTypes.DATE.getClassName()) {
+                        fieldBuilder.initializer("$T.now()", ClassName.get(LocalDate.class));
+                    } else if (fieldType == SupportedDataTypes.DATETIME.getClassName()) {
+                        fieldBuilder.initializer("$T.now()", ClassName.get(LocalDateTime.class));
+                    } else if (fieldType == SupportedDataTypes.BOOL.getClassName()) {
+                        fieldBuilder.initializer("$T.$L", field.getDefaultValue().equals("true") ? "TRUE" : "FALSE");
+                    } else {
+                        fieldBuilder.initializer("$S", field.getDefaultValue());
+                    }
+                }
                 builder.addField(fieldBuilder.build());
 
                 // Getter/Setters schreiben

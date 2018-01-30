@@ -92,10 +92,9 @@ class GenerateRestApiTask extends AbstractTask {
             def file = new File(restApiExtension.generatorImplOutput, "${specContainer.packageName.replaceAll('\\.', fileSeparator)}${fileSeparator}${GeneratorUtil.createResourceImplementationName(specFile.name)}.java")
 
             if (!file.exists()) {
-                amountOfGeneratedJavaSourceFiles++
-
-                writeToFileSystem(specContainer.packageName, specContainer.restImplementation, restApiExtension.generatorImplOutput)
                 logger.lifecycle('Writing implementation {} to {}', file.name, restApiExtension.generatorImplOutput)
+                amountOfGeneratedJavaSourceFiles++
+                writeToFileSystem(specContainer.packageName, specContainer.restImplementation, restApiExtension.generatorImplOutput)
             } else {
                 logger.lifecycle('Resource implementation {} exists. Skipping this one', file.name)
             }

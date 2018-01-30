@@ -26,6 +26,7 @@ package ch.silviowangler.rest.contract.model.v1;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Silvio Wangler
@@ -76,5 +77,23 @@ public class ResourceContract implements Serializable {
 
     public void setTypes(List<ResourceTypes> types) {
         this.types = types;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ResourceContract that = (ResourceContract) o;
+        return Objects.equals(general, that.general) &&
+                Objects.equals(verbs, that.verbs) &&
+                Objects.equals(fields, that.fields) &&
+                Objects.equals(subresources, that.subresources) &&
+                Objects.equals(types, that.types);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(general, verbs, fields, subresources, types);
     }
 }

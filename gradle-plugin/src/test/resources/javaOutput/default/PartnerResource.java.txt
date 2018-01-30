@@ -1,4 +1,4 @@
-package org.acme.rest.v1;
+package org.acme.rest.v1.partner;
 
 import ch.silviowangler.rest.types.IdType;
 import java.util.Collection;
