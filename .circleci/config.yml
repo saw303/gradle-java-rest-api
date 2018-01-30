@@ -41,6 +41,9 @@ jobs:
       # run tests!
       - run: gradle test
 
+      - store_test_results:
+        path: gradle-plugin/build/reports/tests/test
+
       # save test results
       - run:
           name: Save test results
