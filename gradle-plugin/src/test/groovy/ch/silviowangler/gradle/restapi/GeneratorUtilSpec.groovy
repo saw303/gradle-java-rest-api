@@ -54,7 +54,7 @@ class GeneratorUtilSpec extends Specification {
     void "Generate Classfile names from string"() {
 
         expect:
-        GeneratorUtil.createClassname(classname) == expectedClassname
+        GeneratorUtil.createClassName(classname) == expectedClassname
 
         where:
         classname        || expectedClassname

@@ -46,7 +46,7 @@ class LinkParser {
         def finder = (this.link =~ /:[a-z]*/)
 
         for (token in finder) {
-            pathVariables << "${token[1..token.length() - 1]}"
+            pathVariables << "${token[1..token.length() - 1]}".toString()
         }
 
         for (String pathVar in pathVariables) {

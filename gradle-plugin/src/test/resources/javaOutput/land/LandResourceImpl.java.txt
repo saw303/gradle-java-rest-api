@@ -1,33 +1,33 @@
-package org.acme.rest.v1;
+package org.acme.rest.v1.laender;
 
-import ch.silviowangler.rest.model.FilterModel;
+import ch.silviowangler.rest.NotYetImplementedException;
 import ch.silviowangler.rest.types.IdType;
 import java.util.Collection;
 import javax.ws.rs.core.Response;
 
 public class LandResourceImpl implements LandResource {
   @Override
-  public Collection<LandGetResourceModel> getCollection(FilterModel filter) {
-    throw new RuntimeException("Not yet implemented");
+  public Collection<LandGetResourceModel> getCollection() {
+    throw new NotYetImplementedException();
   }
 
   @Override
   public LandGetResourceModel getEntity(String id) {
-    throw new RuntimeException("Not yet implemented");
+    throw new NotYetImplementedException();
   }
 
   @Override
   public Response getEntityPdf(String id) {
-    throw new RuntimeException("Not yet implemented");
+    throw new NotYetImplementedException();
   }
 
   @Override
   public IdType createEntity(LandPostResourceModel model) {
-    throw new RuntimeException("Not yet implemented");
+    throw new NotYetImplementedException();
   }
 
   @Override
   public IdType updateEntity(LandPutResourceModel model, String id) {
-    throw new RuntimeException("Not yet implemented");
+    throw new NotYetImplementedException();
   }
 }

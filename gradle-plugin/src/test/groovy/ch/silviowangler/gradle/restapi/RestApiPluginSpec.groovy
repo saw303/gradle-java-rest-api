@@ -153,6 +153,7 @@ class RestApiPluginSpec extends Specification {
         project.restApi.generateDateAttribute = false
         project.restApi.objectResourceModelMapping = customFieldModelMapping
         project.restApi.springBoot = true
+        project.restApi.responseEncoding = Charset.forName('UTF-8')
 
         and:
         GenerateRestApiTask task = project.tasks.generateRestArtifacts
@@ -266,8 +267,7 @@ class RestApiPluginSpec extends Specification {
     }
 
 
-    @PendingFeature
-    void "Typ-Definitionen in root.json werden berücksichtigt"() {
+    void "Typ Definitionen in der Root Ressource werden berücksichtigt"() {
 
         given:
         project.restApi.generatorOutput = temporaryFolder.getRoot()
@@ -304,17 +304,17 @@ class RestApiPluginSpec extends Specification {
 
         and: 'Ressourcen validieren'
         assertJavaFile('org.acme.rest.v1', 'CoordinatesType', 'land')
-        assertJavaFile('org.acme.rest.v1', 'LandGetResourceModel', 'land')
-        assertJavaFile('org.acme.rest.v1', 'LandPutResourceModel', 'land')
-        assertJavaFile('org.acme.rest.v1', 'LandPostResourceModel', 'land')
-        assertJavaFile('org.acme.rest.v1', 'LandResource', 'land')
-        assertJavaFile('org.acme.rest.v1', 'LandResourceImpl', 'land')
+        assertJavaFile('org.acme.rest.v1.laender', 'LandGetResourceModel', 'land')
+        assertJavaFile('org.acme.rest.v1.laender', 'LandPutResourceModel', 'land')
+        assertJavaFile('org.acme.rest.v1.laender', 'LandPostResourceModel', 'land')
+        assertJavaFile('org.acme.rest.v1.laender', 'LandResource', 'land')
+        assertJavaFile('org.acme.rest.v1.laender', 'LandResourceImpl', 'land')
 
-        assertJavaFile('org.acme.rest.v1.laender', 'OrtResource', 'land')
-        assertJavaFile('org.acme.rest.v1.laender', 'OrtResourceImpl', 'land')
-        assertJavaFile('org.acme.rest.v1.laender', 'OrtGetResourceModel', 'land')
-        assertJavaFile('org.acme.rest.v1.laender', 'OrtPutResourceModel', 'land')
-        assertJavaFile('org.acme.rest.v1.laender', 'OrtPostResourceModel', 'land')
+        assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtResource', 'land')
+        assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtResourceImpl', 'land')
+        assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtGetResourceModel', 'land')
+        assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtPutResourceModel', 'land')
+        assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtPostResourceModel', 'land')
 
         assertJavaFile('org.acme.rest.v1', 'RootResource', 'land')
         assertJavaFile('org.acme.rest.v1', 'RootResourceImpl', 'land')

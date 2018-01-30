@@ -1,14 +1,15 @@
-package org.acme.rest.v1;
+package org.acme.rest.v1.laender;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
 import javax.annotation.Generated;
 import javax.validation.constraints.NotNull;
+import org.acme.rest.v1.CoordinatesType;
 
 @Generated(
-    value = "ch.silviowangler.restapi",
-    comments = "Specification filename: land.v1.json"
+    comments = "Specification filename: land.v1.json",
+    value = "ch.silviowangler.restapi"
 )
 public class LandPostResourceModel implements Serializable {
   public static final String TYPE = "application/ch.silviowangler.land";
@@ -77,6 +78,6 @@ public class LandPostResourceModel implements Serializable {
 
   @Override
   public int hashCode() {
-    return Objects.hash(getId(), getName(), getGruendungsDatum(), getFlaeche(), getKoordinaten());
+    return Objects.hash(id, name, gruendungsDatum, flaeche, koordinaten);
   }
 }

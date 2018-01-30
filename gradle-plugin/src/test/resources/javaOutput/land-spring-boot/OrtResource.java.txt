@@ -35,14 +35,14 @@ public interface OrtResource {
       produces = MediaType.APPLICATION_JSON_UTF8_VALUE
   )
   @ResponseBody
-  ResponseEntity deleteEntity();
+  ResponseEntity deleteEntity(@PathVariable("land") String land, @PathVariable("id") String id);
 
   @RequestMapping(
       method = RequestMethod.GET,
       produces = MediaType.APPLICATION_JSON_UTF8_VALUE
   )
   @ResponseBody
-  Collection<OrtGetResourceModel> getCollection();
+  Collection<OrtGetResourceModel> getCollection(@PathVariable("land") String land);
 
   @RequestMapping(
       method = RequestMethod.GET,
@@ -50,21 +50,21 @@ public interface OrtResource {
       produces = MediaType.APPLICATION_JSON_UTF8_VALUE
   )
   @ResponseBody
-  OrtGetResourceModel getEntity(@PathVariable("id") String id);
+  OrtGetResourceModel getEntity(@PathVariable("land") String land, @PathVariable("id") String id);
 
   @RequestMapping(
       method = RequestMethod.GET,
       path = "/{id}.jpeg",
       produces = "image/jpeg"
   )
-  ResponseEntity getEntityJpeg(@PathVariable("id") String id);
+  ResponseEntity getEntityJpeg(@PathVariable("land") String land, @PathVariable("id") String id);
 
   @RequestMapping(
       method = RequestMethod.POST,
       produces = MediaType.APPLICATION_JSON_UTF8_VALUE
   )
   @ResponseBody
-  IdType createEntity(@Valid OrtPostResourceModel model);
+  IdType createEntity(@Valid OrtPostResourceModel model, @PathVariable("land") String land);
 
   @RequestMapping(
       method = RequestMethod.PUT,
@@ -72,7 +72,8 @@ public interface OrtResource {
       produces = MediaType.APPLICATION_JSON_UTF8_VALUE
   )
   @ResponseBody
-  IdType updateEntity(@Valid OrtPutResourceModel model, @PathVariable("id") String id);
+  IdType updateEntity(@Valid OrtPutResourceModel model, @PathVariable("id") String id,
+      @PathVariable("land") String land);
 
   @RequestMapping(
       method = RequestMethod.DELETE,

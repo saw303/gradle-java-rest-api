@@ -5,8 +5,8 @@ import java.util.Objects;
 import javax.annotation.Generated;
 
 @Generated(
-    value = "ch.silviowangler.restapi",
-    comments = "Specification filename: root.v1.json"
+    comments = "Specification filename: root.v1.json",
+    value = "ch.silviowangler.restapi"
 )
 public class RootGetResourceModel implements Serializable {
   public static final String TYPE = "application/ch.silviowangler.land";
@@ -41,6 +41,6 @@ public class RootGetResourceModel implements Serializable {
 
   @Override
   public int hashCode() {
-    return Objects.hash(getId(), getName());
+    return Objects.hash(id, name);
   }
 }

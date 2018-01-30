@@ -53,11 +53,15 @@ public class SpecGenerator {
         String packageName = String.format("%s.%s", extension.getPackageName(),
                 generatePackageName(resourceContractContainer.getResourceContract()));
 
-        ResourceBuilder resourceBuilder = RootResourceBuilderFactory
+        ResourceBuilder resourceBuilder = ResourceBuilderFactory
                 .getRootResourceBuilder(extension)
                 .withResourceContractContainer(resourceContractContainer)
                 .withCurrentPackageName(packageName)
                 .withTimestampInGeneratedAnnotation(extension.isGenerateDateAttribute());
+
+        if (extension.getResponseEncoding() != null) {
+            resourceBuilder.withResponseEncoding(extension.getResponseEncoding());
+        }
 
         Set<TypeSpec> types = resourceBuilder.buildResourceTypes(resourceTypeCache);
 

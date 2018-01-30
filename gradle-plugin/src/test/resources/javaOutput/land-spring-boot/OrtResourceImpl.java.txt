@@ -9,32 +9,32 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class OrtResourceImpl implements OrtResource {
   @Override
-  public ResponseEntity deleteEntity() {
+  public ResponseEntity deleteEntity(String land, String id) {
     throw new NotYetImplementedException();
   }
 
   @Override
-  public Collection<OrtGetResourceModel> getCollection() {
+  public Collection<OrtGetResourceModel> getCollection(String land) {
     throw new NotYetImplementedException();
   }
 
   @Override
-  public OrtGetResourceModel getEntity(String id) {
+  public OrtGetResourceModel getEntity(String land, String id) {
     throw new NotYetImplementedException();
   }
 
   @Override
-  public ResponseEntity getEntityJpeg(String id) {
+  public ResponseEntity getEntityJpeg(String land, String id) {
     throw new NotYetImplementedException();
   }
 
   @Override
-  public IdType createEntity(OrtPostResourceModel model) {
+  public IdType createEntity(OrtPostResourceModel model, String land) {
     throw new NotYetImplementedException();
   }
 
   @Override
-  public IdType updateEntity(OrtPutResourceModel model, String id) {
+  public IdType updateEntity(OrtPutResourceModel model, String id, String land) {
     throw new NotYetImplementedException();
   }
 }

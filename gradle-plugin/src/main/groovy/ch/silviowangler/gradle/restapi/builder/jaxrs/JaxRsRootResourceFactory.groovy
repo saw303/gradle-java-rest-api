@@ -85,15 +85,16 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder {
         return builder.build()
     }
 
-    private AnnotationSpec createProducesAnnotation() {
-        createProducesAnnotation('application/json')
-    }
+    private AnnotationSpec createProducesAnnotation(Representation representation) {
 
-    private AnnotationSpec createProducesAnnotation(String mimetype) {
+        Charset charset = getResponseEncoding()
+        String mimetype = Objects.requireNonNull(representation.getMimetype(), "mime type must not be null")
 
-        Charset charset = project.restApi.responseEncoding
-
-        if (charset && mimetype == 'application/json') {
+        if (charset && representation.isJson()) {
+            mimetype = "application/json; charset=${charset.name()}"
+        } else if (representation.isJson()) {
+            mimetype = "application/json"
+        } else if (charset) {
             mimetype = "${mimetype}; charset=${charset.name()}"
         }
         AnnotationSpec.builder(JAX_RS_PRODUCES.className).addMember('value', '{ $S }', mimetype).build()
@@ -122,12 +123,10 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder {
             specs << createAnnotation(JAX_RS_DELETE_VERB)
         }
 
-        specs << AnnotationSpec.builder(JAX_RS_PRODUCES.className)
-                .addMember('value', '{ $S }', 'application/json')
-                .build()
+        specs << createProducesAnnotation(representation)
 
         if (applyId) {
-            specs << createAnnotation(JAX_RS_PATH, ['value': '{id}'])
+            specs << createAnnotation(JAX_RS_PATH, ['value': "{id}${representation.isJson() ? '' : ".${representation.name}"}"])
         }
 
         return specs

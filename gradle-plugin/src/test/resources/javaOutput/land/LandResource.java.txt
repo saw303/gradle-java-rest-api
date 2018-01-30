@@ -1,12 +1,8 @@
-package org.acme.rest.v1;
+package org.acme.rest.v1.laender;
 
-import ch.silviowangler.rest.cache.CacheSetting;
-import ch.silviowangler.rest.model.FilterModel;
-import ch.silviowangler.rest.security.SecurityEnabled;
 import ch.silviowangler.rest.types.IdType;
 import java.util.Collection;
 import javax.annotation.Generated;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -16,85 +12,56 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 
 @Generated(
-    value = "ch.silviowangler.restapi",
-    comments = "Specification filename: land.v1.json"
+    comments = "Specification filename: land.v1.json",
+    value = "ch.silviowangler.restapi"
 )
 @Path("/v1/laender")
 public interface LandResource {
   String OPTIONS_CONTENT = "{\"general\":{\"name\":\"land\",\"description\":\"Land\",\"version\":\"1.0.0\",\"lifecycle\":{\"deprecated\":false,\"info\":\"Diese Version ist noch immer gültig\"},\"searchable\":true,\"countable\":false,\"x-route\":\"/:version/laender/:entity\"},\"verbs\":[{\"verb\":\"GET_ENTITY\",\"rel\":\"Land laden\",\"responseStates\":[{\"code\":200,\"message\":\"200 Ok\",\"comment\":\"content in response body\"},{\"code\":503,\"message\":\"503 Service Unavailable\",\"comment\":\"Backend server eventually not reachable or to slow\"}],\"representations\":[{\"name\":\"json\",\"comment\":\"\",\"responseExample\":\"{...}\",\"isDefault\":true,\"mimetype\":\"application/ch.silviowangler.land\"},{\"name\":\"pdf\",\"comment\":\"\",\"responseExample\":\"{...}\",\"isDefault\":false,\"mimetype\":\"application/pdf\"}],\"parameters\":[],\"permissions\":[],\"caching\":{\"no-cache\":true,\"private\":false,\"max-age\":-2,\"Expires\":-1,\"ETag\":true}},{\"verb\":\"GET_COLLECTION\",\"rel\":\"Länder holen\",\"collectionLimit\":19,\"maxCollectionLimit\":101,\"responseStates\":[{\"code\":200,\"message\":\"200 Ok\",\"comment\":\"content in response body\"},{\"code\":503,\"message\":\"503 Service Unavailable\",\"comment\":\"Backend server eventually not reachable or to slow\"}],\"representations\":[{\"name\":\"json\",\"comment\":\"\",\"responseExample\":\"{...}\",\"isDefault\":true,\"mimetype\":\"application/ch.silviowangler.land.collection\"}],\"permissions\":[]},{\"verb\":\"PUT\",\"rel\":\"Land ändern\",\"responseStates\":[{\"code\":200,\"message\":\"200 Ok\",\"comment\":\"content in response body\"},{\"code\":503,\"message\":\"503 Service Unavailable\",\"comment\":\"Backend server eventually not reachable or to slow\"}],\"representations\":[{\"name\":\"json\",\"comment\":\"\",\"responseExample\":\"{...}\",\"isDefault\":true,\"mimetype\":\"application/json\"}],\"parameters\":[],\"permissions\":[{\"name\":\"mitarbeiter\",\"mode\":\"all\",\"comment\":\"Jeder darf ein Land ändern\"}]},{\"verb\":\"POST\",\"rel\":\"Land anlegen\",\"responseStates\":[{\"code\":200,\"message\":\"200 Ok\",\"comment\":\"content in response body\"},{\"code\":503,\"message\":\"503 Service Unavailable\",\"comment\":\"Backend server eventually not reachable or to slow\"}],\"representations\":[{\"name\":\"json\",\"comment\":\"\",\"responseExample\":\"{...}\",\"isDefault\":true,\"mimetype\":\"application/json\"}],\"parameters\":[],\"permissions\":[{\"name\":\"mitarbeiter\",\"mode\":\"all\",\"comment\":\"Jeder darf Länder ändern\"}]}],\"fields\":[{\"name\":\"id\",\"type\":\"uuid\",\"options\":null,\"mandatory\":[\"PUT\"],\"min\":null,\"max\":null,\"multiple\":false,\"defaultValue\":null,\"protected\":[],\"visible\":true,\"sortable\":false,\"readonly\":false,\"filterable\":false,\"alias\":[],\"x-comment\":\"VOKey\"},{\"name\":\"name\",\"type\":\"string\",\"options\":null,\"mandatory\":[\"PUT\",\"POST\"],\"min\":null,\"max\":null,\"multiple\":false,\"defaultValue\":null,\"protected\":[],\"visible\":true,\"sortable\":false,\"readonly\":false,\"filterable\":false,\"alias\":[],\"x-comment\":\"Name des Landes\"},{\"name\":\"gruendungsDatum\",\"type\":\"date\",\"options\":null,\"mandatory\":[\"PUT\",\"POST\"],\"min\":null,\"max\":null,\"multiple\":false,\"defaultValue\":null,\"protected\":[],\"visible\":true,\"sortable\":false,\"readonly\":false,\"filterable\":false,\"alias\":[],\"x-comment\":\"Wann wurde das Land gegründet?\"},{\"name\":\"flaeche\",\"type\":\"int\",\"options\":null,\"mandatory\":[\"PUT\",\"POST\"],\"min\":null,\"max\":null,\"multiple\":false,\"defaultValue\":null,\"protected\":[],\"visible\":true,\"sortable\":false,\"readonly\":false,\"filterable\":false,\"alias\":[],\"x-comment\":\"Fläche in km\"},{\"name\":\"koordinaten\",\"type\":\"coordinates\",\"options\":null,\"mandatory\":[\"PUT\",\"POST\"],\"min\":null,\"max\":null,\"multiple\":false,\"defaultValue\":null,\"protected\":[],\"visible\":true,\"sortable\":false,\"readonly\":false,\"filterable\":false,\"alias\":[],\"x-comment\":\"Koordinaten\"}],\"subresources\":[{\"name\":\"land.ort\",\"type\":\"application/vnd.ch.silviowangler.ort.collection\",\"rel\":\"orte\",\"href\":\"/v1/laender/{land}/orte/\",\"method\":\"GET\",\"expandable\":true}]}";
 
+  @Produces({ "application/json; charset=UTF-8" })
+  @OPTIONS
+  @Path("")
+  default Response getOptions() {
+    return Response.ok(OPTIONS_CONTENT).build();
+  }
+
   @GET
   @Produces({ "application/json; charset=UTF-8" })
-  @Path("")
-  Collection<LandGetResourceModel> getCollection(@QueryParam("filter") FilterModel filter);
+  Collection<LandGetResourceModel> getCollection();
 
   @GET
   @Produces({ "application/json; charset=UTF-8" })
   @Path("{id}")
-  @CacheSetting(
-      noCache = true,
-      isPrivate = false,
-      maxAge = -2,
-      expires = -1,
-      eTag = true
-  )
   LandGetResourceModel getEntity(@PathParam("id") String id);
 
   @GET
-  @Produces({ "application/pdf" })
+  @Produces({ "application/pdf; charset=UTF-8" })
   @Path("{id}.pdf")
-  @CacheSetting(
-      noCache = true,
-      isPrivate = false,
-      maxAge = -2,
-      expires = -1,
-      eTag = true
-  )
   Response getEntityPdf(@PathParam("id") String id);
 
   @POST
   @Produces({ "application/json; charset=UTF-8" })
-  @Path("")
-  @SecurityEnabled
   IdType createEntity(@Valid LandPostResourceModel model);
 
   @PUT
   @Produces({ "application/json; charset=UTF-8" })
   @Path("{id}")
-  @SecurityEnabled
   IdType updateEntity(@Valid LandPutResourceModel model, @PathParam("id") String id);
 
   @DELETE
   @Produces({ "application/json; charset=UTF-8" })
-  @Path("{id}")
-  default Response deleteEntity() {
+  default Response deleteCollectionAutoAnswer() {
     return Response.status(405).build();
   }
 
   @DELETE
   @Produces({ "application/json; charset=UTF-8" })
-  @Path("")
-  default Response deleteCollection() {
+  @Path("{id}")
+  default Response deleteEntityAutoAnswer(@PathParam("id") String id) {
     return Response.status(405).build();
-  }
-
-  @OPTIONS
-  @Produces({ "application/json; charset=UTF-8" })
-  @Path("")
-  @CacheSetting(
-      noCache = false,
-      isPrivate = true,
-      maxAge = 86400,
-      expires = 86400,
-      eTag = false
-  )
-  default Response getOptions(@Context UriInfo uriInfo, @Context HttpServletRequest request) {
-    return Response.ok(OPTIONS_CONTENT).build();
   }
 }

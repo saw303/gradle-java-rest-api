@@ -1,8 +1,10 @@
 package org.acme.rest.v1;
 
+import ch.silviowangler.rest.NotYetImplementedException;
+
 public class RootResourceImpl implements RootResource {
   @Override
-  public RootGetResourceModel getEntity() {
-    throw new RuntimeException("Not yet implemented");
+  public RootGetResourceModel getEntity(String id) {
+    throw new NotYetImplementedException();
   }
 }

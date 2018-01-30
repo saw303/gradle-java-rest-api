@@ -1,4 +1,4 @@
-package org.acme.rest.v1.laender;
+package org.acme.rest.v1.laender.orte;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -6,8 +6,8 @@ import javax.annotation.Generated;
 import javax.validation.constraints.NotNull;
 
 @Generated(
-    value = "ch.silviowangler.restapi",
-    comments = "Specification filename: land.ort.v1.json"
+    comments = "Specification filename: land.ort.v1.json",
+    value = "ch.silviowangler.restapi"
 )
 public class OrtPostResourceModel implements Serializable {
   public static final String TYPE = "application/ch.silviowangler.ort";
@@ -43,6 +43,6 @@ public class OrtPostResourceModel implements Serializable {
 
   @Override
   public int hashCode() {
-    return Objects.hash(getId(), getName());
+    return Objects.hash(id, name);
   }
 }

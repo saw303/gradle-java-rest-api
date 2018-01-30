@@ -31,6 +31,7 @@ import ch.silviowangler.rest.contract.model.v1.Verb;
 import com.google.common.base.CaseFormat;
 import com.squareup.javapoet.*;
 
+import java.nio.charset.Charset;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -51,6 +52,8 @@ public interface ResourceBuilder {
     String getCurrentPackageName();
 
     ResourceBuilder withCurrentPackageName(String packageName);
+
+    ResourceBuilder withResponseEncoding(Charset responseEncoding);
 
     ArtifactType getArtifactType();
 
@@ -133,8 +136,7 @@ public interface ResourceBuilder {
     ClassName getMethodNowAllowedReturnType();
 
     default MethodSpec.Builder createMethodNotAllowedHandler(String methodName) {
-        Representation representation = new Representation();
-        representation.setName("json");
+        Representation representation = Representation.json();
         MethodSpec.Builder builder = createMethod(methodName, getMethodNowAllowedReturnType(), new HashMap<>(), representation);
 
         if (isIdGenerationRequired(methodName)) {
@@ -146,15 +148,13 @@ public interface ResourceBuilder {
     }
 
     default MethodSpec.Builder createMethod(String methodName, TypeName returnType) {
-        Representation representation = new Representation();
-        representation.setName("json");
+        Representation representation = Representation.json();
         return createMethod(methodName, returnType, new HashMap<>(), representation);
     }
 
     default MethodSpec.Builder createMethod(String methodName, TypeName returnType, Map<String, ClassName> params, Representation representation) {
 
-
-        if (!representation.getName().equals("json")) {
+        if (!representation.isJson()) {
             methodName += CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, representation.getName());
         }
 
@@ -206,8 +206,6 @@ public interface ResourceBuilder {
     default boolean isIdGenerationRequired(String methodName) {
         List<String> noId = Arrays.asList("getOptions", "createEntity", "getCollection", "deleteCollection");
 
-        boolean result = true;
-
         for (String s : noId) {
             if (methodName.startsWith(s)) {
                 return false;
@@ -248,4 +246,6 @@ public interface ResourceBuilder {
     Set<TypeSpec> buildResourceTypes(Set<ClassName> types);
 
     Set<TypeSpec> buildResourceModels(Set<ClassName> types);
+
+
 }

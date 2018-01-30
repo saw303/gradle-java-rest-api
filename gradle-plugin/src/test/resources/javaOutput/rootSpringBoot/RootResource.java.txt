@@ -19,7 +19,7 @@ public interface RootResource {
 
   @RequestMapping(
       method = RequestMethod.OPTIONS,
-      produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+      produces = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseBody
   default String getOptions() {
@@ -29,14 +29,14 @@ public interface RootResource {
   @RequestMapping(
       method = RequestMethod.GET,
       path = "/{id}",
-      produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+      produces = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseBody
   RootGetResourceModel getEntity(@PathVariable("id") String id);
 
   @RequestMapping(
       method = RequestMethod.POST,
-      produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+      produces = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseBody
   default ResponseEntity createEntityAutoAnswer() {
@@ -45,7 +45,7 @@ public interface RootResource {
 
   @RequestMapping(
       method = RequestMethod.DELETE,
-      produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+      produces = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseBody
   default ResponseEntity deleteCollectionAutoAnswer() {
@@ -55,7 +55,7 @@ public interface RootResource {
   @RequestMapping(
       method = RequestMethod.DELETE,
       path = "/{id}",
-      produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+      produces = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseBody
   default ResponseEntity deleteEntityAutoAnswer(@PathVariable("id") String id) {
@@ -64,7 +64,7 @@ public interface RootResource {
 
   @RequestMapping(
       method = RequestMethod.GET,
-      produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+      produces = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseBody
   default ResponseEntity getCollectionAutoAnswer() {
@@ -74,7 +74,7 @@ public interface RootResource {
   @RequestMapping(
       method = RequestMethod.PUT,
       path = "/{id}",
-      produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+      produces = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseBody
   default ResponseEntity updateEntityAutoAnswer(@PathVariable("id") String id) {

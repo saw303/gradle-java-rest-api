@@ -35,6 +35,7 @@ import io.github.getify.minify.Minify;
 
 import javax.lang.model.element.Modifier;
 import java.io.Serializable;
+import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -54,6 +55,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
     private String currentPackageName;
     private boolean printTimestamp = true;
     private ArtifactType artifactType;
+    private Charset responseEncoding;
 
 
     public Verb getCurrentVerb() {
@@ -76,6 +78,10 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
         this.artifactType = artifactType;
     }
 
+    protected Charset getResponseEncoding() {
+        return responseEncoding;
+    }
+
     @Override
     public ResourceBuilder withResourceContractContainer(ResourceContractContainer resourceContract) {
         this.resourceContractContainer = resourceContract;
@@ -94,6 +100,11 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
         return this;
     }
 
+    @Override
+    public ResourceBuilder withResponseEncoding(Charset responseEncoding) {
+        this.responseEncoding = responseEncoding;
+        return this;
+    }
 
     @Override
     public ResourceContractContainer getResourceContractContainer() {
@@ -161,6 +172,11 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
         List<Verb> verbs = getResourceContractContainer().getResourceContract().getVerbs();
         Collections.sort(verbs, Comparator.comparing(Verb::getVerb));
 
+
+        LinkParser parser = new LinkParser(getResourceContractContainer().getResourceContract().getGeneral().getxRoute(), getResourceContractContainer().getResourceContract().getGeneral().getVersion().split("\\.")[0]);
+
+
+
         for (Verb verb : verbs) {
 
             MethodSpec.Builder methodBuilder;
@@ -171,6 +187,21 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
             verb.getParameters().forEach(p -> params.put(p.getName(), GeneratorUtil.translateToJava(p.getType())));
 
             for (Representation representation : verb.getRepresentations()) {
+
+                List<ParameterSpec> pathParams = new ArrayList<>(parser.getPathVariables().size());
+                for (String pathVar : parser.getPathVariables()) {
+                    ParameterSpec.Builder paramBuilder = ParameterSpec.builder(String.class, pathVar);
+
+                    if (isResourceInterface()) {
+                        paramBuilder.addAnnotation(
+                                AnnotationSpec.builder(getPathVariableAnnotationType().getClassName())
+                                        .addMember("value", "$S", pathVar)
+                                        .build()
+                        );
+                    }
+                    pathParams.add(paramBuilder.build());
+                }
+
 
                 if (GenerateRestApiTask.GET_COLLECTION.equals(verb.getVerb())) {
 
@@ -190,8 +221,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
                             params,
                             representation
                     );
-
-                    methodBuilder.addParameter(generateIdParam());
+                    pathParams.add(generateIdParam());
 
 
                 } else if (GenerateRestApiTask.POST.equals(verb.getVerb())) {
@@ -260,8 +290,14 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
                             representation
                     );
 
+                    pathParams.add(generateIdParam());
+
                 } else {
                     throw new IllegalArgumentException(String.format("Verb %s is unknown", verb.getVerb()));
+                }
+
+                for (ParameterSpec pathParam : pathParams) {
+                    methodBuilder.addParameter(pathParam);
                 }
                 this.typeBuilder.addMethod(methodBuilder.build());
             }

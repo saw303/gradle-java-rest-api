@@ -84,7 +84,7 @@ class GeneratorUtil {
         createTypeName(fileName, RESOURCE_IMPLEMENTATION)
     }
 
-    private static Map<String, ClassName> supportedDatatypes = [
+    private static Map<String, ClassName> supportedDataTypes = [
             'date'    : SupportedDataTypes.DATE.className,
             'datetime': SupportedDataTypes.DATETIME.className,
             'decimal' : SupportedDataTypes.DECIMAL.className,
@@ -101,13 +101,13 @@ class GeneratorUtil {
     ]
 
     static ClassName translateToJava(final String jsonType) {
-        if (isSupportedDatatype(jsonType)) return supportedDatatypes[jsonType]
+        if (isSupportedDataType(jsonType)) return supportedDataTypes[jsonType]
 
         throw new UnsupportedDataTypeException(jsonType)
     }
 
-    static boolean isSupportedDatatype(final String jsonType) {
-        supportedDatatypes.containsKey(jsonType)
+    static boolean isSupportedDataType(final String jsonType) {
+        supportedDataTypes.containsKey(jsonType)
     }
 
     static String verb(final String verb) {
@@ -154,7 +154,7 @@ class GeneratorUtil {
         }
     }
 
-    static String createClassname(String value) {
+    static String createClassName(String value) {
         return CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, value)
     }
 
