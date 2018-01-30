@@ -575,11 +575,6 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
             Optional<ClassName> any = types.stream().filter(t -> t.simpleName().equalsIgnoreCase(fieldType + "Type")).findAny();
 
             if (!any.isPresent()) {
-                System.out.println(String.format("XXXXXXX   %d types registered", types.size()));
-                for (ClassName className : types) {
-                    System.out.println(String.format("XXXXXXX   %s ", className.simpleName()));
-                }
-
                 throw e;
             }
             type = any.get();
