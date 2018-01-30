@@ -176,7 +176,6 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
         LinkParser parser = new LinkParser(getResourceContractContainer().getResourceContract().getGeneral().getxRoute(), getResourceContractContainer().getResourceContract().getGeneral().getVersion().split("\\.")[0]);
 
 
-
         for (Verb verb : verbs) {
 
             MethodSpec.Builder methodBuilder;
@@ -436,8 +435,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
         List<Verb> declaredVerbs = resourceContract.getVerbs();
         if (declaredVerbs.size() == 1 && declaredVerbs.get(0).getVerb().equals(GET_COLLECTION)) {
             verbs = declaredVerbs;
-        }
-        else {
+        } else {
             List<String> excludeVerbs = Arrays.asList(DELETE_ENTITY, GET_COLLECTION);
             verbs = declaredVerbs.stream().filter(v -> !excludeVerbs.contains(v.getVerb())).collect(Collectors.toList());
         }
@@ -577,6 +575,11 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
             Optional<ClassName> any = types.stream().filter(t -> t.simpleName().equalsIgnoreCase(fieldType + "Type")).findAny();
 
             if (!any.isPresent()) {
+                System.out.println(String.format("XXXXXXX   %d types registered", types.size()));
+                for (ClassName className : types) {
+                    System.out.println(String.format("XXXXXXX   %s ", className.simpleName()));
+                }
+
                 throw e;
             }
             type = any.get();
