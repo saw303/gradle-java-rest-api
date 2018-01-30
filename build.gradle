@@ -14,7 +14,7 @@ buildscript {
 
 subprojects {
 
-    version = '1.0.5'
+    version = '1.0.6'
 
     apply from: "${rootDir}/gradle/java.gradle"
     apply from: "${rootDir}/gradle/bintray.gradle"
