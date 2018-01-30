@@ -1,0 +1,11 @@
+package org.acme.rest.v1.partner;
+
+import ch.silviowangler.rest.NotYetImplementedException;
+import java.util.Collection;
+
+public class PartnersearchResourceImpl implements PartnersearchResource {
+  @Override
+  public Collection<PartnersearchGetResourceModel> getCollection(String q) {
+    throw new NotYetImplementedException();
+  }
+}

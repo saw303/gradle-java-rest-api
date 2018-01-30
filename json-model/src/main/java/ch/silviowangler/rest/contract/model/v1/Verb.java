@@ -37,7 +37,7 @@ public class Verb implements Serializable {
     private String rel;
     private List<ResponseState> responseStates = new ArrayList<>();
     private List<Representation> representations = new ArrayList<>();
-    private List<ResourceField> parameters = new ArrayList<>();
+    private List<VerbParameter> parameters = new ArrayList<>();
 
     public Verb() {
     }
@@ -78,11 +78,11 @@ public class Verb implements Serializable {
         this.representations = representations;
     }
 
-    public List<ResourceField> getParameters() {
+    public List<VerbParameter> getParameters() {
         return parameters;
     }
 
-    public void setParameters(List<ResourceField> parameters) {
+    public void setParameters(List<VerbParameter> parameters) {
         this.parameters = parameters;
     }
 

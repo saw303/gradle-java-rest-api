@@ -30,7 +30,6 @@ import org.gradle.api.Task
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
-import spock.lang.PendingFeature
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -391,7 +390,6 @@ class RestApiPluginSpec extends Specification {
         javaFiles.isEmpty()
     }
 
-    @PendingFeature
     void "Das Plugin generiert auch read only Ressourcen mit nur einem Collection GET"() {
 
         given:
@@ -426,9 +424,9 @@ class RestApiPluginSpec extends Specification {
         }.size() == javaFiles.size()
 
         and: 'Ressourcen validieren'
-        assertJavaFile('org.acme.rest.v1', 'PartnersearchResource', 'collectionGet')
-        assertJavaFile('org.acme.rest.v1', 'PartnersearchResourceImpl', 'collectionGet')
-        assertJavaFile('org.acme.rest.v1', 'PartnersearchGetResourceModel', 'collectionGet')
+        assertJavaFile('org.acme.rest.v1.partner', 'PartnersearchResource', 'collectionOnly')
+        assertJavaFile('org.acme.rest.v1.partner', 'PartnersearchResourceImpl', 'collectionOnly')
+        assertJavaFile('org.acme.rest.v1.partner', 'PartnersearchGetResourceModel', 'collectionOnly')
 
         when:
         CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts

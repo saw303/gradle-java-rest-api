@@ -80,7 +80,7 @@
           "name": "q",
           "type": "string",
           "options": null,
-          "mandatory": [],
+          "mandatory": false,
           "min": null,
           "max": null,
           "multiple": false,

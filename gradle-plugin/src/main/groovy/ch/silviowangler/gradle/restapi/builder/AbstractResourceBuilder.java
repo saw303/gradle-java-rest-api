@@ -432,9 +432,15 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
     public Set<TypeSpec> buildResourceModels(Set<ClassName> types) {
         ResourceContract resourceContract = getResourceContractContainer().getResourceContract();
 
-
-        List<String> excludeVerbs = Arrays.asList(DELETE_ENTITY, GET_COLLECTION);
-        List<Verb> verbs = resourceContract.getVerbs().stream().filter(v -> !excludeVerbs.contains(v.getVerb())).collect(Collectors.toList());
+        List<Verb> verbs;
+        List<Verb> declaredVerbs = resourceContract.getVerbs();
+        if (declaredVerbs.size() == 1 && declaredVerbs.get(0).getVerb().equals(GET_COLLECTION)) {
+            verbs = declaredVerbs;
+        }
+        else {
+            List<String> excludeVerbs = Arrays.asList(DELETE_ENTITY, GET_COLLECTION);
+            verbs = declaredVerbs.stream().filter(v -> !excludeVerbs.contains(v.getVerb())).collect(Collectors.toList());
+        }
         Set<TypeSpec> specTypes = new HashSet<>(verbs.size());
 
 

@@ -83,6 +83,7 @@ class GenerateRestApiTask extends AbstractTask {
 
         for (File specFile in specs) {
 
+            println "XXX ${specFile.name}"
             GeneratedSpecContainer specContainer = SpecGenerator.generateType(specFile, project.restApi as RestApiExtension)
 
             for (TypeSpec model in specContainer.collectGeneratedTypes()) {

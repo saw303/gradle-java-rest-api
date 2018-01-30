@@ -1,12 +1,12 @@
-package org.acme.rest.v1;
+package org.acme.rest.v1.partner;
 
 import java.io.Serializable;
 import java.util.Objects;
 import javax.annotation.Generated;
 
 @Generated(
-    value = "ch.silviowangler.restapi",
-    comments = "Specification filename: partnersearch.v1.json"
+    comments = "Specification filename: partnersearch.v1.json",
+    value = "ch.silviowangler.restapi"
 )
 public class PartnersearchGetResourceModel implements Serializable {
   public static final String TYPE = "application/ch.silviowangler.partner.collection";
@@ -71,6 +71,6 @@ public class PartnersearchGetResourceModel implements Serializable {
 
   @Override
   public int hashCode() {
-    return Objects.hash(getId(), getName(), getVorname(), getPartnerNummer(), getPartnerTyp());
+    return Objects.hash(id, name, vorname, partnerNummer, partnerTyp);
   }
 }
