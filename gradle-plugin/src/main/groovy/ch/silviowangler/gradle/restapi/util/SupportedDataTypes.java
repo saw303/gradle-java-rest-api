@@ -49,7 +49,7 @@ public enum SupportedDataTypes {
   LOCALE(ClassName.get(Locale.class)),
   MONEY(ClassName.get("org.javamoney.moneta","Money"));
 
-  private ClassName className;
+  private final ClassName className;
 
   SupportedDataTypes(ClassName className) {
     this.className = className;

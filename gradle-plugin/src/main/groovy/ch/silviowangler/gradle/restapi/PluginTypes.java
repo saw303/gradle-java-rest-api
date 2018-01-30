@@ -68,7 +68,7 @@ public enum PluginTypes {
     SPRING_RESPONSE_BODY(ClassName.get("org.springframework.web.bind.annotation", "ResponseBody"));
 
 
-    private ClassName className;
+    private final ClassName className;
 
     PluginTypes(ClassName className) {
         this.className = className;

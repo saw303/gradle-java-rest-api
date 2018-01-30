@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
  */
 public class SpecGenerator {
 
-    private static Set<ClassName> resourceTypeCache = new HashSet<>();
+    private static final Set<ClassName> resourceTypeCache = new HashSet<>();
 
     public static GeneratedSpecContainer generateType(File specFile, RestApiExtension extension) {
 

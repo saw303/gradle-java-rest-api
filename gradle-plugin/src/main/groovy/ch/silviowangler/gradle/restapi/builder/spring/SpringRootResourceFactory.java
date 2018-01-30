@@ -43,13 +43,11 @@ public class SpringRootResourceFactory extends AbstractResourceBuilder {
 
     private static final ClassName STRING_CLASS = ClassName.get(String.class);
 
-    private TypeSpec.Builder resourceBuilder;
-
     @Override
     public TypeSpec buildRootResource() {
         reset();
         setArtifactType(ArtifactType.RESOURCE);
-        resourceBuilder = interfaceBaseInstance();
+        TypeSpec.Builder resourceBuilder = interfaceBaseInstance();
 
         Map<String, Object> args = new HashMap<>();
         args.put("value", getPath());

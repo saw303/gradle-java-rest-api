@@ -41,7 +41,7 @@ import java.util.List;
  * @author Silvio Wangler
  */
 @ControllerAdvice
-public class JsonModelAdvice implements ResponseBodyAdvice {
+class JsonModelAdvice implements ResponseBodyAdvice {
 
 
     @Override

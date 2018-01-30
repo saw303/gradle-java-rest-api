@@ -29,7 +29,7 @@ import ch.silviowangler.gradle.restapi.builder.spring.SpringRootResourceFactory;
 
 import java.util.Objects;
 
-public class ResourceBuilderFactory {
+class ResourceBuilderFactory {
 
     public static ResourceBuilder getRootResourceBuilder(RestApiExtension restApiExtension) {
 

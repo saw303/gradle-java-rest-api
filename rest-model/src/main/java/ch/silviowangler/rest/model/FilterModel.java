@@ -88,8 +88,8 @@ public class FilterModel {
   }
 
   public static class FilterCondition {
-    private FilterOperation op;
-    private String value;
+    private final FilterOperation op;
+    private final String value;
 
     public FilterCondition(FilterOperation op, String value) {
       this.op = op;

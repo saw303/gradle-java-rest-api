@@ -49,7 +49,7 @@ import static javax.lang.model.element.Modifier.*;
  */
 public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
-    protected TypeSpec.Builder typeBuilder;
+    private TypeSpec.Builder typeBuilder;
     private ResourceContractContainer resourceContractContainer;
     private Verb currentVerb;
     private String currentPackageName;
@@ -58,7 +58,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
     private Charset responseEncoding;
 
 
-    public Verb getCurrentVerb() {
+    private Verb getCurrentVerb() {
         return currentVerb;
     }
 
@@ -121,7 +121,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
         return this.typeBuilder;
     }
 
-    protected TypeSpec.Builder resourceTypeBaseInstance(String name) {
+    private TypeSpec.Builder resourceTypeBaseInstance(String name) {
         TypeSpec.Builder builder = TypeSpec
                 .classBuilder(CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, name) + "Type")
                 .addModifiers(PUBLIC)
@@ -129,7 +129,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
         return this.typeBuilder = builder;
     }
 
-    protected TypeSpec.Builder resourceModelBaseInstance(Verb verb) {
+    private TypeSpec.Builder resourceModelBaseInstance(Verb verb) {
         TypeSpec.Builder builder = TypeSpec.classBuilder(resourceModelName(verb))
                 .addModifiers(PUBLIC)
                 .addAnnotation(createGeneratedAnnotation(printTimestamp))
@@ -170,7 +170,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
         }
 
         List<Verb> verbs = getResourceContractContainer().getResourceContract().getVerbs();
-        Collections.sort(verbs, Comparator.comparing(Verb::getVerb));
+        verbs.sort(Comparator.comparing(Verb::getVerb));
 
 
         LinkParser parser = new LinkParser(getResourceContractContainer().getResourceContract().getGeneral().getxRoute(), getResourceContractContainer().getResourceContract().getGeneral().getVersion().split("\\.")[0]);
@@ -262,11 +262,11 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
                     if (getArtifactType().equals(ArtifactType.RESOURCE)) {
 
-                        Map<String, Object> attrs = new HashMap<>();
-                        attrs.put("value", "id");
+                        Map<String, Object> attributes = new HashMap<>();
+                        attributes.put("value", "id");
 
                         param.addAnnotation(
-                                createAnnotation(getPathVariableAnnotationType(), attrs)
+                                createAnnotation(getPathVariableAnnotationType(), attributes)
                         ).build();
                     }
                     methodBuilder.addParameter(param.build());
@@ -312,7 +312,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
     }
 
 
-    protected boolean isResourceInterface() {
+    private boolean isResourceInterface() {
         return ArtifactType.RESOURCE.equals(getArtifactType());
     }
 
@@ -419,7 +419,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
                 builder.addField(FieldSpec.builder(fieldType, field.getName(), PRIVATE).build());
 
-                // Getter/Setters schreiben
+                // write Getter/Setters
                 writeGetterSetter(builder, fieldType, field.getName());
             }
             specTypes.add(builder.build());
@@ -448,7 +448,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
         List<ResourceField> fields = resourceContract.getFields();
 
-        List<String> fieldNames = fields.stream().filter(f -> f.isVisible()).map(ResourceField::getName).collect(Collectors.toList());
+        List<String> fieldNames = fields.stream().filter(ResourceField::isVisible).map(ResourceField::getName).collect(Collectors.toList());
 
         List<String> getters = fieldNames.stream().map(name -> "get" + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, name))
                 .collect(Collectors.toList());
@@ -528,11 +528,11 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
                 }
                 builder.addField(fieldBuilder.build());
 
-                // Getter/Setters schreiben
+                // write Getter/Setters
                 writeGetterSetter(builder, fieldType, field.getName());
             }
 
-            // --> equals Methode überschreiben
+            // --> overwrite equals Methode
             String equalsParamName = "other";
             String equalsCastVarName = "that";
 

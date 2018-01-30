@@ -95,7 +95,7 @@ class RestApiPluginSpec extends Specification {
         project.restApi.springBoot = true
 
         and:
-        GenerateRestApiTask task = project.tasks.generateRestArtifacts
+        GenerateRestApiTask task = project.tasks.generateRestArtifacts as GenerateRestApiTask
 
         and:
         String path = project.restApi.packageName.replaceAll('\\.', '/')
@@ -126,7 +126,7 @@ class RestApiPluginSpec extends Specification {
         assertJavaFile("${project.restApi.packageName}/api/v1", 'RootGetResourceModel', 'rootSpringBoot')
 
         when:
-        CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts
+        CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask
 
         and:
         cleanTask.cleanUp()
@@ -155,7 +155,7 @@ class RestApiPluginSpec extends Specification {
         project.restApi.responseEncoding = Charset.forName('UTF-8')
 
         and:
-        GenerateRestApiTask task = project.tasks.generateRestArtifacts
+        GenerateRestApiTask task = project.tasks.generateRestArtifacts as GenerateRestApiTask
 
         when:
         task.exec()
@@ -194,7 +194,7 @@ class RestApiPluginSpec extends Specification {
         assertJavaFile('org.acme.rest.v1', 'RootResourceImpl', 'land-spring-boot')
 
         when:
-        CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts
+        CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask
 
         and:
         cleanTask.cleanUp()
@@ -220,7 +220,7 @@ class RestApiPluginSpec extends Specification {
         project.restApi.objectResourceModelMapping = customFieldModelMapping
 
         and:
-        GenerateRestApiTask task = project.tasks.generateRestArtifacts
+        GenerateRestApiTask task = project.tasks.generateRestArtifacts as GenerateRestApiTask
 
         when:
         task.exec()
@@ -250,7 +250,7 @@ class RestApiPluginSpec extends Specification {
         assertJavaFile('org.acme.rest.v1.partner', 'PartnerPostResourceModel')
 
         when:
-        CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts
+        CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask
 
         and:
         cleanTask.cleanUp()
@@ -279,7 +279,7 @@ class RestApiPluginSpec extends Specification {
         project.restApi.responseEncoding = Charset.forName('UTF-8')
 
         and:
-        GenerateRestApiTask task = project.tasks.generateRestArtifacts
+        GenerateRestApiTask task = project.tasks.generateRestArtifacts as GenerateRestApiTask
 
         when:
         task.exec()
@@ -320,7 +320,7 @@ class RestApiPluginSpec extends Specification {
         assertJavaFile('org.acme.rest.v1', 'RootGetResourceModel', 'land')
 
         when:
-        CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts
+        CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask
 
         and:
         cleanTask.cleanUp()
@@ -347,7 +347,7 @@ class RestApiPluginSpec extends Specification {
         project.restApi.responseEncoding = Charset.forName('UTF-8')
 
         and:
-        GenerateRestApiTask task = project.tasks.generateRestArtifacts
+        GenerateRestApiTask task = project.tasks.generateRestArtifacts as GenerateRestApiTask
 
         when:
         task.exec()
@@ -375,7 +375,7 @@ class RestApiPluginSpec extends Specification {
         assertJavaFile('org.acme.rest.v1', 'RootResourceImpl', 'root')
 
         when:
-        CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts
+        CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask
 
         and:
         cleanTask.cleanUp()
@@ -401,7 +401,7 @@ class RestApiPluginSpec extends Specification {
         project.restApi.objectResourceModelMapping = customFieldModelMapping
 
         and:
-        GenerateRestApiTask task = project.tasks.generateRestArtifacts
+        GenerateRestApiTask task = project.tasks.generateRestArtifacts as GenerateRestApiTask
 
         when:
         task.exec()
@@ -429,7 +429,7 @@ class RestApiPluginSpec extends Specification {
         assertJavaFile('org.acme.rest.v1.partner', 'PartnersearchGetResourceModel', 'collectionOnly')
 
         when:
-        CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts
+        CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask
 
         and:
         cleanTask.cleanUp()
