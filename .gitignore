@@ -1,9 +1,11 @@
 .idea
 *.iml
 out
-
+*/build
 .gradle
 
+.DS_Store
+**/.DS_Store
 
 demo-app-springboot/src/generated
 demo-app-springboot/src/main/java/**/*ResourceImpl.java
