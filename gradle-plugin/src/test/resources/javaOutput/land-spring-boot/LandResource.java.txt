@@ -28,7 +28,7 @@ public abstract class LandResource {
     return OPTIONS_CONTENT;
   }
 
-  public abstract LandGetResourceModel handleGetCollection();
+  public abstract Collection<LandGetResourceModel> handleGetCollection();
 
   @RequestMapping(
       method = RequestMethod.GET,

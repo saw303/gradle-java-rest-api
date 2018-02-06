@@ -161,7 +161,7 @@ public interface ResourceBuilder {
 
         MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(methodName).addModifiers(PUBLIC);
 
-        if ("getCollection".equals(methodName)) {
+        if ("getCollection".equals(methodName) || "handleGetCollection".equals(methodName)) {
             methodBuilder.returns(ParameterizedTypeName.get(ClassName.get(Collection.class), returnType));
         } else {
             methodBuilder.returns(returnType);

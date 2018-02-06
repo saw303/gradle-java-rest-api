@@ -2,13 +2,14 @@ package org.acme.rest.v1.laender;
 
 import ch.silviowangler.rest.NotYetImplementedException;
 import ch.silviowangler.rest.types.IdType;
+import java.util.Collection;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class LandResourceImpl implements LandResource {
+public class LandResourceImpl extends LandResource {
   @Override
-  public LandGetResourceModel handleGetCollection() {
+  public Collection<LandGetResourceModel> handleGetCollection() {
     throw new NotYetImplementedException();
   }
 

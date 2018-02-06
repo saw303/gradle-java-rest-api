@@ -70,7 +70,7 @@ public class SpringRootResourceFactory extends AbstractResourceBuilder {
         TypeSpec.Builder builder = classBaseInstance();
 
         builder.addAnnotation(createAnnotation(SPRING_REST_CONTROLLER));
-        builder.addSuperinterface(ClassName.get(getCurrentPackageName(), resourceName()));
+        builder.superclass(ClassName.get(getCurrentPackageName(), resourceName()));
 
         generateResourceMethods();
         return builder.build();

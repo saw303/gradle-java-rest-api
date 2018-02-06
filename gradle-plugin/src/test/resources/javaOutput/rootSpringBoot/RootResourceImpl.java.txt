@@ -4,7 +4,7 @@ import ch.silviowangler.rest.NotYetImplementedException;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class RootResourceImpl implements RootResource {
+public class RootResourceImpl extends RootResource {
   @Override
   public RootGetResourceModel handleGetEntity(String id) {
     throw new NotYetImplementedException();
