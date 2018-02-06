@@ -2,39 +2,38 @@ package org.acme.rest.v1.laender.orte;
 
 import ch.silviowangler.rest.NotYetImplementedException;
 import ch.silviowangler.rest.types.IdType;
-import java.util.Collection;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class OrtResourceImpl implements OrtResource {
   @Override
-  public ResponseEntity deleteEntity(String land, String id) {
+  public ResponseEntity handleDeleteEntity(String id, String land) {
     throw new NotYetImplementedException();
   }
 
   @Override
-  public Collection<OrtGetResourceModel> getCollection(String land) {
+  public OrtGetResourceModel handleGetCollection(String land) {
     throw new NotYetImplementedException();
   }
 
   @Override
-  public OrtGetResourceModel getEntity(String land, String id) {
+  public OrtGetResourceModel handleGetEntity(String id, String land) {
     throw new NotYetImplementedException();
   }
 
   @Override
-  public ResponseEntity getEntityJpeg(String land, String id) {
+  public ResponseEntity handleGetEntityJpeg(String id, String land) {
     throw new NotYetImplementedException();
   }
 
   @Override
-  public IdType createEntity(OrtPostResourceModel model, String land) {
+  public IdType handleCreateEntity(String land) {
     throw new NotYetImplementedException();
   }
 
   @Override
-  public IdType updateEntity(OrtPutResourceModel model, String id, String land) {
+  public IdType handleUpdateEntity(String id, String land) {
     throw new NotYetImplementedException();
   }
 }

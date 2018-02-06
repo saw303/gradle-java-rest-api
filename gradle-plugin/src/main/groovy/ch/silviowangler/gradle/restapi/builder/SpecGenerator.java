@@ -71,7 +71,7 @@ public class SpecGenerator {
 
         Set<TypeSpec> models = resourceBuilder.buildResourceModels(resourceTypeCache);
 
-        TypeSpec restInterface = resourceBuilder.buildRootResource();
+        TypeSpec restInterface = resourceBuilder.buildResource();
         TypeSpec restImplementation = resourceBuilder.buildResourceImpl();
 
         GeneratedSpecContainer result = new GeneratedSpecContainer();

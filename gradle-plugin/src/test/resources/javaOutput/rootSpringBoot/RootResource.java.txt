@@ -14,17 +14,19 @@ import org.springframework.web.bind.annotation.ResponseBody;
     value = "ch.silviowangler.restapi"
 )
 @RequestMapping("/api/v1")
-public interface RootResource {
-  String OPTIONS_CONTENT = "{\"general\":{\"description\":\"This is the root resource of API version 1.0.0\",\"version\":\"1.0.0\",\"x-route\":\"/api/:version\"},\"verbs\":[{\"verb\":\"GET_ENTITY\",\"rel\":\"entity\",\"responseStates\":[{\"code\":200,\"message\":\"200 Ok\",\"comment\":\"content in response body\"},{\"code\":503,\"message\":\"503 Service Unavailable\",\"comment\":\"Backend server eventually not reachable or to slow\"}],\"representations\":[{\"name\":\"json\",\"comment\":\"\",\"responseExample\":\"{...}\",\"isDefault\":true,\"mimetype\":\"application/ch.silviowangler.root\"}],\"parameters\":[],\"permissions\":[{\"name\":\"user\",\"mode\":\"all\",\"comment\":\"Root Ressource of API Version 1\"}]}],\"fields\":[{\"name\":\"id\",\"type\":\"uuid\",\"options\":null,\"mandatory\":[],\"min\":null,\"max\":null,\"multiple\":false,\"defaultValue\":null,\"protected\":[],\"visible\":true,\"sortable\":false,\"readonly\":false,\"filterable\":false,\"alias\":[],\"x-comment\":\"id\"},{\"name\":\"name\",\"type\":\"string\",\"options\":null,\"mandatory\":[],\"min\":null,\"max\":null,\"multiple\":false,\"defaultValue\":null,\"protected\":[],\"visible\":true,\"sortable\":false,\"readonly\":false,\"filterable\":false,\"alias\":[],\"x-comment\":\"Name\"}],\"subresources\":[],\"types\":[]}";
+public abstract class RootResource {
+  public static final String OPTIONS_CONTENT = "{\"general\":{\"description\":\"This is the root resource of API version 1.0.0\",\"version\":\"1.0.0\",\"x-route\":\"/api/:version\"},\"verbs\":[{\"verb\":\"GET_ENTITY\",\"rel\":\"entity\",\"responseStates\":[{\"code\":200,\"message\":\"200 Ok\",\"comment\":\"content in response body\"},{\"code\":503,\"message\":\"503 Service Unavailable\",\"comment\":\"Backend server eventually not reachable or to slow\"}],\"representations\":[{\"name\":\"json\",\"comment\":\"\",\"responseExample\":\"{...}\",\"isDefault\":true,\"mimetype\":\"application/ch.silviowangler.root\"}],\"parameters\":[],\"permissions\":[{\"name\":\"user\",\"mode\":\"all\",\"comment\":\"Root Ressource of API Version 1\"}]}],\"fields\":[{\"name\":\"id\",\"type\":\"uuid\",\"options\":null,\"mandatory\":[],\"min\":null,\"max\":null,\"multiple\":false,\"defaultValue\":null,\"protected\":[],\"visible\":true,\"sortable\":false,\"readonly\":false,\"filterable\":false,\"alias\":[],\"x-comment\":\"id\"},{\"name\":\"name\",\"type\":\"string\",\"options\":null,\"mandatory\":[],\"min\":null,\"max\":null,\"multiple\":false,\"defaultValue\":null,\"protected\":[],\"visible\":true,\"sortable\":false,\"readonly\":false,\"filterable\":false,\"alias\":[],\"x-comment\":\"Name\"}],\"subresources\":[],\"types\":[]}";
 
   @RequestMapping(
       method = RequestMethod.OPTIONS,
       produces = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseBody
-  default String getOptions() {
+  public String getOptions() {
     return OPTIONS_CONTENT;
   }
+
+  public abstract RootGetResourceModel handleGetEntity(String id);
 
   @RequestMapping(
       method = RequestMethod.GET,
@@ -32,14 +34,16 @@ public interface RootResource {
       produces = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseBody
-  RootGetResourceModel getEntity(@PathVariable("id") String id);
+  public RootGetResourceModel getEntity(@PathVariable("id") String id) {
+    return handleGetEntity(id);
+  }
 
   @RequestMapping(
       method = RequestMethod.POST,
       produces = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseBody
-  default ResponseEntity createEntityAutoAnswer() {
+  public ResponseEntity createEntityAutoAnswer() {
     return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
   }
 
@@ -48,7 +52,7 @@ public interface RootResource {
       produces = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseBody
-  default ResponseEntity deleteCollectionAutoAnswer() {
+  public ResponseEntity deleteCollectionAutoAnswer() {
     return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
   }
 
@@ -58,7 +62,7 @@ public interface RootResource {
       produces = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseBody
-  default ResponseEntity deleteEntityAutoAnswer(@PathVariable("id") String id) {
+  public ResponseEntity deleteEntityAutoAnswer(@PathVariable("id") String id) {
     return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
   }
 
@@ -67,7 +71,7 @@ public interface RootResource {
       produces = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseBody
-  default ResponseEntity getCollectionAutoAnswer() {
+  public ResponseEntity getCollectionAutoAnswer() {
     return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
   }
 
@@ -77,7 +81,7 @@ public interface RootResource {
       produces = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseBody
-  default ResponseEntity updateEntityAutoAnswer(@PathVariable("id") String id) {
+  public ResponseEntity updateEntityAutoAnswer(@PathVariable("id") String id) {
     return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
   }
 }

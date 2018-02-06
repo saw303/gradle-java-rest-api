@@ -3,7 +3,6 @@ package org.acme.rest.v1.laender.orte;
 import ch.silviowangler.rest.types.IdType;
 import java.util.Collection;
 import javax.annotation.Generated;
-import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,17 +16,19 @@ import org.springframework.web.bind.annotation.ResponseBody;
     value = "ch.silviowangler.restapi"
 )
 @RequestMapping("/v1/laender/{land}/orte")
-public interface OrtResource {
-  String OPTIONS_CONTENT = "{\"general\":{\"name\":\"land.ort\",\"description\":\"Ort\",\"version\":\"1.0.0\",\"lifecycle\":{\"deprecated\":false,\"info\":\"Diese Version ist noch immer gültig\"},\"searchable\":true,\"countable\":false,\"x-route\":\"/:version/laender/:land/orte/:entity\"},\"verbs\":[{\"verb\":\"GET_ENTITY\",\"rel\":\"Ort laden\",\"responseStates\":[{\"code\":200,\"message\":\"200 Ok\",\"comment\":\"content in response body\"},{\"code\":503,\"message\":\"503 Service Unavailable\",\"comment\":\"Backend server eventually not reachable or to slow\"}],\"representations\":[{\"name\":\"json\",\"comment\":\"\",\"responseExample\":\"{...}\",\"isDefault\":true,\"mimetype\":\"application/ch.silviowangler.ort\"},{\"name\":\"jpeg\",\"comment\":\"\",\"responseExample\":\"{...}\",\"isDefault\":true,\"mimetype\":\"image/jpeg\"}],\"options\":[],\"permissions\":[]},{\"verb\":\"GET_COLLECTION\",\"rel\":\"Orte holen\",\"collectionLimit\":19,\"maxCollectionLimit\":101,\"responseStates\":[{\"code\":200,\"message\":\"200 Ok\",\"comment\":\"content in response body\"},{\"code\":503,\"message\":\"503 Service Unavailable\",\"comment\":\"Backend server eventually not reachable or to slow\"}],\"representations\":[{\"name\":\"json\",\"comment\":\"\",\"responseExample\":\"{...}\",\"isDefault\":true,\"mimetype\":\"application/ch.silviowangler.ort.collection\"}],\"options\":[],\"permissions\":[]},{\"verb\":\"PUT\",\"rel\":\"Ort ändern\",\"responseStates\":[{\"code\":200,\"message\":\"200 Ok\",\"comment\":\"content in response body\"},{\"code\":503,\"message\":\"503 Service Unavailable\",\"comment\":\"Backend server eventually not reachable or to slow\"}],\"representations\":[{\"name\":\"json\",\"comment\":\"\",\"responseExample\":\"{...}\",\"isDefault\":true,\"mimetype\":\"application/json\"}],\"options\":[],\"permissions\":[]},{\"verb\":\"POST\",\"rel\":\"Ort ändern\",\"responseStates\":[{\"code\":200,\"message\":\"200 Ok\",\"comment\":\"content in response body\"},{\"code\":503,\"message\":\"503 Service Unavailable\",\"comment\":\"Backend server eventually not reachable or to slow\"}],\"representations\":[{\"name\":\"json\",\"comment\":\"\",\"responseExample\":\"{...}\",\"isDefault\":true,\"mimetype\":\"application/json\"}],\"options\":[],\"permissions\":[]},{\"verb\":\"DELETE_ENTITY\",\"rel\":\"Ort löschen\",\"responseStates\":[{\"code\":200,\"message\":\"200 Ok\",\"comment\":\"content in response body\"},{\"code\":503,\"message\":\"503 Service Unavailable\",\"comment\":\"Backend server eventually not reachable or to slow\"}],\"representations\":[{\"name\":\"json\",\"comment\":\"\",\"responseExample\":\"{...}\",\"isDefault\":true,\"mimetype\":\"application/json\"}],\"options\":[],\"permissions\":[]}],\"fields\":[{\"name\":\"id\",\"type\":\"uuid\",\"options\":null,\"mandatory\":[\"PUT\"],\"min\":null,\"max\":null,\"multiple\":false,\"defaultValue\":null,\"protected\":[],\"visible\":true,\"sortable\":false,\"readonly\":false,\"filterable\":false,\"alias\":[],\"x-comment\":\"VOKey\"},{\"name\":\"name\",\"type\":\"string\",\"options\":null,\"mandatory\":[\"PUT\",\"POST\"],\"min\":null,\"max\":null,\"multiple\":false,\"defaultValue\":null,\"protected\":[],\"visible\":true,\"sortable\":false,\"readonly\":false,\"filterable\":false,\"alias\":[],\"x-comment\":\"Ort\"}],\"parameters\":[],\"subresources\":[]}";
+public abstract class OrtResource {
+  public static final String OPTIONS_CONTENT = "{\"general\":{\"name\":\"land.ort\",\"description\":\"Ort\",\"version\":\"1.0.0\",\"lifecycle\":{\"deprecated\":false,\"info\":\"Diese Version ist noch immer gültig\"},\"searchable\":true,\"countable\":false,\"x-route\":\"/:version/laender/:land/orte/:entity\"},\"verbs\":[{\"verb\":\"GET_ENTITY\",\"rel\":\"Ort laden\",\"responseStates\":[{\"code\":200,\"message\":\"200 Ok\",\"comment\":\"content in response body\"},{\"code\":503,\"message\":\"503 Service Unavailable\",\"comment\":\"Backend server eventually not reachable or to slow\"}],\"representations\":[{\"name\":\"json\",\"comment\":\"\",\"responseExample\":\"{...}\",\"isDefault\":true,\"mimetype\":\"application/ch.silviowangler.ort\"},{\"name\":\"jpeg\",\"comment\":\"\",\"responseExample\":\"{...}\",\"isDefault\":true,\"mimetype\":\"image/jpeg\"}],\"options\":[],\"permissions\":[]},{\"verb\":\"GET_COLLECTION\",\"rel\":\"Orte holen\",\"collectionLimit\":19,\"maxCollectionLimit\":101,\"responseStates\":[{\"code\":200,\"message\":\"200 Ok\",\"comment\":\"content in response body\"},{\"code\":503,\"message\":\"503 Service Unavailable\",\"comment\":\"Backend server eventually not reachable or to slow\"}],\"representations\":[{\"name\":\"json\",\"comment\":\"\",\"responseExample\":\"{...}\",\"isDefault\":true,\"mimetype\":\"application/ch.silviowangler.ort.collection\"}],\"options\":[],\"permissions\":[]},{\"verb\":\"PUT\",\"rel\":\"Ort ändern\",\"responseStates\":[{\"code\":200,\"message\":\"200 Ok\",\"comment\":\"content in response body\"},{\"code\":503,\"message\":\"503 Service Unavailable\",\"comment\":\"Backend server eventually not reachable or to slow\"}],\"representations\":[{\"name\":\"json\",\"comment\":\"\",\"responseExample\":\"{...}\",\"isDefault\":true,\"mimetype\":\"application/json\"}],\"options\":[],\"permissions\":[]},{\"verb\":\"POST\",\"rel\":\"Ort ändern\",\"responseStates\":[{\"code\":200,\"message\":\"200 Ok\",\"comment\":\"content in response body\"},{\"code\":503,\"message\":\"503 Service Unavailable\",\"comment\":\"Backend server eventually not reachable or to slow\"}],\"representations\":[{\"name\":\"json\",\"comment\":\"\",\"responseExample\":\"{...}\",\"isDefault\":true,\"mimetype\":\"application/json\"}],\"options\":[],\"permissions\":[]},{\"verb\":\"DELETE_ENTITY\",\"rel\":\"Ort löschen\",\"responseStates\":[{\"code\":200,\"message\":\"200 Ok\",\"comment\":\"content in response body\"},{\"code\":503,\"message\":\"503 Service Unavailable\",\"comment\":\"Backend server eventually not reachable or to slow\"}],\"representations\":[{\"name\":\"json\",\"comment\":\"\",\"responseExample\":\"{...}\",\"isDefault\":true,\"mimetype\":\"application/json\"}],\"options\":[],\"permissions\":[]}],\"fields\":[{\"name\":\"id\",\"type\":\"uuid\",\"options\":null,\"mandatory\":[\"PUT\"],\"min\":null,\"max\":null,\"multiple\":false,\"defaultValue\":null,\"protected\":[],\"visible\":true,\"sortable\":false,\"readonly\":false,\"filterable\":false,\"alias\":[],\"x-comment\":\"VOKey\"},{\"name\":\"name\",\"type\":\"string\",\"options\":null,\"mandatory\":[\"PUT\",\"POST\"],\"min\":null,\"max\":null,\"multiple\":false,\"defaultValue\":null,\"protected\":[],\"visible\":true,\"sortable\":false,\"readonly\":false,\"filterable\":false,\"alias\":[],\"x-comment\":\"Ort\"}],\"parameters\":[],\"subresources\":[]}";
 
   @RequestMapping(
       method = RequestMethod.OPTIONS,
       produces = MediaType.APPLICATION_JSON_UTF8_VALUE
   )
   @ResponseBody
-  default String getOptions() {
+  public String getOptions() {
     return OPTIONS_CONTENT;
   }
+
+  public abstract ResponseEntity handleDeleteEntity(String id, @PathVariable("land") String land);
 
   @RequestMapping(
       method = RequestMethod.DELETE,
@@ -35,14 +36,23 @@ public interface OrtResource {
       produces = MediaType.APPLICATION_JSON_UTF8_VALUE
   )
   @ResponseBody
-  ResponseEntity deleteEntity(@PathVariable("land") String land, @PathVariable("id") String id);
+  public ResponseEntity deleteEntity(@PathVariable("id") String id,
+      @PathVariable("land") String land) {
+    return handleDeleteEntity(id, land);
+  }
+
+  public abstract OrtGetResourceModel handleGetCollection(@PathVariable("land") String land);
 
   @RequestMapping(
       method = RequestMethod.GET,
       produces = MediaType.APPLICATION_JSON_UTF8_VALUE
   )
   @ResponseBody
-  Collection<OrtGetResourceModel> getCollection(@PathVariable("land") String land);
+  public Collection<OrtGetResourceModel> getCollection(@PathVariable("land") String land) {
+    return handleGetCollection(land);
+  }
+
+  public abstract OrtGetResourceModel handleGetEntity(String id, @PathVariable("land") String land);
 
   @RequestMapping(
       method = RequestMethod.GET,
@@ -50,21 +60,35 @@ public interface OrtResource {
       produces = MediaType.APPLICATION_JSON_UTF8_VALUE
   )
   @ResponseBody
-  OrtGetResourceModel getEntity(@PathVariable("land") String land, @PathVariable("id") String id);
+  public OrtGetResourceModel getEntity(@PathVariable("id") String id,
+      @PathVariable("land") String land) {
+    return handleGetEntity(id, land);
+  }
+
+  public abstract ResponseEntity handleGetEntityJpeg(String id, @PathVariable("land") String land);
 
   @RequestMapping(
       method = RequestMethod.GET,
       path = "/{id}.jpeg",
       produces = "image/jpeg"
   )
-  ResponseEntity getEntityJpeg(@PathVariable("land") String land, @PathVariable("id") String id);
+  public ResponseEntity getEntityJpeg(@PathVariable("id") String id,
+      @PathVariable("land") String land) {
+    return handleGetEntityJpeg(id, land);
+  }
+
+  public abstract IdType handleCreateEntity(@PathVariable("land") String land);
 
   @RequestMapping(
       method = RequestMethod.POST,
       produces = MediaType.APPLICATION_JSON_UTF8_VALUE
   )
   @ResponseBody
-  IdType createEntity(@Valid OrtPostResourceModel model, @PathVariable("land") String land);
+  public IdType createEntity(@PathVariable("land") String land, OrtPostResourceModel model) {
+    return handleCreateEntity(land);
+  }
+
+  public abstract IdType handleUpdateEntity(String id, @PathVariable("land") String land);
 
   @RequestMapping(
       method = RequestMethod.PUT,
@@ -72,15 +96,17 @@ public interface OrtResource {
       produces = MediaType.APPLICATION_JSON_UTF8_VALUE
   )
   @ResponseBody
-  IdType updateEntity(@Valid OrtPutResourceModel model, @PathVariable("id") String id,
-      @PathVariable("land") String land);
+  public IdType updateEntity(OrtPutResourceModel model, @PathVariable("id") String id,
+      @PathVariable("land") String land) {
+    return handleUpdateEntity(id, land);
+  }
 
   @RequestMapping(
       method = RequestMethod.DELETE,
       produces = MediaType.APPLICATION_JSON_UTF8_VALUE
   )
   @ResponseBody
-  default ResponseEntity deleteCollectionAutoAnswer() {
+  public ResponseEntity deleteCollectionAutoAnswer() {
     return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
   }
 }

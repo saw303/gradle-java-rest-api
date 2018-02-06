@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class RootResourceImpl implements RootResource {
   @Override
-  public RootGetResourceModel getEntity(String id) {
+  public RootGetResourceModel handleGetEntity(String id) {
     throw new NotYetImplementedException();
   }
 }

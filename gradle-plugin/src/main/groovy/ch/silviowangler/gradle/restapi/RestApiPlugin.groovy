@@ -63,11 +63,11 @@ class RestApiPlugin implements Plugin<Project> {
         Configuration restApiSpecification = project.configurations.findByName(CONFIGUATION_REST_API)
 
         if (!restApiSpecification) {
-            restApiSpecification = project.configurations.create(CONFIGUATION_REST_API)
+            project.configurations.create(CONFIGUATION_REST_API)
         }
 
         project.dependencies {
-            compile("ch.silviowangler.rest:rest-api-spring:1.0.8")
+            compile("ch.silviowangler.rest:rest-api-spring:1.0.9")
             compile ("org.javamoney:moneta:1.1")
         }
     }

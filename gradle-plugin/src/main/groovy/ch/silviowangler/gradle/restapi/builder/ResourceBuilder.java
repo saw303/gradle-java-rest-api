@@ -23,6 +23,7 @@
  */
 package ch.silviowangler.gradle.restapi.builder;
 
+import ch.silviowangler.gradle.restapi.GenerateRestApiTask;
 import ch.silviowangler.gradle.restapi.GeneratorUtil;
 import ch.silviowangler.gradle.restapi.PluginTypes;
 import ch.silviowangler.gradle.restapi.RestApiPlugin;
@@ -35,9 +36,9 @@ import java.nio.charset.Charset;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
-import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_GENERATED;
-import static ch.silviowangler.gradle.restapi.PluginTypes.JAVA_OVERRIDE;
+import static ch.silviowangler.gradle.restapi.PluginTypes.*;
 import static javax.lang.model.element.Modifier.*;
 
 public interface ResourceBuilder {
@@ -59,7 +60,7 @@ public interface ResourceBuilder {
 
     ResourceContractContainer getResourceContractContainer();
 
-    TypeSpec buildRootResource();
+    TypeSpec buildResource();
 
     TypeSpec buildResourceImpl();
 
@@ -137,11 +138,7 @@ public interface ResourceBuilder {
 
     default MethodSpec.Builder createMethodNotAllowedHandler(String methodName) {
         Representation representation = Representation.json();
-        MethodSpec.Builder builder = createMethod(methodName, getMethodNowAllowedReturnType(), new HashMap<>(), representation);
-
-        if (isIdGenerationRequired(methodName)) {
-            builder.addParameter(generateIdParam());
-        }
+        MethodSpec.Builder builder = createMethod(methodName, getMethodNowAllowedReturnType(), new HashMap<>(), representation, Collections.emptyList());
         generateMethodNotAllowedStatement(builder);
 
         return builder;
@@ -153,12 +150,16 @@ public interface ResourceBuilder {
     }
 
     default MethodSpec.Builder createMethod(String methodName, TypeName returnType, Map<String, ClassName> params, Representation representation) {
+        return createMethod(methodName, returnType, params, representation, Collections.emptyList());
+    }
+
+    default MethodSpec.Builder createMethod(String methodName, TypeName returnType, Map<String, ClassName> params, Representation representation, List<ParameterSpec> pathParams) {
 
         if (!representation.isJson()) {
             methodName += CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, representation.getName());
         }
 
-        MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(methodName);
+        MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(methodName).addModifiers(PUBLIC);
 
         if ("getCollection".equals(methodName)) {
             methodBuilder.returns(ParameterizedTypeName.get(ClassName.get(Collection.class), returnType));
@@ -166,41 +167,91 @@ public interface ResourceBuilder {
             methodBuilder.returns(returnType);
         }
 
-        methodBuilder.addModifiers(PUBLIC);
+        final boolean isResourceInterface = ArtifactType.RESOURCE.equals(getArtifactType());
+        final boolean isAbstractResourceClass = ArtifactType.ABSTRACT_RESOURCE.equals(getArtifactType());
 
-
-        if (ArtifactType.RESOURCE.equals(getArtifactType())) {
+        if (isResourceInterface || (isAbstractResourceClass && !isHandlerMethod(methodName))) {
             Iterable<AnnotationSpec> annotations = getResourceMethodAnnotations(isIdGenerationRequired(methodName), representation);
             methodBuilder.addAnnotations(annotations);
         } else if (ArtifactType.RESOURCE_IMPL.equals(getArtifactType())) {
             methodBuilder.addAnnotation(AnnotationSpec.builder(JAVA_OVERRIDE.getClassName()).build());
         }
 
-        if ("getOptions".equals(methodName) || isDefaultMethodNotAllowed(methodName)) {
-            methodBuilder.addModifiers(DEFAULT);
-        } else {
-            if (ArtifactType.RESOURCE.equals(getArtifactType())) {
-                methodBuilder.addModifiers(ABSTRACT);
-            } else {
-                methodBuilder.addModifiers(PUBLIC);
+        boolean generateIdParamAnnotation = false;
 
-                methodBuilder.addStatement("throw new $T()", PluginTypes.PLUGIN_NOT_YET_IMPLEMENTED_EXCEPTION.getClassName());
+        if (!supportsInterfaces() && isHandlerMethod(methodName) && ArtifactType.RESOURCE_IMPL.equals(getArtifactType())) {
+            methodBuilder.addStatement("throw new $T()", PLUGIN_NOT_YET_IMPLEMENTED_EXCEPTION.getClassName());
+        } else if ("getOptions".equals(methodName) || isDefaultMethodNotAllowed(methodName)) {
+
+            if (isResourceInterface) {
+                methodBuilder.addModifiers(DEFAULT);
+            }
+
+            generateIdParamAnnotation = true;
+        } else if (!supportsInterfaces() && !isHandlerMethod(methodName)) {
+            generateIdParamAnnotation = true;
+        } else if (!supportsInterfaces() && isHandlerMethod(methodName) && ArtifactType.ABSTRACT_RESOURCE.equals(getArtifactType())) {
+            methodBuilder.addModifiers(ABSTRACT);
+        }
+        else {
+            if (isResourceInterface) {
+                methodBuilder.addModifiers(ABSTRACT);
+                generateIdParamAnnotation = true;
+            } else {
+                methodBuilder.addStatement("throw new $T()", PLUGIN_NOT_YET_IMPLEMENTED_EXCEPTION.getClassName());
             }
         }
 
-        params.forEach((key, value) -> {
+        List<String> names = new ArrayList<>(params.size());
 
-            ParameterSpec.Builder builder = ParameterSpec.builder(value, key);
+        params.forEach((name, type) -> {
 
-            if (ArtifactType.RESOURCE.equals(getArtifactType())) {
-                builder.addAnnotation(getQueryParamAnnotation(key));
+            ParameterSpec.Builder builder = ParameterSpec.builder(type, name);
+
+            if (isResourceInterface) {
+                builder.addAnnotation(getQueryParamAnnotation(name));
             }
             ParameterSpec parameter = builder.build();
 
             methodBuilder.addParameter(parameter);
-
+            names.add(name);
         });
+
+
+        if (methodName.equals("updateEntity")) {
+            Verb verb = new Verb();
+            verb.setVerb(GenerateRestApiTask.PUT);
+            ParameterSpec.Builder param = ParameterSpec.builder(resourceModelName(verb), "model");
+            if (getArtifactType().equals(ArtifactType.RESOURCE)) {
+                param.addAnnotation(
+                        createAnnotation(PluginTypes.JAVAX_VALIDATION_VALID)
+                ).build();
+            }
+            methodBuilder.addParameter(param.build());
+        }
+
+        if (methodName.matches("(handle){0,1}(get|update|delete|Get|Update|Delete)Entity.*")) {
+            ParameterSpec id = generateIdParam(generateIdParamAnnotation);
+            methodBuilder.addParameter(id);
+            names.add(id.name);
+        }
+
+        pathParams.forEach(p -> {
+            names.add(p.name);
+            methodBuilder.addParameter(p);
+        });
+
+        String paramNames = names.stream().collect(Collectors.joining(", "));
+
+        if (!supportsInterfaces() && !isHandlerMethod(methodName) && ArtifactType.ABSTRACT_RESOURCE.equals(getArtifactType()) && !methodName.endsWith("AutoAnswer") && !methodName.equals("getOptions")) {
+            methodBuilder.addStatement("return handle$L($L)", CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, methodName), paramNames);
+        }
+
         return methodBuilder;
+    }
+
+    default boolean isHandlerMethod(String methodName) {
+        return methodName.startsWith("handle");
     }
 
     default boolean isIdGenerationRequired(String methodName) {
@@ -224,10 +275,10 @@ public interface ResourceBuilder {
 
     PluginTypes getPathVariableAnnotationType();
 
-    default ParameterSpec generateIdParam() {
+    default ParameterSpec generateIdParam(boolean withAnnotation) {
         ParameterSpec.Builder param = ParameterSpec.builder(ClassName.get(String.class), "id");
 
-        if (getArtifactType().equals(ArtifactType.RESOURCE)) {
+        if (withAnnotation) {
 
             Map<String, Object> attrs = new HashMap<>();
             attrs.put("value", "id");
@@ -247,5 +298,6 @@ public interface ResourceBuilder {
 
     Set<TypeSpec> buildResourceModels(Set<ClassName> types);
 
+    boolean supportsInterfaces();
 
 }

@@ -44,10 +44,15 @@ public class SpringRootResourceFactory extends AbstractResourceBuilder {
     private static final ClassName STRING_CLASS = ClassName.get(String.class);
 
     @Override
-    public TypeSpec buildRootResource() {
+    public boolean supportsInterfaces() {
+        return false;
+    }
+
+    @Override
+    public TypeSpec buildResource() {
         reset();
-        setArtifactType(ArtifactType.RESOURCE);
-        TypeSpec.Builder resourceBuilder = interfaceBaseInstance();
+        setArtifactType(ArtifactType.ABSTRACT_RESOURCE);
+        TypeSpec.Builder resourceBuilder = resourceBaseTypeBuilder();
 
         Map<String, Object> args = new HashMap<>();
         args.put("value", getPath());
@@ -65,10 +70,9 @@ public class SpringRootResourceFactory extends AbstractResourceBuilder {
         TypeSpec.Builder builder = classBaseInstance();
 
         builder.addAnnotation(createAnnotation(SPRING_REST_CONTROLLER));
-
         builder.addSuperinterface(ClassName.get(getCurrentPackageName(), resourceName()));
 
-        super.generateResourceMethods();
+        generateResourceMethods();
         return builder.build();
     }
 
@@ -83,7 +87,7 @@ public class SpringRootResourceFactory extends AbstractResourceBuilder {
 
         optionsMethod.addStatement("return OPTIONS_CONTENT");
 
-        interfaceBaseInstance().addMethod(optionsMethod.build());
+        resourceBaseTypeBuilder().addMethod(optionsMethod.build());
         setCurrentVerb(null);
     }
 
@@ -115,7 +119,7 @@ public class SpringRootResourceFactory extends AbstractResourceBuilder {
 
             if (Charset.forName("UTF-8").equals(getResponseEncoding())) {
                 builder.addMember("produces", "$T.APPLICATION_JSON_UTF8_VALUE", SPRING_HTTP_MEDIA_TYPE.getClassName());
-            }else {
+            } else {
                 builder.addMember("produces", "application/json;charset=$L", getResponseEncoding().name());
             }
 

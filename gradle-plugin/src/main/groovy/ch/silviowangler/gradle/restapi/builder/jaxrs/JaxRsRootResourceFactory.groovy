@@ -37,6 +37,10 @@ import static ch.silviowangler.gradle.restapi.PluginTypes.*
 
 class JaxRsRootResourceFactory extends AbstractResourceBuilder {
 
+    @Override
+    boolean supportsInterfaces() {
+        return true
+    }
 
     @Override
     protected void createOptionsMethod() {
@@ -54,16 +58,16 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder {
         )
         optionsMethod.addStatement('return $T.ok(OPTIONS_CONTENT).build()', JAX_RS_RESPONSE.className)
 
-        interfaceBaseInstance().addMethod(optionsMethod.build())
+        resourceBaseTypeBuilder().addMethod(optionsMethod.build())
         setCurrentVerb(null)
     }
 
     @Override
-    TypeSpec buildRootResource() {
+    TypeSpec buildResource() {
 
         reset()
         setArtifactType(ArtifactType.RESOURCE)
-        TypeSpec.Builder builder = interfaceBaseInstance()
+        TypeSpec.Builder builder = resourceBaseTypeBuilder()
 
         Map<String, Object> args = ['value': getPath()]
 

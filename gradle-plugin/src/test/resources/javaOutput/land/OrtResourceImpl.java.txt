@@ -7,7 +7,7 @@ import javax.ws.rs.core.Response;
 
 public class OrtResourceImpl implements OrtResource {
   @Override
-  public Response deleteEntity(String land, String id) {
+  public Response deleteEntity(String id, String land) {
     throw new NotYetImplementedException();
   }
 
@@ -17,17 +17,17 @@ public class OrtResourceImpl implements OrtResource {
   }
 
   @Override
-  public OrtGetResourceModel getEntity(String land, String id) {
+  public OrtGetResourceModel getEntity(String id, String land) {
     throw new NotYetImplementedException();
   }
 
   @Override
-  public Response getEntityJpeg(String land, String id) {
+  public Response getEntityJpeg(String id, String land) {
     throw new NotYetImplementedException();
   }
 
   @Override
-  public IdType createEntity(OrtPostResourceModel model, String land) {
+  public IdType createEntity(String land, OrtPostResourceModel model) {
     throw new NotYetImplementedException();
   }
 

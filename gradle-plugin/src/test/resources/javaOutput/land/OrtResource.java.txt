@@ -32,7 +32,7 @@ public interface OrtResource {
   @DELETE
   @Produces({ "application/json; charset=UTF-8" })
   @Path("{id}")
-  Response deleteEntity(@PathParam("land") String land, @PathParam("id") String id);
+  Response deleteEntity(@PathParam("id") String id, @PathParam("land") String land);
 
   @GET
   @Produces({ "application/json; charset=UTF-8" })
@@ -41,16 +41,16 @@ public interface OrtResource {
   @GET
   @Produces({ "application/json; charset=UTF-8" })
   @Path("{id}")
-  OrtGetResourceModel getEntity(@PathParam("land") String land, @PathParam("id") String id);
+  OrtGetResourceModel getEntity(@PathParam("id") String id, @PathParam("land") String land);
 
   @GET
   @Produces({ "image/jpeg; charset=UTF-8" })
   @Path("{id}.jpeg")
-  Response getEntityJpeg(@PathParam("land") String land, @PathParam("id") String id);
+  Response getEntityJpeg(@PathParam("id") String id, @PathParam("land") String land);
 
   @POST
   @Produces({ "application/json; charset=UTF-8" })
-  IdType createEntity(@Valid OrtPostResourceModel model, @PathParam("land") String land);
+  IdType createEntity(@PathParam("land") String land, @Valid OrtPostResourceModel model);
 
   @PUT
   @Produces({ "application/json; charset=UTF-8" })

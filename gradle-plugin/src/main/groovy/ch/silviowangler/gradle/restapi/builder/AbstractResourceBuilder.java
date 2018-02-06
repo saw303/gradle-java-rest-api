@@ -111,31 +111,23 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
         return this.resourceContractContainer;
     }
 
-    protected TypeSpec.Builder interfaceBaseInstance() {
+
+    protected TypeSpec.Builder resourceBaseTypeBuilder() {
 
         if (this.typeBuilder == null) {
-            this.typeBuilder = TypeSpec.interfaceBuilder(resourceName())
-                    .addModifiers(PUBLIC)
-                    .addAnnotation(createGeneratedAnnotation(printTimestamp));
+
+            if (supportsInterfaces()) {
+                this.typeBuilder = TypeSpec.interfaceBuilder(resourceName())
+                        .addModifiers(PUBLIC)
+                        .addAnnotation(createGeneratedAnnotation(printTimestamp));
+            } else {
+                this.typeBuilder = TypeSpec.classBuilder(resourceName())
+                        .addModifiers(PUBLIC, ABSTRACT)
+                        .addAnnotation(createGeneratedAnnotation(printTimestamp));
+            }
+
         }
         return this.typeBuilder;
-    }
-
-    private TypeSpec.Builder resourceTypeBaseInstance(String name) {
-        TypeSpec.Builder builder = TypeSpec
-                .classBuilder(CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, name) + "Type")
-                .addModifiers(PUBLIC)
-                .addSuperinterface(ClassName.get(Serializable.class));
-        return this.typeBuilder = builder;
-    }
-
-    private TypeSpec.Builder resourceModelBaseInstance(Verb verb) {
-        TypeSpec.Builder builder = TypeSpec.classBuilder(resourceModelName(verb))
-                .addModifiers(PUBLIC)
-                .addAnnotation(createGeneratedAnnotation(printTimestamp))
-                .addSuperinterface(Serializable.class);
-
-        return builder;
     }
 
     protected void reset() {
@@ -156,7 +148,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
     @Override
     public void generateResourceMethods() {
 
-        if (isResourceInterface()) {
+        if (isResourceInterface() || isAbstractResourceInterface()) {
 
             String content = getResourceContractContainer().getResourceContractPlainText();
             content = Minify.minify(content).replaceAll("\"", "\\\\\"");
@@ -175,7 +167,6 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
         LinkParser parser = new LinkParser(getResourceContractContainer().getResourceContract().getGeneral().getxRoute(), getResourceContractContainer().getResourceContract().getGeneral().getVersion().split("\\.")[0]);
 
-
         for (Verb verb : verbs) {
 
             MethodSpec.Builder methodBuilder;
@@ -185,13 +176,15 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
             verb.getParameters().forEach(p -> params.put(p.getName(), GeneratorUtil.translateToJava(p.getType())));
 
+            String methodName;
             for (Representation representation : verb.getRepresentations()) {
 
                 List<ParameterSpec> pathParams = new ArrayList<>(parser.getPathVariables().size());
+
                 for (String pathVar : parser.getPathVariables()) {
                     ParameterSpec.Builder paramBuilder = ParameterSpec.builder(String.class, pathVar);
 
-                    if (isResourceInterface()) {
+                    if (isResourceInterface() || isAbstractResourceInterface()) {
                         paramBuilder.addAnnotation(
                                 AnnotationSpec.builder(getPathVariableAnnotationType().getClassName())
                                         .addMember("value", "$S", pathVar)
@@ -204,32 +197,36 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
                 if (GenerateRestApiTask.GET_COLLECTION.equals(verb.getVerb())) {
 
+                    methodName = "getCollection";
                     methodBuilder = createMethod(
-                            "getCollection",
+                            methodName,
                             resourceMethodReturnType(verb, representation),
                             params,
-                            representation
+                            representation,
+                            pathParams
                     );
 
                 } else if (GenerateRestApiTask.GET_ENTITY.equals(verb.getVerb())) {
 
+                    methodName = "getEntity";
 
                     methodBuilder = createMethod(
-                            "getEntity",
+                            methodName,
                             resourceMethodReturnType(verb, representation),
                             params,
-                            representation
+                            representation,
+                            pathParams
                     );
-                    pathParams.add(generateIdParam());
-
 
                 } else if (GenerateRestApiTask.POST.equals(verb.getVerb())) {
 
+                    methodName = "createEntity";
                     methodBuilder = createMethod(
-                            "createEntity",
+                            methodName,
                             resourceMethodReturnType(verb, representation),
                             params,
-                            representation
+                            representation,
+                            pathParams
                     );
 
                     ParameterSpec.Builder param = ParameterSpec.builder(resourceModelName(verb), "model");
@@ -242,145 +239,72 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
                 } else if (GenerateRestApiTask.PUT.equals(verb.getVerb())) {
 
+                    methodName = "updateEntity";
                     methodBuilder = createMethod(
-                            "updateEntity",
+                            methodName,
                             resourceMethodReturnType(verb, representation),
                             params,
-                            representation
+                            representation,
+                            pathParams
                     );
-
-                    ParameterSpec.Builder param = ParameterSpec.builder(resourceModelName(verb), "model");
-                    if (getArtifactType().equals(ArtifactType.RESOURCE)) {
-                        param.addAnnotation(
-                                createAnnotation(PluginTypes.JAVAX_VALIDATION_VALID)
-                        ).build();
-                    }
-                    methodBuilder.addParameter(param.build());
-
-                    param = ParameterSpec.builder(ClassName.get(String.class), "id");
-
-                    if (getArtifactType().equals(ArtifactType.RESOURCE)) {
-
-                        Map<String, Object> attributes = new HashMap<>();
-                        attributes.put("value", "id");
-
-                        param.addAnnotation(
-                                createAnnotation(getPathVariableAnnotationType(), attributes)
-                        ).build();
-                    }
-                    methodBuilder.addParameter(param.build());
-
 
                 } else if (GenerateRestApiTask.DELETE_COLLECTION.equals(verb.getVerb())) {
 
+                    methodName = "deleteCollection";
+
                     methodBuilder = createMethod(
-                            "deleteCollection",
+                            methodName,
                             resourceMethodReturnType(verb, representation),
                             params,
-                            representation
+                            representation,
+                            pathParams
                     );
 
                 } else if (GenerateRestApiTask.DELETE_ENTITY.equals(verb.getVerb())) {
 
+                    methodName = "deleteEntity";
                     methodBuilder = createMethod(
-                            "deleteEntity",
+                            methodName,
                             resourceMethodReturnType(verb, representation),
                             params,
-                            representation
+                            representation,
+                            pathParams
                     );
-
-                    pathParams.add(generateIdParam());
 
                 } else {
                     throw new IllegalArgumentException(String.format("Verb %s is unknown", verb.getVerb()));
                 }
 
-                for (ParameterSpec pathParam : pathParams) {
-                    methodBuilder.addParameter(pathParam);
+                MethodSpec resourceMethod = methodBuilder.build();
+
+                if (!supportsInterfaces() && resourceMethod.modifiers.size() == 1 && resourceMethod.modifiers.contains(PUBLIC)) {
+                    MethodSpec.Builder handlerBuilder = createMethod(
+                            String.format("%s%s", "handle", CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, methodName)),
+                            resourceMethodReturnType(verb, representation),
+                            params,
+                            representation,
+                            pathParams
+                    );
+                    this.typeBuilder.addMethod(handlerBuilder.build());
                 }
-                this.typeBuilder.addMethod(methodBuilder.build());
+
+                if (supportsInterfaces() || !isResourceImpl()) {
+                    this.typeBuilder.addMethod(resourceMethod);
+                }
             }
             this.currentVerb = null;
         }
 
 
-        if (isResourceInterface()) {
+        if (isResourceInterface() || isAbstractResourceInterface()) {
             generatedDefaultMethodNotAllowedHandlersForMissingVerbs();
         }
 
     }
 
-
-    private boolean isResourceInterface() {
-        return ArtifactType.RESOURCE.equals(getArtifactType());
-    }
-
-    private void generatedDefaultMethodNotAllowedHandlersForMissingVerbs() {
-
-
-        if (!hasPostVerb()) {
-            this.currentVerb = new Verb(GenerateRestApiTask.POST);
-            this.typeBuilder.addMethod(createMethodNotAllowedHandler("createEntityAutoAnswer").build());
-        }
-
-        if (!hasDeleteCollectionVerb()) {
-            this.currentVerb = new Verb(GenerateRestApiTask.DELETE_COLLECTION);
-            this.typeBuilder.addMethod(createMethodNotAllowedHandler("deleteCollectionAutoAnswer").build());
-        }
-
-        if (!hasDeleteEntityVerb()) {
-            this.currentVerb = new Verb(GenerateRestApiTask.DELETE_ENTITY);
-            this.typeBuilder.addMethod(createMethodNotAllowedHandler("deleteEntityAutoAnswer").build());
-        }
-
-        if (!hasGetCollectionVerb()) {
-            this.currentVerb = new Verb(GenerateRestApiTask.GET_COLLECTION);
-            this.typeBuilder.addMethod(createMethodNotAllowedHandler("getCollectionAutoAnswer").build());
-        } else if (!hasGetEntityVerb()) {
-            this.currentVerb = new Verb(GenerateRestApiTask.GET_ENTITY);
-            this.typeBuilder.addMethod(createMethodNotAllowedHandler("getEntityAutoAnswer").build());
-        }
-
-        if (!hasPutVerb()) {
-            this.currentVerb = new Verb(GenerateRestApiTask.PUT);
-            this.typeBuilder.addMethod(createMethodNotAllowedHandler("updateEntityAutoAnswer").build());
-        }
-        this.currentVerb = null;
-    }
-
-    private boolean hasGetEntityVerb() {
-        return hasVerb(GenerateRestApiTask.GET_ENTITY);
-    }
-
-    private boolean hasGetCollectionVerb() {
-        return hasVerb(GenerateRestApiTask.GET_COLLECTION);
-    }
-
-    private boolean hasPostVerb() {
-        return hasVerb(GenerateRestApiTask.POST);
-    }
-
-    private boolean hasPutVerb() {
-        return hasVerb(GenerateRestApiTask.PUT);
-    }
-
-    private boolean hasDeleteCollectionVerb() {
-        return hasVerb(GenerateRestApiTask.DELETE_COLLECTION);
-    }
-
-    private boolean hasDeleteEntityVerb() {
-        return hasVerb(GenerateRestApiTask.DELETE_ENTITY);
-    }
-
-    private boolean hasVerb(String verb) {
-        return getResourceContractContainer().getResourceContract().getVerbs().stream().filter(v -> verb.equals(v.getVerb())).findAny().isPresent();
-    }
-
     protected String getPath() {
-        return new LinkParser(
-                getResourceContractContainer().getResourceContract().getGeneral().getxRoute(),
-                getResourceContractContainer().getResourceContract().getGeneral().getVersion().split("\\.")[0]
-        ).toBasePath();
+        GeneralDetails general = getResourceContractContainer().getResourceContract().getGeneral();
+        return new LinkParser(general.getxRoute(), general.getVersion().split("\\.")[0]).toBasePath();
     }
 
     protected String getHttpMethod() {
@@ -594,5 +518,95 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
                 .addParameter(ParameterSpec.builder(fieldType, name).build())
                 .addStatement("this.$L = $L", name, name);
         builder.addMethod(setterBuilder.build());
+    }
+
+    private boolean isResourceInterface() {
+        return ArtifactType.RESOURCE.equals(getArtifactType());
+    }
+
+    private boolean isAbstractResourceInterface() {
+        return ArtifactType.ABSTRACT_RESOURCE.equals(getArtifactType());
+    }
+
+    private boolean isResourceImpl() {
+        return ArtifactType.RESOURCE_IMPL.equals(getArtifactType());
+    }
+
+    private void generatedDefaultMethodNotAllowedHandlersForMissingVerbs() {
+
+
+        if (!hasPostVerb()) {
+            this.currentVerb = new Verb(GenerateRestApiTask.POST);
+            this.typeBuilder.addMethod(createMethodNotAllowedHandler("createEntityAutoAnswer").build());
+        }
+
+        if (!hasDeleteCollectionVerb()) {
+            this.currentVerb = new Verb(GenerateRestApiTask.DELETE_COLLECTION);
+            this.typeBuilder.addMethod(createMethodNotAllowedHandler("deleteCollectionAutoAnswer").build());
+        }
+
+        if (!hasDeleteEntityVerb()) {
+            this.currentVerb = new Verb(GenerateRestApiTask.DELETE_ENTITY);
+            this.typeBuilder.addMethod(createMethodNotAllowedHandler("deleteEntityAutoAnswer").build());
+        }
+
+        if (!hasGetCollectionVerb()) {
+            this.currentVerb = new Verb(GenerateRestApiTask.GET_COLLECTION);
+            this.typeBuilder.addMethod(createMethodNotAllowedHandler("getCollectionAutoAnswer").build());
+        } else if (!hasGetEntityVerb()) {
+            this.currentVerb = new Verb(GenerateRestApiTask.GET_ENTITY);
+            this.typeBuilder.addMethod(createMethodNotAllowedHandler("getEntityAutoAnswer").build());
+        }
+
+        if (!hasPutVerb()) {
+            this.currentVerb = new Verb(GenerateRestApiTask.PUT);
+            this.typeBuilder.addMethod(createMethodNotAllowedHandler("updateEntityAutoAnswer").build());
+        }
+        this.currentVerb = null;
+    }
+
+    private boolean hasGetEntityVerb() {
+        return hasVerb(GenerateRestApiTask.GET_ENTITY);
+    }
+
+    private boolean hasGetCollectionVerb() {
+        return hasVerb(GenerateRestApiTask.GET_COLLECTION);
+    }
+
+    private boolean hasPostVerb() {
+        return hasVerb(GenerateRestApiTask.POST);
+    }
+
+    private boolean hasPutVerb() {
+        return hasVerb(GenerateRestApiTask.PUT);
+    }
+
+    private boolean hasDeleteCollectionVerb() {
+        return hasVerb(GenerateRestApiTask.DELETE_COLLECTION);
+    }
+
+    private boolean hasDeleteEntityVerb() {
+        return hasVerb(GenerateRestApiTask.DELETE_ENTITY);
+    }
+
+    private boolean hasVerb(String verb) {
+        return getResourceContractContainer().getResourceContract().getVerbs().stream().filter(v -> verb.equals(v.getVerb())).findAny().isPresent();
+    }
+
+    private TypeSpec.Builder resourceTypeBaseInstance(String name) {
+        TypeSpec.Builder builder = TypeSpec
+                .classBuilder(CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, name) + "Type")
+                .addModifiers(PUBLIC)
+                .addSuperinterface(ClassName.get(Serializable.class));
+        return this.typeBuilder = builder;
+    }
+
+    private TypeSpec.Builder resourceModelBaseInstance(Verb verb) {
+        TypeSpec.Builder builder = TypeSpec.classBuilder(resourceModelName(verb))
+                .addModifiers(PUBLIC)
+                .addAnnotation(createGeneratedAnnotation(printTimestamp))
+                .addSuperinterface(Serializable.class);
+
+        return builder;
     }
 }

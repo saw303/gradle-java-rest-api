@@ -2,34 +2,33 @@ package org.acme.rest.v1.laender;
 
 import ch.silviowangler.rest.NotYetImplementedException;
 import ch.silviowangler.rest.types.IdType;
-import java.util.Collection;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class LandResourceImpl implements LandResource {
   @Override
-  public Collection<LandGetResourceModel> getCollection() {
+  public LandGetResourceModel handleGetCollection() {
     throw new NotYetImplementedException();
   }
 
   @Override
-  public LandGetResourceModel getEntity(String id) {
+  public LandGetResourceModel handleGetEntity(String id) {
     throw new NotYetImplementedException();
   }
 
   @Override
-  public ResponseEntity getEntityPdf(String id) {
+  public ResponseEntity handleGetEntityPdf(String id) {
     throw new NotYetImplementedException();
   }
 
   @Override
-  public IdType createEntity(LandPostResourceModel model) {
+  public IdType handleCreateEntity() {
     throw new NotYetImplementedException();
   }
 
   @Override
-  public IdType updateEntity(LandPutResourceModel model, String id) {
+  public IdType handleUpdateEntity(String id) {
     throw new NotYetImplementedException();
   }
 }
