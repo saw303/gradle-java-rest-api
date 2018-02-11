@@ -1,5 +1,6 @@
 package org.acme.rest.v1.partner;
 
+import ch.silviowangler.rest.model.ResourceModel;
 import java.io.Serializable;
 import java.util.Objects;
 import javax.annotation.Generated;
@@ -8,7 +9,7 @@ import javax.annotation.Generated;
     comments = "Specification filename: partnersearch.v1.json",
     value = "ch.silviowangler.restapi"
 )
-public class PartnersearchGetResourceModel implements Serializable {
+public class PartnersearchGetResourceModel implements Serializable, ResourceModel {
   public static final String TYPE = "application/ch.silviowangler.partner.collection";
 
   private String id;

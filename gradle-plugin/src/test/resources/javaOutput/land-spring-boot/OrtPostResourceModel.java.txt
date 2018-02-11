@@ -1,5 +1,6 @@
 package org.acme.rest.v1.laender.orte;
 
+import ch.silviowangler.rest.model.ResourceModel;
 import java.io.Serializable;
 import java.util.Objects;
 import javax.annotation.Generated;
@@ -9,7 +10,7 @@ import javax.validation.constraints.NotNull;
     comments = "Specification filename: land.ort.v1.json",
     value = "ch.silviowangler.restapi"
 )
-public class OrtPostResourceModel implements Serializable {
+public class OrtPostResourceModel implements Serializable, ResourceModel {
   public static final String TYPE = "application/ch.silviowangler.ort";
 
   private String id;

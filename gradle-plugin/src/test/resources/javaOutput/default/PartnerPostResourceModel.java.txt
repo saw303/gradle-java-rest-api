@@ -1,5 +1,6 @@
 package org.acme.rest.v1.partner;
 
+import ch.silviowangler.rest.model.ResourceModel;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -16,7 +17,7 @@ import org.javamoney.moneta.Money;
     comments = "Specification filename: partner.v1.json",
     value = "ch.silviowangler.restapi"
 )
-public class PartnerPostResourceModel implements Serializable {
+public class PartnerPostResourceModel implements Serializable, ResourceModel {
   public static final String TYPE = "application/ch.silviowangler.partner";
 
   private String id;

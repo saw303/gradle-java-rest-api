@@ -1,5 +1,6 @@
 package org.acme.rest.v1.laender;
 
+import ch.silviowangler.rest.model.ResourceModel;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
@@ -10,7 +11,7 @@ import org.acme.rest.v1.CoordinatesType;
     comments = "Specification filename: land.v1.json",
     value = "ch.silviowangler.restapi"
 )
-public class LandGetResourceModel implements Serializable {
+public class LandGetResourceModel implements Serializable, ResourceModel {
   public static final String TYPE = "application/ch.silviowangler.land";
 
   private String id;

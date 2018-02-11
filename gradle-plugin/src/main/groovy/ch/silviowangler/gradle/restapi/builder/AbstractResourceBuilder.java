@@ -605,7 +605,8 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
         TypeSpec.Builder builder = TypeSpec.classBuilder(resourceModelName(verb))
                 .addModifiers(PUBLIC)
                 .addAnnotation(createGeneratedAnnotation(printTimestamp))
-                .addSuperinterface(Serializable.class);
+                .addSuperinterface(Serializable.class)
+                .addSuperinterface(PluginTypes.RESTAPI_RESOURCE_MODEL.getClassName());
 
         return builder;
     }

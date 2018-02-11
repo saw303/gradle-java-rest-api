@@ -1,9 +1,10 @@
 buildscript {
     ext {
-        springBootVersion = '2.0.0.M7'
-        restVersion = '1.0.10'
+        springBootVersion = '2.0.0.RC1'
+        restVersion = '1.0.11'
     }
     repositories {
+        mavenLocal()
         mavenCentral()
         maven { url "https://dl.bintray.com/saw303/gradle-plugins" }
         maven { url "https://repo.spring.io/snapshot" }
@@ -27,6 +28,7 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 1.8
 
 repositories {
+    mavenLocal()
     mavenCentral()
     maven { url "https://dl.bintray.com/saw303/gradle-plugins" }
     maven { url "https://repo.spring.io/snapshot" }

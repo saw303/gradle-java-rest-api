@@ -33,6 +33,7 @@ public class CollectionModel implements Serializable {
 
     private List<EntityModel> data;
 
+    private List<ResourceLink> links;
 
     public List<EntityModel> getData() {
         return data;
@@ -40,5 +41,13 @@ public class CollectionModel implements Serializable {
 
     public void setData(List<EntityModel> data) {
         this.data = data;
+    }
+
+    public List<ResourceLink> getLinks() {
+        return links;
+    }
+
+    public void setLinks(List<ResourceLink> links) {
+        this.links = links;
     }
 }

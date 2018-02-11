@@ -36,6 +36,7 @@ public enum PluginTypes {
     RESTAPI_FILTERMODEL(ClassName.get("ch.silviowangler.rest.model", "FilterModel")),
     RESTAPI_JWT_ANNOTATION(ClassName.get("ch.silviowangler.rest.security", "SecurityEnabled")),
     RESTAPI_CACHING_ANNOTATION(ClassName.get("ch.silviowangler.rest.cache", "CacheSetting")),
+    RESTAPI_RESOURCE_MODEL(ClassName.get("ch.silviowangler.rest.model", "ResourceModel")),
     JAX_RS_RESPONSE(ClassName.get("javax.ws.rs.core", "Response")),
     JAX_RS_OPTIONS_VERB(ClassName.get("javax.ws.rs", "OPTIONS")),
     JAX_RS_GET_VERB(ClassName.get("javax.ws.rs", "GET")),
