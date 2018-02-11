@@ -24,6 +24,7 @@
 package ch.silviowangler.rest.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,7 +34,7 @@ public class CollectionModel implements Serializable {
 
     private List<EntityModel> data;
 
-    private List<ResourceLink> links;
+    private List<ResourceLink> links = new ArrayList<>();
 
     public List<EntityModel> getData() {
         return data;
