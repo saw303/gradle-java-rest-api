@@ -31,8 +31,6 @@ import com.squareup.javapoet.ParameterizedTypeName
 import com.squareup.javapoet.TypeName
 import org.gradle.api.Project
 
-import javax.activation.UnsupportedDataTypeException
-
 /**
  * Created by Silvio Wangler on 25/01/16.
  */

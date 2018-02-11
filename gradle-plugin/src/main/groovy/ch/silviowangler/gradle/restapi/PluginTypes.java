@@ -55,7 +55,7 @@ public enum PluginTypes {
     JAVAX_VALIDATION_DECIMAL_MAX(ClassName.get("javax.validation.constraints", "DecimalMax")),
     JAVAX_VALIDATION_NOT_NULL(ClassName.get("javax.validation.constraints", "NotNull")),
     JAVAX_VALIDATION_VALID(ClassName.get("javax.validation", "Valid")),
-    JAVAX_GENERATED(ClassName.get(Generated.class)),
+    JAVAX_GENERATED(ClassName.get("javax.annotation", "Generated")),
     JAVA_OVERRIDE(ClassName.get(Override.class)),
     PLUGIN_NOT_YET_IMPLEMENTED_EXCEPTION(ClassName.get("ch.silviowangler.rest", "NotYetImplementedException")),
     SPRING_REQUEST_MAPPING(ClassName.get("org.springframework.web.bind.annotation", "RequestMapping")),

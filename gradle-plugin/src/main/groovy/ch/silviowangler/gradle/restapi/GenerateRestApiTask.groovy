@@ -70,14 +70,7 @@ class GenerateRestApiTask extends AbstractTask {
         getOptionsSource().eachFile(FileType.FILES, { f -> if (f.name.endsWith('.json')) specs << f })
 
 
-        Collections.sort(specs, new Comparator<File>() {
-            @Override
-            int compare(File o1, File o2) {
-                if (o1.name.startsWith("root")) return -1
-
-                return o1.name <=> o2.name
-            }
-        })
+        Collections.sort(specs, new ResourceFileComparator())
 
         logger.lifecycle("Found ${specs.size()} specification files")
 
