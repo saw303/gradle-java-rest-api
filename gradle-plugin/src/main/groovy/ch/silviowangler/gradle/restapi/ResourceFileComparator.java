@@ -37,6 +37,16 @@ public class ResourceFileComparator implements Comparator<File> {
 
 		if (fileNameA.startsWith("root")) return -1;
 
-		return fileNameA.compareTo(fileNameB);
+
+		long countA = fileNameA.codePoints().filter(ch -> ch == '.').count();
+		long countB = fileNameB.codePoints().filter(ch -> ch == '.').count();
+
+
+		if (countA == countB) {
+			return fileNameA.compareTo(fileNameB);
+		}
+		else {
+			return Long.valueOf(countA).compareTo(Long.valueOf(countB));
+		}
 	}
 }

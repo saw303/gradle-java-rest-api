@@ -23,19 +23,19 @@
  */
 package ch.silviowangler.gradle.restapi
 
-import spock.lang.PendingFeature
 import spock.lang.Specification
 
 class ResourceFileComparatorSpec extends Specification {
 
 
-    @PendingFeature
     void "Sort files in the correct order"() {
 
         given:
         def files = [
                 new File('zen.a.v1.json'),
                 new File('zen.v1.json'),
+                new File('zan.v1.json'),
+                new File('zen.b.v1.json'),
                 new File('root.v1.json')
         ]
 
@@ -45,8 +45,7 @@ class ResourceFileComparatorSpec extends Specification {
         and:
         def names = files.collect { f -> f.name }
 
-
         expect:
-        names == ['root.v1.json', 'zen.v1.json', 'zen.a.v1.json']
+        names == ['root.v1.json', 'zan.v1.json', 'zen.v1.json', 'zen.a.v1.json', 'zen.b.v1.json']
     }
 }
