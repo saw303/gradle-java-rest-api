@@ -42,6 +42,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static ch.silviowangler.gradle.restapi.PluginTypes.*;
+import static ch.silviowangler.gradle.restapi.builder.ArtifactType.RESOURCE;
 import static javax.lang.model.element.Modifier.*;
 
 /**
@@ -230,9 +231,9 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
                     );
 
                     ParameterSpec.Builder param = ParameterSpec.builder(resourceModelName(verb), "model");
-                    if (getArtifactType().equals(ArtifactType.RESOURCE)) {
+                    if (getArtifactType().equals(RESOURCE)) {
                         param.addAnnotation(
-                                createAnnotation(PluginTypes.JAVAX_VALIDATION_VALID)
+                                createAnnotation(JAVAX_VALIDATION_VALID)
                         ).build();
                     }
                     methodBuilder.addParameter(param.build());
@@ -521,7 +522,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
     }
 
     private boolean isResourceInterface() {
-        return ArtifactType.RESOURCE.equals(getArtifactType());
+        return RESOURCE.equals(getArtifactType());
     }
 
     private boolean isAbstractResourceInterface() {
