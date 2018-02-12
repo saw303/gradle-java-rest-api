@@ -224,7 +224,7 @@ public interface ResourceBuilder {
             ParameterSpec.Builder param = ParameterSpec.builder(resourceModelName(verb), "model");
             if (getArtifactType().equals(ArtifactType.RESOURCE)) {
                 param.addAnnotation(
-                        createAnnotation(PluginTypes.JAVAX_VALIDATION_VALID)
+                        createAnnotation(JAVAX_VALIDATION_VALID)
                 ).build();
             }
             methodBuilder.addParameter(param.build());
