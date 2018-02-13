@@ -48,4 +48,23 @@ class ResourceFileComparatorSpec extends Specification {
         expect:
         names == ['root.v1.json', 'zan.v1.json', 'zen.v1.json', 'zen.a.v1.json', 'zen.b.v1.json']
     }
+
+    void "Sort files in the correct order 2"() {
+
+        given:
+        def files = [
+                new File('root.v1.json'),
+                new File('land.ort.v1.json'),
+                new File('land.v1.json')
+        ]
+
+        and:
+        Collections.sort(files, new ResourceFileComparator())
+
+        and:
+        def names = files.collect { f -> f.name }
+
+        expect:
+        names == ['root.v1.json', 'land.v1.json', 'land.ort.v1.json']
+    }
 }

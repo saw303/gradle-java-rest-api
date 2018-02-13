@@ -72,7 +72,7 @@ class GenerateRestApiTask extends AbstractTask {
 
         Collections.sort(specs, new ResourceFileComparator())
 
-        logger.lifecycle("Found ${specs.size()} specification files")
+        logger.lifecycle("Found ${specs.size()} specification files (${specs.collect { it.name}})")
 
         for (File specFile in specs) {
 

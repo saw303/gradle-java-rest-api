@@ -23,11 +23,16 @@
  */
 package ch.silviowangler.gradle.restapi;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.util.Comparator;
 import java.util.Objects;
 
 public class ResourceFileComparator implements Comparator<File> {
+
+	private static final Logger log = LoggerFactory.getLogger(ResourceFileComparator.class);
 
 
 	@Override
@@ -36,17 +41,23 @@ public class ResourceFileComparator implements Comparator<File> {
 		final String fileNameB = Objects.requireNonNull(fileB, "fileB must not be null").getName();
 
 		if (fileNameA.startsWith("root")) return -1;
+		if (fileNameB.startsWith("root")) return 1;
 
 
 		long countA = fileNameA.codePoints().filter(ch -> ch == '.').count();
 		long countB = fileNameB.codePoints().filter(ch -> ch == '.').count();
 
 
+		int result;
+
+
 		if (countA == countB) {
-			return fileNameA.compareTo(fileNameB);
+			result = fileNameA.compareTo(fileNameB);
 		}
 		else {
-			return Long.valueOf(countA).compareTo(Long.valueOf(countB));
+			result = Long.valueOf(countA).compareTo(Long.valueOf(countB));
 		}
+		log.error("Comparison between {} and {} results in {}", fileA.getName(), fileB.getName(), result);
+		return result;
 	}
 }
