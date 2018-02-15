@@ -69,7 +69,7 @@ class JsonModelAdvice implements ResponseBodyAdvice {
 
 			for (Object l : list) {
 				if (l instanceof ResourceModel) {
-					entityModels.add((EntityModel) l);
+					entityModels.add(new EntityModel((ResourceModel) l));
 				} else {
 					log.warn("Detected non resource model type '{}' in controller response collection", l.getClass().getCanonicalName());
 				}
