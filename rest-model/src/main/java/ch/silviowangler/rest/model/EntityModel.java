@@ -33,9 +33,22 @@ import java.util.List;
 public class EntityModel implements Serializable {
 
     private ResourceModel data;
-    private List<ResourceLink> links = new ArrayList<>();
+    private List<ResourceLink> links;
 
-    public ResourceModel getData() {
+	public EntityModel() {
+		this(null);
+	}
+
+	public EntityModel(ResourceModel data) {
+		this(data, new ArrayList<>());
+	}
+
+	public EntityModel(ResourceModel data, List<ResourceLink> links) {
+		this.data = data;
+		this.links = links;
+	}
+
+	public ResourceModel getData() {
         return data;
     }
 

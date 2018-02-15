@@ -26,6 +26,8 @@ package ch.silviowangler.rest.spring;
 import ch.silviowangler.rest.model.CollectionModel;
 import ch.silviowangler.rest.model.EntityModel;
 import ch.silviowangler.rest.model.ResourceModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.ServerHttpRequest;
@@ -33,6 +35,7 @@ import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,25 +46,39 @@ import java.util.List;
 @ControllerAdvice
 class JsonModelAdvice implements ResponseBodyAdvice {
 
+	private static final Logger log = LoggerFactory.getLogger(JsonModelAdvice.class);
 
-    @Override
-    public boolean supports(MethodParameter returnType, Class converterType) {
-        return true;
-    }
 
-    @Override
-    public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType, Class selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
+	@Override
+	public boolean supports(MethodParameter returnType, Class converterType) {
+		return true;
+	}
 
-        if (body instanceof ResourceModel) {
-            EntityModel model = new EntityModel();
-            model.setData((ResourceModel) body);
-            return model;
-        } else if (body instanceof List) {
-            CollectionModel model = new CollectionModel();
-            model.setData((List<EntityModel>) body);
-            return model;
-        } else {
-            return body;
-        }
-    }
+	@Override
+	public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType, Class selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
+
+		if (body instanceof ResourceModel) {
+			EntityModel model = new EntityModel((ResourceModel) body);
+			return model;
+		} else if (body instanceof List) {
+
+			List list = (List) body;
+			CollectionModel model = new CollectionModel();
+
+			List<EntityModel> entityModels = new ArrayList<>(list.size());
+
+			for (Object l : list) {
+				if (l instanceof ResourceModel) {
+					entityModels.add((EntityModel) l);
+				} else {
+					log.warn("Detected non resource model type '{}' in controller response collection", l.getClass().getCanonicalName());
+				}
+			}
+
+			model.setData(entityModels);
+			return model;
+		} else {
+			return body;
+		}
+	}
 }
