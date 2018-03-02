@@ -1,0 +1,69 @@
+package org.acme.rest.v1.session.insurableperson.insuranceneeds.productproposal;
+
+import ch.silviowangler.rest.model.ResourceModel;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Objects;
+import javax.annotation.Generated;
+import org.javamoney.moneta.Money;
+
+@Generated(
+    comments = "Specification filename: productproposal.v1.json",
+    value = "ch.silviowangler.restapi"
+)
+public class ProductproposalGetResourceModel implements Serializable, ResourceModel {
+  public static final String TYPE = "application/gesus.productproposal";
+
+  private List<ProposalType> proposal = new java.util.ArrayList<>();
+
+  private Money premiumTotal;
+
+  private Boolean addAnotherPersonSelected;
+
+  private Boolean nextButtonSelected;
+
+  public List<ProposalType> getProposal() {
+    return this.proposal;
+  }
+
+  public void setProposal(List<ProposalType> proposal) {
+    this.proposal = proposal;
+  }
+
+  public Money getPremiumTotal() {
+    return this.premiumTotal;
+  }
+
+  public void setPremiumTotal(Money premiumTotal) {
+    this.premiumTotal = premiumTotal;
+  }
+
+  public Boolean getAddAnotherPersonSelected() {
+    return this.addAnotherPersonSelected;
+  }
+
+  public void setAddAnotherPersonSelected(Boolean addAnotherPersonSelected) {
+    this.addAnotherPersonSelected = addAnotherPersonSelected;
+  }
+
+  public Boolean getNextButtonSelected() {
+    return this.nextButtonSelected;
+  }
+
+  public void setNextButtonSelected(Boolean nextButtonSelected) {
+    this.nextButtonSelected = nextButtonSelected;
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    if (! (other instanceof ProductproposalGetResourceModel)) return false;
+    ProductproposalGetResourceModel that = (ProductproposalGetResourceModel) other;
+    return Objects.equals(getProposal(), that.getProposal()) && Objects.equals(getPremiumTotal(), that.getPremiumTotal()) && Objects.equals(getAddAnotherPersonSelected(), that.getAddAnotherPersonSelected()) && Objects.equals(getNextButtonSelected(), that.getNextButtonSelected());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(proposal, premiumTotal, addAnotherPersonSelected, nextButtonSelected);
+  }
+}

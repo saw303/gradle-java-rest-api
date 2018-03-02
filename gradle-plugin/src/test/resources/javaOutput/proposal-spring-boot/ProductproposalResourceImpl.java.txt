@@ -1,0 +1,19 @@
+package org.acme.rest.v1.session.insurableperson.insuranceneeds.productproposal;
+
+import ch.silviowangler.rest.NotYetImplementedException;
+import ch.silviowangler.rest.types.IdType;
+import java.util.Collection;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class ProductproposalResourceImpl extends ProductproposalResource {
+  @Override
+  public Collection<ProductproposalGetResourceModel> handleGetCollection() {
+    throw new NotYetImplementedException();
+  }
+
+  @Override
+  public IdType handleCreateEntity() {
+    throw new NotYetImplementedException();
+  }
+}

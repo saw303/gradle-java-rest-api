@@ -47,9 +47,7 @@ public class ResourceFileComparator implements Comparator<File> {
 		long countA = fileNameA.codePoints().filter(ch -> ch == '.').count();
 		long countB = fileNameB.codePoints().filter(ch -> ch == '.').count();
 
-
 		int result;
-
 
 		if (countA == countB) {
 			result = fileNameA.compareTo(fileNameB);
@@ -57,7 +55,7 @@ public class ResourceFileComparator implements Comparator<File> {
 		else {
 			result = Long.valueOf(countA).compareTo(Long.valueOf(countB));
 		}
-		log.error("Comparison between {} and {} results in {}", fileA.getName(), fileB.getName(), result);
+		log.debug("Comparison between {} and {} results in {}", fileA.getName(), fileB.getName(), result);
 		return result;
 	}
 }

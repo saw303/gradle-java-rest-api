@@ -361,7 +361,16 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 		if (declaredVerbs.size() == 1 && declaredVerbs.get(0).getVerb().equals(GET_COLLECTION)) {
 			verbs = declaredVerbs;
 		} else {
-			List<String> excludeVerbs = Arrays.asList(DELETE_ENTITY, GET_COLLECTION);
+
+			List<String> excludeVerbs = new ArrayList<>();
+			excludeVerbs.add(DELETE_ENTITY);
+
+			Optional<Verb> getEntity = declaredVerbs.stream().filter(verb -> verb.getVerb().equals(GET_ENTITY)).findAny();
+
+			if (getEntity.isPresent()) {
+				excludeVerbs.add(GET_COLLECTION);
+			}
+
 			verbs = declaredVerbs.stream().filter(v -> !excludeVerbs.contains(v.getVerb())).collect(Collectors.toList());
 		}
 		Set<TypeSpec> specTypes = new HashSet<>(verbs.size());

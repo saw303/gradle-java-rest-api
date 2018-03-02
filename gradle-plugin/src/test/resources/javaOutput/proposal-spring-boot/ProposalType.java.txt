@@ -1,0 +1,46 @@
+package org.acme.rest.v1.session.insurableperson.insuranceneeds.productproposal;
+
+import java.io.Serializable;
+import org.javamoney.moneta.Money;
+
+public class ProposalType implements Serializable {
+  private String label;
+
+  private String productid;
+
+  private Money productPremium;
+
+  private String productAttributes;
+
+  public String getLabel() {
+    return this.label;
+  }
+
+  public void setLabel(String label) {
+    this.label = label;
+  }
+
+  public String getProductid() {
+    return this.productid;
+  }
+
+  public void setProductid(String productid) {
+    this.productid = productid;
+  }
+
+  public Money getProductPremium() {
+    return this.productPremium;
+  }
+
+  public void setProductPremium(Money productPremium) {
+    this.productPremium = productPremium;
+  }
+
+  public String getProductAttributes() {
+    return this.productAttributes;
+  }
+
+  public void setProductAttributes(String productAttributes) {
+    this.productAttributes = productAttributes;
+  }
+}
