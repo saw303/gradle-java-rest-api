@@ -29,12 +29,12 @@ public class OrtResourceImpl extends OrtResource {
   }
 
   @Override
-  public IdType handleCreateEntity(String land) {
+  public IdType handleCreateEntity(OrtPostResourceModel model, String land) {
     throw new NotYetImplementedException();
   }
 
   @Override
-  public IdType handleUpdateEntity(String id, String land) {
+  public IdType handleUpdateEntity(OrtPutResourceModel model, String id, String land) {
     throw new NotYetImplementedException();
   }
 }

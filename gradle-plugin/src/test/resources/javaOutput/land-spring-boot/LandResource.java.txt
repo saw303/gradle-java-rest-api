@@ -3,10 +3,12 @@ package org.acme.rest.v1.laender;
 import ch.silviowangler.rest.types.IdType;
 import java.util.Collection;
 import javax.annotation.Generated;
+import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -62,18 +64,18 @@ public abstract class LandResource {
     return handleGetEntityPdf(id);
   }
 
-  public abstract IdType handleCreateEntity();
+  public abstract IdType handleCreateEntity(LandPostResourceModel model);
 
   @RequestMapping(
       method = RequestMethod.POST,
       produces = MediaType.APPLICATION_JSON_UTF8_VALUE
   )
   @ResponseBody
-  public IdType createEntity(LandPostResourceModel model) {
-    return handleCreateEntity();
+  public IdType createEntity(@Valid @RequestBody LandPostResourceModel model) {
+    return handleCreateEntity(model);
   }
 
-  public abstract IdType handleUpdateEntity(String id);
+  public abstract IdType handleUpdateEntity(LandPutResourceModel model, String id);
 
   @RequestMapping(
       method = RequestMethod.PUT,
@@ -81,8 +83,9 @@ public abstract class LandResource {
       produces = MediaType.APPLICATION_JSON_UTF8_VALUE
   )
   @ResponseBody
-  public IdType updateEntity(LandPutResourceModel model, @PathVariable("id") String id) {
-    return handleUpdateEntity(id);
+  public IdType updateEntity(@Valid @RequestBody LandPutResourceModel model,
+      @PathVariable("id") String id) {
+    return handleUpdateEntity(model, id);
   }
 
   @RequestMapping(

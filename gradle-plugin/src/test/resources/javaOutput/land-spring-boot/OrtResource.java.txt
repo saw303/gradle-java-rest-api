@@ -3,10 +3,12 @@ package org.acme.rest.v1.laender.orte;
 import ch.silviowangler.rest.types.IdType;
 import java.util.Collection;
 import javax.annotation.Generated;
+import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -77,18 +79,21 @@ public abstract class OrtResource {
     return handleGetEntityJpeg(id, land);
   }
 
-  public abstract IdType handleCreateEntity(@PathVariable("land") String land);
+  public abstract IdType handleCreateEntity(OrtPostResourceModel model,
+      @PathVariable("land") String land);
 
   @RequestMapping(
       method = RequestMethod.POST,
       produces = MediaType.APPLICATION_JSON_UTF8_VALUE
   )
   @ResponseBody
-  public IdType createEntity(@PathVariable("land") String land, OrtPostResourceModel model) {
-    return handleCreateEntity(land);
+  public IdType createEntity(@Valid @RequestBody OrtPostResourceModel model,
+      @PathVariable("land") String land) {
+    return handleCreateEntity(model, land);
   }
 
-  public abstract IdType handleUpdateEntity(String id, @PathVariable("land") String land);
+  public abstract IdType handleUpdateEntity(OrtPutResourceModel model, String id,
+      @PathVariable("land") String land);
 
   @RequestMapping(
       method = RequestMethod.PUT,
@@ -96,9 +101,9 @@ public abstract class OrtResource {
       produces = MediaType.APPLICATION_JSON_UTF8_VALUE
   )
   @ResponseBody
-  public IdType updateEntity(OrtPutResourceModel model, @PathVariable("id") String id,
-      @PathVariable("land") String land) {
-    return handleUpdateEntity(id, land);
+  public IdType updateEntity(@Valid @RequestBody OrtPutResourceModel model,
+      @PathVariable("id") String id, @PathVariable("land") String land) {
+    return handleUpdateEntity(model, id, land);
   }
 
   @RequestMapping(

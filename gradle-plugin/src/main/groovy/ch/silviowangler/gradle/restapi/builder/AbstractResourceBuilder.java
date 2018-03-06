@@ -149,7 +149,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 	@Override
 	public void generateResourceMethods() {
 
-		if (isResourceInterface() || isAbstractResourceInterface()) {
+		if (isAbstractOrInterfaceResource()) {
 
 			String content = getResourceContractContainer().getResourceContractPlainText();
 			content = Minify.minify(content).replaceAll("\"", "\\\\\"");
@@ -185,7 +185,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 				for (String pathVar : parser.getPathVariables()) {
 					ParameterSpec.Builder paramBuilder = ParameterSpec.builder(String.class, pathVar);
 
-					if (isResourceInterface() || isAbstractResourceInterface()) {
+					if (isAbstractOrInterfaceResource()) {
 						paramBuilder.addAnnotation(
 								AnnotationSpec.builder(getPathVariableAnnotationType().getClassName())
 										.addMember("value", "$S", pathVar)
@@ -219,61 +219,60 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 							pathParams
 					);
 
-				} else if (GenerateRestApiTask.POST.equals(verb.getVerb())) {
-
-					methodName = "createEntity";
-					methodBuilder = createMethod(
-							methodName,
-							resourceMethodReturnType(verb, representation),
-							params,
-							representation,
-							pathParams
-					);
-
-					ParameterSpec.Builder param = ParameterSpec.builder(resourceModelName(verb), "model");
-					if (getArtifactType().equals(RESOURCE)) {
-						param.addAnnotation(
-								createAnnotation(JAVAX_VALIDATION_VALID)
-						).build();
-					}
-					methodBuilder.addParameter(param.build());
-
-				} else if (GenerateRestApiTask.PUT.equals(verb.getVerb())) {
-
-					methodName = "updateEntity";
-					methodBuilder = createMethod(
-							methodName,
-							resourceMethodReturnType(verb, representation),
-							params,
-							representation,
-							pathParams
-					);
-
-				} else if (GenerateRestApiTask.DELETE_COLLECTION.equals(verb.getVerb())) {
-
-					methodName = "deleteCollection";
-
-					methodBuilder = createMethod(
-							methodName,
-							resourceMethodReturnType(verb, representation),
-							params,
-							representation,
-							pathParams
-					);
-
-				} else if (GenerateRestApiTask.DELETE_ENTITY.equals(verb.getVerb())) {
-
-					methodName = "deleteEntity";
-					methodBuilder = createMethod(
-							methodName,
-							resourceMethodReturnType(verb, representation),
-							params,
-							representation,
-							pathParams
-					);
-
 				} else {
-					throw new IllegalArgumentException(String.format("Verb %s is unknown", verb.getVerb()));
+					ClassName model = resourceModelName(verb);
+
+					if (GenerateRestApiTask.POST.equals(verb.getVerb())) {
+
+						params.put("model", model);
+
+						methodName = "createEntity";
+						methodBuilder = createMethod(
+								methodName,
+								resourceMethodReturnType(verb, representation),
+								params,
+								representation,
+								pathParams
+						);
+
+					} else if (GenerateRestApiTask.PUT.equals(verb.getVerb())) {
+
+						params.put("model", model);
+						methodName = "updateEntity";
+						methodBuilder = createMethod(
+								methodName,
+								resourceMethodReturnType(verb, representation),
+								params,
+								representation,
+								pathParams
+						);
+
+					} else if (GenerateRestApiTask.DELETE_COLLECTION.equals(verb.getVerb())) {
+
+						methodName = "deleteCollection";
+
+						methodBuilder = createMethod(
+								methodName,
+								resourceMethodReturnType(verb, representation),
+								params,
+								representation,
+								pathParams
+						);
+
+					} else if (GenerateRestApiTask.DELETE_ENTITY.equals(verb.getVerb())) {
+
+						methodName = "deleteEntity";
+						methodBuilder = createMethod(
+								methodName,
+								resourceMethodReturnType(verb, representation),
+								params,
+								representation,
+								pathParams
+						);
+
+					} else {
+						throw new IllegalArgumentException(String.format("Verb %s is unknown", verb.getVerb()));
+					}
 				}
 
 				MethodSpec resourceMethod = methodBuilder.build();
@@ -297,11 +296,11 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 		}
 
 
-		if (isResourceInterface() || isAbstractResourceInterface()) {
+		if (isAbstractOrInterfaceResource()) {
 			generatedDefaultMethodNotAllowedHandlersForMissingVerbs();
 		}
-
 	}
+
 
 	protected String getPath() {
 		GeneralDetails general = getResourceContractContainer().getResourceContract().getGeneral();
@@ -536,6 +535,10 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
 	private boolean isAbstractResourceInterface() {
 		return ArtifactType.ABSTRACT_RESOURCE.equals(getArtifactType());
+	}
+
+	private boolean isAbstractOrInterfaceResource() {
+		return isAbstractResourceInterface() || isResourceInterface();
 	}
 
 	private boolean isResourceImpl() {

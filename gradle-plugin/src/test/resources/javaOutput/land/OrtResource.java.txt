@@ -50,7 +50,7 @@ public interface OrtResource {
 
   @POST
   @Produces({ "application/json; charset=UTF-8" })
-  IdType createEntity(@PathParam("land") String land, @Valid OrtPostResourceModel model);
+  IdType createEntity(@Valid OrtPostResourceModel model, @PathParam("land") String land);
 
   @PUT
   @Produces({ "application/json; charset=UTF-8" })

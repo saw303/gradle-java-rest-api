@@ -471,7 +471,7 @@ class RestApiPluginSpec extends Specification {
         new File(temporaryFolder.getRoot(), 'org/acme/rest').exists()
 
         and:
-        assertGeneratedFiles javaFiles, 5
+        assertGeneratedFiles javaFiles, 6
 
         and:
         javaFiles.collect {
@@ -483,6 +483,7 @@ class RestApiPluginSpec extends Specification {
         assertJavaFile('org.acme.rest.v1.session.insurableperson.insuranceneeds.productproposal', 'ProductproposalResourceImpl', 'proposal-spring-boot')
         assertJavaFile('org.acme.rest.v1.session.insurableperson.insuranceneeds.productproposal', 'ProductproposalGetResourceModel', 'proposal-spring-boot')
         assertJavaFile('org.acme.rest.v1.session.insurableperson.insuranceneeds.productproposal', 'ProductproposalPostResourceModel', 'proposal-spring-boot')
+        assertJavaFile('org.acme.rest.v1.session.insurableperson.insuranceneeds.productproposal', 'ProductproposalPutResourceModel', 'proposal-spring-boot')
         assertJavaFile('org.acme.rest.v1.session.insurableperson.insuranceneeds.productproposal', 'ProposalType', 'proposal-spring-boot')
 
         when:

@@ -91,7 +91,17 @@ public class SpringRootResourceFactory extends AbstractResourceBuilder {
         setCurrentVerb(null);
     }
 
-    @Override
+	@Override
+	public boolean providesRequestBodyAnnotation() {
+		return true;
+	}
+
+	@Override
+	public AnnotationSpec buildRequestBodyAnnotation() {
+		return createAnnotation(SPRING_REQUEST_BODY);
+	}
+
+	@Override
     public AnnotationSpec getQueryParamAnnotation(String paramName) {
         return AnnotationSpec.builder(SPRING_REQUEST_PARAM.getClassName())
                 .addMember("value", "$S", paramName).build();

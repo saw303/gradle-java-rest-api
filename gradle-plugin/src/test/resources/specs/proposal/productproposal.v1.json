@@ -63,6 +63,33 @@
       ],
       "parameters": [],
       "permissions": []
+    },
+    {
+      "verb": "PUT",
+      "rel": "update",
+      "responseStates": [
+        {
+          "code": 200,
+          "message": "200 Ok",
+          "comment": "content in response body"
+        },
+        {
+          "code": 503,
+          "message": "503 Service Unavailable",
+          "comment": "Backend server not reachable or too slow"
+        }
+      ],
+      "representations": [
+        {
+          "name": "json",
+          "comment": "",
+          "responseExample": "{...}",
+          "isDefault": true,
+          "mimetype": "application/gesus.productproposal"
+        }
+      ],
+      "parameters": [],
+      "permissions": []
     }
   ],
   "fields": [
@@ -104,7 +131,7 @@
       "name": "addAnotherPersonSelected",
       "type": "bool",
       "options": null,
-      "mandatory": [],
+      "mandatory": ["POST", "PUT"],
       "min": null,
       "max": null,
       "multiple": false,

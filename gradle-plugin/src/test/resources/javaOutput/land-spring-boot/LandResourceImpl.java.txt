@@ -24,12 +24,12 @@ public class LandResourceImpl extends LandResource {
   }
 
   @Override
-  public IdType handleCreateEntity() {
+  public IdType handleCreateEntity(LandPostResourceModel model) {
     throw new NotYetImplementedException();
   }
 
   @Override
-  public IdType handleUpdateEntity(String id) {
+  public IdType handleUpdateEntity(LandPutResourceModel model, String id) {
     throw new NotYetImplementedException();
   }
 }

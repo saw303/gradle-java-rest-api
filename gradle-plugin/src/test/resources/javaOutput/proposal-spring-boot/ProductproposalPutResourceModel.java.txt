@@ -12,7 +12,7 @@ import org.javamoney.moneta.Money;
     comments = "Specification filename: productproposal.v1.json",
     value = "ch.silviowangler.restapi"
 )
-public class ProductproposalPostResourceModel implements Serializable, ResourceModel {
+public class ProductproposalPutResourceModel implements Serializable, ResourceModel {
   public static final String TYPE = "application/gesus.productproposal";
 
   private List<ProposalType> proposal = new java.util.ArrayList<>();
@@ -59,8 +59,8 @@ public class ProductproposalPostResourceModel implements Serializable, ResourceM
   @Override
   public boolean equals(Object other) {
     if (this == other) return true;
-    if (! (other instanceof ProductproposalPostResourceModel)) return false;
-    ProductproposalPostResourceModel that = (ProductproposalPostResourceModel) other;
+    if (! (other instanceof ProductproposalPutResourceModel)) return false;
+    ProductproposalPutResourceModel that = (ProductproposalPutResourceModel) other;
     return Objects.equals(getProposal(), that.getProposal()) && Objects.equals(getPremiumTotal(), that.getPremiumTotal()) && Objects.equals(getAddAnotherPersonSelected(), that.getAddAnotherPersonSelected()) && Objects.equals(getNextButtonSelected(), that.getNextButtonSelected());
   }
 

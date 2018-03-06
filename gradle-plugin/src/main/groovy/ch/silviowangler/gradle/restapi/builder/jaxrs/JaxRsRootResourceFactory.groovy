@@ -63,6 +63,11 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder {
     }
 
     @Override
+    AnnotationSpec buildRequestBodyAnnotation() {
+        throw new UnsupportedOperationException("Not supported for JAX-RS")
+    }
+
+    @Override
     TypeSpec buildResource() {
 
         reset()

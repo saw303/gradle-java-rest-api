@@ -27,7 +27,7 @@ public class OrtResourceImpl implements OrtResource {
   }
 
   @Override
-  public IdType createEntity(String land, OrtPostResourceModel model) {
+  public IdType createEntity(OrtPostResourceModel model, String land) {
     throw new NotYetImplementedException();
   }
 

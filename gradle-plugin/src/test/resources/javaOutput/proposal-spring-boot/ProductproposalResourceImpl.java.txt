@@ -13,7 +13,12 @@ public class ProductproposalResourceImpl extends ProductproposalResource {
   }
 
   @Override
-  public IdType handleCreateEntity() {
+  public IdType handleCreateEntity(ProductproposalPostResourceModel model) {
+    throw new NotYetImplementedException();
+  }
+
+  @Override
+  public IdType handleUpdateEntity(ProductproposalPutResourceModel model, String id) {
     throw new NotYetImplementedException();
   }
 }

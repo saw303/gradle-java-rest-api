@@ -23,7 +23,6 @@
  */
 package ch.silviowangler.gradle.restapi.builder;
 
-import ch.silviowangler.gradle.restapi.GenerateRestApiTask;
 import ch.silviowangler.gradle.restapi.GeneratorUtil;
 import ch.silviowangler.gradle.restapi.PluginTypes;
 import ch.silviowangler.gradle.restapi.RestApiPlugin;
@@ -43,261 +42,266 @@ import static javax.lang.model.element.Modifier.*;
 
 public interface ResourceBuilder {
 
-    String GET_COLLECTION = "GET_COLLECTION";
-    String GET_ENTITY = "GET_ENTITY";
-    String POST = "POST";
-    String PUT = "PUT";
-    String DELETE_ENTITY = "DELETE_ENTITY";
-    String DELETE_COLLECTION = "DELETE_COLLECTION";
+	String GET_COLLECTION = "GET_COLLECTION";
+	String GET_ENTITY = "GET_ENTITY";
+	String POST = "POST";
+	String PUT = "PUT";
+	String DELETE_ENTITY = "DELETE_ENTITY";
+	String DELETE_COLLECTION = "DELETE_COLLECTION";
 
-    String getCurrentPackageName();
+	String getCurrentPackageName();
 
-    ResourceBuilder withCurrentPackageName(String packageName);
+	ResourceBuilder withCurrentPackageName(String packageName);
 
-    ResourceBuilder withResponseEncoding(Charset responseEncoding);
+	ResourceBuilder withResponseEncoding(Charset responseEncoding);
 
-    ArtifactType getArtifactType();
+	ArtifactType getArtifactType();
 
-    ResourceContractContainer getResourceContractContainer();
+	ResourceContractContainer getResourceContractContainer();
 
-    TypeSpec buildResource();
+	TypeSpec buildResource();
 
-    TypeSpec buildResourceImpl();
+	TypeSpec buildResourceImpl();
 
-    default String resourceName() {
-        return GeneratorUtil.createResourceName(getResourceContractContainer().getSourceFileName());
-    }
+	default String resourceName() {
+		return GeneratorUtil.createResourceName(getResourceContractContainer().getSourceFileName());
+	}
 
-    default String resourceImplName() {
-        return GeneratorUtil.createResourceImplementationName(getResourceContractContainer().getSourceFileName());
-    }
+	default String resourceImplName() {
+		return GeneratorUtil.createResourceImplementationName(getResourceContractContainer().getSourceFileName());
+	}
 
 
-    TypeName resourceMethodReturnType(Verb verb, Representation representation);
+	TypeName resourceMethodReturnType(Verb verb, Representation representation);
 
-    default String toHttpMethod(Verb verb) {
-        String v;
+	default String toHttpMethod(Verb verb) {
+		String v;
 
-        if (GET_ENTITY.equals(verb.getVerb()) || GET_COLLECTION.equals(verb.getVerb())) {
-            v = "Get";
-        } else if (DELETE_ENTITY.equals(verb.getVerb()) || DELETE_COLLECTION.equals(verb.getVerb())) {
-            v = "Delete";
-        } else if (PUT.equals(verb.getVerb())) {
-            v = "Put";
-        } else if (POST.equals(verb.getVerb())) {
-            v = "Post";
-        } else {
-            throw new IllegalArgumentException("Unknown verb " + verb.getVerb());
-        }
-        return v;
-    }
+		if (GET_ENTITY.equals(verb.getVerb()) || GET_COLLECTION.equals(verb.getVerb())) {
+			v = "Get";
+		} else if (DELETE_ENTITY.equals(verb.getVerb()) || DELETE_COLLECTION.equals(verb.getVerb())) {
+			v = "Delete";
+		} else if (PUT.equals(verb.getVerb())) {
+			v = "Put";
+		} else if (POST.equals(verb.getVerb())) {
+			v = "Post";
+		} else {
+			throw new IllegalArgumentException("Unknown verb " + verb.getVerb());
+		}
+		return v;
+	}
 
-    default ClassName resourceModelName(Verb verb) {
-        return ClassName.get(getCurrentPackageName(), GeneratorUtil.createResourceModelName(getResourceContractContainer().getSourceFileName(), toHttpMethod(verb)));
-    }
+	default ClassName resourceModelName(Verb verb) {
+		return ClassName.get(getCurrentPackageName(), GeneratorUtil.createResourceModelName(getResourceContractContainer().getSourceFileName(), toHttpMethod(verb)));
+	}
 
-    default AnnotationSpec createGeneratedAnnotation(boolean printTimestamp) {
+	default AnnotationSpec createGeneratedAnnotation(boolean printTimestamp) {
 
-        Map<String, Object> map = new HashMap<>();
+		Map<String, Object> map = new HashMap<>();
 
-        map.put("value", RestApiPlugin.PLUGIN_ID);
-        map.put("comments", "Specification filename: " + getResourceContractContainer().getSourceFileName());
+		map.put("value", RestApiPlugin.PLUGIN_ID);
+		map.put("comments", "Specification filename: " + getResourceContractContainer().getSourceFileName());
 
-        if (printTimestamp) {
-            ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
-            map.put("date", utc.toString());
-        }
+		if (printTimestamp) {
+			ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
+			map.put("date", utc.toString());
+		}
 
-        return createAnnotation(JAVAX_GENERATED, map);
-    }
+		return createAnnotation(JAVAX_GENERATED, map);
+	}
 
-    default AnnotationSpec createAnnotation(PluginTypes className) {
-        return createAnnotation(className, new HashMap<>());
-    }
+	default AnnotationSpec createAnnotation(PluginTypes className) {
+		return createAnnotation(className, new HashMap<>());
+	}
 
-    default AnnotationSpec createAnnotation(PluginTypes className, Map<String, Object> attributes) {
-        AnnotationSpec.Builder builder = AnnotationSpec.builder(className.getClassName());
+	default AnnotationSpec createAnnotation(PluginTypes className, Map<String, Object> attributes) {
+		AnnotationSpec.Builder builder = AnnotationSpec.builder(className.getClassName());
 
-        for (Map.Entry<String, Object> entry : attributes.entrySet()) {
+		for (Map.Entry<String, Object> entry : attributes.entrySet()) {
 
-            String param = "$S";
+			String param = "$S";
 
-            if (entry.getValue() instanceof String && ((String) entry.getValue()).endsWith(".class")) {
-                param = "$N";
-            }
-            builder.addMember(entry.getKey(), param, entry.getValue());
-        }
-        return builder.build();
-    }
+			if (entry.getValue() instanceof String && ((String) entry.getValue()).endsWith(".class")) {
+				param = "$N";
+			}
+			builder.addMember(entry.getKey(), param, entry.getValue());
+		}
+		return builder.build();
+	}
 
-    void generateResourceMethods();
+	void generateResourceMethods();
 
-    void generateMethodNotAllowedStatement(MethodSpec.Builder builder);
+	void generateMethodNotAllowedStatement(MethodSpec.Builder builder);
 
-    ClassName getMethodNowAllowedReturnType();
+	ClassName getMethodNowAllowedReturnType();
 
-    default MethodSpec.Builder createMethodNotAllowedHandler(String methodName) {
-        Representation representation = Representation.json();
-        MethodSpec.Builder builder = createMethod(methodName, getMethodNowAllowedReturnType(), new HashMap<>(), representation, Collections.emptyList());
-        generateMethodNotAllowedStatement(builder);
+	default MethodSpec.Builder createMethodNotAllowedHandler(String methodName) {
+		Representation representation = Representation.json();
+		MethodSpec.Builder builder = createMethod(methodName, getMethodNowAllowedReturnType(), new HashMap<>(), representation, Collections.emptyList());
+		generateMethodNotAllowedStatement(builder);
 
-        return builder;
-    }
+		return builder;
+	}
 
-    default MethodSpec.Builder createMethod(String methodName, TypeName returnType) {
-        Representation representation = Representation.json();
-        return createMethod(methodName, returnType, new HashMap<>(), representation);
-    }
-
-    default MethodSpec.Builder createMethod(String methodName, TypeName returnType, Map<String, ClassName> params, Representation representation) {
-        return createMethod(methodName, returnType, params, representation, Collections.emptyList());
-    }
-
-    default MethodSpec.Builder createMethod(String methodName, TypeName returnType, Map<String, ClassName> params, Representation representation, List<ParameterSpec> pathParams) {
-
-        if (!representation.isJson()) {
-            methodName += CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, representation.getName());
-        }
-
-        MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(methodName).addModifiers(PUBLIC);
-
-        if ("getCollection".equals(methodName) || "handleGetCollection".equals(methodName)) {
-            methodBuilder.returns(ParameterizedTypeName.get(ClassName.get(Collection.class), returnType));
-        } else {
-            methodBuilder.returns(returnType);
-        }
-
-        final boolean isResourceInterface = ArtifactType.RESOURCE.equals(getArtifactType());
-        final boolean isAbstractResourceClass = ArtifactType.ABSTRACT_RESOURCE.equals(getArtifactType());
-
-        if (isResourceInterface || (isAbstractResourceClass && !isHandlerMethod(methodName))) {
-            Iterable<AnnotationSpec> annotations = getResourceMethodAnnotations(isIdGenerationRequired(methodName), representation);
-            methodBuilder.addAnnotations(annotations);
-        } else if (ArtifactType.RESOURCE_IMPL.equals(getArtifactType())) {
-            methodBuilder.addAnnotation(AnnotationSpec.builder(JAVA_OVERRIDE.getClassName()).build());
-        }
-
-        boolean generateIdParamAnnotation = false;
-
-        if (!supportsInterfaces() && isHandlerMethod(methodName) && ArtifactType.RESOURCE_IMPL.equals(getArtifactType())) {
-            methodBuilder.addStatement("throw new $T()", PLUGIN_NOT_YET_IMPLEMENTED_EXCEPTION.getClassName());
-        } else if ("getOptions".equals(methodName) || isDefaultMethodNotAllowed(methodName)) {
-
-            if (isResourceInterface) {
-                methodBuilder.addModifiers(DEFAULT);
-            }
-
-            generateIdParamAnnotation = true;
-        } else if (!supportsInterfaces() && !isHandlerMethod(methodName)) {
-            generateIdParamAnnotation = true;
-        } else if (!supportsInterfaces() && isHandlerMethod(methodName) && ArtifactType.ABSTRACT_RESOURCE.equals(getArtifactType())) {
-            methodBuilder.addModifiers(ABSTRACT);
-        }
-        else {
-            if (isResourceInterface) {
-                methodBuilder.addModifiers(ABSTRACT);
-                generateIdParamAnnotation = true;
-            } else {
-                methodBuilder.addStatement("throw new $T()", PLUGIN_NOT_YET_IMPLEMENTED_EXCEPTION.getClassName());
-            }
-        }
+	default MethodSpec.Builder createMethod(String methodName, TypeName returnType) {
+		Representation representation = Representation.json();
+		return createMethod(methodName, returnType, new HashMap<>(), representation);
+	}
+
+	default MethodSpec.Builder createMethod(String methodName, TypeName returnType, Map<String, ClassName> params, Representation representation) {
+		return createMethod(methodName, returnType, params, representation, Collections.emptyList());
+	}
+
+	default MethodSpec.Builder createMethod(String methodName, TypeName returnType, Map<String, ClassName> params, Representation representation, List<ParameterSpec> pathParams) {
+
+		if (!representation.isJson()) {
+			methodName += CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, representation.getName());
+		}
+		final String methodNameCopy = String.valueOf(methodName);
+
+		MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(methodName).addModifiers(PUBLIC);
+
+		if ("getCollection".equals(methodName) || "handleGetCollection".equals(methodName)) {
+			methodBuilder.returns(ParameterizedTypeName.get(ClassName.get(Collection.class), returnType));
+		} else {
+			methodBuilder.returns(returnType);
+		}
+
+		final boolean isResourceInterface = ArtifactType.RESOURCE.equals(getArtifactType());
+		final boolean isAbstractResourceClass = ArtifactType.ABSTRACT_RESOURCE.equals(getArtifactType());
+
+		if (isResourceInterface || (isAbstractResourceClass && !isHandlerMethod(methodName))) {
+			Iterable<AnnotationSpec> annotations = getResourceMethodAnnotations(isIdGenerationRequired(methodName), representation);
+			methodBuilder.addAnnotations(annotations);
+		} else if (ArtifactType.RESOURCE_IMPL.equals(getArtifactType())) {
+			methodBuilder.addAnnotation(AnnotationSpec.builder(JAVA_OVERRIDE.getClassName()).build());
+		}
+
+		boolean generateIdParamAnnotation = false;
+
+		if (!supportsInterfaces() && isHandlerMethod(methodName) && ArtifactType.RESOURCE_IMPL.equals(getArtifactType())) {
+			methodBuilder.addStatement("throw new $T()", PLUGIN_NOT_YET_IMPLEMENTED_EXCEPTION.getClassName());
+		} else if ("getOptions".equals(methodName) || isDefaultMethodNotAllowed(methodName)) {
+
+			if (isResourceInterface) {
+				methodBuilder.addModifiers(DEFAULT);
+			}
+
+			generateIdParamAnnotation = true;
+		} else if (!supportsInterfaces() && !isHandlerMethod(methodName)) {
+			generateIdParamAnnotation = true;
+		} else if (!supportsInterfaces() && isHandlerMethod(methodName) && ArtifactType.ABSTRACT_RESOURCE.equals(getArtifactType())) {
+			methodBuilder.addModifiers(ABSTRACT);
+		} else {
+			if (isResourceInterface) {
+				methodBuilder.addModifiers(ABSTRACT);
+				generateIdParamAnnotation = true;
+			} else {
+				methodBuilder.addStatement("throw new $T()", PLUGIN_NOT_YET_IMPLEMENTED_EXCEPTION.getClassName());
+			}
+		}
 
-        List<String> names = new ArrayList<>(params.size());
+		List<String> names = new ArrayList<>(params.size());
 
-        params.forEach((name, type) -> {
+		params.forEach((name, type) -> {
 
-            ParameterSpec.Builder builder = ParameterSpec.builder(type, name);
+			ParameterSpec.Builder builder = ParameterSpec.builder(type, name);
 
-            if (isResourceInterface) {
-                builder.addAnnotation(getQueryParamAnnotation(name));
-            }
-            ParameterSpec parameter = builder.build();
+			if ("model".equals(name) && !methodNameCopy.startsWith("handle")) {
+				if (isResourceInterface || isAbstractResourceClass) {
+					builder.addAnnotation(
+							createAnnotation(JAVAX_VALIDATION_VALID)
+					).build();
 
-            methodBuilder.addParameter(parameter);
-            names.add(name);
-        });
+					if (providesRequestBodyAnnotation()) {
+						builder.addAnnotation(buildRequestBodyAnnotation());
+					}
+				}
+			} else {
+				if (isResourceInterface) {
+					builder.addAnnotation(getQueryParamAnnotation(name));
+				}
+			}
 
+			ParameterSpec parameter = builder.build();
 
-        if (methodName.equals("updateEntity")) {
-            Verb verb = new Verb();
-            verb.setVerb(GenerateRestApiTask.PUT);
-            ParameterSpec.Builder param = ParameterSpec.builder(resourceModelName(verb), "model");
-            if (getArtifactType().equals(ArtifactType.RESOURCE)) {
-                param.addAnnotation(
-                        createAnnotation(JAVAX_VALIDATION_VALID)
-                ).build();
-            }
-            methodBuilder.addParameter(param.build());
-        }
+			methodBuilder.addParameter(parameter);
+			names.add(name);
+		});
 
-        if (methodName.matches("(handle){0,1}(get|update|delete|Get|Update|Delete)Entity.*")) {
-            ParameterSpec id = generateIdParam(generateIdParamAnnotation);
-            methodBuilder.addParameter(id);
-            names.add(id.name);
-        }
+		if (methodName.matches("(handle){0,1}(get|update|delete|Get|Update|Delete)Entity.*")) {
+			ParameterSpec id = generateIdParam(generateIdParamAnnotation);
+			methodBuilder.addParameter(id);
+			names.add(id.name);
+		}
 
-        pathParams.forEach(p -> {
-            names.add(p.name);
-            methodBuilder.addParameter(p);
-        });
+		pathParams.forEach(p -> {
+			names.add(p.name);
+			methodBuilder.addParameter(p);
+		});
 
-        String paramNames = names.stream().collect(Collectors.joining(", "));
+		String paramNames = names.stream().collect(Collectors.joining(", "));
 
-        if (!supportsInterfaces() && !isHandlerMethod(methodName) && ArtifactType.ABSTRACT_RESOURCE.equals(getArtifactType()) && !methodName.endsWith("AutoAnswer") && !methodName.equals("getOptions")) {
-            methodBuilder.addStatement("return handle$L($L)", CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, methodName), paramNames);
-        }
+		if (!supportsInterfaces() && !isHandlerMethod(methodName) && ArtifactType.ABSTRACT_RESOURCE.equals(getArtifactType()) && !methodName.endsWith("AutoAnswer") && !methodName.equals("getOptions")) {
+			methodBuilder.addStatement("return handle$L($L)", CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, methodName), paramNames);
+		}
+		return methodBuilder;
+	}
 
-        return methodBuilder;
-    }
+	default boolean isHandlerMethod(String methodName) {
+		return methodName.startsWith("handle");
+	}
 
-    default boolean isHandlerMethod(String methodName) {
-        return methodName.startsWith("handle");
-    }
+	default boolean isIdGenerationRequired(String methodName) {
+		List<String> noId = Arrays.asList("getOptions", "createEntity", "getCollection", "deleteCollection");
 
-    default boolean isIdGenerationRequired(String methodName) {
-        List<String> noId = Arrays.asList("getOptions", "createEntity", "getCollection", "deleteCollection");
+		for (String s : noId) {
+			if (methodName.startsWith(s)) {
+				return false;
+			}
+		}
+		return true;
+	}
 
-        for (String s : noId) {
-            if (methodName.startsWith(s)) {
-                return false;
-            }
-        }
-        return true;
-    }
+	default boolean isDefaultMethodNotAllowed(String methodName) {
+		return methodName.endsWith("AutoAnswer") && ArtifactType.RESOURCE.equals(getArtifactType());
+	}
 
-    default boolean isDefaultMethodNotAllowed(String methodName) {
-        return methodName.endsWith("AutoAnswer") && ArtifactType.RESOURCE.equals(getArtifactType());
-    }
+	AnnotationSpec getQueryParamAnnotation(String paramName);
 
-    AnnotationSpec getQueryParamAnnotation(String paramName);
+	Iterable<AnnotationSpec> getResourceMethodAnnotations(boolean applyId, Representation representation);
 
-    Iterable<AnnotationSpec> getResourceMethodAnnotations(boolean applyId, Representation representation);
+	PluginTypes getPathVariableAnnotationType();
 
-    PluginTypes getPathVariableAnnotationType();
+	default ParameterSpec generateIdParam(boolean withAnnotation) {
+		ParameterSpec.Builder param = ParameterSpec.builder(ClassName.get(String.class), "id");
 
-    default ParameterSpec generateIdParam(boolean withAnnotation) {
-        ParameterSpec.Builder param = ParameterSpec.builder(ClassName.get(String.class), "id");
+		if (withAnnotation) {
 
-        if (withAnnotation) {
+			Map<String, Object> attrs = new HashMap<>();
+			attrs.put("value", "id");
 
-            Map<String, Object> attrs = new HashMap<>();
-            attrs.put("value", "id");
+			param.addAnnotation(
+					createAnnotation(getPathVariableAnnotationType(), attrs)
+			).build();
+		}
+		return param.build();
+	}
 
-            param.addAnnotation(
-                    createAnnotation(getPathVariableAnnotationType(), attrs)
-            ).build();
-        }
-        return param.build();
-    }
+	ResourceBuilder withResourceContractContainer(ResourceContractContainer resourceContract);
 
-    ResourceBuilder withResourceContractContainer(ResourceContractContainer resourceContract);
+	ResourceBuilder withTimestampInGeneratedAnnotation(boolean val);
 
-    ResourceBuilder withTimestampInGeneratedAnnotation(boolean val);
+	Set<TypeSpec> buildResourceTypes(Set<ClassName> types);
 
-    Set<TypeSpec> buildResourceTypes(Set<ClassName> types);
+	Set<TypeSpec> buildResourceModels(Set<ClassName> types);
 
-    Set<TypeSpec> buildResourceModels(Set<ClassName> types);
+	boolean supportsInterfaces();
 
-    boolean supportsInterfaces();
+	default boolean providesRequestBodyAnnotation() {
+		return false;
+	}
+
+	AnnotationSpec buildRequestBodyAnnotation();
 
 }
