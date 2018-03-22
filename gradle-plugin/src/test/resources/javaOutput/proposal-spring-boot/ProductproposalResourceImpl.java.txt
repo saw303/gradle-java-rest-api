@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ProductproposalResourceImpl extends ProductproposalResource {
   @Override
-  public Collection<ProductproposalGetResourceModel> handleGetCollection() {
+  public Collection<ProductproposalGetResourceModel> handleGetCollection(String q) {
     throw new NotYetImplementedException();
   }
 

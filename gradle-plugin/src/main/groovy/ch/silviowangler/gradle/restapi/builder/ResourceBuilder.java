@@ -207,20 +207,17 @@ public interface ResourceBuilder {
 
 			ParameterSpec.Builder builder = ParameterSpec.builder(type, name);
 
-			if ("model".equals(name) && !methodNameCopy.startsWith("handle")) {
-				if (isResourceInterface || isAbstractResourceClass) {
-					builder.addAnnotation(
-							createAnnotation(JAVAX_VALIDATION_VALID)
-					).build();
+			final boolean isHandleMethod = methodNameCopy.startsWith("handle");
+			final boolean isResource = isResourceInterface || isAbstractResourceClass;
 
-					if (providesRequestBodyAnnotation()) {
-						builder.addAnnotation(buildRequestBodyAnnotation());
-					}
+			if ("model".equals(name) && !isHandleMethod && isResource) {
+				builder.addAnnotation(createAnnotation(JAVAX_VALIDATION_VALID)).build();
+
+				if (providesRequestBodyAnnotation()) {
+					builder.addAnnotation(buildRequestBodyAnnotation());
 				}
-			} else {
-				if (isResourceInterface) {
-					builder.addAnnotation(getQueryParamAnnotation(name));
-				}
+			} else if (isResource && !isHandleMethod) {
+				builder.addAnnotation(getQueryParamAnnotation(name));
 			}
 
 			ParameterSpec parameter = builder.build();

@@ -34,7 +34,20 @@
           "mimetype": "application/gesus.productproposal"
         }
       ],
-      "parameters": [],
+      "parameters": [
+        {
+          "name": "q",
+          "type": "string",
+          "options": null,
+          "mandatory": false,
+          "min": null,
+          "max": null,
+          "multiple": false,
+          "defaultValue": null,
+          "alias": [],
+          "x-comment": "Search"
+        }
+      ],
       "permissions": []
     },
     {
@@ -131,7 +144,10 @@
       "name": "addAnotherPersonSelected",
       "type": "bool",
       "options": null,
-      "mandatory": ["POST", "PUT"],
+      "mandatory": [
+        "POST",
+        "PUT"
+      ],
       "min": null,
       "max": null,
       "multiple": false,
