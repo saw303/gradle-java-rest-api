@@ -43,7 +43,8 @@ public abstract class OrtResource {
     return handleDeleteEntity(id, land);
   }
 
-  public abstract Collection<OrtGetResourceModel> handleGetCollection(@PathVariable("land") String land);
+  public abstract Collection<OrtGetResourceModel> handleGetCollection(
+      @PathVariable("land") String land);
 
   @RequestMapping(
       method = RequestMethod.GET,
