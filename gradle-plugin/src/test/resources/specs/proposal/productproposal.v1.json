@@ -3,7 +3,7 @@
     "name": "productProposal.v1",
     "description": "This resource generates the product proposal for the customer based on certain criteria like postcode/city, age and insurance needs",
     "version": "1.0.0",
-    "x-route": "v1/session/insurableperson/insuranceneeds/productproposal",
+    "x-route": "v1/session/insurableperson/insuranceneeds/productproposal/:entity",
     "lifecycle": {
       "deprecated": false,
       "info": "This version is still valid"

@@ -26,16 +26,15 @@ public abstract class RootResource {
     return OPTIONS_CONTENT;
   }
 
-  public abstract RootGetResourceModel handleGetEntity(String id);
+  public abstract RootGetResourceModel handleGetEntity();
 
   @RequestMapping(
       method = RequestMethod.GET,
-      path = "/{id}",
       produces = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseBody
-  public RootGetResourceModel getEntity(@PathVariable("id") String id) {
-    return handleGetEntity(id);
+  public RootGetResourceModel getEntity() {
+    return handleGetEntity();
   }
 
   @RequestMapping(
@@ -63,15 +62,6 @@ public abstract class RootResource {
   )
   @ResponseBody
   public ResponseEntity deleteEntityAutoAnswer(@PathVariable("id") String id) {
-    return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
-  }
-
-  @RequestMapping(
-      method = RequestMethod.GET,
-      produces = MediaType.APPLICATION_JSON_VALUE
-  )
-  @ResponseBody
-  public ResponseEntity getCollectionAutoAnswer() {
     return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
   }
 

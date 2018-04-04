@@ -28,8 +28,7 @@ public interface RootResource {
 
   @GET
   @Produces({ "application/json; charset=UTF-8" })
-  @Path("{id}")
-  RootGetResourceModel getEntity(@PathParam("id") String id);
+  RootGetResourceModel getEntity();
 
   @POST
   @Produces({ "application/json; charset=UTF-8" })
@@ -47,12 +46,6 @@ public interface RootResource {
   @Produces({ "application/json; charset=UTF-8" })
   @Path("{id}")
   default Response deleteEntityAutoAnswer(@PathParam("id") String id) {
-    return Response.status(405).build();
-  }
-
-  @GET
-  @Produces({ "application/json; charset=UTF-8" })
-  default Response getCollectionAutoAnswer() {
     return Response.status(405).build();
   }
 

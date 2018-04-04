@@ -4,7 +4,7 @@ import ch.silviowangler.rest.NotYetImplementedException;
 
 public class RootResourceImpl implements RootResource {
   @Override
-  public RootGetResourceModel getEntity(String id) {
+  public RootGetResourceModel getEntity() {
     throw new NotYetImplementedException();
   }
 }

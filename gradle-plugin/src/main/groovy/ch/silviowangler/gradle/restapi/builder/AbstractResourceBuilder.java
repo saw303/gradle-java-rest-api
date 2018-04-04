@@ -177,10 +177,11 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
 			verb.getParameters().forEach(p -> params.put(p.getName(), GeneratorUtil.translateToJava(p.getType())));
 
-			String methodName;
 			for (Representation representation : verb.getRepresentations()) {
 
+
 				List<ParameterSpec> pathParams = new ArrayList<>(parser.getPathVariables().size());
+				boolean directEntity = parser.isDirectEntity();
 
 				for (String pathVar : parser.getPathVariables()) {
 					ParameterSpec.Builder paramBuilder = ParameterSpec.builder(String.class, pathVar);
@@ -195,29 +196,21 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 					pathParams.add(paramBuilder.build());
 				}
 
+				MethodContext context = new MethodContext(resourceMethodReturnType(verb, representation), params, representation, pathParams, directEntity);
 
 				if (GenerateRestApiTask.GET_COLLECTION.equals(verb.getVerb())) {
 
-					methodName = "getCollection";
-					methodBuilder = createMethod(
-							methodName,
-							resourceMethodReturnType(verb, representation),
-							params,
-							representation,
-							pathParams
-					);
+					if (directEntity) {
+						continue;
+					}
+
+					context.setMethodName("getCollection");
+					methodBuilder = createMethod(context);
 
 				} else if (GenerateRestApiTask.GET_ENTITY.equals(verb.getVerb())) {
 
-					methodName = "getEntity";
-
-					methodBuilder = createMethod(
-							methodName,
-							resourceMethodReturnType(verb, representation),
-							params,
-							representation,
-							pathParams
-					);
+					context.setMethodName("getEntity");
+					methodBuilder = createMethod(context);
 
 				} else {
 					ClassName model = resourceModelName(verb);
@@ -226,49 +219,25 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
 						params.put("model", model);
 
-						methodName = "createEntity";
-						methodBuilder = createMethod(
-								methodName,
-								resourceMethodReturnType(verb, representation),
-								params,
-								representation,
-								pathParams
-						);
+						context.setMethodName("createEntity");
+						methodBuilder = createMethod(context);
 
 					} else if (GenerateRestApiTask.PUT.equals(verb.getVerb())) {
 
 						params.put("model", model);
-						methodName = "updateEntity";
-						methodBuilder = createMethod(
-								methodName,
-								resourceMethodReturnType(verb, representation),
-								params,
-								representation,
-								pathParams
-						);
+						context.setMethodName("updateEntity");
+						methodBuilder = createMethod(context);
 
 					} else if (GenerateRestApiTask.DELETE_COLLECTION.equals(verb.getVerb())) {
 
-						methodName = "deleteCollection";
+						context.setMethodName("deleteCollection");
 
-						methodBuilder = createMethod(
-								methodName,
-								resourceMethodReturnType(verb, representation),
-								params,
-								representation,
-								pathParams
-						);
+						methodBuilder = createMethod(context);
 
 					} else if (GenerateRestApiTask.DELETE_ENTITY.equals(verb.getVerb())) {
 
-						methodName = "deleteEntity";
-						methodBuilder = createMethod(
-								methodName,
-								resourceMethodReturnType(verb, representation),
-								params,
-								representation,
-								pathParams
-						);
+						context.setMethodName("deleteEntity");
+						methodBuilder = createMethod(context);
 
 					} else {
 						throw new IllegalArgumentException(String.format("Verb %s is unknown", verb.getVerb()));
@@ -278,13 +247,9 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 				MethodSpec resourceMethod = methodBuilder.build();
 
 				if (!supportsInterfaces() && resourceMethod.modifiers.size() == 1 && resourceMethod.modifiers.contains(PUBLIC)) {
-					MethodSpec.Builder handlerBuilder = createMethod(
-							String.format("%s%s", "handle", LOWER_CAMEL.to(UPPER_CAMEL, methodName)),
-							resourceMethodReturnType(verb, representation),
-							params,
-							representation,
-							pathParams
-					);
+
+					context.setMethodName(String.format("%s%s", "handle", LOWER_CAMEL.to(UPPER_CAMEL, context.getMethodName())));
+					MethodSpec.Builder handlerBuilder = createMethod(context);
 					this.typeBuilder.addMethod(handlerBuilder.build());
 				}
 
@@ -297,7 +262,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
 
 		if (isAbstractOrInterfaceResource()) {
-			generatedDefaultMethodNotAllowedHandlersForMissingVerbs();
+			generatedDefaultMethodNotAllowedHandlersForMissingVerbs(parser.isDirectEntity());
 		}
 	}
 
@@ -552,7 +517,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 		return ArtifactType.RESOURCE_IMPL.equals(getArtifactType());
 	}
 
-	private void generatedDefaultMethodNotAllowedHandlersForMissingVerbs() {
+	private void generatedDefaultMethodNotAllowedHandlersForMissingVerbs(boolean directEntity) {
 
 
 		if (!hasPostVerb()) {
@@ -570,7 +535,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 			this.typeBuilder.addMethod(createMethodNotAllowedHandler("deleteEntityAutoAnswer").build());
 		}
 
-		if (!hasGetCollectionVerb()) {
+		if (!hasGetCollectionVerb() && !directEntity) {
 			this.currentVerb = new Verb(GET_COLLECTION);
 			this.typeBuilder.addMethod(createMethodNotAllowedHandler("getCollectionAutoAnswer").build());
 		} else if (!hasGetEntityVerb()) {

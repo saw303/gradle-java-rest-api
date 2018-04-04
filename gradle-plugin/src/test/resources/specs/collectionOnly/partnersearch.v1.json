@@ -9,7 +9,7 @@
     },
     "searchable": true,
     "countable": false,
-    "x-route": "/v1/partner/"
+    "x-route": "/v1/partner/:entity"
   },
   "verbs": [
     {

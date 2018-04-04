@@ -137,7 +137,9 @@ public interface ResourceBuilder {
 
 	default MethodSpec.Builder createMethodNotAllowedHandler(String methodName) {
 		Representation representation = Representation.json();
-		MethodSpec.Builder builder = createMethod(methodName, getMethodNowAllowedReturnType(), new HashMap<>(), representation, Collections.emptyList());
+
+		MethodContext context = new MethodContext(methodName, getMethodNowAllowedReturnType(), representation);
+		MethodSpec.Builder builder = createMethod(context);
 		generateMethodNotAllowedStatement(builder);
 
 		return builder;
@@ -145,14 +147,15 @@ public interface ResourceBuilder {
 
 	default MethodSpec.Builder createMethod(String methodName, TypeName returnType) {
 		Representation representation = Representation.json();
-		return createMethod(methodName, returnType, new HashMap<>(), representation);
+
+		MethodContext context = new MethodContext(methodName, returnType, representation);
+		return createMethod(context);
 	}
 
-	default MethodSpec.Builder createMethod(String methodName, TypeName returnType, Map<String, ClassName> params, Representation representation) {
-		return createMethod(methodName, returnType, params, representation, Collections.emptyList());
-	}
+	default MethodSpec.Builder createMethod(MethodContext context) {
 
-	default MethodSpec.Builder createMethod(String methodName, TypeName returnType, Map<String, ClassName> params, Representation representation, List<ParameterSpec> pathParams) {
+		String methodName = context.getMethodName();
+		Representation representation = context.getRepresentation();
 
 		if (!representation.isJson()) {
 			methodName += CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, representation.getName());
@@ -162,16 +165,16 @@ public interface ResourceBuilder {
 		MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(methodName).addModifiers(PUBLIC);
 
 		if ("getCollection".equals(methodName) || "handleGetCollection".equals(methodName)) {
-			methodBuilder.returns(ParameterizedTypeName.get(ClassName.get(Collection.class), returnType));
+			methodBuilder.returns(ParameterizedTypeName.get(ClassName.get(Collection.class), context.getReturnType()));
 		} else {
-			methodBuilder.returns(returnType);
+			methodBuilder.returns(context.getReturnType());
 		}
 
 		final boolean isResourceInterface = ArtifactType.RESOURCE.equals(getArtifactType());
 		final boolean isAbstractResourceClass = ArtifactType.ABSTRACT_RESOURCE.equals(getArtifactType());
 
 		if (isResourceInterface || (isAbstractResourceClass && !isHandlerMethod(methodName))) {
-			Iterable<AnnotationSpec> annotations = getResourceMethodAnnotations(isIdGenerationRequired(methodName), representation, methodName);
+			Iterable<AnnotationSpec> annotations = getResourceMethodAnnotations(isIdGenerationRequired(context), representation, methodName);
 			methodBuilder.addAnnotations(annotations);
 
 		} else if (ArtifactType.RESOURCE_IMPL.equals(getArtifactType())) {
@@ -202,9 +205,9 @@ public interface ResourceBuilder {
 			}
 		}
 
-		List<String> names = new ArrayList<>(params.size());
+		List<String> names = new ArrayList<>(context.getParams().size());
 
-		params.forEach((name, type) -> {
+		context.getParams().forEach((name, type) -> {
 
 			ParameterSpec.Builder builder = ParameterSpec.builder(type, name);
 
@@ -227,13 +230,13 @@ public interface ResourceBuilder {
 			names.add(name);
 		});
 
-		if (methodName.matches("(handle){0,1}(get|update|delete|Get|Update|Delete)Entity.*")) {
+		if (!context.isDirectEntity() &&  methodName.matches("(handle){0,1}(get|update|delete|Get|Update|Delete)Entity.*")) {
 			ParameterSpec id = generateIdParam(generateIdParamAnnotation);
 			methodBuilder.addParameter(id);
 			names.add(id.name);
 		}
 
-		pathParams.forEach(p -> {
+		context.getPathParams().forEach(p -> {
 			names.add(p.name);
 			methodBuilder.addParameter(p);
 		});
@@ -250,11 +253,13 @@ public interface ResourceBuilder {
 		return methodName.startsWith("handle");
 	}
 
-	default boolean isIdGenerationRequired(String methodName) {
+	default boolean isIdGenerationRequired(MethodContext context) {
 		List<String> noId = Arrays.asList("getOptions", "createEntity", "getCollection", "deleteCollection");
 
+		if (context.isDirectEntity()) return false;
+
 		for (String s : noId) {
-			if (methodName.startsWith(s)) {
+			if (context.getMethodName().startsWith(s)) {
 				return false;
 			}
 		}
