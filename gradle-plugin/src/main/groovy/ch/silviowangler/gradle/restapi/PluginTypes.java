@@ -65,7 +65,8 @@ public enum PluginTypes {
 	SPRING_RESPONSE_ENTITY(ClassName.get("org.springframework.http", "ResponseEntity")),
 	SPRING_HTTP_STATUS(ClassName.get("org.springframework.http", "HttpStatus")),
 	SPRING_HTTP_MEDIA_TYPE(ClassName.get("org.springframework.http", "MediaType")),
-	SPRING_RESPONSE_BODY(ClassName.get("org.springframework.web.bind.annotation", "ResponseBody"));
+	SPRING_RESPONSE_BODY(ClassName.get("org.springframework.web.bind.annotation", "ResponseBody")),
+	SPRING_RESPONSE_STATUS(ClassName.get("org.springframework.web.bind.annotation", "ResponseStatus"));
 
 
 	private final ClassName className;

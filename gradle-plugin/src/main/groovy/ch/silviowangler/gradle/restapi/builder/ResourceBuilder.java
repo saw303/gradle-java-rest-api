@@ -171,8 +171,9 @@ public interface ResourceBuilder {
 		final boolean isAbstractResourceClass = ArtifactType.ABSTRACT_RESOURCE.equals(getArtifactType());
 
 		if (isResourceInterface || (isAbstractResourceClass && !isHandlerMethod(methodName))) {
-			Iterable<AnnotationSpec> annotations = getResourceMethodAnnotations(isIdGenerationRequired(methodName), representation);
+			Iterable<AnnotationSpec> annotations = getResourceMethodAnnotations(isIdGenerationRequired(methodName), representation, methodName);
 			methodBuilder.addAnnotations(annotations);
+
 		} else if (ArtifactType.RESOURCE_IMPL.equals(getArtifactType())) {
 			methodBuilder.addAnnotation(AnnotationSpec.builder(JAVA_OVERRIDE.getClassName()).build());
 		}
@@ -266,7 +267,7 @@ public interface ResourceBuilder {
 
 	AnnotationSpec getQueryParamAnnotation(String paramName);
 
-	Iterable<AnnotationSpec> getResourceMethodAnnotations(boolean applyId, Representation representation);
+	Iterable<AnnotationSpec> getResourceMethodAnnotations(boolean applyId, Representation representation, String methodName);
 
 	PluginTypes getPathVariableAnnotationType();
 

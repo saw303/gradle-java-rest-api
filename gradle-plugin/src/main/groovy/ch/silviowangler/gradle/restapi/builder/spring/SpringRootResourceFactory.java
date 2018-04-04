@@ -32,10 +32,7 @@ import ch.silviowangler.rest.contract.model.v1.Verb;
 import com.squareup.javapoet.*;
 
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static ch.silviowangler.gradle.restapi.PluginTypes.*;
 
@@ -108,7 +105,7 @@ public class SpringRootResourceFactory extends AbstractResourceBuilder {
     }
 
     @Override
-    public Iterable<AnnotationSpec> getResourceMethodAnnotations(boolean applyId, Representation representation) {
+    public Iterable<AnnotationSpec> getResourceMethodAnnotations(boolean applyId, Representation representation, String methodName) {
         List<AnnotationSpec> annotations = new ArrayList<>();
 
         String httpMethod = getHttpMethod();
@@ -144,6 +141,27 @@ public class SpringRootResourceFactory extends AbstractResourceBuilder {
         if (representation.isJson()) {
             annotations.add(createAnnotation(SPRING_RESPONSE_BODY));
         }
+
+		List<String> responseStatusRequired = Arrays.asList("createEntity", "deleteEntity", "deleteCollection");
+
+		if (responseStatusRequired.contains(methodName)) {
+
+			String v;
+			if (methodName.startsWith("create")) {
+				v = "$T.CREATED";
+			}
+			else if (methodName.startsWith("delete")) {
+				v = "$T.NO_CONTENT";
+			}
+			else {
+				throw new IllegalArgumentException("Unknown method name " + methodName);
+			}
+
+			AnnotationSpec.Builder b = AnnotationSpec.builder(SPRING_RESPONSE_STATUS.getClassName());
+			b.addMember("code", v, SPRING_HTTP_STATUS.getClassName());
+			annotations.add(b.build());
+		}
+
         return annotations;
     }
 

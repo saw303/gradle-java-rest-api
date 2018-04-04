@@ -116,7 +116,7 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder {
     }
 
     @Override
-    Iterable<AnnotationSpec> getResourceMethodAnnotations(boolean applyId, Representation representation) {
+    Iterable<AnnotationSpec> getResourceMethodAnnotations(boolean applyId, Representation representation, String methodName) {
 
         List<AnnotationSpec> specs = []
 
