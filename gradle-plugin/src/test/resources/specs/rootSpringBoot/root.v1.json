@@ -73,8 +73,72 @@
       "filterable": false,
       "alias": [],
       "x-comment": "Name"
+    },
+    {
+      "name": "needGroups",
+      "type": "insuranceNeedsGroup",
+      "options": null,
+      "mandatory": [],
+      "min": null,
+      "max": null,
+      "multiple": true,
+      "defaultValue": null,
+      "protected": [],
+      "visible": true,
+      "sortable": false,
+      "readonly": false,
+      "filterable": false,
+      "alias": [],
+      "x-comment": "Name"
     }
   ],
   "subresources": [],
-  "types": []
+  "types": [
+    {
+      "name": "need",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "options": null,
+          "min": null,
+          "max": null,
+          "multiple": false,
+          "defaultValue": "null"
+        },
+        {
+          "name": "labelKey",
+          "type": "string",
+          "options": null,
+          "min": null,
+          "max": null,
+          "multiple": false,
+          "defaultValue": "null"
+        }
+      ]
+    },
+    {
+      "name": "insuranceNeedsGroup",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "options": null,
+          "min": null,
+          "max": null,
+          "multiple": false,
+          "defaultValue": "null"
+        },
+        {
+          "name": "needs",
+          "type": "need",
+          "options": null,
+          "min": null,
+          "max": null,
+          "multiple": true,
+          "defaultValue": "null"
+        }
+      ]
+    }
+  ]
 }

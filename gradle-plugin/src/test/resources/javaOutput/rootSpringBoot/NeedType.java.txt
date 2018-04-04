@@ -1,0 +1,25 @@
+package org.acme.rest.v1.api.v1;
+
+import java.io.Serializable;
+
+public class NeedType implements Serializable {
+  private String id;
+
+  private String labelKey;
+
+  public String getId() {
+    return this.id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public String getLabelKey() {
+    return this.labelKey;
+  }
+
+  public void setLabelKey(String labelKey) {
+    this.labelKey = labelKey;
+  }
+}

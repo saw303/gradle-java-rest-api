@@ -327,7 +327,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 	}
 
 	@Override
-	public Set<TypeSpec> buildResourceTypes(Set<ClassName> types) {
+	public Set<TypeSpec> buildResourceTypes(Set<ClassName> types, String packageName) {
 
 		ResourceContract resourceContract = getResourceContractContainer().getResourceContract();
 		List<ResourceTypes> contractTypes = resourceContract.getTypes();
@@ -340,12 +340,19 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
 				TypeName fieldType = getFieldType(types, field.getType());
 
+				if ("true".equals(field.getMultiple())) {
+					ClassName list = ClassName.get(List.class);
+					fieldType = ParameterizedTypeName.get(list, fieldType);
+				}
+
 				builder.addField(FieldSpec.builder(fieldType, field.getName(), PRIVATE).build());
 
 				// write Getter/Setters
 				writeGetterSetter(builder, fieldType, field.getName());
 			}
-			specTypes.add(builder.build());
+			TypeSpec typeSpec = builder.build();
+			types.add(ClassName.get(packageName, typeSpec.name));
+			specTypes.add(typeSpec);
 		}
 		return specTypes;
 	}

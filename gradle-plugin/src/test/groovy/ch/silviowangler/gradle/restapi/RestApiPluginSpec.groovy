@@ -113,7 +113,7 @@ class RestApiPluginSpec extends Specification {
         new File(temporaryFolder.getRoot(), path).exists()
 
         and:
-        assertGeneratedFiles javaFiles, 3
+        assertGeneratedFiles javaFiles, 5
 
         and:
         javaFiles.collect {
@@ -124,6 +124,8 @@ class RestApiPluginSpec extends Specification {
         assertJavaFile("${project.restApi.packageName}/api/v1", 'RootResource', 'rootSpringBoot')
         assertJavaFile("${project.restApi.packageName}/api/v1", 'RootResourceImpl', 'rootSpringBoot')
         assertJavaFile("${project.restApi.packageName}/api/v1", 'RootGetResourceModel', 'rootSpringBoot')
+        assertJavaFile("${project.restApi.packageName}/api/v1", 'NeedType', 'rootSpringBoot')
+        assertJavaFile("${project.restApi.packageName}/api/v1", 'InsuranceNeedsGroupType', 'rootSpringBoot')
 
         when:
         CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask

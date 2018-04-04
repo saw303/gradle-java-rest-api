@@ -2,6 +2,7 @@ package org.acme.rest.v1.api.v1;
 
 import ch.silviowangler.rest.model.ResourceModel;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 import javax.annotation.Generated;
 
@@ -15,6 +16,8 @@ public class RootGetResourceModel implements Serializable, ResourceModel {
   private String id;
 
   private String name;
+
+  private List<InsuranceNeedsGroupType> needGroups = new java.util.ArrayList<>();
 
   public String getId() {
     return this.id;
@@ -32,16 +35,24 @@ public class RootGetResourceModel implements Serializable, ResourceModel {
     this.name = name;
   }
 
+  public List<InsuranceNeedsGroupType> getNeedGroups() {
+    return this.needGroups;
+  }
+
+  public void setNeedGroups(List<InsuranceNeedsGroupType> needGroups) {
+    this.needGroups = needGroups;
+  }
+
   @Override
   public boolean equals(Object other) {
     if (this == other) return true;
     if (! (other instanceof RootGetResourceModel)) return false;
     RootGetResourceModel that = (RootGetResourceModel) other;
-    return Objects.equals(getId(), that.getId()) && Objects.equals(getName(), that.getName());
+    return Objects.equals(getId(), that.getId()) && Objects.equals(getName(), that.getName()) && Objects.equals(getNeedGroups(), that.getNeedGroups());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name);
+    return Objects.hash(id, name, needGroups);
   }
 }

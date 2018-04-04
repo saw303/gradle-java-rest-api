@@ -289,7 +289,7 @@ public interface ResourceBuilder {
 
 	ResourceBuilder withTimestampInGeneratedAnnotation(boolean val);
 
-	Set<TypeSpec> buildResourceTypes(Set<ClassName> types);
+	Set<TypeSpec> buildResourceTypes(Set<ClassName> types, String packageName);
 
 	Set<TypeSpec> buildResourceModels(Set<ClassName> types);
 

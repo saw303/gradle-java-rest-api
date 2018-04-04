@@ -63,7 +63,7 @@ public class SpecGenerator {
             resourceBuilder.withResponseEncoding(extension.getResponseEncoding());
         }
 
-        Set<TypeSpec> types = resourceBuilder.buildResourceTypes(resourceTypeCache);
+        Set<TypeSpec> types = resourceBuilder.buildResourceTypes(resourceTypeCache, packageName);
 
         for (TypeSpec type : types) {
             resourceTypeCache.add(ClassName.get(packageName, type.name));
