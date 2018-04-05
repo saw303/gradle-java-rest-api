@@ -179,22 +179,9 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
 			for (Representation representation : verb.getRepresentations()) {
 
-
-				List<ParameterSpec> pathParams = new ArrayList<>(parser.getPathVariables().size());
 				boolean directEntity = parser.isDirectEntity();
 
-				for (String pathVar : parser.getPathVariables()) {
-					ParameterSpec.Builder paramBuilder = ParameterSpec.builder(String.class, pathVar);
-
-					if (isAbstractOrInterfaceResource()) {
-						paramBuilder.addAnnotation(
-								AnnotationSpec.builder(getPathVariableAnnotationType().getClassName())
-										.addMember("value", "$S", pathVar)
-										.build()
-						);
-					}
-					pathParams.add(paramBuilder.build());
-				}
+				List<ParameterSpec> pathParams = getPathParams(parser, isAbstractOrInterfaceResource());
 
 				MethodContext context = new MethodContext(resourceMethodReturnType(verb, representation), params, representation, pathParams, directEntity);
 
@@ -248,7 +235,8 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
 				if (!supportsInterfaces() && resourceMethod.modifiers.size() == 1 && resourceMethod.modifiers.contains(PUBLIC)) {
 
-					context.setMethodName(String.format("%s%s", "handle", LOWER_CAMEL.to(UPPER_CAMEL, context.getMethodName())));
+					context.setMethodName(String.format("handle%s", LOWER_CAMEL.to(UPPER_CAMEL, context.getMethodName())));
+					context.setPathParams(getPathParams(parser, false));
 					MethodSpec.Builder handlerBuilder = createMethod(context);
 					this.typeBuilder.addMethod(handlerBuilder.build());
 				}
@@ -594,5 +582,23 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 				.addSuperinterface(RESTAPI_RESOURCE_MODEL.getClassName());
 
 		return builder;
+	}
+
+	private List<ParameterSpec> getPathParams(LinkParser parser, boolean addAnnotations) {
+		List<ParameterSpec> pathParams = new ArrayList<>(parser.getPathVariables().size());
+
+		for (String pathVar : parser.getPathVariables()) {
+			ParameterSpec.Builder paramBuilder = ParameterSpec.builder(String.class, pathVar);
+
+			if (addAnnotations) {
+				paramBuilder.addAnnotation(
+						AnnotationSpec.builder(getPathVariableAnnotationType().getClassName())
+								.addMember("value", "$S", pathVar)
+								.build()
+				);
+			}
+			pathParams.add(paramBuilder.build());
+		}
+		return pathParams;
 	}
 }

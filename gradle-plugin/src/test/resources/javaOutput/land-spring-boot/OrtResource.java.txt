@@ -31,7 +31,7 @@ public abstract class OrtResource {
     return OPTIONS_CONTENT;
   }
 
-  public abstract ResponseEntity handleDeleteEntity(String id, @PathVariable("land") String land);
+  public abstract ResponseEntity handleDeleteEntity(String id, String land);
 
   @RequestMapping(
       method = RequestMethod.DELETE,
@@ -47,8 +47,7 @@ public abstract class OrtResource {
     return handleDeleteEntity(id, land);
   }
 
-  public abstract Collection<OrtGetResourceModel> handleGetCollection(
-      @PathVariable("land") String land);
+  public abstract Collection<OrtGetResourceModel> handleGetCollection(String land);
 
   @RequestMapping(
       method = RequestMethod.GET,
@@ -59,7 +58,7 @@ public abstract class OrtResource {
     return handleGetCollection(land);
   }
 
-  public abstract OrtGetResourceModel handleGetEntity(String id, @PathVariable("land") String land);
+  public abstract OrtGetResourceModel handleGetEntity(String id, String land);
 
   @RequestMapping(
       method = RequestMethod.GET,
@@ -72,7 +71,7 @@ public abstract class OrtResource {
     return handleGetEntity(id, land);
   }
 
-  public abstract ResponseEntity handleGetEntityJpeg(String id, @PathVariable("land") String land);
+  public abstract ResponseEntity handleGetEntityJpeg(String id, String land);
 
   @RequestMapping(
       method = RequestMethod.GET,
@@ -84,8 +83,7 @@ public abstract class OrtResource {
     return handleGetEntityJpeg(id, land);
   }
 
-  public abstract IdType handleCreateEntity(OrtPostResourceModel model,
-      @PathVariable("land") String land);
+  public abstract IdType handleCreateEntity(OrtPostResourceModel model, String land);
 
   @RequestMapping(
       method = RequestMethod.POST,
@@ -100,8 +98,7 @@ public abstract class OrtResource {
     return handleCreateEntity(model, land);
   }
 
-  public abstract IdType handleUpdateEntity(OrtPutResourceModel model, String id,
-      @PathVariable("land") String land);
+  public abstract IdType handleUpdateEntity(OrtPutResourceModel model, String id, String land);
 
   @RequestMapping(
       method = RequestMethod.PUT,
