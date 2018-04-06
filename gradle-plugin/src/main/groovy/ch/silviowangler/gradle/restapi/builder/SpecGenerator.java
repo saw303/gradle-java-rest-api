@@ -84,6 +84,28 @@ public class SpecGenerator {
         return result;
     }
 
+	public static ResourceContractContainer parseResourceContract(File file) {
+		Objects.requireNonNull(file, "file must not be null");
+
+		if (!file.exists()) {
+			throw new IllegalArgumentException(String.format("File %s does not exist", file.getAbsolutePath()));
+		}
+
+		try {
+			ResourceContract resourceContract = new GsonBuilder()
+					.registerTypeAdapter(GeneralDetails.class, new GeneralDetailsDeserializer())
+					.create().fromJson(new FileReader(file), ResourceContract.class);
+
+
+			String plainText = new String(Files.readAllBytes(file.toPath()), "UTF-8");
+
+			return new ResourceContractContainer(resourceContract, plainText, file.getName());
+
+		} catch (IOException e) {
+			throw new RuntimeException("Unable to transform JSON file " + file.getAbsolutePath() + " to Java model", e);
+		}
+	}
+
     private static String generatePackageName(ResourceContract resourceContract) {
 
         GeneralDetails general = resourceContract.getGeneral();
@@ -101,27 +123,5 @@ public class SpecGenerator {
 
     private static String readVersion(String versionString) {
         return String.format("v%s", versionString.split("\\.")[0]);
-    }
-
-    private static ResourceContractContainer parseResourceContract(File file) {
-        Objects.requireNonNull(file, "file must not be null");
-
-        if (!file.exists()) {
-            throw new IllegalArgumentException(String.format("File %s does not exist", file.getAbsolutePath()));
-        }
-
-        try {
-            ResourceContract resourceContract = new GsonBuilder()
-                    .registerTypeAdapter(GeneralDetails.class, new GeneralDetailsDeserializer())
-                    .create().fromJson(new FileReader(file), ResourceContract.class);
-
-
-            String plainText = new String(Files.readAllBytes(file.toPath()), "UTF-8");
-
-            return new ResourceContractContainer(resourceContract, plainText, file.getName());
-
-        } catch (IOException e) {
-            throw new RuntimeException("Unable to transform JSON file " + file.getAbsolutePath() + " to Java model", e);
-        }
     }
 }

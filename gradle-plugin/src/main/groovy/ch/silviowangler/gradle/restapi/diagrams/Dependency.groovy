@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2018 Silvio Wangler (silvio.wangler@gmail.com)
@@ -21,27 +21,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package ch.silviowangler.gradle.restapi.gson;
-
-import ch.silviowangler.rest.contract.model.v1.GeneralDetails;
-import com.google.gson.*;
-
-import java.lang.reflect.Type;
+package ch.silviowangler.gradle.restapi.diagrams
 
 /**
  * @author Silvio Wangler
  */
-public class GeneralDetailsDeserializer implements JsonDeserializer<GeneralDetails> {
-    @Override
-    public GeneralDetails deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        GeneralDetails generalDetails = new GeneralDetails();
+class Dependency {
 
-        JsonObject jsonObject = json.getAsJsonObject();
-        generalDetails.setDescription(jsonObject.get("description").getAsString());
-        generalDetails.setVersion(jsonObject.get("version").getAsString());
-        generalDetails.setxRoute(jsonObject.get("x-route").getAsString());
-        generalDetails.setName(jsonObject.get("name").getAsString());
+    String parent
+    String child
 
-        return generalDetails;
+    boolean equals(o) {
+        if (this.is(o)) return true
+        if (getClass() != o.class) return false
+
+        Dependency that = (Dependency) o
+
+        if (child != that.child) return false
+        if (parent != that.parent) return false
+
+        return true
+    }
+
+    int hashCode() {
+        int result
+        result = (parent != null ? parent.hashCode() : 0)
+        result = 31 * result + (child != null ? child.hashCode() : 0)
+        return result
     }
 }

@@ -1,0 +1,21 @@
+@startuml
+title Resources Overview
+
+skinparam class {
+	BackgroundColor white
+	ArrowColor SeaGreen
+	BorderColor #CDCDCD
+}
+
+class "root" as root << (R,#DADADA) >> {
+}
+class "land" as land << (R,#DADADA) >> {
+}
+class "land.ort" as land.ort << (R,#DADADA) >> {
+}
+
+root  o--  land
+land  o--  land.ort
+
+
+@enduml

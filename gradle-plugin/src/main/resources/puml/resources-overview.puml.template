@@ -1,0 +1,16 @@
+@startuml
+title ${title}
+
+skinparam class {
+	BackgroundColor white
+	ArrowColor SeaGreen
+	BorderColor #CDCDCD
+}
+
+<%for(container in containers) { String name = container.resourceContract.general.name  %>class "${name}" as ${name} << (R,#DADADA) >> {
+}
+<%}%>
+<%for(dep in dependencies){%>${dep.parent}  o--  ${dep.child}
+<%}%>
+
+@enduml

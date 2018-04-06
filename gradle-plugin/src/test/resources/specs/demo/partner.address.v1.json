@@ -1,5 +1,6 @@
 {
   "general": {
+    "name": "address",
     "description": "Adresse eines Partners",
     "version": "1.0.0",
     "icon": "map",

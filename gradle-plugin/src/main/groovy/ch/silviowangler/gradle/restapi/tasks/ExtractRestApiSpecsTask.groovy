@@ -21,8 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package ch.silviowangler.gradle.restapi
+package ch.silviowangler.gradle.restapi.tasks
 
+import ch.silviowangler.gradle.restapi.Consts
+import ch.silviowangler.gradle.restapi.GeneratorUtil
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.internal.AbstractTask
 import org.gradle.api.tasks.OutputDirectory

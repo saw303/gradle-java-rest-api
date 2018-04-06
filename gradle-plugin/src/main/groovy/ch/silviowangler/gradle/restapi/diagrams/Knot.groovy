@@ -21,28 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package ch.silviowangler.gradle.restapi
-
-import org.gradle.api.internal.AbstractTask
-import org.gradle.api.tasks.TaskAction
-
-import static groovy.io.FileType.DIRECTORIES
+package ch.silviowangler.gradle.restapi.diagrams
 
 /**
- *
  * @author Silvio Wangler
  */
-class CleanRestApiTask extends AbstractTask {
+class Knot<T> {
 
-    @TaskAction
-    void cleanUp() {
-        def rootDir = project.restApi.generatorOutput
+    T data
+    Knot<T> parent
+    List<Knot<T>> children = []
 
-        if (rootDir.exists()) {
-            rootDir.eachFile DIRECTORIES, { dir ->
-                dir.deleteDir()
-            }
-            rootDir.eachFile { file -> file.delete() }
-        }
+    Knot(T data) {
+        this(data, null)
+    }
+
+    Knot(T data, Knot<T> parent) {
+        this.data = data
+        this.parent = parent
     }
 }

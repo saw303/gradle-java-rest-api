@@ -1,5 +1,6 @@
 {
   "general": {
+    "name": "root",
     "description": "Das ist die Root Resource der Version 1.0.0",
     "version": "1.0.0",
     "x-route": "/:version"
@@ -71,6 +72,7 @@
   ],
   "subresources": [
     {
+      "name": "land",
       "type": "application/vnd.ch.silviowangler.land.collection",
       "rel": "Länder Dokumentation",
       "href": "/v1/laender/",

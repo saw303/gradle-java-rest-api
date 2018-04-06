@@ -23,9 +23,9 @@
  */
 package ch.silviowangler.gradle.restapi.builder;
 
-import ch.silviowangler.gradle.restapi.GenerateRestApiTask;
 import ch.silviowangler.gradle.restapi.GeneratorUtil;
 import ch.silviowangler.gradle.restapi.LinkParser;
+import ch.silviowangler.gradle.restapi.tasks.GenerateRestApiTask;
 import ch.silviowangler.rest.contract.model.v1.*;
 import com.squareup.javapoet.*;
 import io.github.getify.minify.Minify;

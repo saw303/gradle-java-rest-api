@@ -43,6 +43,7 @@ class RestApiExtension {
     boolean enableSecurity = false
     boolean springBoot = false
     Charset responseEncoding
+    File diagramOutput = new File(project.buildDir, 'diagrams')
 
     RestApiExtension(Project project) {
         this.project = project
@@ -84,6 +85,13 @@ class RestApiExtension {
         }
 
         this.generatorImplOutput = generatorImplOutput
+    }
+
+    void setDiagramOutput(File diagramOutput) {
+        if (!diagramOutput?.isDirectory()) {
+            throw new IllegalArgumentException("diagramOutput must be a directory")
+        }
+        this.diagramOutput = diagramOutput
     }
 }
 

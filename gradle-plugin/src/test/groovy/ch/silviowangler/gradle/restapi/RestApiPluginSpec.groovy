@@ -23,6 +23,10 @@
  */
 package ch.silviowangler.gradle.restapi
 
+import ch.silviowangler.gradle.restapi.tasks.CleanRestApiTask
+import ch.silviowangler.gradle.restapi.tasks.ExtractRestApiSpecsTask
+import ch.silviowangler.gradle.restapi.tasks.GenerateRestApiTask
+import ch.silviowangler.gradle.restapi.tasks.PlantUmlTask
 import com.squareup.javapoet.ClassName
 import groovy.io.FileType
 import org.gradle.api.Project
@@ -66,7 +70,7 @@ class RestApiPluginSpec extends Specification {
     void "The plugin provides the following tasks"() {
 
         expect:
-        project.tasks.findAll { Task task -> task.group == TASK_GROUP_REST_API }.size() == 3
+        project.tasks.findAll { Task task -> task.group == TASK_GROUP_REST_API }.size() == 4
 
         project.tasks.generateRestArtifacts instanceof GenerateRestApiTask
         project.tasks.generateRestArtifacts.group == TASK_GROUP_REST_API
@@ -78,6 +82,10 @@ class RestApiPluginSpec extends Specification {
         and:
         project.tasks.cleanRestArtifacts instanceof CleanRestApiTask
         project.tasks.cleanRestArtifacts.group == TASK_GROUP_REST_API
+
+        and:
+        project.tasks.generateDiagrams instanceof PlantUmlTask
+        project.tasks.generateDiagrams.group == TASK_GROUP_REST_API
 
         and:
         project.extensions.restApi != null
@@ -502,6 +510,80 @@ class RestApiPluginSpec extends Specification {
 
         then:
         javaFiles.isEmpty()
+    }
+
+    void "The plugin can generate resource diagrams"() {
+
+        given:
+        project.restApi.generatorOutput = temporaryFolder.getRoot()
+        project.restApi.generatorImplOutput = temporaryFolder.getRoot()
+        project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/rootSpringBoot")
+        project.restApi.packageName = 'org.acme.rest'
+        project.restApi.generateDateAttribute = false
+        project.restApi.objectResourceModelMapping = customFieldModelMapping
+        project.restApi.springBoot = true
+        project.restApi.diagramOutput = temporaryFolder.getRoot()
+
+        and:
+        PlantUmlTask task = project.tasks.generateDiagrams as PlantUmlTask
+
+        when:
+        task.generateDiagrams()
+
+        and:
+        def files = []
+        temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+            if (it.name.endsWith('.puml')) files << it
+        })
+
+        then:
+        files.size() == 1
+
+        and:
+        assertPlantUmlFile('resources-overview.puml', 'rootSpringBoot')
+    }
+
+    void "The plugin can generate resource diagrams for land/ort"() {
+
+        given:
+        project.restApi.generatorOutput = temporaryFolder.getRoot()
+        project.restApi.generatorImplOutput = temporaryFolder.getRoot()
+        project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/v1")
+        project.restApi.packageName = 'org.acme.rest'
+        project.restApi.generateDateAttribute = false
+        project.restApi.objectResourceModelMapping = customFieldModelMapping
+        project.restApi.springBoot = true
+        project.restApi.diagramOutput = temporaryFolder.getRoot()
+
+        and:
+        PlantUmlTask task = project.tasks.generateDiagrams as PlantUmlTask
+
+        when:
+        task.generateDiagrams()
+
+        and:
+        def files = []
+        temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+            if (it.name.endsWith('.puml')) files << it
+        })
+
+        then:
+        files.size() == 1
+
+        and:
+        assertPlantUmlFile('resources-overview.puml', 'land')
+    }
+
+    private void assertPlantUmlFile(String filename, String testSetName) {
+        final String ENCODING = 'UTF-8'
+        File expectedFile = new File(temporaryFolder.getRoot(), filename)
+        URL resource = getClass().getResource("/puml/${testSetName}/${filename}")
+        File actualFile = new File(resource.file)
+
+        final String expectedSourceCode = expectedFile.exists() ? expectedFile.getText(ENCODING) : "File ${expectedFile.absolutePath} not found"
+        final String actualSourceCode = actualFile.exists() ? actualFile.getText(ENCODING) : "File ${actualFile.absolutePath} not found"
+
+        assert expectedSourceCode == actualSourceCode
     }
 
     private void assertJavaFile(String packageName, String className) {

@@ -21,18 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package ch.silviowangler.gradle.restapi
+package ch.silviowangler.gradle.restapi.tasks
 
+import ch.silviowangler.gradle.restapi.GeneratedSpecContainer
+import ch.silviowangler.gradle.restapi.GeneratorUtil
+import ch.silviowangler.gradle.restapi.RestApiExtension
+import ch.silviowangler.gradle.restapi.Specification
 import ch.silviowangler.gradle.restapi.builder.SpecGenerator
 import com.squareup.javapoet.JavaFile
 import com.squareup.javapoet.TypeSpec
-import groovy.io.FileType
 import org.gradle.api.internal.AbstractTask
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 
-class GenerateRestApiTask extends AbstractTask {
+class GenerateRestApiTask extends AbstractTask implements Specification {
 
 
     public static final String GET_COLLECTION = 'GET_COLLECTION'
@@ -66,11 +69,7 @@ class GenerateRestApiTask extends AbstractTask {
 
         RestApiExtension restApiExtension = project.restApi
 
-        List<File> specs = []
-        getOptionsSource().eachFile(FileType.FILES, { f -> if (f.name.endsWith('.json')) specs << f })
-
-
-        Collections.sort(specs, new ResourceFileComparator())
+        List<File> specs = findSpecifications(getOptionsSource())
 
         logger.lifecycle("Found ${specs.size()} specification files (${specs.collect { it.name}})")
 

@@ -1,0 +1,15 @@
+@startuml
+title Resources Overview
+
+skinparam class {
+	BackgroundColor white
+	ArrowColor SeaGreen
+	BorderColor #CDCDCD
+}
+
+class "root" as root << (R,#DADADA) >> {
+}
+
+
+
+@enduml

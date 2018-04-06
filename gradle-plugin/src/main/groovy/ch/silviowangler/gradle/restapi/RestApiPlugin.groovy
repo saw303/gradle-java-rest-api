@@ -23,6 +23,10 @@
  */
 package ch.silviowangler.gradle.restapi
 
+import ch.silviowangler.gradle.restapi.tasks.CleanRestApiTask
+import ch.silviowangler.gradle.restapi.tasks.ExtractRestApiSpecsTask
+import ch.silviowangler.gradle.restapi.tasks.GenerateRestApiTask
+import ch.silviowangler.gradle.restapi.tasks.PlantUmlTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -50,6 +54,7 @@ class RestApiPlugin implements Plugin<Project> {
         Task clean = project.task('cleanRestArtifacts', type: CleanRestApiTask, group: TASK_GROUP_REST_API)
         Task extract = project.task('extractSpecs', type: ExtractRestApiSpecsTask, group: TASK_GROUP_REST_API)
         Task generate = project.task('generateRestArtifacts', type: GenerateRestApiTask, group: TASK_GROUP_REST_API)
+        Task docs = project.task('generateDiagrams', type: PlantUmlTask, group: TASK_GROUP_REST_API)
 
         project.clean.dependsOn clean
         extract.dependsOn extract
@@ -67,7 +72,7 @@ class RestApiPlugin implements Plugin<Project> {
         }
 
         project.dependencies {
-            compile("ch.silviowangler.rest:rest-api-spring:1.0.20")
+            compile("ch.silviowangler.rest:rest-api-spring:1.0.21")
             compile("org.javamoney:moneta:1.1")
         }
     }

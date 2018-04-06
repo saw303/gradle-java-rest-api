@@ -1,5 +1,6 @@
 {
   "general": {
+    "name": "partner",
     "description": "Natürliche Person",
     "version": "1.0.0",
     "icon": "users",
@@ -379,7 +380,7 @@
   },
   "subresources": [
     {
-      "name": "addresses",
+      "name": "address",
       "type": "application/vnd.ch.silviowangler.adresse.collection",
       "rel": "addresses",
       "href": "/v1/partner/{partner}/address/{paramattr}",

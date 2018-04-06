@@ -1,5 +1,6 @@
 {
   "general": {
+    "name": "login",
     "description": "Dummy Login für Demoapp",
     "version": "1.0.0",
     "icon": "contact",

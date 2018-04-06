@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2018 Silvio Wangler (silvio.wangler@gmail.com)
@@ -21,27 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package ch.silviowangler.gradle.restapi.gson;
-
-import ch.silviowangler.rest.contract.model.v1.GeneralDetails;
-import com.google.gson.*;
-
-import java.lang.reflect.Type;
+package ch.silviowangler.gradle.restapi
 
 /**
- * @author Silvio Wangler
- */
-public class GeneralDetailsDeserializer implements JsonDeserializer<GeneralDetails> {
-    @Override
-    public GeneralDetails deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        GeneralDetails generalDetails = new GeneralDetails();
-
-        JsonObject jsonObject = json.getAsJsonObject();
-        generalDetails.setDescription(jsonObject.get("description").getAsString());
-        generalDetails.setVersion(jsonObject.get("version").getAsString());
-        generalDetails.setxRoute(jsonObject.get("x-route").getAsString());
-        generalDetails.setName(jsonObject.get("name").getAsString());
-
-        return generalDetails;
-    }
+* @author Silvio Wangler
+*/class PlantUmlTask {
 }

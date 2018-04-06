@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2018 Silvio Wangler (silvio.wangler@gmail.com)
@@ -21,27 +21,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package ch.silviowangler.gradle.restapi.gson;
+package ch.silviowangler.gradle.restapi
 
-import ch.silviowangler.rest.contract.model.v1.GeneralDetails;
-import com.google.gson.*;
-
-import java.lang.reflect.Type;
+import groovy.io.FileType
 
 /**
  * @author Silvio Wangler
  */
-public class GeneralDetailsDeserializer implements JsonDeserializer<GeneralDetails> {
-    @Override
-    public GeneralDetails deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        GeneralDetails generalDetails = new GeneralDetails();
+trait Specification {
 
-        JsonObject jsonObject = json.getAsJsonObject();
-        generalDetails.setDescription(jsonObject.get("description").getAsString());
-        generalDetails.setVersion(jsonObject.get("version").getAsString());
-        generalDetails.setxRoute(jsonObject.get("x-route").getAsString());
-        generalDetails.setName(jsonObject.get("name").getAsString());
+    List<File> findSpecifications(File folder) {
 
-        return generalDetails;
+        if (!folder.exists()) {
+            throw new IllegalArgumentException("$folder.absolutePath does not exist")
+        }
+
+        if (!folder.isDirectory()) {
+            throw new IllegalArgumentException("$folder.absolutePath is not a directory")
+        }
+
+        List<File> specs = []
+        folder.eachFile(FileType.FILES, { f -> if (f.name.endsWith('.json')) specs << f })
+
+        Collections.sort(specs, new ResourceFileComparator())
+
+        return specs
     }
+
 }

@@ -32,6 +32,7 @@ import java.util.Objects;
  */
 public class GeneralDetails implements Serializable {
 
+	private String name;
     private String description;
     private String version;
     private String xRoute;
@@ -60,19 +61,28 @@ public class GeneralDetails implements Serializable {
         this.xRoute = xRoute;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        GeneralDetails that = (GeneralDetails) o;
-        return Objects.equals(description, that.description) &&
-                Objects.equals(version, that.version) &&
-                Objects.equals(xRoute, that.xRoute);
-    }
+	public String getName() {
+		return name;
+	}
 
-    @Override
-    public int hashCode() {
+	public void setName(String name) {
+		this.name = name;
+	}
 
-        return Objects.hash(description, version, xRoute);
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		GeneralDetails that = (GeneralDetails) o;
+		return Objects.equals(getName(), that.getName()) &&
+				Objects.equals(getDescription(), that.getDescription()) &&
+				Objects.equals(getVersion(), that.getVersion()) &&
+				Objects.equals(getxRoute(), that.getxRoute());
+	}
+
+	@Override
+	public int hashCode() {
+
+		return Objects.hash(getName(), getDescription(), getVersion(), getxRoute());
+	}
 }
