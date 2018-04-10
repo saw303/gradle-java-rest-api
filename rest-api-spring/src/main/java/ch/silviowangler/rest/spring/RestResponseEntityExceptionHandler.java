@@ -24,13 +24,19 @@
 package ch.silviowangler.rest.spring;
 
 import ch.silviowangler.rest.NotYetImplementedException;
+import ch.silviowangler.rest.model.FieldError;
+import ch.silviowangler.rest.model.ValidationErrorModel;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Silvio Wangler
@@ -44,4 +50,28 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         return handleExceptionInternal(ex, ex.getMessage(),
                 new HttpHeaders(), HttpStatus.NOT_IMPLEMENTED, request);
     }
+
+	/**
+	 * Converts {@link MethodArgumentNotValidException} into {@ValidationErrorModel}.
+	 * @param ex the exception
+	 * @param headers headers
+	 * @param status http status
+	 * @param request the http request
+	 * @return a validation model according the failed validation constraints.
+	 * @since 1.0.22
+	 */
+	@Override
+	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+
+
+		List<org.springframework.validation.FieldError> fieldErrors = ex.getBindingResult().getFieldErrors();
+		List<FieldError> errors = new ArrayList<>(fieldErrors.size());
+
+		for (org.springframework.validation.FieldError error : fieldErrors) {
+			errors.add(new FieldError(error.getField(), error.getRejectedValue()));
+		}
+
+		ValidationErrorModel errorModel = new ValidationErrorModel(errors);
+		return new ResponseEntity<>(errorModel, headers, status);
+	}
 }
