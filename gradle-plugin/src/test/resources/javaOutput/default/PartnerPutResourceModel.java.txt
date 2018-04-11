@@ -8,10 +8,10 @@ import java.time.OffsetDateTime;
 import java.util.Locale;
 import java.util.Objects;
 import javax.annotation.Generated;
+import javax.money.MonetaryAmount;
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
-import org.javamoney.moneta.Money;
 
 @Generated(
     comments = "Specification filename: partner.v1.json",
@@ -40,7 +40,7 @@ public class PartnerPutResourceModel implements Serializable, ResourceModel {
   private BigDecimal gewicht;
 
   @NotNull
-  private Money lohn;
+  private MonetaryAmount lohn;
 
   private OffsetDateTime uhrzeit;
 
@@ -95,11 +95,11 @@ public class PartnerPutResourceModel implements Serializable, ResourceModel {
     this.gewicht = gewicht;
   }
 
-  public Money getLohn() {
+  public MonetaryAmount getLohn() {
     return this.lohn;
   }
 
-  public void setLohn(Money lohn) {
+  public void setLohn(MonetaryAmount lohn) {
     this.lohn = lohn;
   }
 

@@ -81,7 +81,7 @@ class GeneratorUtilSpec extends Specification {
         'bool'     || ClassName.get(Boolean)
         'flag'     || ClassName.get(Boolean)
         'object'   || ClassName.get(Object)
-        'money'    || ClassName.get('org.javamoney.moneta', 'Money')
+        'money'    || ClassName.get('javax.money', 'MonetaryAmount')
     }
 
     @Unroll

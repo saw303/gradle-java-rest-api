@@ -5,7 +5,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Generated;
-import org.javamoney.moneta.Money;
+import javax.money.MonetaryAmount;
 
 @Generated(
     comments = "Specification filename: productproposal.v1.json",
@@ -16,7 +16,7 @@ public class ProductproposalGetResourceModel implements Serializable, ResourceMo
 
   private List<ProposalType> proposal = new java.util.ArrayList<>();
 
-  private Money premiumTotal;
+  private MonetaryAmount premiumTotal;
 
   private Boolean addAnotherPersonSelected;
 
@@ -30,11 +30,11 @@ public class ProductproposalGetResourceModel implements Serializable, ResourceMo
     this.proposal = proposal;
   }
 
-  public Money getPremiumTotal() {
+  public MonetaryAmount getPremiumTotal() {
     return this.premiumTotal;
   }
 
-  public void setPremiumTotal(Money premiumTotal) {
+  public void setPremiumTotal(MonetaryAmount premiumTotal) {
     this.premiumTotal = premiumTotal;
   }
 

@@ -1,14 +1,14 @@
 package org.acme.rest.v1.session.insurableperson.insuranceneeds.productproposal;
 
 import java.io.Serializable;
-import org.javamoney.moneta.Money;
+import javax.money.MonetaryAmount;
 
 public class ProposalType implements Serializable {
   private String label;
 
   private String productid;
 
-  private Money productPremium;
+  private MonetaryAmount productPremium;
 
   private String productAttributes;
 
@@ -28,11 +28,11 @@ public class ProposalType implements Serializable {
     this.productid = productid;
   }
 
-  public Money getProductPremium() {
+  public MonetaryAmount getProductPremium() {
     return this.productPremium;
   }
 
-  public void setProductPremium(Money productPremium) {
+  public void setProductPremium(MonetaryAmount productPremium) {
     this.productPremium = productPremium;
   }
 

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import javax.annotation.Generated;
-import org.javamoney.moneta.Money;
+import javax.money.MonetaryAmount;
 
 @Generated(
     comments = "Specification filename: partner.v1.json",
@@ -29,7 +29,7 @@ public class PartnerGetResourceModel implements Serializable, ResourceModel {
 
   private BigDecimal gewicht;
 
-  private Money lohn;
+  private MonetaryAmount lohn;
 
   private List<String> tags = new java.util.ArrayList<>();
 
@@ -85,11 +85,11 @@ public class PartnerGetResourceModel implements Serializable, ResourceModel {
     this.gewicht = gewicht;
   }
 
-  public Money getLohn() {
+  public MonetaryAmount getLohn() {
     return this.lohn;
   }
 
-  public void setLohn(Money lohn) {
+  public void setLohn(MonetaryAmount lohn) {
     this.lohn = lohn;
   }
 

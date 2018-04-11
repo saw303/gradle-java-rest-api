@@ -47,7 +47,7 @@ public enum SupportedDataTypes {
   UUID(ClassName.get(String.class)),
   OBJECT(ClassName.get(Object.class)),
   LOCALE(ClassName.get(Locale.class)),
-  MONEY(ClassName.get("org.javamoney.moneta","Money"));
+  MONEY(ClassName.get("javax.money","MonetaryAmount"));
 
   private final ClassName className;
 
