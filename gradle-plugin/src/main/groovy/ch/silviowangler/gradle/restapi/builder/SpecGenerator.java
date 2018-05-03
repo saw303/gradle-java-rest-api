@@ -51,7 +51,7 @@ public class SpecGenerator {
         ResourceContractContainer resourceContractContainer = parseResourceContract(specFile);
 
         String packageName = String.format("%s.%s", extension.getPackageName(),
-                generatePackageName(resourceContractContainer.getResourceContract()));
+                generatePackageName(resourceContractContainer.getResourceContract())).toLowerCase();
 
         ResourceBuilder resourceBuilder = ResourceBuilderFactory
                 .getRootResourceBuilder(extension)

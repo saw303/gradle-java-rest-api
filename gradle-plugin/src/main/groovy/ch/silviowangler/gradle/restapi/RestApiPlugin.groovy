@@ -72,7 +72,7 @@ class RestApiPlugin implements Plugin<Project> {
         }
 
         project.dependencies {
-            compile("ch.silviowangler.rest:rest-api-spring:1.0.24")
+            compile("ch.silviowangler.rest:rest-api-spring:1.0.25")
             compile("javax.money:money-api:1.0.3")
         }
     }
