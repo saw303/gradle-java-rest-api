@@ -196,6 +196,25 @@
       "filterable": false,
       "alias": [],
       "x-comment": "Ort"
+    },
+    {
+      "name": "koordinaten",
+      "type": "coordinates",
+      "options": null,
+      "mandatory": [
+        "PUT", "POST"
+      ],
+      "min": null,
+      "max": null,
+      "multiple": false,
+      "defaultValue": null,
+      "protected": [],
+      "visible": true,
+      "sortable": false,
+      "readonly": false,
+      "filterable": false,
+      "alias": [],
+      "x-comment": "Koordinaten"
     }
   ],
   "parameters": [],

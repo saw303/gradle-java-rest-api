@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.util.Objects;
 import javax.annotation.Generated;
 import javax.validation.constraints.NotNull;
+import org.acme.rest.v1.CoordinatesType;
 
 @Generated(
     comments = "Specification filename: land.ort.v1.json",
@@ -18,6 +19,9 @@ public class OrtPutResourceModel implements Serializable, ResourceModel {
 
   @NotNull
   private String name;
+
+  @NotNull
+  private CoordinatesType koordinaten;
 
   public String getId() {
     return this.id;
@@ -35,16 +39,24 @@ public class OrtPutResourceModel implements Serializable, ResourceModel {
     this.name = name;
   }
 
+  public CoordinatesType getKoordinaten() {
+    return this.koordinaten;
+  }
+
+  public void setKoordinaten(CoordinatesType koordinaten) {
+    this.koordinaten = koordinaten;
+  }
+
   @Override
   public boolean equals(Object other) {
     if (this == other) return true;
     if (! (other instanceof OrtPutResourceModel)) return false;
     OrtPutResourceModel that = (OrtPutResourceModel) other;
-    return Objects.equals(getId(), that.getId()) && Objects.equals(getName(), that.getName());
+    return Objects.equals(getId(), that.getId()) && Objects.equals(getName(), that.getName()) && Objects.equals(getKoordinaten(), that.getKoordinaten());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name);
+    return Objects.hash(id, name, koordinaten);
   }
 }
