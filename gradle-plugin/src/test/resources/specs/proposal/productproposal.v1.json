@@ -172,7 +172,7 @@
       "protected": [],
       "visible": true,
       "sortable": false,
-      "readonly": false,
+      "readonly": true,
       "filterable": false,
       "alias": [],
       "x-comment": "button 'next' pressed"

@@ -339,12 +339,9 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
 		List<ResourceField> fields = resourceContract.getFields();
 
-		List<String> fieldNames = fields.stream().filter(ResourceField::isVisible).map(ResourceField::getName).collect(Collectors.toList());
-
-		List<String> getters = fieldNames.stream().map(name -> "get" + LOWER_CAMEL.to(UPPER_CAMEL, name))
-				.collect(Collectors.toList());
-
 		for (Verb verb : verbs) {
+
+			List<String> fieldNamesApplied = new ArrayList<>();
 
 			ClassName resourceModelName = resourceModelName(verb);
 			TypeSpec.Builder builder = resourceModelBaseInstance(verb);
@@ -361,6 +358,8 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
 				if (!field.isVisible() && verb.equals(verbGet)) continue;
 				if (field.isReadonly() && !verb.equals(verbGet)) continue;
+
+				fieldNamesApplied.add(field.getName());
 
 				TypeName fieldType = getFieldType(types, field.getType());
 
@@ -423,7 +422,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 				writeGetterSetter(builder, fieldType, field.getName());
 			}
 
-			// --> overwrite equals Methode
+			// --> overwrite equals method
 			String equalsParamName = "other";
 			String equalsCastVarName = "that";
 
@@ -436,20 +435,21 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 					.addStatement("$T $L = ($T) $L", resourceModelName, equalsCastVarName, resourceModelName, equalsParamName);
 
 
-			String code = getters.stream().map(getter -> "$T.equals(" + getter + "(), " + equalsCastVarName + "." + getter + "())")
+			String code = fieldNamesApplied.stream()
+					.map(f -> "get" + LOWER_CAMEL.to(UPPER_CAMEL, f))
+					.map(f -> "$T.equals(" + f + "(), " + equalsCastVarName + "." + f + "())")
 					.collect(Collectors.joining(" && "));
 
-			equalsBuilder.addStatement("return " + code, Collections.nCopies(getters.size(), Objects.class).toArray());
+			equalsBuilder.addStatement("return " + code, Collections.nCopies(fieldNamesApplied.size(), Objects.class).toArray());
 
 			builder.addMethod(equalsBuilder.build());
 
-
-			// --> hashCode Methode überschreiben
+			// --> overwrite hashCode method
 			MethodSpec.Builder hashCodeBuilder = MethodSpec.methodBuilder("hashCode")
 					.addAnnotation(Override.class)
 					.addModifiers(PUBLIC).returns(INT);
 
-			code = "$T.hash(" + fieldNames.stream().collect(Collectors.joining(", ")) + ")";
+			code = "$T.hash(" + fieldNamesApplied.stream().collect(Collectors.joining(", ")) + ")";
 
 			hashCodeBuilder.addStatement("return " + code, Objects.class);
 

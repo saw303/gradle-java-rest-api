@@ -22,8 +22,6 @@ public class ProductproposalPostResourceModel implements Serializable, ResourceM
   @NotNull
   private Boolean addAnotherPersonSelected;
 
-  private Boolean nextButtonSelected;
-
   public List<ProposalType> getProposal() {
     return this.proposal;
   }
@@ -48,24 +46,16 @@ public class ProductproposalPostResourceModel implements Serializable, ResourceM
     this.addAnotherPersonSelected = addAnotherPersonSelected;
   }
 
-  public Boolean getNextButtonSelected() {
-    return this.nextButtonSelected;
-  }
-
-  public void setNextButtonSelected(Boolean nextButtonSelected) {
-    this.nextButtonSelected = nextButtonSelected;
-  }
-
   @Override
   public boolean equals(Object other) {
     if (this == other) return true;
     if (! (other instanceof ProductproposalPostResourceModel)) return false;
     ProductproposalPostResourceModel that = (ProductproposalPostResourceModel) other;
-    return Objects.equals(getProposal(), that.getProposal()) && Objects.equals(getPremiumTotal(), that.getPremiumTotal()) && Objects.equals(getAddAnotherPersonSelected(), that.getAddAnotherPersonSelected()) && Objects.equals(getNextButtonSelected(), that.getNextButtonSelected());
+    return Objects.equals(getProposal(), that.getProposal()) && Objects.equals(getPremiumTotal(), that.getPremiumTotal()) && Objects.equals(getAddAnotherPersonSelected(), that.getAddAnotherPersonSelected());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(proposal, premiumTotal, addAnotherPersonSelected, nextButtonSelected);
+    return Objects.hash(proposal, premiumTotal, addAnotherPersonSelected);
   }
 }
