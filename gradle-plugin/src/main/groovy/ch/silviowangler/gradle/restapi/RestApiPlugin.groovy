@@ -47,7 +47,7 @@ class RestApiPlugin implements Plugin<Project> {
 
         project.apply(plugin: 'java')
 
-        def extension = new RestApiExtension(project)
+        RestApiExtension extension = new RestApiExtension(project)
         project.extensions.add('restApi', extension)
 
 
@@ -71,9 +71,16 @@ class RestApiPlugin implements Plugin<Project> {
             project.configurations.create(CONFIGUATION_REST_API)
         }
 
-        project.dependencies {
-            compile("ch.silviowangler.rest:rest-api-spring:1.0.27")
-            compile("javax.money:money-api:1.0.3")
+        project.afterEvaluate {
+            project.dependencies {
+                compile("ch.silviowangler.rest:rest-api-spring:1.0.31")
+                compile("javax.money:money-api:1.0.3")
+                compileOnly("javax.validation:validation-api:2.0.1.Final")
+
+                if (extension.springBoot) {
+                    compileOnly "org.springframework:spring-web:5.0.7.RELEASE"
+                }
+            }
         }
     }
 }
