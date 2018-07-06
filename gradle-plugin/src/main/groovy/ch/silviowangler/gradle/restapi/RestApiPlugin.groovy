@@ -71,14 +71,17 @@ class RestApiPlugin implements Plugin<Project> {
             project.configurations.create(CONFIGUATION_REST_API)
         }
 
+        final String springVersion = '5.0.7.RELEASE'
+
         project.afterEvaluate {
             project.dependencies {
-                compile("ch.silviowangler.rest:rest-api-spring:1.0.31")
+                compile("ch.silviowangler.rest:rest-api-spring:1.0.32")
                 compile("javax.money:money-api:1.0.3")
                 compileOnly("javax.validation:validation-api:2.0.1.Final")
 
                 if (extension.springBoot) {
-                    compileOnly "org.springframework:spring-web:5.0.7.RELEASE"
+                    compileOnly "org.springframework:spring-web:${springVersion}"
+                    compileOnly "org.springframework:spring-webmvc:${springVersion}"
                 }
             }
         }
