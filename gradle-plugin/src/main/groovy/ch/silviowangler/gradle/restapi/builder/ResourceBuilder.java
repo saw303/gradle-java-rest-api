@@ -28,6 +28,7 @@ import ch.silviowangler.gradle.restapi.PluginTypes;
 import ch.silviowangler.gradle.restapi.RestApiPlugin;
 import ch.silviowangler.rest.contract.model.v1.Representation;
 import ch.silviowangler.rest.contract.model.v1.Verb;
+import ch.silviowangler.rest.contract.model.v1.VerbParameter;
 import com.google.common.base.CaseFormat;
 import com.squareup.javapoet.*;
 
@@ -207,9 +208,26 @@ public interface ResourceBuilder {
 
 		List<String> names = new ArrayList<>(context.getParams().size());
 
-		context.getParams().forEach((name, type) -> {
+		context.getParams().forEach((name, p) -> {
 
-			ParameterSpec.Builder builder = ParameterSpec.builder(type, name);
+			ParameterSpec.Builder builder = ParameterSpec.builder(GeneratorUtil.translateToJava(p.getType()), name);
+
+			final boolean isHandleMethod = methodNameCopy.startsWith("handle");
+			final boolean isResource = isResourceInterface || isAbstractResourceClass;
+
+			if (isResource && !isHandleMethod) {
+				builder.addAnnotation(getQueryParamAnnotation(p));
+			}
+
+			ParameterSpec parameter = builder.build();
+
+			methodBuilder.addParameter(parameter);
+			names.add(name);
+		});
+
+		context.getParamClasses().forEach((name, className) -> {
+
+			ParameterSpec.Builder builder = ParameterSpec.builder(className, name);
 
 			final boolean isHandleMethod = methodNameCopy.startsWith("handle");
 			final boolean isResource = isResourceInterface || isAbstractResourceClass;
@@ -220,8 +238,6 @@ public interface ResourceBuilder {
 				if (providesRequestBodyAnnotation()) {
 					builder.addAnnotation(buildRequestBodyAnnotation());
 				}
-			} else if (isResource && !isHandleMethod) {
-				builder.addAnnotation(getQueryParamAnnotation(name));
 			}
 
 			ParameterSpec parameter = builder.build();
@@ -230,7 +246,7 @@ public interface ResourceBuilder {
 			names.add(name);
 		});
 
-		if (!context.isDirectEntity() &&  methodName.matches("(handle){0,1}(get|update|delete|Get|Update|Delete)Entity.*")) {
+		if (!context.isDirectEntity() && methodName.matches("(handle){0,1}(get|update|delete|Get|Update|Delete)Entity.*")) {
 			ParameterSpec id = generateIdParam(generateIdParamAnnotation);
 			methodBuilder.addParameter(id);
 			names.add(id.name);
@@ -270,7 +286,7 @@ public interface ResourceBuilder {
 		return methodName.endsWith("AutoAnswer") && ArtifactType.RESOURCE.equals(getArtifactType());
 	}
 
-	AnnotationSpec getQueryParamAnnotation(String paramName);
+	AnnotationSpec getQueryParamAnnotation(VerbParameter paramName);
 
 	Iterable<AnnotationSpec> getResourceMethodAnnotations(boolean applyId, Representation representation, String methodName);
 

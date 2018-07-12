@@ -29,6 +29,7 @@ import ch.silviowangler.gradle.restapi.builder.AbstractResourceBuilder
 import ch.silviowangler.gradle.restapi.builder.ArtifactType
 import ch.silviowangler.rest.contract.model.v1.Representation
 import ch.silviowangler.rest.contract.model.v1.Verb
+import ch.silviowangler.rest.contract.model.v1.VerbParameter
 import com.squareup.javapoet.*
 
 import java.nio.charset.Charset
@@ -111,8 +112,9 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder {
 
 
     @Override
-    AnnotationSpec getQueryParamAnnotation(String paramName) {
-        return createAnnotation(JAX_RS_QUERY_PARAM, ['value': paramName])
+    AnnotationSpec getQueryParamAnnotation(VerbParameter paramName) {
+        // TODO handle VerbParameter options like required
+        return createAnnotation(JAX_RS_QUERY_PARAM, ['value': paramName.getName()])
     }
 
     @Override
