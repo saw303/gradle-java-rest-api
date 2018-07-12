@@ -24,6 +24,7 @@
 package ch.silviowangler.gradle.restapi.builder
 
 import ch.silviowangler.rest.contract.model.v1.Representation
+import ch.silviowangler.rest.contract.model.v1.VerbParameter
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.ParameterSpec
 import com.squareup.javapoet.TypeName
@@ -35,7 +36,8 @@ class MethodContext {
 
     String methodName
     TypeName returnType
-    Map<String, ClassName> params = [:]
+    Map<String, VerbParameter> params = [:]
+    Map<String, ClassName> paramClasses = [:]
     Representation representation
     List<ParameterSpec> pathParams = []
     boolean directEntity
@@ -46,11 +48,13 @@ class MethodContext {
         this.representation = representation
     }
 
-    MethodContext(TypeName returnType, Map<String, ClassName> params, Representation representation, List<ParameterSpec> pathParams, boolean directEntity) {
+    MethodContext(TypeName returnType, Map<String, VerbParameter> params, Map<String, ClassName> paramClasses, Representation representation, List<ParameterSpec> pathParams, boolean directEntity) {
         this.returnType = returnType
         this.params = params
         this.representation = representation
         this.pathParams = pathParams
         this.directEntity = directEntity
+        this.paramClasses = paramClasses
+
     }
 }

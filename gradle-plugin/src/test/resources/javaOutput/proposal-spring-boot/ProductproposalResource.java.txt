@@ -39,7 +39,8 @@ public abstract class ProductproposalResource {
       produces = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseBody
-  public Collection<ProductproposalGetResourceModel> getCollection(@RequestParam("q") String q) {
+  public Collection<ProductproposalGetResourceModel> getCollection(
+      @RequestParam(value = "q", required = false) String q) {
     return handleGetCollection(q);
   }
 

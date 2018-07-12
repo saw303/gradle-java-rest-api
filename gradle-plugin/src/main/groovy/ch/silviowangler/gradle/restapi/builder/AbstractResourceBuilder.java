@@ -35,6 +35,7 @@ import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static ch.silviowangler.gradle.restapi.PluginTypes.*;
@@ -67,10 +68,12 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 		this.currentVerb = currentVerb;
 	}
 
+	@Override
 	public String getCurrentPackageName() {
 		return currentPackageName;
 	}
 
+	@Override
 	public ArtifactType getArtifactType() {
 		return artifactType;
 	}
@@ -172,10 +175,10 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
 			MethodSpec.Builder methodBuilder;
 
-			Map<String, ClassName> params = new HashMap<>();
 			this.currentVerb = verb;
 
-			verb.getParameters().forEach(p -> params.put(p.getName(), GeneratorUtil.translateToJava(p.getType())));
+			Map<String, VerbParameter> params = verb.getParameters().stream().collect(Collectors.toMap(VerbParameter::getName, Function.identity()));
+			Map<String, ClassName> paramClasses = new HashMap<>();
 
 			for (Representation representation : verb.getRepresentations()) {
 
@@ -183,7 +186,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
 				List<ParameterSpec> pathParams = getPathParams(parser, isAbstractOrInterfaceResource());
 
-				MethodContext context = new MethodContext(resourceMethodReturnType(verb, representation), params, representation, pathParams, directEntity);
+				MethodContext context = new MethodContext(resourceMethodReturnType(verb, representation), params, paramClasses, representation, pathParams, directEntity);
 
 				if (GenerateRestApiTask.GET_COLLECTION.equals(verb.getVerb())) {
 
@@ -204,14 +207,14 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
 					if (GenerateRestApiTask.POST.equals(verb.getVerb())) {
 
-						params.put("model", model);
+						paramClasses.put("model", model);
 
 						context.setMethodName("createEntity");
 						methodBuilder = createMethod(context);
 
 					} else if (GenerateRestApiTask.PUT.equals(verb.getVerb())) {
 
-						params.put("model", model);
+						paramClasses.put("model", model);
 						context.setMethodName("updateEntity");
 						methodBuilder = createMethod(context);
 

@@ -32,168 +32,168 @@ import java.util.Objects;
  */
 public class VerbParameter implements Serializable {
 
-    private String name;
-    private String type;
-    private String options;
-    private boolean mandatory;
-    private Number min;
-    private Number max;
-    private boolean multiple;
-    private Object defaultValue;
-    // in JSON protected
-    private String shield;
-    private boolean visible;
-    private boolean sortable;
-    private boolean readonly;
-    private boolean filterable;
-    private List<String> alias;
-    private String xComment;
+	private String name;
+	private String type;
+	private String options;
+	private boolean mandatory;
+	private Number min;
+	private Number max;
+	private boolean multiple;
+	private Object defaultValue;
+	// in JSON protected
+	private String shield;
+	private boolean visible;
+	private boolean sortable;
+	private boolean readonly;
+	private boolean filterable;
+	private List<String> alias;
+	private String xComment;
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public String getType() {
-        return type;
-    }
+	public String getType() {
+		return type;
+	}
 
-    public void setType(String type) {
-        this.type = type;
-    }
+	public void setType(String type) {
+		this.type = type;
+	}
 
-    public String getOptions() {
-        return options;
-    }
+	public String getOptions() {
+		return options;
+	}
 
-    public void setOptions(String options) {
-        this.options = options;
-    }
+	public void setOptions(String options) {
+		this.options = options;
+	}
 
-    public boolean getMandatory() {
-        return mandatory;
-    }
+	public boolean getMandatory() {
+		return mandatory;
+	}
 
-    public void setMandatory(boolean mandatory) {
-        this.mandatory = mandatory;
-    }
+	public void setMandatory(boolean mandatory) {
+		this.mandatory = mandatory;
+	}
 
-    public Number getMin() {
-        return min;
-    }
+	public Number getMin() {
+		return min;
+	}
 
-    public void setMin(Number min) {
-        this.min = min;
-    }
+	public void setMin(Number min) {
+		this.min = min;
+	}
 
-    public Number getMax() {
-        return max;
-    }
+	public Number getMax() {
+		return max;
+	}
 
-    public void setMax(Number max) {
-        this.max = max;
-    }
+	public void setMax(Number max) {
+		this.max = max;
+	}
 
-    public boolean isMultiple() {
-        return multiple;
-    }
+	public boolean isMultiple() {
+		return multiple;
+	}
 
-    public void setMultiple(boolean multiple) {
-        this.multiple = multiple;
-    }
+	public void setMultiple(boolean multiple) {
+		this.multiple = multiple;
+	}
 
-    public Object getDefaultValue() {
-        return defaultValue;
-    }
+	public Object getDefaultValue() {
+		return defaultValue;
+	}
 
-    public void setDefaultValue(Object defaultValue) {
-        this.defaultValue = defaultValue;
-    }
+	public void setDefaultValue(Object defaultValue) {
+		this.defaultValue = defaultValue;
+	}
 
-    public String getShield() {
-        return shield;
-    }
+	public String getShield() {
+		return shield;
+	}
 
-    public void setShield(String shield) {
-        this.shield = shield;
-    }
+	public void setShield(String shield) {
+		this.shield = shield;
+	}
 
-    public boolean isVisible() {
-        return visible;
-    }
+	public boolean isVisible() {
+		return visible;
+	}
 
-    public void setVisible(boolean visible) {
-        this.visible = visible;
-    }
+	public void setVisible(boolean visible) {
+		this.visible = visible;
+	}
 
-    public boolean isSortable() {
-        return sortable;
-    }
+	public boolean isSortable() {
+		return sortable;
+	}
 
-    public void setSortable(boolean sortable) {
-        this.sortable = sortable;
-    }
+	public void setSortable(boolean sortable) {
+		this.sortable = sortable;
+	}
 
-    public boolean isReadonly() {
-        return readonly;
-    }
+	public boolean isReadonly() {
+		return readonly;
+	}
 
-    public void setReadonly(boolean readonly) {
-        this.readonly = readonly;
-    }
+	public void setReadonly(boolean readonly) {
+		this.readonly = readonly;
+	}
 
-    public boolean isFilterable() {
-        return filterable;
-    }
+	public boolean isFilterable() {
+		return filterable;
+	}
 
-    public void setFilterable(boolean filterable) {
-        this.filterable = filterable;
-    }
+	public void setFilterable(boolean filterable) {
+		this.filterable = filterable;
+	}
 
-    public List<String> getAlias() {
-        return alias;
-    }
+	public List<String> getAlias() {
+		return alias;
+	}
 
-    public void setAlias(List<String> alias) {
-        this.alias = alias;
-    }
+	public void setAlias(List<String> alias) {
+		this.alias = alias;
+	}
 
-    public String getxComment() {
-        return xComment;
-    }
+	public String getxComment() {
+		return xComment;
+	}
 
-    public void setxComment(String xComment) {
-        this.xComment = xComment;
-    }
+	public void setxComment(String xComment) {
+		this.xComment = xComment;
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        VerbParameter that = (VerbParameter) o;
-        return mandatory == that.mandatory &&
-                multiple == that.multiple &&
-                visible == that.visible &&
-                sortable == that.sortable &&
-                readonly == that.readonly &&
-                filterable == that.filterable &&
-                Objects.equals(name, that.name) &&
-                Objects.equals(type, that.type) &&
-                Objects.equals(options, that.options) &&
-                Objects.equals(min, that.min) &&
-                Objects.equals(max, that.max) &&
-                Objects.equals(defaultValue, that.defaultValue) &&
-                Objects.equals(shield, that.shield) &&
-                Objects.equals(alias, that.alias) &&
-                Objects.equals(xComment, that.xComment);
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		VerbParameter that = (VerbParameter) o;
+		return mandatory == that.mandatory &&
+				multiple == that.multiple &&
+				visible == that.visible &&
+				sortable == that.sortable &&
+				readonly == that.readonly &&
+				filterable == that.filterable &&
+				Objects.equals(name, that.name) &&
+				Objects.equals(type, that.type) &&
+				Objects.equals(options, that.options) &&
+				Objects.equals(min, that.min) &&
+				Objects.equals(max, that.max) &&
+				Objects.equals(defaultValue, that.defaultValue) &&
+				Objects.equals(shield, that.shield) &&
+				Objects.equals(alias, that.alias) &&
+				Objects.equals(xComment, that.xComment);
+	}
 
-    @Override
-    public int hashCode() {
+	@Override
+	public int hashCode() {
 
-        return Objects.hash(name, type, options, mandatory, min, max, multiple, defaultValue, shield, visible, sortable, readonly, filterable, alias, xComment);
-    }
+		return Objects.hash(name, type, options, mandatory, min, max, multiple, defaultValue, shield, visible, sortable, readonly, filterable, alias, xComment);
+	}
 }
