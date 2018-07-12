@@ -113,6 +113,7 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder {
 
     @Override
     AnnotationSpec getQueryParamAnnotation(VerbParameter paramName) {
+        // TODO handle VerbParameter options like required
         return createAnnotation(JAX_RS_QUERY_PARAM, ['value': paramName.getName()])
     }
 

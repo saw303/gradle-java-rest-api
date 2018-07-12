@@ -107,6 +107,7 @@ public class SpringRootResourceFactory extends AbstractResourceBuilder {
 		if (!param.getMandatory()) {
 			builder.addMember("required", "$L", false);
 		}
+		// TODO handle other VerbParameter options like defaultValue
 
 		return builder.build();
 	}
