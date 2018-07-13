@@ -178,7 +178,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 			this.currentVerb = verb;
 
 			Map<String, VerbParameter> params = verb.getParameters().stream().collect(Collectors.toMap(VerbParameter::getName, Function.identity()));
-			Map<String, ClassName> paramClasses = new HashMap<>();
+			Map<String, TypeName> paramClasses = new HashMap<>();
 
 			for (Representation representation : verb.getRepresentations()) {
 
@@ -212,10 +212,16 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 						context.setMethodName("createEntity");
 						methodBuilder = createMethod(context);
 
-					} else if (GenerateRestApiTask.PUT.equals(verb.getVerb())) {
+					} else if (GenerateRestApiTask.PUT.equals(verb.getVerb()) || GenerateRestApiTask.PUT_ENTITY.equals(verb.getVerb())) {
 
 						paramClasses.put("model", model);
 						context.setMethodName("updateEntity");
+						methodBuilder = createMethod(context);
+
+					} else if (GenerateRestApiTask.PUT_COLLECTION.equals(verb.getVerb())) {
+
+						paramClasses.put("model", ParameterizedTypeName.get(ClassName.get(Collection.class), model));
+						context.setMethodName("updateEntities");
 						methodBuilder = createMethod(context);
 
 					} else if (GenerateRestApiTask.DELETE_COLLECTION.equals(verb.getVerb())) {
@@ -264,22 +270,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 	}
 
 	protected String getHttpMethod() {
-
-		String v = Objects.requireNonNull(getCurrentVerb()).getVerb();
-
-		if (GenerateRestApiTask.GET_ENTITY.equals(v) || GenerateRestApiTask.GET_COLLECTION.equals(v)) {
-			return "GET";
-		} else if (GenerateRestApiTask.DELETE_ENTITY.equals(v) || GenerateRestApiTask.DELETE_COLLECTION.equals(v)) {
-			return "DELETE";
-		} else if (GenerateRestApiTask.PUT.equals(v)) {
-			return "PUT";
-		} else if (GenerateRestApiTask.POST.equals(v)) {
-			return "POST";
-		} else if ("OPTIONS".equals(v)) {
-			return v;
-		} else {
-			throw new IllegalArgumentException("Unknown verb " + v);
-		}
+		return toHttpMethod(getCurrentVerb()).toUpperCase();
 	}
 
 	@Override

@@ -23,6 +23,7 @@
  */
 package ch.silviowangler.gradle.restapi
 
+
 import ch.silviowangler.gradle.restapi.util.SupportedDataTypes
 import ch.silviowangler.rest.contract.model.v1.Representation
 import com.google.common.base.CaseFormat
@@ -137,14 +138,18 @@ class GeneratorUtil {
     static TypeName getReturnType(String fileName, String verb, boolean collection = false, String packageName, boolean springBoot = false) {
 
         if (verb == 'Get') {
-            def resourceModelName = GeneratorUtil.createResourceModelName(fileName, verb)
+            String resourceModelName = createResourceModelName(fileName, verb)
             if (collection) {
                 return ParameterizedTypeName.get(ClassName.get(Collection.class), ClassName.get(packageName, resourceModelName))
             } else {
                 return ClassName.get(packageName, resourceModelName)
             }
         } else if (verb == 'Put' || verb == 'Post') {
-            return PluginTypes.RESTAPI_IDTYPE.className
+            if (collection) {
+                return PluginTypes.SPRING_RESPONSE_ENTITY.className
+            } else {
+                return PluginTypes.RESTAPI_IDTYPE.className
+            }
         } else if (verb == 'Delete') {
             return springBoot ? PluginTypes.SPRING_RESPONSE_ENTITY.className : PluginTypes.JAX_RS_RESPONSE.className
         } else {

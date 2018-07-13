@@ -189,6 +189,6 @@ public class SpringRootResourceFactory extends AbstractResourceBuilder {
 	@Override
 	public TypeName resourceMethodReturnType(Verb verb, Representation representation) {
 		String v = toHttpMethod(verb);
-		return GeneratorUtil.getSpringBootReturnType(getResourceContractContainer().getSourceFileName(), v, false, getCurrentPackageName(), representation);
+		return GeneratorUtil.getSpringBootReturnType(getResourceContractContainer().getSourceFileName(), v, verb.getVerb().endsWith("_COLLECTION"), getCurrentPackageName(), representation);
 	}
 }

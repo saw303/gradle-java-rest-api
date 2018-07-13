@@ -1,0 +1,38 @@
+GET http://localhost:8080/v1/laender
+Content-Type: application/json
+
+###
+
+PUT http://localhost:8080/v1/laender
+Content-Type: application/json
+
+[
+  {
+    "id": "CH",
+    "name": "Schweiz",
+    "gruendungsDatum": 1291,
+    "flaeche": 1,
+    "koordinaten": {
+      "longitude": 7834.9,
+      "latitude": 7834
+    }
+  }
+]
+
+###
+
+PUT http://localhost:8080/v1/laender/1
+Content-Type: application/json
+
+{
+  "id": "CH",
+  "name": "Schweiz",
+  "gruendungsDatum": 1291,
+  "flaeche": 1,
+  "koordinaten": {
+    "longitude": 7834.9,
+    "latitude": 7834
+  }
+}
+
+###
