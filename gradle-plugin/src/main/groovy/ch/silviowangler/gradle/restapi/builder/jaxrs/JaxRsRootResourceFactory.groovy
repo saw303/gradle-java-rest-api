@@ -161,6 +161,6 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder {
     @Override
     TypeName resourceMethodReturnType(Verb verb, Representation representation) {
         String v = toHttpMethod(verb)
-        return GeneratorUtil.getJaxRsReturnType(getResourceContractContainer().getSourceFileName(), v, false, getCurrentPackageName(), representation)
+        return GeneratorUtil.getJaxRsReturnType(getResourceContractContainer().getSourceFileName(), v, verb.getVerb().endsWith("_COLLECTION"), getCurrentPackageName(), representation)
     }
 }

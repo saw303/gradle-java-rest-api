@@ -38,6 +38,39 @@
           "comment": "Root Ressource of API Version 1"
         }
       ]
+    },
+    {
+      "verb": "PUT_COLLECTION",
+      "rel": "collection",
+      "responseStates": [
+        {
+          "code": 200,
+          "message": "200 Ok",
+          "comment": "content in response body"
+        },
+        {
+          "code": 503,
+          "message": "503 Service Unavailable",
+          "comment": "Backend server eventually not reachable or to slow"
+        }
+      ],
+      "representations": [
+        {
+          "name": "json",
+          "comment": "",
+          "responseExample": "{...}",
+          "isDefault": true,
+          "mimetype": "application/ch.silviowangler.root"
+        }
+      ],
+      "parameters": [],
+      "permissions": [
+        {
+          "name": "user",
+          "mode": "all",
+          "comment": "Root Ressource of API Version 1"
+        }
+      ]
     }
   ],
   "fields": [

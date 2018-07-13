@@ -47,8 +47,11 @@ public interface ResourceBuilder {
 	String GET_ENTITY = "GET_ENTITY";
 	String POST = "POST";
 	String PUT = "PUT";
+	String PUT_ENTITY = "PUT_ENTITY";
+	String PUT_COLLECTION = "PUT_COLLECTION";
 	String DELETE_ENTITY = "DELETE_ENTITY";
 	String DELETE_COLLECTION = "DELETE_COLLECTION";
+	String OPTIONS = "OPTIONS";
 
 	String getCurrentPackageName();
 
@@ -78,14 +81,18 @@ public interface ResourceBuilder {
 	default String toHttpMethod(Verb verb) {
 		String v;
 
+		List<String> put = Arrays.asList(PUT, PUT_ENTITY, PUT_COLLECTION);
+
 		if (GET_ENTITY.equals(verb.getVerb()) || GET_COLLECTION.equals(verb.getVerb())) {
 			v = "Get";
 		} else if (DELETE_ENTITY.equals(verb.getVerb()) || DELETE_COLLECTION.equals(verb.getVerb())) {
 			v = "Delete";
-		} else if (PUT.equals(verb.getVerb())) {
+		} else if (put.contains(verb.getVerb())) {
 			v = "Put";
 		} else if (POST.equals(verb.getVerb())) {
 			v = "Post";
+		} else if (OPTIONS.equals(verb.getVerb())) {
+			v = "Options";
 		} else {
 			throw new IllegalArgumentException("Unknown verb " + verb.getVerb());
 		}
@@ -164,12 +171,7 @@ public interface ResourceBuilder {
 		final String methodNameCopy = String.valueOf(methodName);
 
 		MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(methodName).addModifiers(PUBLIC);
-
-		if ("getCollection".equals(methodName) || "handleGetCollection".equals(methodName)) {
-			methodBuilder.returns(ParameterizedTypeName.get(ClassName.get(Collection.class), context.getReturnType()));
-		} else {
-			methodBuilder.returns(context.getReturnType());
-		}
+		methodBuilder.returns(context.getReturnType());
 
 		final boolean isResourceInterface = ArtifactType.RESOURCE.equals(getArtifactType());
 		final boolean isAbstractResourceClass = ArtifactType.ABSTRACT_RESOURCE.equals(getArtifactType());
