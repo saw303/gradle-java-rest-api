@@ -175,8 +175,8 @@
       "mandatory": [
         "PUT", "POST"
       ],
-      "min": null,
-      "max": null,
+      "min": 0,
+      "max": 100,
       "multiple": false,
       "defaultValue": null,
       "protected": [],

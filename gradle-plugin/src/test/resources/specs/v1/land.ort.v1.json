@@ -186,7 +186,7 @@
         "PUT", "POST"
       ],
       "min": null,
-      "max": null,
+      "max": 20,
       "multiple": false,
       "defaultValue": null,
       "protected": [],

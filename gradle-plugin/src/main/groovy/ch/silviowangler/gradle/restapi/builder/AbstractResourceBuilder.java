@@ -26,25 +26,59 @@ package ch.silviowangler.gradle.restapi.builder;
 import ch.silviowangler.gradle.restapi.GeneratorUtil;
 import ch.silviowangler.gradle.restapi.LinkParser;
 import ch.silviowangler.gradle.restapi.tasks.GenerateRestApiTask;
-import ch.silviowangler.rest.contract.model.v1.*;
-import com.squareup.javapoet.*;
+import ch.silviowangler.rest.contract.model.v1.GeneralDetails;
+import ch.silviowangler.rest.contract.model.v1.Representation;
+import ch.silviowangler.rest.contract.model.v1.ResourceContract;
+import ch.silviowangler.rest.contract.model.v1.ResourceField;
+import ch.silviowangler.rest.contract.model.v1.ResourceTypeField;
+import ch.silviowangler.rest.contract.model.v1.ResourceTypes;
+import ch.silviowangler.rest.contract.model.v1.Verb;
+import ch.silviowangler.rest.contract.model.v1.VerbParameter;
+import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.FieldSpec;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
+import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;
 import io.github.getify.minify.Minify;
 
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static ch.silviowangler.gradle.restapi.PluginTypes.*;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_DECIMAL_MAX;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_DECIMAL_MIN;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_NOT_NULL;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_SIZE;
+import static ch.silviowangler.gradle.restapi.PluginTypes.RESTAPI_RESOURCE_MODEL;
 import static ch.silviowangler.gradle.restapi.builder.ArtifactType.RESOURCE;
-import static ch.silviowangler.gradle.restapi.util.SupportedDataTypes.*;
+import static ch.silviowangler.gradle.restapi.util.SupportedDataTypes.BOOL;
+import static ch.silviowangler.gradle.restapi.util.SupportedDataTypes.DATE;
+import static ch.silviowangler.gradle.restapi.util.SupportedDataTypes.DATETIME;
+import static ch.silviowangler.gradle.restapi.util.SupportedDataTypes.STRING;
 import static com.google.common.base.CaseFormat.LOWER_CAMEL;
 import static com.google.common.base.CaseFormat.UPPER_CAMEL;
 import static com.squareup.javapoet.TypeName.INT;
-import static javax.lang.model.element.Modifier.*;
+import static javax.lang.model.element.Modifier.ABSTRACT;
+import static javax.lang.model.element.Modifier.FINAL;
+import static javax.lang.model.element.Modifier.PRIVATE;
+import static javax.lang.model.element.Modifier.PUBLIC;
+import static javax.lang.model.element.Modifier.STATIC;
 
 /**
  * @author Silvio Wangler
@@ -368,19 +402,26 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 					fieldBuilder.addAnnotation(createAnnotation(JAVAX_VALIDATION_NOT_NULL));
 				}
 
-				if (!verb.equals(verbGet) && field.getMin() instanceof Number && field.getMax() instanceof Number) {
+				if (!verb.equals(verbGet) && (field.getMin() instanceof Number || field.getMax() instanceof Number)) {
 
 					Number min = field.getMin();
 					Number max = field.getMax();
 
-					if (field.getType().equalsIgnoreCase("integer")) {
-						fieldBuilder.addAnnotation(
-								AnnotationSpec.builder(JAVAX_VALIDATION_SIZE.getClassName())
-										.addMember("min", "$N", min.intValue())
-										.addMember("max", "$N", max.intValue()).build()
-						);
+					if (field.getType().equalsIgnoreCase("integer") || field.getType().equalsIgnoreCase("string")) {
+
+						AnnotationSpec.Builder annoBuilder = AnnotationSpec.builder(JAVAX_VALIDATION_SIZE.getClassName());
+
+						if (field.getMin() != null) {
+							annoBuilder.addMember("min", "$L", min.intValue());
+						}
+
+						if (field.getMax() != null) {
+							annoBuilder.addMember("max", "$L", max.intValue());
+						}
+
+						fieldBuilder.addAnnotation(annoBuilder.build());
 					}
-					if (field.getType().equalsIgnoreCase("decimal")) {
+					else if (field.getType().equalsIgnoreCase("decimal")) {
 						fieldBuilder.addAnnotation(
 								AnnotationSpec.builder(JAVAX_VALIDATION_DECIMAL_MIN.getClassName())
 										.addMember("value", "$S", min.doubleValue()).build()
