@@ -373,11 +373,13 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 					Number min = field.getMin();
 					Number max = field.getMax();
 
-					if (field.getType().equalsIgnoreCase("integer")) {
+					if (field.getType().equalsIgnoreCase("string")) {
+						int minInt = min.intValue();
+						int maxInt = max.intValue();
 						fieldBuilder.addAnnotation(
 								AnnotationSpec.builder(JAVAX_VALIDATION_SIZE.getClassName())
-										.addMember("min", "$N", min.intValue())
-										.addMember("max", "$N", max.intValue()).build()
+										.addMember("min", "$L", String.valueOf(minInt))
+										.addMember("max", "$L", String.valueOf(maxInt)).build()
 						);
 					}
 					if (field.getType().equalsIgnoreCase("decimal")) {
