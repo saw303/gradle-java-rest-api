@@ -75,7 +75,7 @@ class RestApiPlugin implements Plugin<Project> {
 
         project.afterEvaluate {
             project.dependencies {
-                compile("ch.silviowangler.rest:rest-api-spring:1.0.33")
+                compile("ch.silviowangler.rest:rest-api-spring:1.0.34")
                 compile("javax.money:money-api:1.0.3")
                 compileOnly("javax.validation:validation-api:2.0.1.Final")
 
