@@ -1,0 +1,14 @@
+{
+  "general": {
+    "name": "root",
+    "description": "Das ist die Root Resource der Version 1.0.0",
+    "version": "1.0.0",
+    "x-route": "/:version"
+  },
+  "verbs": [],
+  "fields": [],
+  "subresources": [],
+  "pipes": [],
+  "types": [],
+  "validators": []
+}

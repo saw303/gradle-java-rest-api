@@ -1,0 +1,76 @@
+package org.acme.rest.v1;
+
+import javax.annotation.Generated;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+@Generated(
+    comments = "Specification filename: root.v1.json",
+    value = "ch.silviowangler.restapi"
+)
+@RequestMapping("/v1")
+public abstract class RootResource {
+  public static final String OPTIONS_CONTENT = "{\"general\":{\"name\":\"root\",\"description\":\"Das ist die Root Resource der Version 1.0.0\",\"version\":\"1.0.0\",\"x-route\":\"/:version\"},\"verbs\":[],\"fields\":[],\"subresources\":[],\"pipes\":[],\"types\":[],\"validators\":[]}";
+
+  @RequestMapping(
+      method = RequestMethod.OPTIONS,
+      produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+  )
+  @ResponseBody
+  public String getOptions() {
+    return OPTIONS_CONTENT;
+  }
+
+  @RequestMapping(
+      method = RequestMethod.POST,
+      produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+  )
+  @ResponseBody
+  public ResponseEntity createEntityAutoAnswer() {
+    return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
+  }
+
+  @RequestMapping(
+      method = RequestMethod.DELETE,
+      produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+  )
+  @ResponseBody
+  public ResponseEntity deleteCollectionAutoAnswer() {
+    return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
+  }
+
+  @RequestMapping(
+      method = RequestMethod.DELETE,
+      path = "/{id}",
+      produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+  )
+  @ResponseBody
+  public ResponseEntity deleteEntityAutoAnswer(@PathVariable("id") String id) {
+    return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
+  }
+
+  @RequestMapping(
+      method = RequestMethod.GET,
+      path = "/{id}",
+      produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+  )
+  @ResponseBody
+  public ResponseEntity getEntityAutoAnswer(@PathVariable("id") String id) {
+    return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
+  }
+
+  @RequestMapping(
+      method = RequestMethod.PUT,
+      path = "/{id}",
+      produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+  )
+  @ResponseBody
+  public ResponseEntity updateEntityAutoAnswer(@PathVariable("id") String id) {
+    return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
+  }
+}

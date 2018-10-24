@@ -364,7 +364,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 		Set<TypeSpec> specTypes = new HashSet<>(verbs.size());
 
 
-		Verb verbGet = verbs.stream().filter(v -> v.getVerb().equals(GET_ENTITY)).findAny().orElse(verbs.get(0));
+		Verb verbGet = verbs.stream().filter(v -> v.getVerb().equals(GET_ENTITY)).findAny().orElse(verbs.isEmpty() ? null : verbs.get(0));
 
 		List<ResourceField> fields = resourceContract.getFields();
 
