@@ -1,0 +1,7 @@
+GET http://localhost:8080/v1/laender/
+
+###
+
+GET http://localhost:8080/v1/laender/875d462f-3491-3e79-bc7f-7354c9f5107a
+
+###

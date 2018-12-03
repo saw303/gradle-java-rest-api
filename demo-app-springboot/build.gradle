@@ -1,7 +1,7 @@
 buildscript {
     ext {
-        springBootVersion = '2.0.4.RELEASE'
-        restVersion = '1.0.33'
+        springBootVersion = '2.1.1.RELEASE'
+        restVersion = '1.0.36'
     }
     repositories {
 
@@ -35,9 +35,9 @@ repositories {
 
 
 dependencies {
-    compile('org.springframework.boot:spring-boot-starter-validation')
-    compile('org.springframework.boot:spring-boot-starter-web')
-    testCompile('org.springframework.boot:spring-boot-starter-test')
+    implementation('org.springframework.boot:spring-boot-starter-validation')
+    implementation('org.springframework.boot:spring-boot-starter-web')
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
 }
 
 restApi {
