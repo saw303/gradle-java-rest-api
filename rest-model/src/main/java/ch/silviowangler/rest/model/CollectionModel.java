@@ -32,7 +32,7 @@ import java.util.List;
  */
 public class CollectionModel implements Serializable {
 
-    private List<EntityModel> data;
+    private List<EntityModel> data = new ArrayList<>();
 
     private List<ResourceLink> links = new ArrayList<>();
 
