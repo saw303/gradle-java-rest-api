@@ -93,6 +93,7 @@ class GeneratorUtil {
             'bool'    : SupportedDataTypes.BOOL.className,
             'flag'    : SupportedDataTypes.FLAG.className,
             'string'  : SupportedDataTypes.STRING.className,
+            'email'   : SupportedDataTypes.STRING.className,
             'uuid'    : SupportedDataTypes.UUID.className,
             'object'  : SupportedDataTypes.OBJECT.className,
             'money'   : SupportedDataTypes.MONEY.className,

@@ -25,6 +25,7 @@ package ch.silviowangler.gradle.restapi.builder;
 
 import ch.silviowangler.gradle.restapi.GeneratorUtil;
 import ch.silviowangler.gradle.restapi.LinkParser;
+import ch.silviowangler.gradle.restapi.PluginTypes;
 import ch.silviowangler.gradle.restapi.tasks.GenerateRestApiTask;
 import ch.silviowangler.rest.contract.model.v1.GeneralDetails;
 import ch.silviowangler.rest.contract.model.v1.Representation;
@@ -62,11 +63,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_DECIMAL_MAX;
-import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_DECIMAL_MIN;
-import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_NOT_NULL;
-import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_SIZE;
-import static ch.silviowangler.gradle.restapi.PluginTypes.RESTAPI_RESOURCE_MODEL;
+import static ch.silviowangler.gradle.restapi.PluginTypes.*;
 import static ch.silviowangler.gradle.restapi.builder.ArtifactType.RESOURCE;
 import static ch.silviowangler.gradle.restapi.util.SupportedDataTypes.BOOL;
 import static ch.silviowangler.gradle.restapi.util.SupportedDataTypes.DATE;
@@ -399,8 +396,12 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
 				FieldSpec.Builder fieldBuilder = FieldSpec.builder(fieldType, field.getName(), PRIVATE);
 
-				if (field.getMandatory().stream().filter(v -> v.equalsIgnoreCase(verb.getVerb())).findAny().isPresent()) {
+				if (field.getMandatory().stream().anyMatch(v -> v.equalsIgnoreCase(verb.getVerb()))) {
 					fieldBuilder.addAnnotation(createAnnotation(JAVAX_VALIDATION_NOT_NULL));
+				}
+
+				if (!verb.equals(verbGet) && field.getType().equalsIgnoreCase("email")) {
+					fieldBuilder.addAnnotation(AnnotationSpec.builder(JAVAX_VALIDATION_EMAIL.getClassName()).build());
 				}
 
 				if (!verb.equals(verbGet) && (field.getMin() instanceof Number || field.getMax() instanceof Number)) {

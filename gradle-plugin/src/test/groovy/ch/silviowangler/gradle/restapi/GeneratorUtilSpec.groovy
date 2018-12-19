@@ -72,6 +72,7 @@ class GeneratorUtilSpec extends Specification {
         where:
         jsonType   || javaType
         'string'   || ClassName.get(String)
+        'email'    || ClassName.get(String)
         'date'     || ClassName.get(LocalDate)
         'datetime' || ClassName.get(OffsetDateTime)
         'decimal'  || ClassName.get(BigDecimal)

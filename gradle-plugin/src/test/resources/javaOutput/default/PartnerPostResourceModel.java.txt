@@ -11,6 +11,7 @@ import javax.annotation.Generated;
 import javax.money.MonetaryAmount;
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
 @Generated(
@@ -28,6 +29,9 @@ public class PartnerPostResourceModel implements Serializable, ResourceModel {
   private String vorname = "unbekannt";
 
   private String titel;
+
+  @Email
+  private String email;
 
   private LocalDate geburtsdatum = LocalDate.now();
 
@@ -71,6 +75,14 @@ public class PartnerPostResourceModel implements Serializable, ResourceModel {
 
   public void setTitel(String titel) {
     this.titel = titel;
+  }
+
+  public String getEmail() {
+    return this.email;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
   }
 
   public LocalDate getGeburtsdatum() {
@@ -118,11 +130,11 @@ public class PartnerPostResourceModel implements Serializable, ResourceModel {
     if (this == other) return true;
     if (! (other instanceof PartnerPostResourceModel)) return false;
     PartnerPostResourceModel that = (PartnerPostResourceModel) other;
-    return Objects.equals(getId(), that.getId()) && Objects.equals(getName(), that.getName()) && Objects.equals(getVorname(), that.getVorname()) && Objects.equals(getTitel(), that.getTitel()) && Objects.equals(getGeburtsdatum(), that.getGeburtsdatum()) && Objects.equals(getGewicht(), that.getGewicht()) && Objects.equals(getLohn(), that.getLohn()) && Objects.equals(getUhrzeit(), that.getUhrzeit()) && Objects.equals(getSprache(), that.getSprache());
+    return Objects.equals(getId(), that.getId()) && Objects.equals(getName(), that.getName()) && Objects.equals(getVorname(), that.getVorname()) && Objects.equals(getTitel(), that.getTitel()) && Objects.equals(getEmail(), that.getEmail()) && Objects.equals(getGeburtsdatum(), that.getGeburtsdatum()) && Objects.equals(getGewicht(), that.getGewicht()) && Objects.equals(getLohn(), that.getLohn()) && Objects.equals(getUhrzeit(), that.getUhrzeit()) && Objects.equals(getSprache(), that.getSprache());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, vorname, titel, geburtsdatum, gewicht, lohn, uhrzeit, sprache);
+    return Objects.hash(id, name, vorname, titel, email, geburtsdatum, gewicht, lohn, uhrzeit, sprache);
   }
 }

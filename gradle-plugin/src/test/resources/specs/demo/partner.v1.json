@@ -246,6 +246,25 @@
       "x-comment": "Titel"
     },
     {
+      "name": "email",
+      "type": "email",
+      "options": null,
+      "mandatory": [
+        "PUT"
+      ],
+      "min": null,
+      "max": null,
+      "multiple": false,
+      "defaultValue": null,
+      "protected": [
+        false
+      ],
+      "visible": true,
+      "sortable": true,
+      "scopeable": true,
+      "x-comment": "Email des Partners"
+    },
+    {
       "name": "geburtsdatum",
       "type": "date",
       "options": null,
