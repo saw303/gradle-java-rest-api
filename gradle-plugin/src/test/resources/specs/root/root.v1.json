@@ -90,7 +90,7 @@
       "readonly": false,
       "filterable": false,
       "alias": [],
-      "x-comment": "Name des Landes"
+      "x-comment": "Ob Entwurf oder nicht"
     }
   ],
   "subresources": [],
