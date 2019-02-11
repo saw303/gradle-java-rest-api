@@ -4,7 +4,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "ch.silviowangler.rest:gradle-java-rest-api:1.2.2"
+        classpath "ch.silviowangler.rest:gradle-java-rest-api:1.2.3"
     }
 }
 

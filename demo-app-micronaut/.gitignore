@@ -11,3 +11,5 @@ out/
 .project
 .settings
 .classpath
+
+demo-app-micronaut/src/generated/*
