@@ -31,11 +31,6 @@ jobs:
           -
       - run: gradle dependencies
 
-      - save_cache:
-          paths:
-            - ~/.gradle
-          key: v1-dependencies-{{ checksum "build.gradle" }}-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
-
       # run tests!
       - run: gradle test
 
@@ -56,4 +51,9 @@ jobs:
           path: ~/junit
       - store_artifacts:
           path: ~/junit
+
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: v1-dependencies-{{ checksum "build.gradle" }}-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
 
