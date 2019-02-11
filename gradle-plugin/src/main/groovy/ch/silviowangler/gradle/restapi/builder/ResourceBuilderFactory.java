@@ -1,7 +1,7 @@
 /**
  * MIT License
  * <p>
- * Copyright (c) 2016 - 2018 Silvio Wangler (silvio.wangler@gmail.com)
+ * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,18 +25,24 @@ package ch.silviowangler.gradle.restapi.builder;
 
 import ch.silviowangler.gradle.restapi.RestApiExtension;
 import ch.silviowangler.gradle.restapi.builder.jaxrs.JaxRsRootResourceFactory;
+import ch.silviowangler.gradle.restapi.builder.micronaut.MicronautResourceFactory;
 import ch.silviowangler.gradle.restapi.builder.spring.SpringRootResourceFactory;
 
 import java.util.Objects;
 
+import static ch.silviowangler.gradle.restapi.TargetFramework.MICRONAUT;
+import static ch.silviowangler.gradle.restapi.TargetFramework.SPRING_BOOT;
+
 class ResourceBuilderFactory {
 
-    public static ResourceBuilder getRootResourceBuilder(RestApiExtension restApiExtension) {
+	public static ResourceBuilder getRootResourceBuilder(RestApiExtension restApiExtension) {
 
-        if (Objects.requireNonNull(restApiExtension).isSpringBoot()) {
-            return new SpringRootResourceFactory();
-        }
-        return new JaxRsRootResourceFactory();
-    }
-
+		if (SPRING_BOOT == Objects.requireNonNull(restApiExtension, "restApiExtension must not be null").getTargetFramework()) {
+			return new SpringRootResourceFactory();
+		} else if (MICRONAUT == restApiExtension.getTargetFramework()) {
+			return new MicronautResourceFactory();
+		} else {
+			return new JaxRsRootResourceFactory();
+		}
+	}
 }

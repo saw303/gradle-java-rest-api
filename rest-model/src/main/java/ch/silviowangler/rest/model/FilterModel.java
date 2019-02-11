@@ -1,7 +1,7 @@
 /**
  * MIT License
  * <p>
- * Copyright (c) 2016 - 2018 Silvio Wangler (silvio.wangler@gmail.com)
+ * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,13 @@ import com.google.gson.JsonPrimitive;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**

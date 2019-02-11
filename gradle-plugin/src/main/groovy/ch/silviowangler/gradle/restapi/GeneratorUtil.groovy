@@ -1,7 +1,7 @@
 /*
  * MIT License
  * <p>
- * Copyright (c) 2016 - 2018 Silvio Wangler (silvio.wangler@gmail.com)
+ * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -41,6 +41,7 @@ class GeneratorUtil {
     private final static String RESOURCE_FORM_DATA = "RFM"
     private final static String RESOURCE = "R"
     private final static String RESOURCE_IMPLEMENTATION = "RI"
+    private final static String RESOURCE_DELEGATION = "RD"
 
     private static String createTypeName(String fileName, String type) {
         return createTypeName(fileName, type, '')
@@ -54,6 +55,7 @@ class GeneratorUtil {
         else if (type == RESOURCE_FORM_DATA) postfix = 'FormData'
         else if (type == RESOURCE) postfix = 'Resource'
         else if (type == RESOURCE_IMPLEMENTATION) postfix = 'ResourceImpl'
+        else if (type == RESOURCE_DELEGATION) postfix = 'ResourceDelegate'
         else throw new IllegalArgumentException("Unknown param value ${type}")
 
 
@@ -81,6 +83,10 @@ class GeneratorUtil {
 
     static String createResourceImplementationName(String fileName) {
         createTypeName(fileName, RESOURCE_IMPLEMENTATION)
+    }
+
+    static String createResourceDelegateName(String fileName) {
+        createTypeName(fileName, RESOURCE_DELEGATION)
     }
 
     private static Map<String, ClassName> supportedDataTypes = [
@@ -116,6 +122,15 @@ class GeneratorUtil {
             v = verb.split('_')[0]
         }
         return "${v[0].toUpperCase()}${v[1..v.length() - 1].toLowerCase()}"
+    }
+
+    static TypeName getMicronautReturnType(String fileName, String verb, boolean collection = false, String packageName, Representation representation) {
+
+        if (representation.name != "json") {
+            return PluginTypes.MICRONAUT_HTTP_RESPONSE.className
+        }
+
+        return getReturnType(fileName, verb, collection, packageName, true)
     }
 
     static TypeName getSpringBootReturnType(String fileName, String verb, boolean collection = false, String packageName, Representation representation) {
@@ -165,4 +180,6 @@ class GeneratorUtil {
     static File generatorInput(Project project) {
         return new File(project.buildDir, 'rest-api-specs')
     }
+
+
 }

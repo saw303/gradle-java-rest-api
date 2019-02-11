@@ -1,7 +1,7 @@
 /**
  * MIT License
  * <p>
- * Copyright (c) 2016 - 2018 Silvio Wangler (silvio.wangler@gmail.com)
+ * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,12 +30,30 @@ import ch.silviowangler.gradle.restapi.builder.ArtifactType;
 import ch.silviowangler.rest.contract.model.v1.Representation;
 import ch.silviowangler.rest.contract.model.v1.Verb;
 import ch.silviowangler.rest.contract.model.v1.VerbParameter;
-import com.squareup.javapoet.*;
+import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;
 
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import static ch.silviowangler.gradle.restapi.PluginTypes.*;
+import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_HTTP_MEDIA_TYPE;
+import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_HTTP_STATUS;
+import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_PATH_VARIABLE;
+import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_REQUEST_BODY;
+import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_REQUEST_MAPPING;
+import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_REQUEST_METHOD;
+import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_REQUEST_PARAM;
+import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_RESPONSE_BODY;
+import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_RESPONSE_ENTITY;
+import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_RESPONSE_STATUS;
+import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_REST_CONTROLLER;
 
 public class SpringRootResourceFactory extends AbstractResourceBuilder {
 
