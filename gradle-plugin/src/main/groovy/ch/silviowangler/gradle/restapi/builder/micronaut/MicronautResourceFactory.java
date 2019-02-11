@@ -154,7 +154,7 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
 		Set<AnnotationSpec> methodAnnotations = new HashSet<>();
 		String httpMethod = getHttpMethod();
 
-		Map annotationsFields = new HashMap();
+		Map<String, Object> annotationsFields = new HashMap<>();
 
 		if (applyId) {
 			if (representation.isJson()) {
