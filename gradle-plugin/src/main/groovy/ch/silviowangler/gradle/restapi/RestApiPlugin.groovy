@@ -34,6 +34,7 @@ import org.gradle.api.artifacts.Configuration
 
 import static ch.silviowangler.gradle.restapi.Consts.CONFIGUATION_REST_API
 import static ch.silviowangler.gradle.restapi.Consts.TASK_GROUP_REST_API
+import static ch.silviowangler.gradle.restapi.TargetFramework.SPRING_BOOT
 
 /**
  * This is the main plugin file. Put a description of your plugin here.
@@ -75,11 +76,11 @@ class RestApiPlugin implements Plugin<Project> {
 
         project.afterEvaluate {
             project.dependencies {
-                compile("ch.silviowangler.rest:rest-api-spring:1.2.0")
+                compile("ch.silviowangler.rest:rest-api-spring:1.2.1")
                 compile("javax.money:money-api:1.0.3")
                 compileOnly("javax.validation:validation-api:2.0.1.Final")
 
-                if (extension.springBoot) {
+                if (extension.targetFramework == SPRING_BOOT) {
                     compileOnly "org.springframework:spring-web:${springVersion}"
                     compileOnly "org.springframework:spring-webmvc:${springVersion}"
                 }
