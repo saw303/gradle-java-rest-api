@@ -9,3 +9,6 @@ out
 
 demo-app-springboot/src/generated
 demo-app-springboot/src/main/java/**/*ResourceImpl.java
+
+demo-app-micronaut/src/generated
+demo-app-micronaut/src/main/java/**/*Delegate.java
