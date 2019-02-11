@@ -1,10 +1,11 @@
-package org.acme.rest.v1.laender.orte;
+package demo.app.micronaut.v1.laender.orte;
 
 import ch.silviowangler.rest.NotYetImplementedException;
 import ch.silviowangler.rest.types.IdType;
 import io.micronaut.http.HttpResponse;
-import java.util.Collection;
+
 import javax.inject.Singleton;
+import java.util.Collection;
 
 @Singleton
 public class OrtResourceDelegate {

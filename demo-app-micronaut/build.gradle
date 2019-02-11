@@ -1,0 +1,72 @@
+buildscript {
+    repositories {
+        maven { url "https://repo.schaltzentrale.ch/artifactory/gesus/" }
+    }
+
+    dependencies {
+        classpath "ch.silviowangler.rest:gradle-java-rest-api:1.2.2"
+    }
+}
+
+plugins {
+    id "io.spring.dependency-management" version "1.0.6.RELEASE"
+    id "com.github.johnrengelman.shadow" version "4.0.2"
+    id "net.ltgt.apt-eclipse" version "0.18"
+    id "net.ltgt.apt-idea" version "0.18"
+
+}
+
+apply plugin:"application"
+apply plugin:"java"
+apply plugin: 'ch.silviowangler.restapi'
+
+version "0.1"
+group "demo.app.micronaut"
+
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url "https://jcenter.bintray.com" }
+    maven { url "https://repo.schaltzentrale.ch/artifactory/gesus/" }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom 'io.micronaut:micronaut-bom:1.0.4'
+    }
+}
+
+dependencies {
+    annotationProcessor "io.micronaut:micronaut-inject-java"
+    annotationProcessor "io.micronaut:micronaut-validation"
+    compile "io.micronaut:micronaut-inject"
+    compile "io.micronaut:micronaut-validation"
+    compile "io.micronaut:micronaut-runtime"
+    compile "io.micronaut:micronaut-http-client"
+    compile "javax.annotation:javax.annotation-api"
+    compile "io.micronaut:micronaut-http-server-netty"
+    compileOnly "io.micronaut:micronaut-inject-java"
+    runtime "ch.qos.logback:logback-classic:1.2.3"
+    testCompile "junit:junit:4.12"
+    testCompile "io.micronaut:micronaut-inject-java"
+    testCompile "org.hamcrest:hamcrest-all:1.3"
+}
+
+shadowJar {
+    mergeServiceFiles()
+}
+
+run.jvmArgs('-noverify', '-XX:TieredStopAtLevel=1')
+
+mainClassName = "demo.app.micronaut.Application"
+tasks.withType(JavaCompile){
+    options.encoding = "UTF-8"
+    options.compilerArgs.add('-parameters')
+}
+
+restApi {
+    packageName = 'demo.app.micronaut'
+    targetFramework = ch.silviowangler.gradle.restapi.TargetFramework.MICRONAUT
+    optionsSource = file("${rootDir}/../gradle-plugin/src/test/resources/specs/v1")
+}

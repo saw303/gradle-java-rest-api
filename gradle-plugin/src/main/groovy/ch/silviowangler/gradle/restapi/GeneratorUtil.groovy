@@ -130,7 +130,7 @@ class GeneratorUtil {
             return PluginTypes.MICRONAUT_HTTP_RESPONSE.className
         }
 
-        return getReturnType(fileName, verb, collection, packageName, true)
+        return getReturnType(fileName, verb, collection, packageName, TargetFramework.MICRONAUT)
     }
 
     static TypeName getSpringBootReturnType(String fileName, String verb, boolean collection = false, String packageName, Representation representation) {
@@ -139,19 +139,26 @@ class GeneratorUtil {
             return PluginTypes.SPRING_RESPONSE_ENTITY.className
         }
 
-        return getReturnType(fileName, verb, collection, packageName, true)
+        return getReturnType(fileName, verb, collection, packageName, TargetFramework.SPRING_BOOT)
     }
 
-    static TypeName getJaxRsReturnType(String fileName, String verb, boolean collection = false, String packageName, Representation representation) {
+    static TypeName getJaxRsReturnType(String fileName,
+                                       String verb,
+                                       boolean collection = false,
+                                       String packageName,
+                                       Representation representation) {
 
         if (representation.name != "json") {
             return PluginTypes.JAX_RS_RESPONSE.className
         }
-        return getReturnType(fileName, verb, collection, packageName)
+        return getReturnType(fileName, verb, collection, packageName, TargetFramework.JAX_RS)
     }
 
-    private
-    static TypeName getReturnType(String fileName, String verb, boolean collection = false, String packageName, boolean springBoot = false) {
+    private static TypeName getReturnType(String fileName,
+                                          String verb,
+                                          boolean collection = false,
+                                          String packageName,
+                                          TargetFramework targetFramework = TargetFramework.JAX_RS) {
 
         if (verb == 'Get') {
             String resourceModelName = createResourceModelName(fileName, verb)
@@ -162,12 +169,32 @@ class GeneratorUtil {
             }
         } else if (verb == 'Put' || verb == 'Post') {
             if (collection) {
-                return PluginTypes.SPRING_RESPONSE_ENTITY.className
+
+                switch (targetFramework) {
+                    case TargetFramework.JAX_RS:
+                        return PluginTypes.JAX_RS_RESPONSE.className
+                    case TargetFramework.SPRING_BOOT:
+                        return PluginTypes.SPRING_RESPONSE_ENTITY.className
+                    case TargetFramework.MICRONAUT:
+                        return PluginTypes.MICRONAUT_HTTP_RESPONSE.className
+                    default:
+                        throw new RuntimeException("Unknown framework ${targetFramework}")
+                }
             } else {
                 return PluginTypes.RESTAPI_IDTYPE.className
             }
         } else if (verb == 'Delete') {
-            return springBoot ? PluginTypes.SPRING_RESPONSE_ENTITY.className : PluginTypes.JAX_RS_RESPONSE.className
+
+            switch (targetFramework) {
+                case TargetFramework.JAX_RS:
+                    return PluginTypes.JAX_RS_RESPONSE.className
+                case TargetFramework.SPRING_BOOT:
+                    return PluginTypes.SPRING_RESPONSE_ENTITY.className
+                case TargetFramework.MICRONAUT:
+                    return PluginTypes.MICRONAUT_HTTP_RESPONSE.className
+                default:
+                    throw new RuntimeException("Unknown framework ${targetFramework}")
+            }
         } else {
             throw new RuntimeException("Unknown verb ${verb}")
         }

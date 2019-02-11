@@ -1,4 +1,4 @@
-package org.acme.rest.v1.laender.orte;
+package demo.app.micronaut.v1.laender.orte;
 
 import ch.silviowangler.rest.types.IdType;
 import io.micronaut.http.HttpResponse;
@@ -9,12 +9,14 @@ import io.micronaut.http.annotation.Options;
 import io.micronaut.http.annotation.Post;
 import io.micronaut.http.annotation.Produces;
 import io.micronaut.http.annotation.Put;
-import java.util.Collection;
+
 import javax.annotation.Generated;
 import javax.inject.Inject;
 import javax.validation.Valid;
+import java.util.Collection;
 
 @Generated(
+    date = "2019-02-11T14:56:02.328Z",
     comments = "Specification filename: land.ort.v1.json",
     value = "ch.silviowangler.restapi"
 )
@@ -30,12 +32,12 @@ public class OrtResource {
   }
 
   @Options
-  @Produces("application/json;charset=UTF-8")
+  @Produces("application/json")
   public String getOptions() {
     return OPTIONS_CONTENT;
   }
 
-  @Produces("application/json;charset=UTF-8")
+  @Produces("application/json")
   @Delete(
       uri = "/{id}"
   )
@@ -43,7 +45,7 @@ public class OrtResource {
     return delegate.deleteEntity(id, land);
   }
 
-  @Produces("application/json;charset=UTF-8")
+  @Produces("application/ch.silviowangler.ort.collection")
   @Get
   public Collection<OrtGetResourceModel> getCollection(String land) {
     return delegate.getCollection(land);
@@ -52,7 +54,7 @@ public class OrtResource {
   @Get(
       uri = "/{id}"
   )
-  @Produces("application/json;charset=UTF-8")
+  @Produces("application/ch.silviowangler.ort")
   public OrtGetResourceModel getEntity(String id, String land) {
     return delegate.getEntity(id, land);
   }
@@ -66,12 +68,12 @@ public class OrtResource {
   }
 
   @Post
-  @Produces("application/json;charset=UTF-8")
+  @Produces("application/json")
   public IdType createEntity(@Valid OrtPostResourceModel model, String land) {
     return delegate.createEntity(model, land);
   }
 
-  @Produces("application/json;charset=UTF-8")
+  @Produces("application/json")
   @Put(
       uri = "/{id}"
   )
