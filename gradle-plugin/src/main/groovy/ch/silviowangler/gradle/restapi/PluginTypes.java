@@ -1,7 +1,7 @@
 /**
  * MIT License
  * <p>
- * Copyright (c) 2016 - 2018 Silvio Wangler (silvio.wangler@gmail.com)
+ * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -67,7 +67,20 @@ public enum PluginTypes {
 	SPRING_HTTP_STATUS(ClassName.get("org.springframework.http", "HttpStatus")),
 	SPRING_HTTP_MEDIA_TYPE(ClassName.get("org.springframework.http", "MediaType")),
 	SPRING_RESPONSE_BODY(ClassName.get("org.springframework.web.bind.annotation", "ResponseBody")),
-	SPRING_RESPONSE_STATUS(ClassName.get("org.springframework.web.bind.annotation", "ResponseStatus"));
+	SPRING_RESPONSE_STATUS(ClassName.get("org.springframework.web.bind.annotation", "ResponseStatus")),
+	JAVAX_SINGLETON(ClassName.get("javax.inject", "Singleton")),
+	JAVAX_INJECT(ClassName.get("javax.inject", "Inject")),
+	MICRONAUT_CONTROLLER(ClassName.get("io.micronaut.http.annotation", "Controller")),
+	MICRONAUT_CONSUMES(ClassName.get("io.micronaut.http.annotation", "Consumes")),
+	MICRONAUT_PRODUCES(ClassName.get("io.micronaut.http.annotation", "Produces")),
+	MICRONAUT_OPTIONS(ClassName.get("io.micronaut.http.annotation", "Options")),
+	MICRONAUT_GET(ClassName.get("io.micronaut.http.annotation", "Get")),
+	MICRONAUT_POST(ClassName.get("io.micronaut.http.annotation", "Post")),
+	MICRONAUT_PUT(ClassName.get("io.micronaut.http.annotation", "Put")),
+	MICRONAUT_DELETE(ClassName.get("io.micronaut.http.annotation", "Delete")),
+	MICRONAUT_HTTP_RESPONSE(ClassName.get("io.micronaut.http", "HttpResponse")),
+	MICRONAUT_QUERY_VALUE(ClassName.get("io.micronaut.http.annotation", "QueryValue")),
+	MICRONAUT_HTTP_STATUS(ClassName.get("io.micronaut.http", "HttpStatus"));
 
 
 	private final ClassName className;

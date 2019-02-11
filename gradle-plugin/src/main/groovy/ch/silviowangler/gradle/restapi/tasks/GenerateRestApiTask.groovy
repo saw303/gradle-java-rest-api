@@ -1,7 +1,7 @@
 /*
  * MIT License
  * <p>
- * Copyright (c) 2016 - 2018 Silvio Wangler (silvio.wangler@gmail.com)
+ * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,7 @@ import ch.silviowangler.gradle.restapi.Specification
 import ch.silviowangler.gradle.restapi.builder.SpecGenerator
 import com.squareup.javapoet.JavaFile
 import com.squareup.javapoet.TypeSpec
+import org.gradle.api.GradleException
 import org.gradle.api.internal.AbstractTask
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.OutputDirectory
@@ -63,6 +64,10 @@ class GenerateRestApiTask extends AbstractTask implements Specification {
 
     @TaskAction
     void exec() {
+
+        if (!getRootOutputDir()) {
+            throw new GradleException("generatorOutput dir must be set")
+        }
 
         logger.lifecycle "Generating REST artifacts ..."
         long start = System.currentTimeMillis()

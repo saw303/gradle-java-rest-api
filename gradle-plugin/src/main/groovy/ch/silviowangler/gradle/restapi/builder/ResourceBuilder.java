@@ -1,7 +1,7 @@
 /**
  * MIT License
  * <p>
- * Copyright (c) 2016 - 2018 Silvio Wangler (silvio.wangler@gmail.com)
+ * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,16 +30,31 @@ import ch.silviowangler.rest.contract.model.v1.Representation;
 import ch.silviowangler.rest.contract.model.v1.Verb;
 import ch.silviowangler.rest.contract.model.v1.VerbParameter;
 import com.google.common.base.CaseFormat;
-import com.squareup.javapoet.*;
+import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterSpec;
+import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;
 
 import java.nio.charset.Charset;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import static ch.silviowangler.gradle.restapi.PluginTypes.*;
-import static javax.lang.model.element.Modifier.*;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_GENERATED;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_VALID;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAVA_OVERRIDE;
+import static ch.silviowangler.gradle.restapi.PluginTypes.PLUGIN_NOT_YET_IMPLEMENTED_EXCEPTION;
+import static javax.lang.model.element.Modifier.ABSTRACT;
+import static javax.lang.model.element.Modifier.DEFAULT;
+import static javax.lang.model.element.Modifier.PUBLIC;
 
 public interface ResourceBuilder {
 
@@ -73,6 +88,10 @@ public interface ResourceBuilder {
 
 	default String resourceImplName() {
 		return GeneratorUtil.createResourceImplementationName(getResourceContractContainer().getSourceFileName());
+	}
+
+	default String resourceDelegateName() {
+		return GeneratorUtil.createResourceDelegateName(getResourceContractContainer().getSourceFileName());
 	}
 
 
@@ -173,14 +192,16 @@ public interface ResourceBuilder {
 		MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(methodName).addModifiers(PUBLIC);
 		methodBuilder.returns(context.getReturnType());
 
-		final boolean isResourceInterface = ArtifactType.RESOURCE.equals(getArtifactType());
-		final boolean isAbstractResourceClass = ArtifactType.ABSTRACT_RESOURCE.equals(getArtifactType());
+		final ArtifactType artifactType = getArtifactType();
+		final boolean isResourceInterface = ArtifactType.RESOURCE.equals(artifactType);
+		final boolean isAbstractResourceClass = ArtifactType.ABSTRACT_RESOURCE.equals(artifactType);
+		final boolean isDelegateResourceClass = ArtifactType.DELEGATOR_RESOURCE.equals(artifactType);
 
-		if (isResourceInterface || (isAbstractResourceClass && !isHandlerMethod(methodName))) {
+		if (isResourceInterface || isDelegateResourceClass || (isAbstractResourceClass && !isHandlerMethod(methodName))) {
 			Iterable<AnnotationSpec> annotations = getResourceMethodAnnotations(isIdGenerationRequired(context), representation, methodName);
 			methodBuilder.addAnnotations(annotations);
 
-		} else if (ArtifactType.RESOURCE_IMPL.equals(getArtifactType())) {
+		} else if (ArtifactType.RESOURCE_IMPL.equals(artifactType) && inheritsFromResource()) {
 			methodBuilder.addAnnotation(AnnotationSpec.builder(JAVA_OVERRIDE.getClassName()).build());
 		}
 
@@ -188,7 +209,10 @@ public interface ResourceBuilder {
 
 		if (!supportsInterfaces() && isHandlerMethod(methodName) && ArtifactType.RESOURCE_IMPL.equals(getArtifactType())) {
 			methodBuilder.addStatement("throw new $T()", PLUGIN_NOT_YET_IMPLEMENTED_EXCEPTION.getClassName());
-		} else if ("getOptions".equals(methodName) || isDefaultMethodNotAllowed(methodName)) {
+		} else if (isDelegateResourceClass) {
+			// do nothing
+		}
+		else if ("getOptions".equals(methodName) || isDefaultMethodNotAllowed(methodName)) {
 
 			if (isResourceInterface) {
 				methodBuilder.addModifiers(DEFAULT);
@@ -232,7 +256,7 @@ public interface ResourceBuilder {
 			ParameterSpec.Builder builder = ParameterSpec.builder(className, name);
 
 			final boolean isHandleMethod = methodNameCopy.startsWith("handle");
-			final boolean isResource = isResourceInterface || isAbstractResourceClass;
+			final boolean isResource = isResourceInterface || isAbstractResourceClass || isDelegateResourceClass;
 
 			if ("model".equals(name) && !isHandleMethod && isResource) {
 				builder.addAnnotation(createAnnotation(JAVAX_VALIDATION_VALID)).build();
@@ -261,8 +285,11 @@ public interface ResourceBuilder {
 
 		String paramNames = names.stream().collect(Collectors.joining(", "));
 
-		if (!supportsInterfaces() && !isHandlerMethod(methodName) && ArtifactType.ABSTRACT_RESOURCE.equals(getArtifactType()) && !methodName.endsWith("AutoAnswer") && !methodName.equals("getOptions")) {
+		if (!supportsInterfaces() && !isHandlerMethod(methodName) && ArtifactType.ABSTRACT_RESOURCE.equals(artifactType) && !methodName.endsWith("AutoAnswer") && !methodName.equals("getOptions")) {
 			methodBuilder.addStatement("return handle$L($L)", CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, methodName), paramNames);
+		}
+		else if (isDelegateResourceClass && !methodName.equals("getOptions")) {
+			methodBuilder.addStatement("return delegate.$L($L)", methodName, paramNames);
 		}
 		return methodBuilder;
 	}
@@ -297,14 +324,13 @@ public interface ResourceBuilder {
 	default ParameterSpec generateIdParam(boolean withAnnotation) {
 		ParameterSpec.Builder param = ParameterSpec.builder(ClassName.get(String.class), "id");
 
-		if (withAnnotation) {
+		if (withAnnotation && supportsQueryParams()) {
 
 			Map<String, Object> attrs = new HashMap<>();
 			attrs.put("value", "id");
 
-			param.addAnnotation(
-					createAnnotation(getPathVariableAnnotationType(), attrs)
-			).build();
+			AnnotationSpec annotation = createAnnotation(getPathVariableAnnotationType(), attrs);
+			param.addAnnotation(annotation).build();
 		}
 		return param.build();
 	}
@@ -319,10 +345,35 @@ public interface ResourceBuilder {
 
 	boolean supportsInterfaces();
 
+	default boolean inheritsFromResource() {
+		return true;
+	}
+
+	/**
+	 * Does the framework work with delegation. the request will delegated from a controller to a delegate resource.
+	 *
+	 * @return yes or no
+	 */
+	default boolean supportsDelegation() {
+		return false;
+	}
+
+	/**
+	 * Declares whether the framework of this builder supports Java annotations for HTTP request params.
+	 *
+	 * @return yes or no
+	 */
+	default boolean supportsQueryParams() {
+		return true;
+	}
+
 	default boolean providesRequestBodyAnnotation() {
 		return false;
 	}
 
 	AnnotationSpec buildRequestBodyAnnotation();
 
+	default boolean supportsMethodNotAllowedGeneration() {
+		return true;
+	}
 }

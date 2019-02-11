@@ -1,7 +1,7 @@
 /*
  * MIT License
  * <p>
- * Copyright (c) 2016 - 2018 Silvio Wangler (silvio.wangler@gmail.com)
+ * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -40,6 +40,8 @@ import spock.lang.Specification
 import java.nio.charset.Charset
 
 import static ch.silviowangler.gradle.restapi.Consts.TASK_GROUP_REST_API
+import static ch.silviowangler.gradle.restapi.TargetFramework.MICRONAUT
+import static ch.silviowangler.gradle.restapi.TargetFramework.SPRING_BOOT
 
 class RestApiPluginSpec extends Specification {
 
@@ -100,7 +102,7 @@ class RestApiPluginSpec extends Specification {
         project.restApi.packageName = 'org.acme.rest.v1'
         project.restApi.generateDateAttribute = false
         project.restApi.objectResourceModelMapping = customFieldModelMapping
-        project.restApi.springBoot = true
+        project.restApi.targetFramework = SPRING_BOOT
 
         and:
         GenerateRestApiTask task = project.tasks.generateRestArtifacts as GenerateRestApiTask
@@ -162,7 +164,7 @@ class RestApiPluginSpec extends Specification {
         project.restApi.packageName = 'org.acme.rest'
         project.restApi.generateDateAttribute = false
         project.restApi.objectResourceModelMapping = customFieldModelMapping
-        project.restApi.springBoot = true
+        project.restApi.targetFramework = SPRING_BOOT
         project.restApi.responseEncoding = Charset.forName('UTF-8')
 
         and:
@@ -203,6 +205,75 @@ class RestApiPluginSpec extends Specification {
         assertJavaFile('org.acme.rest.v1', 'RootGetResourceModel', 'land-spring-boot')
         assertJavaFile('org.acme.rest.v1', 'RootResource', 'land-spring-boot')
         assertJavaFile('org.acme.rest.v1', 'RootResourceImpl', 'land-spring-boot')
+
+        when:
+        CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask
+
+        and:
+        cleanTask.cleanUp()
+
+        and:
+        javaFiles.clear()
+        temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+            if (it.name.endsWith('.java')) javaFiles << it
+        })
+
+        then:
+        javaFiles.isEmpty()
+    }
+
+    void "The plugin generates valid Java 8 code for Micronaut and the Land/Ort specs"() {
+
+        given:
+        project.restApi.generatorOutput = temporaryFolder.getRoot()
+        project.restApi.generatorImplOutput = temporaryFolder.getRoot()
+        project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/v1")
+        project.restApi.packageName = 'org.acme.rest'
+        project.restApi.generateDateAttribute = false
+        project.restApi.objectResourceModelMapping = customFieldModelMapping
+        project.restApi.targetFramework = MICRONAUT
+        project.restApi.responseEncoding = Charset.forName('UTF-8')
+
+        String testName = 'land-micronaut'
+
+        and:
+        GenerateRestApiTask task = project.tasks.generateRestArtifacts as GenerateRestApiTask
+
+        when:
+        task.exec()
+
+        and:
+        List<File> javaFiles = []
+        temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+            if (it.name.endsWith('.java')) javaFiles << it
+        })
+
+        then:
+        new File(temporaryFolder.getRoot(), 'org/acme/rest').exists()
+
+        and:
+        assertGeneratedFiles javaFiles, 14
+
+        and:
+        javaFiles.collect {
+            it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
+        }.size() == javaFiles.size()
+
+        and: 'Ressourcen validieren'
+        assertJavaFile('org.acme.rest.v1', 'CoordinatesType', testName)
+        assertJavaFile('org.acme.rest.v1.laender', 'LandGetResourceModel', testName)
+        assertJavaFile('org.acme.rest.v1.laender', 'LandPostResourceModel', testName)
+        assertJavaFile('org.acme.rest.v1.laender', 'LandPutResourceModel', testName)
+        assertJavaFile('org.acme.rest.v1.laender', 'LandResource', testName)
+        assertJavaFile('org.acme.rest.v1.laender', 'LandResourceDelegate', testName)
+        assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtGetResourceModel', testName)
+        assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtPostResourceModel', testName)
+        assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtPutResourceModel', testName)
+        assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtResource', testName)
+        assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtResourceDelegate', testName)
+        assertJavaFile('org.acme.rest.v1', 'RootGetResourceModel', testName)
+        assertJavaFile('org.acme.rest.v1', 'RootResource', testName)
+        assertJavaFile('org.acme.rest.v1', 'RootResourceDelegate', testName)
 
         when:
         CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask
@@ -356,7 +427,7 @@ class RestApiPluginSpec extends Specification {
         project.restApi.generateDateAttribute = false
         project.restApi.objectResourceModelMapping = customFieldModelMapping
         project.restApi.responseEncoding = Charset.forName('UTF-8')
-        project.restApi.springBoot = true
+        project.restApi.targetFramework = SPRING_BOOT
 
         and:
         GenerateRestApiTask task = project.tasks.generateRestArtifacts as GenerateRestApiTask
@@ -519,7 +590,7 @@ class RestApiPluginSpec extends Specification {
         project.restApi.packageName = 'org.acme.rest'
         project.restApi.generateDateAttribute = false
         project.restApi.objectResourceModelMapping = customFieldModelMapping
-        project.restApi.springBoot = true
+        project.restApi.targetFramework = SPRING_BOOT
 
         and:
         GenerateRestApiTask task = project.tasks.generateRestArtifacts as GenerateRestApiTask
@@ -577,7 +648,7 @@ class RestApiPluginSpec extends Specification {
         project.restApi.packageName = 'org.acme.rest'
         project.restApi.generateDateAttribute = false
         project.restApi.objectResourceModelMapping = customFieldModelMapping
-        project.restApi.springBoot = true
+        project.restApi.targetFramework = SPRING_BOOT
         project.restApi.diagramOutput = temporaryFolder.getRoot()
 
         and:
@@ -608,7 +679,7 @@ class RestApiPluginSpec extends Specification {
         project.restApi.packageName = 'org.acme.rest'
         project.restApi.generateDateAttribute = false
         project.restApi.objectResourceModelMapping = customFieldModelMapping
-        project.restApi.springBoot = true
+        project.restApi.targetFramework = SPRING_BOOT
         project.restApi.diagramOutput = temporaryFolder.getRoot()
 
         and:

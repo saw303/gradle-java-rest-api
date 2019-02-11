@@ -1,7 +1,7 @@
 /*
  * MIT License
  * <p>
- * Copyright (c) 2016 - 2018 Silvio Wangler (silvio.wangler@gmail.com)
+ * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -75,7 +75,7 @@ class RestApiPlugin implements Plugin<Project> {
 
         project.afterEvaluate {
             project.dependencies {
-                compile("ch.silviowangler.rest:rest-api-spring:1.1.0")
+                compile("ch.silviowangler.rest:rest-api-spring:1.2.0")
                 compile("javax.money:money-api:1.0.3")
                 compileOnly("javax.validation:validation-api:2.0.1.Final")
 

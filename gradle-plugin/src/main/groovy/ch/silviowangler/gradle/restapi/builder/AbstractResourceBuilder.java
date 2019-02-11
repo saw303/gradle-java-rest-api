@@ -1,7 +1,7 @@
 /**
  * MIT License
  * <p>
- * Copyright (c) 2016 - 2018 Silvio Wangler (silvio.wangler@gmail.com)
+ * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,25 +26,61 @@ package ch.silviowangler.gradle.restapi.builder;
 import ch.silviowangler.gradle.restapi.GeneratorUtil;
 import ch.silviowangler.gradle.restapi.LinkParser;
 import ch.silviowangler.gradle.restapi.tasks.GenerateRestApiTask;
-import ch.silviowangler.rest.contract.model.v1.*;
-import com.squareup.javapoet.*;
+import ch.silviowangler.rest.contract.model.v1.GeneralDetails;
+import ch.silviowangler.rest.contract.model.v1.Representation;
+import ch.silviowangler.rest.contract.model.v1.ResourceContract;
+import ch.silviowangler.rest.contract.model.v1.ResourceField;
+import ch.silviowangler.rest.contract.model.v1.ResourceTypeField;
+import ch.silviowangler.rest.contract.model.v1.ResourceTypes;
+import ch.silviowangler.rest.contract.model.v1.Verb;
+import ch.silviowangler.rest.contract.model.v1.VerbParameter;
+import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.FieldSpec;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
+import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;
 import io.github.getify.minify.Minify;
 
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static ch.silviowangler.gradle.restapi.PluginTypes.*;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_DECIMAL_MAX;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_DECIMAL_MIN;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_EMAIL;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_NOT_NULL;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_SIZE;
+import static ch.silviowangler.gradle.restapi.PluginTypes.RESTAPI_RESOURCE_MODEL;
 import static ch.silviowangler.gradle.restapi.builder.ArtifactType.RESOURCE;
-import static ch.silviowangler.gradle.restapi.util.SupportedDataTypes.*;
+import static ch.silviowangler.gradle.restapi.util.SupportedDataTypes.BOOL;
+import static ch.silviowangler.gradle.restapi.util.SupportedDataTypes.DATE;
+import static ch.silviowangler.gradle.restapi.util.SupportedDataTypes.DATETIME;
+import static ch.silviowangler.gradle.restapi.util.SupportedDataTypes.STRING;
 import static com.google.common.base.CaseFormat.LOWER_CAMEL;
 import static com.google.common.base.CaseFormat.UPPER_CAMEL;
 import static com.squareup.javapoet.TypeName.INT;
-import static javax.lang.model.element.Modifier.*;
+import static javax.lang.model.element.Modifier.ABSTRACT;
+import static javax.lang.model.element.Modifier.FINAL;
+import static javax.lang.model.element.Modifier.PRIVATE;
+import static javax.lang.model.element.Modifier.PUBLIC;
+import static javax.lang.model.element.Modifier.STATIC;
 
 /**
  * @author Silvio Wangler
@@ -115,21 +151,27 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 		return this.resourceContractContainer;
 	}
 
-
 	protected TypeSpec.Builder resourceBaseTypeBuilder() {
+		return resourceBaseTypeBuilder(resourceName());
+	}
+
+	protected TypeSpec.Builder resourceBaseTypeBuilder(String resourceName) {
 
 		if (this.typeBuilder == null) {
 
 			if (supportsInterfaces()) {
-				this.typeBuilder = TypeSpec.interfaceBuilder(resourceName())
+				this.typeBuilder = TypeSpec.interfaceBuilder(resourceName)
 						.addModifiers(PUBLIC)
 						.addAnnotation(createGeneratedAnnotation(printTimestamp));
 			} else {
-				this.typeBuilder = TypeSpec.classBuilder(resourceName())
-						.addModifiers(PUBLIC, ABSTRACT)
+				this.typeBuilder = TypeSpec.classBuilder(resourceName)
+						.addModifiers(PUBLIC)
 						.addAnnotation(createGeneratedAnnotation(printTimestamp));
-			}
 
+				if (!supportsDelegation()) {
+					this.typeBuilder.addModifiers(ABSTRACT);
+				}
+			}
 		}
 		return this.typeBuilder;
 	}
@@ -140,9 +182,13 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 	}
 
 	protected TypeSpec.Builder classBaseInstance() {
+		return classBaseInstance(resourceImplName());
+	}
+
+	protected TypeSpec.Builder classBaseInstance(String resourceName) {
 
 		if (this.typeBuilder == null) {
-			this.typeBuilder = TypeSpec.classBuilder(resourceImplName()).addModifiers(PUBLIC);
+			this.typeBuilder = TypeSpec.classBuilder(resourceName).addModifiers(PUBLIC);
 		}
 		return this.typeBuilder;
 	}
@@ -184,7 +230,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
 				boolean directEntity = parser.isDirectEntity();
 
-				List<ParameterSpec> pathParams = getPathParams(parser, isAbstractOrInterfaceResource());
+				List<ParameterSpec> pathParams = getPathParams(parser, isAbstractOrInterfaceResource() && !isDelegatorResource());
 
 				MethodContext context = new MethodContext(resourceMethodReturnType(verb, representation), params, paramClasses, representation, pathParams, directEntity);
 
@@ -242,9 +288,11 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
 				MethodSpec resourceMethod = methodBuilder.build();
 
-				if (!supportsInterfaces() && resourceMethod.modifiers.size() == 1 && resourceMethod.modifiers.contains(PUBLIC)) {
+				if (!supportsInterfaces() && !isDelegatorResource() && resourceMethod.modifiers.size() == 1 && resourceMethod.modifiers.contains(PUBLIC)) {
 
-					context.setMethodName(String.format("handle%s", LOWER_CAMEL.to(UPPER_CAMEL, context.getMethodName())));
+					if (inheritsFromResource()) {
+						context.setMethodName(String.format("handle%s", LOWER_CAMEL.to(UPPER_CAMEL, context.getMethodName())));
+					}
 					context.setPathParams(getPathParams(parser, false));
 					MethodSpec.Builder handlerBuilder = createMethod(context);
 					this.typeBuilder.addMethod(handlerBuilder.build());
@@ -258,7 +306,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 		}
 
 
-		if (isAbstractOrInterfaceResource()) {
+		if (isAbstractOrInterfaceResource() && supportsMethodNotAllowedGeneration()) {
 			generatedDefaultMethodNotAllowedHandlersForMissingVerbs(parser.isDirectEntity());
 		}
 	}
@@ -390,8 +438,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 						}
 
 						fieldBuilder.addAnnotation(annoBuilder.build());
-					}
-					else if ("decimal".equalsIgnoreCase(field.getType())) {
+					} else if ("decimal".equalsIgnoreCase(field.getType())) {
 						fieldBuilder.addAnnotation(
 								AnnotationSpec.builder(JAVAX_VALIDATION_DECIMAL_MIN.getClassName())
 										.addMember("value", "$S", min.doubleValue()).build()
@@ -502,8 +549,12 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 		return ArtifactType.ABSTRACT_RESOURCE.equals(getArtifactType());
 	}
 
+	private boolean isDelegatorResource() {
+		return ArtifactType.DELEGATOR_RESOURCE.equals(getArtifactType());
+	}
+
 	private boolean isAbstractOrInterfaceResource() {
-		return isAbstractResourceInterface() || isResourceInterface();
+		return isAbstractResourceInterface() || isResourceInterface() || isDelegatorResource();
 	}
 
 	private boolean isResourceImpl() {
@@ -511,7 +562,6 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 	}
 
 	private void generatedDefaultMethodNotAllowedHandlersForMissingVerbs(boolean directEntity) {
-
 
 		if (!hasPostVerb()) {
 			this.currentVerb = new Verb(POST);

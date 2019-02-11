@@ -1,7 +1,7 @@
 /*
  * MIT License
  * <p>
- * Copyright (c) 2016 - 2018 Silvio Wangler (silvio.wangler@gmail.com)
+ * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -42,13 +42,14 @@ class GeneratorUtilSpec extends Specification {
         GeneratorUtil.createResourceImplementationName(file.name) == resourceImpl
         GeneratorUtil.createResourceModelName(file.name) == resourceModel
         GeneratorUtil.createResourceName(file.name) == resourceClass
+        GeneratorUtil.createResourceDelegateName(file.name) == resourceDelegate
 
         where:
 
-        file                                  || resourceClass       || resourceImpl            || resourceModel               || resourceFormData
-        new File('natperson.json')            || 'NatpersonResource' || 'NatpersonResourceImpl' || 'NatpersonGetResourceModel' || 'NatpersonFormData'
-        new File('natperson.v1.json')         || 'NatpersonResource' || 'NatpersonResourceImpl' || 'NatpersonGetResourceModel' || 'NatpersonFormData'
-        new File('natperson.adresse.v1.json') || 'AdresseResource'   || 'AdresseResourceImpl'   || 'AdresseGetResourceModel'   || 'AdresseFormData'
+        file                                  || resourceClass       || resourceImpl            || resourceModel               || resourceFormData  ||  resourceDelegate
+        new File('natperson.json')            || 'NatpersonResource' || 'NatpersonResourceImpl' || 'NatpersonGetResourceModel' || 'NatpersonFormData' || 'NatpersonResourceDelegate'
+        new File('natperson.v1.json')         || 'NatpersonResource' || 'NatpersonResourceImpl' || 'NatpersonGetResourceModel' || 'NatpersonFormData' || 'NatpersonResourceDelegate'
+        new File('natperson.adresse.v1.json') || 'AdresseResource'   || 'AdresseResourceImpl'   || 'AdresseGetResourceModel'   || 'AdresseFormData'  || 'AdresseResourceDelegate'
     }
 
     void "Generate Classfile names from string"() {
