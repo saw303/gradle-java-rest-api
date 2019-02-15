@@ -11,7 +11,7 @@ import org.reactivestreams.Publisher;
 /**
  * @author Silvio Wangler
  */
-@Filter("/v1**")
+@Filter("/**")
 public class FunnyFilter implements HttpServerFilter {
 
 	private final JsonModelFilter jsonModelFilter;

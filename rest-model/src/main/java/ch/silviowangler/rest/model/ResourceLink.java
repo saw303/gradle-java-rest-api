@@ -76,4 +76,13 @@ public class ResourceLink implements Serializable {
     public int hashCode() {
         return Objects.hash(rel, method, href);
     }
+
+	/**
+	 * Generates a self link from URI string representation.
+	 * @param uri the URI
+	 * @return a self link with that URI.
+	 */
+	public static ResourceLink selfLink(String uri) {
+    	return new ResourceLink(URI.create(uri));
+	}
 }

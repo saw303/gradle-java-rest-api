@@ -73,21 +73,13 @@ class JsonModelAdvice implements ResponseBodyAdvice {
 
 			if (body instanceof ResourceModel) {
 				EntityModel model = new EntityModel((ResourceModel) body);
-				try {
-					model.getLinks().add(new ResourceLink(new URI(request.getURI().getPath())));
-				} catch (URISyntaxException ex) {
-					log.error("Cannot parse URI", ex);
-				}
+				model.getLinks().add(ResourceLink.selfLink(request.getURI().getPath()));
 				return model;
 			} else if (body instanceof List) {
 
 				List list = (List) body;
 				CollectionModel collectionModel = new CollectionModel();
-				try {
-					collectionModel.getLinks().add(new ResourceLink(new URI(request.getURI().getPath())));
-				} catch (URISyntaxException ex) {
-					log.error("Cannot parse URI", ex);
-				}
+				collectionModel.getLinks().add(ResourceLink.selfLink(request.getURI().getPath()));
 
 				List<EntityModel> entityModels = new ArrayList<>(list.size());
 
@@ -95,12 +87,7 @@ class JsonModelAdvice implements ResponseBodyAdvice {
 					if (l instanceof ResourceModel) {
 						ResourceModel resourceModel = (ResourceModel) l;
 						EntityModel entityModel = new EntityModel(resourceModel);
-
-						try {
-							entityModel.getLinks().add(new ResourceLink(new URI(request.getURI().getPath() + "/" + resourceModel.getId())));
-						} catch (URISyntaxException ex) {
-							log.error("Cannot parse URI", ex);
-						}
+						entityModel.getLinks().add(ResourceLink.selfLink(request.getURI().getPath()+ "/" + resourceModel.getId()));
 						entityModels.add(entityModel);
 					} else {
 						log.warn("Detected non resource model type '{}' in controller response collection", l.getClass().getCanonicalName());
