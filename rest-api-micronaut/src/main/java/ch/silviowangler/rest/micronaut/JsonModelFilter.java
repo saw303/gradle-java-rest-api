@@ -69,7 +69,6 @@ public class JsonModelFilter implements HttpServerFilter {
 						}
 					}
 					collectionModel.setData(entityModels);
-
 					((MutableHttpResponse) res).body(collectionModel);
 				}
 			}

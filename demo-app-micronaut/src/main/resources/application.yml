@@ -1,3 +1,6 @@
 micronaut:
     application:
         name: demo-app-micronaut
+
+jackson:
+    dateFormat: yyyyMMdd
