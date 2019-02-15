@@ -25,17 +25,22 @@ package ch.silviowangler.rest.spring;
 
 import ch.silviowangler.rest.model.CollectionModel;
 import ch.silviowangler.rest.model.EntityModel;
+import ch.silviowangler.rest.model.ResourceLink;
 import ch.silviowangler.rest.model.ResourceModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -51,33 +56,64 @@ class JsonModelAdvice implements ResponseBodyAdvice {
 
 	@Override
 	public boolean supports(MethodParameter returnType, Class converterType) {
-		return true;
+		Class<?> parameterType = returnType.getParameterType();
+		return ResourceModel.class.isAssignableFrom(parameterType) || Collection.class.isAssignableFrom(parameterType)
+				&& HttpMessageConverter.class.isAssignableFrom(converterType);
 	}
 
 	@Override
-	public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType, Class selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
+	public Object beforeBodyWrite(Object body,
+								  MethodParameter returnType,
+								  MediaType selectedContentType,
+								  Class selectedConverterType,
+								  ServerHttpRequest request,
+								  ServerHttpResponse response) {
 
-		if (body instanceof ResourceModel) {
-			EntityModel model = new EntityModel((ResourceModel) body);
-			return model;
-		} else if (body instanceof List) {
+		if (MediaType.APPLICATION_JSON.includes(selectedContentType)) {
 
-			List list = (List) body;
-			CollectionModel model = new CollectionModel();
-
-			List<EntityModel> entityModels = new ArrayList<>(list.size());
-
-			for (Object l : list) {
-				if (l instanceof ResourceModel) {
-					entityModels.add(new EntityModel((ResourceModel) l));
-				} else {
-					log.warn("Detected non resource model type '{}' in controller response collection", l.getClass().getCanonicalName());
+			if (body instanceof ResourceModel) {
+				EntityModel model = new EntityModel((ResourceModel) body);
+				try {
+					model.getLinks().add(new ResourceLink(new URI(request.getURI().getPath())));
+				} catch (URISyntaxException ex) {
+					log.error("Cannot parse URI", ex);
 				}
-			}
+				return model;
+			} else if (body instanceof List) {
 
-			model.setData(entityModels);
-			return model;
-		} else {
+				List list = (List) body;
+				CollectionModel collectionModel = new CollectionModel();
+				try {
+					collectionModel.getLinks().add(new ResourceLink(new URI(request.getURI().getPath())));
+				} catch (URISyntaxException ex) {
+					log.error("Cannot parse URI", ex);
+				}
+
+				List<EntityModel> entityModels = new ArrayList<>(list.size());
+
+				for (Object l : list) {
+					if (l instanceof ResourceModel) {
+						ResourceModel resourceModel = (ResourceModel) l;
+						EntityModel entityModel = new EntityModel(resourceModel);
+
+						try {
+							entityModel.getLinks().add(new ResourceLink(new URI(request.getURI().getPath() + "/" + resourceModel.getId())));
+						} catch (URISyntaxException ex) {
+							log.error("Cannot parse URI", ex);
+						}
+						entityModels.add(entityModel);
+					} else {
+						log.warn("Detected non resource model type '{}' in controller response collection", l.getClass().getCanonicalName());
+					}
+				}
+
+				collectionModel.setData(entityModels);
+				return collectionModel;
+			} else {
+				return body;
+			}
+		}
+		else {
 			return body;
 		}
 	}

@@ -1,4 +1,3 @@
-apply plugin: 'java'
 
 ext {
     pomDescription = 'Java model for Gradle plugin'

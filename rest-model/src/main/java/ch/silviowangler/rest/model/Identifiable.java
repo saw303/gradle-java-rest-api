@@ -24,9 +24,16 @@
 package ch.silviowangler.rest.model;
 
 /**
- * A simple marker interface for resource models.
+ * Indicates that a type is identifiable and has an identifier.
  *
  * @author Silvio Wangler
  */
-public interface ResourceModel extends Identifiable<String> {
+public interface Identifiable<T> {
+
+	/**
+	 * Returns the id of the identifiable.
+	 *
+	 * @return its id
+	 */
+	T getId();
 }

@@ -186,8 +186,6 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
 		}
 		annotationsFields.clear();
 
-		annotationsFields.put("value", "application/json");
-
 		if (representation.isJson() && getResponseEncoding() != null) {
 			annotationsFields.put("value", String.format("application/json;charset=%s", getResponseEncoding().name()));
 		} else if (representation.isJson()) {

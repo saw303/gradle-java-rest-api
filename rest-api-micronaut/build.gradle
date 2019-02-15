@@ -1,0 +1,11 @@
+dependencies {
+
+    implementation project(':rest-model')
+
+    compileOnly "io.micronaut:micronaut-http:${micronautVersion}"
+    compileOnly "io.reactivex.rxjava2:rxjava:2.2.2"
+}
+
+ext {
+    pomDescription = 'Add ons for the Micronaut framework'
+}

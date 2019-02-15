@@ -6,18 +6,18 @@ ext {
 
 dependencies {
 
-    compile project(':json-model')
+    implementation project(':json-model')
 
     compileOnly gradleApi()
-    testCompile gradleTestKit()
+    testImplementation gradleTestKit()
 
     testCompile("org.spockframework:spock-core:${spockVersion}") {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
 
-    compile "com.squareup:javapoet:${javaPoetVersion}"
-    compile "com.google.guava:guava:${guavaVersion}"
-    compile "com.google.code.gson:gson:${gsonVersion}"
+    implementation "com.squareup:javapoet:${javaPoetVersion}"
+    implementation "com.google.guava:guava:${guavaVersion}"
+    implementation "com.google.code.gson:gson:${gsonVersion}"
 }
 
 task checkVersion(type: Test) {
