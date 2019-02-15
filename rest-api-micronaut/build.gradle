@@ -1,6 +1,6 @@
 dependencies {
 
-    implementation project(':rest-model')
+    api project(':rest-model')
 
     compileOnly "io.micronaut:micronaut-http:${micronautVersion}"
     compileOnly "io.micronaut:micronaut-router:${micronautVersion}"

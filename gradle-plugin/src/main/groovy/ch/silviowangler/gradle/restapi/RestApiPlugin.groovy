@@ -74,19 +74,20 @@ class RestApiPlugin implements Plugin<Project> {
         }
 
         final String springVersion = '5.1.3.RELEASE'
+        final String pluginVersion = "1.3.0"
 
         project.afterEvaluate {
             project.dependencies {
-                compile("ch.silviowangler.rest:rest-api-spring:1.3.0-SNAPSHOT")
-                compile("javax.money:money-api:1.0.3")
+                implementation("javax.money:money-api:1.0.3")
                 compileOnly("javax.validation:validation-api:2.0.1.Final")
 
                 if (extension.targetFramework == SPRING_BOOT) {
+                    implementation "ch.silviowangler.rest:rest-api-spring:${pluginVersion}"
                     compileOnly "org.springframework:spring-web:${springVersion}"
                     compileOnly "org.springframework:spring-webmvc:${springVersion}"
                 }
                 else if (extension.targetFramework == MICRONAUT) {
-
+                    implementation "ch.silviowangler.rest:rest-api-micronaut:${pluginVersion}"
                 }
             }
         }
