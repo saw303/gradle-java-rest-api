@@ -89,7 +89,7 @@ class GenerateRestApiTask extends AbstractTask implements Specification {
                 amountOfGeneratedJavaSourceFiles++
                 writeToFileSystem(specContainer.packageName, model, getRootOutputDir())
             }
-            def file = new File(restApiExtension.generatorImplOutput, "${specContainer.packageName.replaceAll('\\.', fileSeparator)}${fileSeparator}${GeneratorUtil.createResourceImplementationName(specFile.name)}.java")
+            File file = new File(restApiExtension.generatorImplOutput, "${specContainer.packageName.replaceAll('\\.', fileSeparator)}${fileSeparator}${GeneratorUtil.createResourceImplementationName(specFile.name)}.java")
 
             if (!file.exists()) {
                 logger.lifecycle('Writing implementation {} to {}', file.name, restApiExtension.generatorImplOutput)
