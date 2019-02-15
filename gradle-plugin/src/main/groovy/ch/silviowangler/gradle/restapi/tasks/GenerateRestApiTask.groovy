@@ -89,7 +89,7 @@ class GenerateRestApiTask extends AbstractTask implements Specification {
                 amountOfGeneratedJavaSourceFiles++
                 writeToFileSystem(specContainer.packageName, model, getRootOutputDir())
             }
-            File file = new File(restApiExtension.generatorImplOutput, "${specContainer.packageName.replaceAll('\\.', fileSeparator)}${fileSeparator}${GeneratorUtil.createResourceImplementationName(specFile.name)}.java")
+            File file = new File(restApiExtension.generatorImplOutput, "${specContainer.packageName.replaceAll('\\.', fileSeparator)}${fileSeparator}${specContainer.restImplementation.name}.java")
 
             if (!file.exists()) {
                 logger.lifecycle('Writing implementation {} to {}', file.name, restApiExtension.generatorImplOutput)
@@ -98,7 +98,6 @@ class GenerateRestApiTask extends AbstractTask implements Specification {
             } else {
                 logger.lifecycle('Resource implementation {} exists. Skipping this one', file.name)
             }
-
         }
 
         logger.lifecycle "Done generating REST artifacts in {} milliseconds. (Processed JSON {} files and generated {} Java source code files)", System.currentTimeMillis() - start, specs.size(), amountOfGeneratedJavaSourceFiles
