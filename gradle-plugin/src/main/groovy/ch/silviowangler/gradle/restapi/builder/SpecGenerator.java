@@ -35,6 +35,7 @@ import com.squareup.javapoet.TypeSpec;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -101,7 +102,7 @@ public class SpecGenerator {
 					.create().fromJson(new FileReader(file), ResourceContract.class);
 
 
-			String plainText = new String(Files.readAllBytes(file.toPath()), "UTF-8");
+			String plainText = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
 
 			return new ResourceContractContainer(resourceContract, plainText, file.getName());
 
