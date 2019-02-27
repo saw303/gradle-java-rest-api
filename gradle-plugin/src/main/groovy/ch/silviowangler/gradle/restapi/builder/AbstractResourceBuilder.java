@@ -385,130 +385,138 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
 			List<String> fieldNamesApplied = new ArrayList<>();
 
-			ClassName resourceModelName = resourceModelName(verb);
 			TypeSpec.Builder builder = resourceModelBaseInstance(verb);
-			String mimeType = verbGet.getRepresentations().stream().filter(r -> "json".equals(r.getName())).findAny().get().getMimetype();
+			Optional<Representation> jsonRepresentation = verbGet.getRepresentations().stream().filter(r -> "json".equals(r.getName())).findAny();
 
-			builder.addField(
-					FieldSpec.builder(String.class, "TYPE")
-							.addModifiers(PUBLIC, FINAL, STATIC)
-							.initializer("$S", mimeType)
-							.build()
-			);
+			if (jsonRepresentation.isPresent()) {
+				String mimeType = jsonRepresentation.get().getMimetype();
 
-			for (ResourceField field : fields) {
+				builder.addField(
+						FieldSpec.builder(String.class, "TYPE")
+								.addModifiers(PUBLIC, FINAL, STATIC)
+								.initializer("$S", mimeType)
+								.build()
+				);
 
-				if (!field.isVisible() && verb.equals(verbGet)) continue;
-				if (field.isReadonly() && !verb.equals(verbGet)) continue;
+				for (ResourceField field : fields) {
 
-				fieldNamesApplied.add(field.getName());
+					if (!field.isVisible() && verb.equals(verbGet)) continue;
+					if (field.isReadonly() && !verb.equals(verbGet)) continue;
 
-				TypeName fieldType = getFieldType(types, field.getType());
+					fieldNamesApplied.add(field.getName());
 
-				if (field.isMultiple()) {
-					ClassName list = ClassName.get(List.class);
-					fieldType = ParameterizedTypeName.get(list, fieldType);
-				}
+					TypeName fieldType = getFieldType(types, field.getType());
 
-				FieldSpec.Builder fieldBuilder = FieldSpec.builder(fieldType, field.getName(), PRIVATE);
-
-				if (field.getMandatory().stream().anyMatch(v -> v.equalsIgnoreCase(verb.getVerb()))) {
-					fieldBuilder.addAnnotation(createAnnotation(JAVAX_VALIDATION_NOT_NULL));
-				}
-
-				if (!verb.equals(verbGet) && "email".equalsIgnoreCase(field.getType())) {
-					fieldBuilder.addAnnotation(AnnotationSpec.builder(JAVAX_VALIDATION_EMAIL.getClassName()).build());
-				}
-
-				if (!verb.equals(verbGet) && (field.getMin() instanceof Number || field.getMax() instanceof Number)) {
-
-					Number min = field.getMin();
-					Number max = field.getMax();
-
-					if ("integer".equalsIgnoreCase(field.getType()) || "string".equalsIgnoreCase(field.getType())) {
-
-						AnnotationSpec.Builder annoBuilder = AnnotationSpec.builder(JAVAX_VALIDATION_SIZE.getClassName());
-
-						if (field.getMin() != null) {
-							annoBuilder.addMember("min", "$L", min.intValue());
-						}
-
-						if (field.getMax() != null) {
-							annoBuilder.addMember("max", "$L", max.intValue());
-						}
-
-						fieldBuilder.addAnnotation(annoBuilder.build());
-					} else if ("decimal".equalsIgnoreCase(field.getType())) {
-						fieldBuilder.addAnnotation(
-								AnnotationSpec.builder(JAVAX_VALIDATION_DECIMAL_MIN.getClassName())
-										.addMember("value", "$S", min.doubleValue()).build()
-						);
-						fieldBuilder.addAnnotation(
-								AnnotationSpec.builder(JAVAX_VALIDATION_DECIMAL_MAX.getClassName())
-										.addMember("value", "$S", max.doubleValue()).build()
-						);
+					if (field.isMultiple()) {
+						ClassName list = ClassName.get(List.class);
+						fieldType = ParameterizedTypeName.get(list, fieldType);
 					}
 
-				}
+					FieldSpec.Builder fieldBuilder = FieldSpec.builder(fieldType, field.getName(), PRIVATE);
 
-
-				if (field.isMultiple()) {
-					fieldBuilder.initializer("new java.util.ArrayList<>()");
-				} else if (field.getDefaultValue() != null) {
-
-					if (fieldType == STRING.getClassName()) {
-						fieldBuilder.initializer("$S", field.getDefaultValue());
-					} else if (fieldType == DATE.getClassName()) {
-						fieldBuilder.initializer("$T.now()", ClassName.get(LocalDate.class));
-					} else if (fieldType == DATETIME.getClassName()) {
-						fieldBuilder.initializer("$T.now()", ClassName.get(LocalDateTime.class));
-					} else if (fieldType == BOOL.getClassName()) {
-						fieldBuilder.initializer("$T.$L", ClassName.get(Boolean.class), Boolean.TRUE.equals(field.getDefaultValue()) ? "TRUE" : "FALSE");
-					} else {
-						fieldBuilder.initializer("$S", field.getDefaultValue());
+					if (field.getMandatory().stream().anyMatch(v -> v.equalsIgnoreCase(verb.getVerb()))) {
+						fieldBuilder.addAnnotation(createAnnotation(JAVAX_VALIDATION_NOT_NULL));
 					}
-				}
-				builder.addField(fieldBuilder.build());
 
-				// write Getter/Setters
-				writeGetterSetter(builder, fieldType, field.getName());
+					if (!verb.equals(verbGet) && "email".equalsIgnoreCase(field.getType())) {
+						fieldBuilder.addAnnotation(AnnotationSpec.builder(JAVAX_VALIDATION_EMAIL.getClassName()).build());
+					}
+
+					if (!verb.equals(verbGet) && (field.getMin() instanceof Number || field.getMax() instanceof Number)) {
+
+						Number min = field.getMin();
+						Number max = field.getMax();
+
+						if ("integer".equalsIgnoreCase(field.getType()) || "string".equalsIgnoreCase(field.getType())) {
+
+							AnnotationSpec.Builder annoBuilder = AnnotationSpec.builder(JAVAX_VALIDATION_SIZE.getClassName());
+
+							if (field.getMin() != null) {
+								annoBuilder.addMember("min", "$L", min.intValue());
+							}
+
+							if (field.getMax() != null) {
+								annoBuilder.addMember("max", "$L", max.intValue());
+							}
+
+							fieldBuilder.addAnnotation(annoBuilder.build());
+						} else if ("decimal".equalsIgnoreCase(field.getType())) {
+							fieldBuilder.addAnnotation(
+									AnnotationSpec.builder(JAVAX_VALIDATION_DECIMAL_MIN.getClassName())
+											.addMember("value", "$S", min.doubleValue()).build()
+							);
+							fieldBuilder.addAnnotation(
+									AnnotationSpec.builder(JAVAX_VALIDATION_DECIMAL_MAX.getClassName())
+											.addMember("value", "$S", max.doubleValue()).build()
+							);
+						}
+
+					}
+
+
+					if (field.isMultiple()) {
+						fieldBuilder.initializer("new java.util.ArrayList<>()");
+					} else if (field.getDefaultValue() != null) {
+
+						if (fieldType == STRING.getClassName()) {
+							fieldBuilder.initializer("$S", field.getDefaultValue());
+						} else if (fieldType == DATE.getClassName()) {
+							fieldBuilder.initializer("$T.now()", ClassName.get(LocalDate.class));
+						} else if (fieldType == DATETIME.getClassName()) {
+							fieldBuilder.initializer("$T.now()", ClassName.get(LocalDateTime.class));
+						} else if (fieldType == BOOL.getClassName()) {
+							fieldBuilder.initializer("$T.$L", ClassName.get(Boolean.class), Boolean.TRUE.equals(field.getDefaultValue()) ? "TRUE" : "FALSE");
+						} else {
+							fieldBuilder.initializer("$S", field.getDefaultValue());
+						}
+					}
+					builder.addField(fieldBuilder.build());
+
+					// write Getter/Setters
+					writeGetterSetter(builder, fieldType, field.getName());
+				}
 			}
 
-			// --> overwrite equals method
-			String equalsParamName = "other";
-			String equalsCastVarName = "that";
+			if(!fieldNamesApplied.isEmpty()) {
+				ClassName resourceModelName = resourceModelName(verb);
 
-			MethodSpec.Builder equalsBuilder = MethodSpec.methodBuilder("equals")
-					.addAnnotation(Override.class)
-					.addModifiers(PUBLIC).addParameter(Object.class, equalsParamName).returns(TypeName.BOOLEAN);
+				// --> overwrite equals method
+				String equalsParamName = "other";
+				String equalsCastVarName = "that";
 
-			equalsBuilder.addStatement("if (this == $L) return true", equalsParamName)
-					.addStatement("if (! ($L instanceof $T)) return false", equalsParamName, resourceModelName)
-					.addStatement("$T $L = ($T) $L", resourceModelName, equalsCastVarName, resourceModelName, equalsParamName);
+				MethodSpec.Builder equalsBuilder = MethodSpec.methodBuilder("equals")
+						.addAnnotation(Override.class)
+						.addModifiers(PUBLIC).addParameter(Object.class, equalsParamName).returns(TypeName.BOOLEAN);
+
+				equalsBuilder.addStatement("if (this == $L) return true", equalsParamName)
+						.addStatement("if (! ($L instanceof $T)) return false", equalsParamName, resourceModelName)
+						.addStatement("$T $L = ($T) $L", resourceModelName, equalsCastVarName, resourceModelName, equalsParamName);
 
 
-			String code = fieldNamesApplied.stream()
-					.map(f -> "get" + LOWER_CAMEL.to(UPPER_CAMEL, f))
-					.map(f -> "$T.equals(" + f + "(), " + equalsCastVarName + "." + f + "())")
-					.collect(Collectors.joining(" && "));
+				String code = fieldNamesApplied.stream()
+						.map(f -> "get" + LOWER_CAMEL.to(UPPER_CAMEL, f))
+						.map(f -> "$T.equals(" + f + "(), " + equalsCastVarName + "." + f + "())")
+						.collect(Collectors.joining(" && "));
 
-			equalsBuilder.addStatement("return " + code, Collections.nCopies(fieldNamesApplied.size(), Objects.class).toArray());
+				equalsBuilder.addStatement("return " + code, Collections.nCopies(fieldNamesApplied.size(), Objects.class).toArray());
 
-			builder.addMethod(equalsBuilder.build());
+				builder.addMethod(equalsBuilder.build());
 
-			// --> overwrite hashCode method
-			MethodSpec.Builder hashCodeBuilder = MethodSpec.methodBuilder("hashCode")
-					.addAnnotation(Override.class)
-					.addModifiers(PUBLIC).returns(INT);
+				// --> overwrite hashCode method
+				MethodSpec.Builder hashCodeBuilder = MethodSpec.methodBuilder("hashCode")
+						.addAnnotation(Override.class)
+						.addModifiers(PUBLIC).returns(INT);
 
-			code = "$T.hash(" + fieldNamesApplied.stream().collect(Collectors.joining(", ")) + ")";
+				code = "$T.hash(" + String.join(", ", fieldNamesApplied) + ")";
 
-			hashCodeBuilder.addStatement("return " + code, Objects.class);
+				hashCodeBuilder.addStatement("return " + code, Objects.class);
 
-			builder.addMethod(hashCodeBuilder.build());
+				builder.addMethod(hashCodeBuilder.build());
 
-			specTypes.add(builder.build());
+				specTypes.add(builder.build());
+			}
 		}
+
 		return specTypes;
 	}
 
