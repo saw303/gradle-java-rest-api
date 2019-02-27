@@ -527,7 +527,7 @@ class RestApiPluginSpec extends Specification {
         javaFiles.isEmpty()
     }
 
-    void "Das Plugin generiert auch read only Ressourcen mit nur einem CSV GET"() {
+    void "Das Plugin generiert auch read only Ressourcen mit nur einem CSV GET (Micronaut)"() {
 
         given:
         project.restApi.generatorOutput = temporaryFolder.getRoot()
@@ -535,6 +535,7 @@ class RestApiPluginSpec extends Specification {
         project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/csvOnly")
         project.restApi.packageName = 'org.acme.rest'
         project.restApi.generateDateAttribute = false
+		project.restApi.targetFramework = MICRONAUT
         project.restApi.objectResourceModelMapping = customFieldModelMapping
 
         and:
@@ -562,7 +563,7 @@ class RestApiPluginSpec extends Specification {
 
         and: 'Ressourcen validieren'
         assertJavaFile('org.acme.rest.v1.download', 'DownloadResource', 'csvOnly')
-        assertJavaFile('org.acme.rest.v1.download', 'DownloadResourceImpl', 'csvOnly')
+        assertJavaFile('org.acme.rest.v1.download', 'DownloadResourceDelegate', 'csvOnly')
 
         when:
         CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask

@@ -1,0 +1,12 @@
+package org.acme.rest.v1.download;
+
+import ch.silviowangler.rest.NotYetImplementedException;
+import io.micronaut.http.HttpResponse;
+import javax.inject.Singleton;
+
+@Singleton
+public class DownloadResourceDelegate {
+  public HttpResponse getEntityCsv(String id) {
+    throw new NotYetImplementedException();
+  }
+}
