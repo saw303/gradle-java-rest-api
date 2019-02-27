@@ -1,0 +1,48 @@
+{
+  "general": {
+    "name": "download",
+    "description": "Download entry point",
+    "version": "1.0.0",
+    "x-route": "/v1/download/:entity",
+    "lifecycle": {
+      "deprecated": false,
+      "info": "This version is still valid"
+    }
+  },
+  "verbs": [
+    {
+      "verb": "GET_ENTITY",
+      "rel": "entity",
+      "responseStates": [
+        {
+          "code": 200,
+          "message": "200 Ok",
+          "comment": "content in response body"
+        },
+        {
+          "code": 503,
+          "message": "503 Service Unavailable",
+          "comment": "Backend server not reachable or too slow"
+        }
+      ],
+      "representations": [
+        {
+          "name": "csv",
+          "comment": "",
+          "responseExample": "{...}",
+          "isDefault": true,
+          "mimetype": "text/csv"
+        }
+      ],
+      "parameters": [],
+      "permissions": []
+    }
+  ],
+  "fields": [],
+  "subresources": [],
+  "pipes": [],
+  "types": [],
+  "validators": []
+}
+
+

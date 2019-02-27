@@ -527,6 +527,60 @@ class RestApiPluginSpec extends Specification {
         javaFiles.isEmpty()
     }
 
+    void "Das Plugin generiert auch read only Ressourcen mit nur einem CSV GET (Micronaut)"() {
+
+        given:
+        project.restApi.generatorOutput = temporaryFolder.getRoot()
+        project.restApi.generatorImplOutput = temporaryFolder.getRoot()
+        project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/csvOnly")
+        project.restApi.packageName = 'org.acme.rest'
+        project.restApi.generateDateAttribute = false
+		project.restApi.targetFramework = MICRONAUT
+        project.restApi.objectResourceModelMapping = customFieldModelMapping
+
+        and:
+        GenerateRestApiTask task = project.tasks.generateRestArtifacts as GenerateRestApiTask
+
+        when:
+        task.exec()
+
+        and:
+        def javaFiles = []
+        temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+            if (it.name.endsWith('.java')) javaFiles << it
+        })
+
+        then:
+        new File(temporaryFolder.getRoot(), 'org/acme/rest').exists()
+
+        and:
+        assertGeneratedFiles javaFiles, 2
+
+        and:
+        javaFiles.collect {
+            it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
+        }.size() == javaFiles.size()
+
+        and: 'Ressourcen validieren'
+        assertJavaFile('org.acme.rest.v1.download', 'DownloadResource', 'csvOnly')
+        assertJavaFile('org.acme.rest.v1.download', 'DownloadResourceDelegate', 'csvOnly')
+
+        when:
+        CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask
+
+        and:
+        cleanTask.cleanUp()
+
+        and:
+        javaFiles.clear()
+        temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+            if (it.name.endsWith('.java')) javaFiles << it
+        })
+
+        then:
+        javaFiles.isEmpty()
+    }
+
     void "Das Plugin generiert auch read only Ressourcen mit nur einem Collection GET"() {
 
         given:
