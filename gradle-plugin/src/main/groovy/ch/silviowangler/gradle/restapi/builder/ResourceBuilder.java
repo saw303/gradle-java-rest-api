@@ -283,7 +283,7 @@ public interface ResourceBuilder {
 			methodBuilder.addParameter(p);
 		});
 
-		String paramNames = names.stream().collect(Collectors.joining(", "));
+		String paramNames = String.join(", ", names);
 
 		if (!supportsInterfaces() && !isHandlerMethod(methodName) && ArtifactType.ABSTRACT_RESOURCE.equals(artifactType) && !methodName.endsWith("AutoAnswer") && !methodName.equals("getOptions")) {
 			methodBuilder.addStatement("return handle$L($L)", CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, methodName), paramNames);
