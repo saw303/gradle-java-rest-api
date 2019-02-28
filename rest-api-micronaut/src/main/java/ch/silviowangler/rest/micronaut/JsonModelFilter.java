@@ -25,24 +25,19 @@ package ch.silviowangler.rest.micronaut;
 
 import ch.silviowangler.rest.model.CollectionModel;
 import ch.silviowangler.rest.model.EntityModel;
+import ch.silviowangler.rest.model.Identifiable;
 import ch.silviowangler.rest.model.ResourceLink;
 import ch.silviowangler.rest.model.ResourceModel;
-import io.micronaut.core.convert.value.MutableConvertibleValues;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.MutableHttpResponse;
-import io.micronaut.http.filter.HttpServerFilter;
 import io.micronaut.http.filter.ServerFilterChain;
 import io.micronaut.web.router.UriRouteMatch;
 import io.reactivex.Flowable;
 import org.reactivestreams.Publisher;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
-
-import static io.micronaut.http.MediaType.APPLICATION_JSON_TYPE;
 
 /**
  * Transforms a {@link ResourceModel} into a {@link EntityModel} or a {@link CollectionModel}.
@@ -79,7 +74,11 @@ public class JsonModelFilter {
 							if (model instanceof ResourceModel) {
 								ResourceModel resourceModel = (ResourceModel) model;
 								EntityModel entityModel = new EntityModel(resourceModel);
-								entityModel.getLinks().add(ResourceLink.selfLink(uriRouteMatch.getUri() + "/" + resourceModel.getId()));
+
+								if (model instanceof Identifiable) {
+									entityModel.getLinks().add(ResourceLink.selfLink(uriRouteMatch.getUri() + "/" + ((Identifiable)resourceModel).getId()));
+								}
+
 								collectionModel.getData().add(entityModel);
 							}
 						}

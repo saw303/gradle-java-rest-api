@@ -28,5 +28,5 @@ package ch.silviowangler.rest.model;
  *
  * @author Silvio Wangler
  */
-public interface ResourceModel extends Identifiable<String> {
+public interface ResourceModel {
 }
