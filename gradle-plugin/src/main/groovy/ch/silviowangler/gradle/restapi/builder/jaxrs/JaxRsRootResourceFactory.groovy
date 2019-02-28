@@ -144,7 +144,9 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder {
 
         if (applyId) {
             specs << createAnnotation(JAX_RS_PATH, ['value': "{id}${representation.isJson() && !explicitExtensions ? '' : ".${representation.name}"}"])
-        }
+        } else if(explicitExtensions) {
+			specs << createAnnotation(JAX_RS_PATH, ['value': ".${representation.name}"])
+		}
 
         return specs
     }

@@ -152,6 +152,8 @@ public class SpringRootResourceFactory extends AbstractResourceBuilder {
 			} else {
 				builder.addMember("path", "\"/{$L}.$L\"", "id", representation.getName());
 			}
+		} else if(explicitExtensions) {
+			builder.addMember("path", "\"/.$L\"", representation.getName());
 		}
 
 		if (representation.isJson() && getResponseEncoding() != null) {

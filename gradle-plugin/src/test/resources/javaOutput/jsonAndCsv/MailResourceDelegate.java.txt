@@ -1,0 +1,16 @@
+package org.acme.rest.v1.input.mail;
+
+import ch.silviowangler.rest.NotYetImplementedException;
+import io.micronaut.http.HttpResponse;
+import javax.inject.Singleton;
+
+@Singleton
+public class MailResourceDelegate {
+  public MailGetResourceModel getEntity(String input) {
+    throw new NotYetImplementedException();
+  }
+
+  public HttpResponse getEntityCsv(String input) {
+    throw new NotYetImplementedException();
+  }
+}
