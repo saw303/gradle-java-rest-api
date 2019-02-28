@@ -93,7 +93,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 	private Verb currentVerb;
 	private String currentPackageName;
 	private boolean printTimestamp = true;
-	private boolean explicitExtensions;
+	private boolean explicitExtensions = false;
 	private ArtifactType artifactType;
 	private Charset responseEncoding;
 
