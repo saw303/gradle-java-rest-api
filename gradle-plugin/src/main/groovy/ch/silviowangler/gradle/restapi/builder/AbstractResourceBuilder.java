@@ -96,7 +96,6 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 	private ArtifactType artifactType;
 	private Charset responseEncoding;
 
-
 	private Verb getCurrentVerb() {
 		return currentVerb;
 	}
@@ -484,7 +483,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 				}
 			}
 
-			if(!fieldNamesApplied.isEmpty()) {
+			if (!fieldNamesApplied.isEmpty()) {
 				ClassName resourceModelName = resourceModelName(verb);
 
 				// --> overwrite equals method
