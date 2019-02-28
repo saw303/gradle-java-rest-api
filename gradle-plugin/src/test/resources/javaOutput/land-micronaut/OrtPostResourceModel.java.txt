@@ -1,5 +1,6 @@
 package org.acme.rest.v1.laender.orte;
 
+import ch.silviowangler.rest.model.Identifiable;
 import ch.silviowangler.rest.model.ResourceModel;
 import java.io.Serializable;
 import java.util.Objects;
@@ -12,7 +13,7 @@ import org.acme.rest.v1.CoordinatesType;
     comments = "Specification filename: land.ort.v1.json",
     value = "ch.silviowangler.restapi"
 )
-public class OrtPostResourceModel implements Serializable, ResourceModel {
+public class OrtPostResourceModel implements Serializable, ResourceModel, Identifiable<String> {
   public static final String TYPE = "application/ch.silviowangler.ort";
 
   private String id;

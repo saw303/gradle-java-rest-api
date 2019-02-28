@@ -360,6 +360,9 @@ class RestApiPluginSpec extends Specification {
         project.restApi.enableSecurity = true
         project.restApi.responseEncoding = Charset.forName('UTF-8')
 
+		and:
+		final String testName = 'land'
+
         and:
         GenerateRestApiTask task = project.tasks.generateRestArtifacts as GenerateRestApiTask
 
@@ -384,22 +387,22 @@ class RestApiPluginSpec extends Specification {
         }.size() == javaFiles.size()
 
         and: 'Ressourcen validieren'
-        assertJavaFile('org.acme.rest.v1', 'CoordinatesType', 'land')
-        assertJavaFile('org.acme.rest.v1.laender', 'LandGetResourceModel', 'land')
-        assertJavaFile('org.acme.rest.v1.laender', 'LandPutResourceModel', 'land')
-        assertJavaFile('org.acme.rest.v1.laender', 'LandPostResourceModel', 'land')
-        assertJavaFile('org.acme.rest.v1.laender', 'LandResource', 'land')
-        assertJavaFile('org.acme.rest.v1.laender', 'LandResourceImpl', 'land')
+        assertJavaFile('org.acme.rest.v1', 'CoordinatesType', testName)
+        assertJavaFile('org.acme.rest.v1.laender', 'LandGetResourceModel',testName)
+		assertJavaFile('org.acme.rest.v1.laender', 'LandPostResourceModel',testName)
+		assertJavaFile('org.acme.rest.v1.laender', 'LandPutResourceModel',testName)
+        assertJavaFile('org.acme.rest.v1.laender', 'LandResource',testName)
+        assertJavaFile('org.acme.rest.v1.laender', 'LandResourceImpl',testName)
 
-        assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtResource', 'land')
-        assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtResourceImpl', 'land')
-        assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtGetResourceModel', 'land')
-        assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtPutResourceModel', 'land')
-        assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtPostResourceModel', 'land')
+        assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtGetResourceModel', testName)
+		assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtPostResourceModel', testName)
+		assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtPutResourceModel', testName)
+		assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtResource', testName)
+		assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtResourceImpl', testName)
 
-        assertJavaFile('org.acme.rest.v1', 'RootResource', 'land')
-        assertJavaFile('org.acme.rest.v1', 'RootResourceImpl', 'land')
-        assertJavaFile('org.acme.rest.v1', 'RootGetResourceModel', 'land')
+        assertJavaFile('org.acme.rest.v1', 'RootGetResourceModel', testName)
+		assertJavaFile('org.acme.rest.v1', 'RootResource', testName)
+		assertJavaFile('org.acme.rest.v1', 'RootResourceImpl', testName)
 
         when:
         CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask
