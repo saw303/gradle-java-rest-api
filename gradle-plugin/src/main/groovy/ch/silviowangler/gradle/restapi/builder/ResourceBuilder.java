@@ -46,7 +46,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_GENERATED;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_VALID;

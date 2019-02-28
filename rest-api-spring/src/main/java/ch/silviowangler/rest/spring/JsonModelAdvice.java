@@ -25,6 +25,7 @@ package ch.silviowangler.rest.spring;
 
 import ch.silviowangler.rest.model.CollectionModel;
 import ch.silviowangler.rest.model.EntityModel;
+import ch.silviowangler.rest.model.Identifiable;
 import ch.silviowangler.rest.model.ResourceLink;
 import ch.silviowangler.rest.model.ResourceModel;
 import org.slf4j.Logger;
@@ -37,8 +38,6 @@ import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -87,7 +86,9 @@ class JsonModelAdvice implements ResponseBodyAdvice {
 					if (l instanceof ResourceModel) {
 						ResourceModel resourceModel = (ResourceModel) l;
 						EntityModel entityModel = new EntityModel(resourceModel);
-						entityModel.getLinks().add(ResourceLink.selfLink(request.getURI().getPath()+ "/" + resourceModel.getId()));
+						if (l instanceof Identifiable){
+							entityModel.getLinks().add(ResourceLink.selfLink(request.getURI().getPath()+ "/" + ((Identifiable)resourceModel).getId()));
+						}
 						entityModels.add(entityModel);
 					} else {
 						log.warn("Detected non resource model type '{}' in controller response collection", l.getClass().getCanonicalName());
