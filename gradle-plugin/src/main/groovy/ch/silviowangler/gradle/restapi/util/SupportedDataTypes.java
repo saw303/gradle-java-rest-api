@@ -39,6 +39,7 @@ public enum SupportedDataTypes {
   DATETIME(ClassName.get(OffsetDateTime.class)),
   DECIMAL(ClassName.get(BigDecimal.class)),
   INT(ClassName.get(Integer.class)),
+  LONG(ClassName.get(Long.class)),
   DOUBLE(ClassName.get(Double.class)),
   FLOAT(ClassName.get(Double.class)),
   BOOL(ClassName.get(Boolean.class)),

@@ -1,5 +1,6 @@
 package org.acme.rest.v1.api.v1;
 
+import ch.silviowangler.rest.model.Identifiable;
 import ch.silviowangler.rest.model.ResourceModel;
 import java.io.Serializable;
 import java.util.List;
@@ -10,7 +11,7 @@ import javax.annotation.Generated;
     comments = "Specification filename: root.v1.json",
     value = "ch.silviowangler.restapi"
 )
-public class RootGetResourceModel implements Serializable, ResourceModel {
+public class RootGetResourceModel implements Serializable, ResourceModel, Identifiable<String> {
   public static final String TYPE = "application/ch.silviowangler.root";
 
   private String id;

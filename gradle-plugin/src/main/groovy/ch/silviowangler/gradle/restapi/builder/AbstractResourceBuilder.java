@@ -67,6 +67,7 @@ import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_DECIM
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_EMAIL;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_NOT_NULL;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_SIZE;
+import static ch.silviowangler.gradle.restapi.PluginTypes.RESTAPI_IDENTIFIABLE;
 import static ch.silviowangler.gradle.restapi.PluginTypes.RESTAPI_RESOURCE_MODEL;
 import static ch.silviowangler.gradle.restapi.builder.ArtifactType.RESOURCE;
 import static ch.silviowangler.gradle.restapi.util.SupportedDataTypes.BOOL;
@@ -397,6 +398,12 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 								.build()
 				);
 
+				Optional<ResourceField> idField = fields.stream().filter(f -> "id".equals(f.getName())).findAny();
+
+				if (idField.isPresent()) {
+					builder.addSuperinterface(RESTAPI_IDENTIFIABLE.getTypeName());
+				}
+
 				for (ResourceField field : fields) {
 
 					if (!field.isVisible() && verb.equals(verbGet)) continue;
@@ -476,7 +483,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 				}
 			}
 
-			if(!fieldNamesApplied.isEmpty()) {
+			if (!fieldNamesApplied.isEmpty()) {
 				ClassName resourceModelName = resourceModelName(verb);
 
 				// --> overwrite equals method
@@ -641,7 +648,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 				.addModifiers(PUBLIC)
 				.addAnnotation(createGeneratedAnnotation(printTimestamp))
 				.addSuperinterface(Serializable.class)
-				.addSuperinterface(RESTAPI_RESOURCE_MODEL.getClassName());
+				.addSuperinterface(RESTAPI_RESOURCE_MODEL.getTypeName());
 
 		return builder;
 	}

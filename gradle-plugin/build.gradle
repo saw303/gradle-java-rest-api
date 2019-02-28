@@ -26,7 +26,7 @@ task checkVersion(type: Test) {
 
     String msg = "Wrong version in ${file.absolutePath}"
 
-    if (! content.contains("final String pluginVersion = \"1.3.0\"")) {
+    if (! content.contains("final String pluginVersion = \"${project.version}\"")) {
         throw new RuntimeException(msg)
     }
 

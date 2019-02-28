@@ -1,5 +1,6 @@
 package org.acme.rest.v1.input;
 
+import ch.silviowangler.rest.model.Identifiable;
 import ch.silviowangler.rest.model.ResourceModel;
 import java.io.Serializable;
 import java.util.Objects;
@@ -9,7 +10,7 @@ import javax.annotation.Generated;
     comments = "Specification filename: input.json",
     value = "ch.silviowangler.restapi"
 )
-public class InputGetResourceModel implements Serializable, ResourceModel {
+public class InputGetResourceModel implements Serializable, ResourceModel, Identifiable<String> {
   public static final String TYPE = "application/json";
 
   private String id;

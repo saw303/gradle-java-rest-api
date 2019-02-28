@@ -1,0 +1,81 @@
+{
+  "general": {
+    "name": "root",
+    "description": "Das ist die Root Resource der Version 1.0.0",
+    "version": "1.0.0",
+    "x-route": "/:version"
+  },
+  "verbs": [
+    {
+      "verb": "GET_ENTITY",
+      "rel": "entity",
+      "responseStates": [
+        {
+          "code": 200,
+          "message": "200 Ok",
+          "comment": "content in response body"
+        },
+        {
+          "code": 503,
+          "message": "503 Service Unavailable",
+          "comment": "Backend server eventually not reachable or to slow"
+        }
+      ],
+      "representations": [
+        {
+          "name": "json",
+          "comment": "",
+          "responseExample": "{...}",
+          "isDefault": true,
+          "mimetype": "application/ch.silviowangler.land"
+        }
+      ],
+      "parameters": [],
+      "permissions": [
+        {
+          "name": "mitarbeiter",
+          "mode": "all",
+          "comment": "Jeder darf nach Land suchen"
+        }
+      ]
+    }
+  ],
+  "fields": [
+    {
+      "name": "name",
+      "type": "string",
+      "options": null,
+      "mandatory": [],
+      "min": null,
+      "max": null,
+      "multiple": false,
+      "defaultValue": null,
+      "protected": [],
+      "visible": true,
+      "sortable": false,
+      "readonly": false,
+      "filterable": false,
+      "alias": [],
+      "x-comment": "Name des Landes"
+    },
+    {
+      "name": "draft",
+      "type": "bool",
+      "options": null,
+      "mandatory": [],
+      "min": null,
+      "max": null,
+      "multiple": false,
+      "defaultValue": true,
+      "protected": [],
+      "visible": true,
+      "sortable": false,
+      "readonly": false,
+      "filterable": false,
+      "alias": [],
+      "x-comment": "Ob Entwurf oder nicht"
+    }
+  ],
+  "subresources": [],
+  "types": []
+}

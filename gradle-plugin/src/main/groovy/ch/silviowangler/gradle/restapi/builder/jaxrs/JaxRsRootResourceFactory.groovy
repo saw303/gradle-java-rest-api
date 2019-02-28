@@ -55,7 +55,7 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder {
         verb.setVerb("OPTIONS")
 
         setCurrentVerb(verb)
-        MethodSpec.Builder optionsMethod = createMethod("getOptions", JAX_RS_RESPONSE.className)
+        MethodSpec.Builder optionsMethod = createMethod("getOptions", JAX_RS_RESPONSE.typeName)
 
         optionsMethod.addAnnotation(
                 createAnnotation(JAX_RS_OPTIONS_VERB)
@@ -63,7 +63,7 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder {
         optionsMethod.addAnnotation(
                 createAnnotation(JAX_RS_PATH, [value: ''])
         )
-        optionsMethod.addStatement('return $T.ok(OPTIONS_CONTENT).build()', JAX_RS_RESPONSE.className)
+        optionsMethod.addStatement('return $T.ok(OPTIONS_CONTENT).build()', JAX_RS_RESPONSE.typeName)
 
         resourceBaseTypeBuilder().addMethod(optionsMethod.build())
         setCurrentVerb(null)
@@ -113,7 +113,7 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder {
         } else if (charset) {
             mimetype = "${mimetype}; charset=${charset.name()}"
         }
-        AnnotationSpec.builder(JAX_RS_PRODUCES.className).addMember('value', '{ $S }', mimetype).build()
+        AnnotationSpec.builder(JAX_RS_PRODUCES.typeName).addMember('value', '{ $S }', mimetype).build()
     }
 
 
@@ -156,7 +156,7 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder {
 
     @Override
     void generateMethodNotAllowedStatement(MethodSpec.Builder builder) {
-        builder.addStatement('return $T.status(405).build()', JAX_RS_RESPONSE.className)
+        builder.addStatement('return $T.status(405).build()', JAX_RS_RESPONSE.typeName)
     }
 
     @Override

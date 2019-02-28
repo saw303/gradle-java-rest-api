@@ -94,6 +94,7 @@ class GeneratorUtil {
             'datetime': SupportedDataTypes.DATETIME.className,
             'decimal' : SupportedDataTypes.DECIMAL.className,
             'int'     : SupportedDataTypes.INT.className,
+            'long'    : SupportedDataTypes.LONG.className,
             'double'  : SupportedDataTypes.DOUBLE.className,
             'float'   : SupportedDataTypes.DOUBLE.className,
             'bool'    : SupportedDataTypes.BOOL.className,
@@ -172,26 +173,26 @@ class GeneratorUtil {
 
                 switch (targetFramework) {
                     case TargetFramework.JAX_RS:
-                        return PluginTypes.JAX_RS_RESPONSE.className
+                        return PluginTypes.JAX_RS_RESPONSE.typeName
                     case TargetFramework.SPRING_BOOT:
-                        return PluginTypes.SPRING_RESPONSE_ENTITY.className
+                        return PluginTypes.SPRING_RESPONSE_ENTITY.typeName
                     case TargetFramework.MICRONAUT:
-                        return PluginTypes.MICRONAUT_HTTP_RESPONSE.className
+                        return PluginTypes.MICRONAUT_HTTP_RESPONSE.typeName
                     default:
                         throw new RuntimeException("Unknown framework ${targetFramework}")
                 }
             } else {
-                return PluginTypes.RESTAPI_IDTYPE.className
+                return PluginTypes.RESTAPI_IDTYPE.typeName
             }
         } else if (verb == 'Delete') {
 
             switch (targetFramework) {
                 case TargetFramework.JAX_RS:
-                    return PluginTypes.JAX_RS_RESPONSE.className
+                    return PluginTypes.JAX_RS_RESPONSE.typeName
                 case TargetFramework.SPRING_BOOT:
-                    return PluginTypes.SPRING_RESPONSE_ENTITY.className
+                    return PluginTypes.SPRING_RESPONSE_ENTITY.typeName
                 case TargetFramework.MICRONAUT:
-                    return PluginTypes.MICRONAUT_HTTP_RESPONSE.className
+                    return PluginTypes.MICRONAUT_HTTP_RESPONSE.typeName
                 default:
                     throw new RuntimeException("Unknown framework ${targetFramework}")
             }

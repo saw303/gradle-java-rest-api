@@ -24,6 +24,8 @@
 package ch.silviowangler.gradle.restapi;
 
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.ParameterizedTypeName;
+import com.squareup.javapoet.TypeName;
 
 /**
  * Created by Silvio Wangler on 26/01/16.
@@ -35,6 +37,7 @@ public enum PluginTypes {
 	RESTAPI_JWT_ANNOTATION(ClassName.get("ch.silviowangler.rest.security", "SecurityEnabled")),
 	RESTAPI_CACHING_ANNOTATION(ClassName.get("ch.silviowangler.rest.cache", "CacheSetting")),
 	RESTAPI_RESOURCE_MODEL(ClassName.get("ch.silviowangler.rest.model", "ResourceModel")),
+	RESTAPI_IDENTIFIABLE(ParameterizedTypeName.get(ClassName.get("ch.silviowangler.rest.model", "Identifiable"), ClassName.get(String.class))),
 	JAX_RS_RESPONSE(ClassName.get("javax.ws.rs.core", "Response")),
 	JAX_RS_OPTIONS_VERB(ClassName.get("javax.ws.rs", "OPTIONS")),
 	JAX_RS_GET_VERB(ClassName.get("javax.ws.rs", "GET")),
@@ -83,14 +86,19 @@ public enum PluginTypes {
 	MICRONAUT_HTTP_STATUS(ClassName.get("io.micronaut.http", "HttpStatus"));
 
 
-	private final ClassName className;
+	private final TypeName typeName;
 
-	PluginTypes(ClassName className) {
-		this.className = className;
+	PluginTypes(TypeName typeName) {
+		this.typeName = typeName;
+	}
+
+	public TypeName getTypeName() {
+		return this.typeName;
 	}
 
 	public ClassName getClassName() {
-		return this.className;
-	}
 
+		if (this.typeName instanceof ClassName) return (ClassName) this.typeName;
+		throw new UnsupportedOperationException(String.format("TypeName %s is not a ClassName", this.typeName.getClass().getCanonicalName()));
+	}
 }
