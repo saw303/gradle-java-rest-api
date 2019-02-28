@@ -758,6 +758,62 @@ class RestApiPluginSpec extends Specification {
         assertPlantUmlFile('resources-overview.puml', 'land')
     }
 
+	void "No id field is present in a resource"() {
+
+		given:
+		project.restApi.generatorOutput = temporaryFolder.getRoot()
+		project.restApi.generatorImplOutput = temporaryFolder.getRoot()
+		project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/root-no-id")
+		project.restApi.packageName = 'org.acme.rest'
+		project.restApi.generateDateAttribute = false
+		project.restApi.objectResourceModelMapping = customFieldModelMapping
+		project.restApi.targetFramework = MICRONAUT
+		project.restApi.responseEncoding = Charset.forName('UTF-8')
+
+		and:
+		GenerateRestApiTask task = project.tasks.generateRestArtifacts as GenerateRestApiTask
+
+		when:
+		task.exec()
+
+		and:
+		List<File> javaFiles = []
+		temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+			if (it.name.endsWith('.java')) javaFiles << it
+		})
+
+		then:
+		new File(temporaryFolder.getRoot(), 'org/acme/rest').exists()
+
+		and:
+		assertGeneratedFiles javaFiles, 3
+
+		and:
+		javaFiles.collect {
+			it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
+		}.size() == javaFiles.size()
+
+		and: 'Ressourcen validieren'
+		assertJavaFile('org.acme.rest.v1', 'RootGetResourceModel', 'root-no-id')
+		assertJavaFile('org.acme.rest.v1', 'RootResource', 'root-no-id')
+		assertJavaFile('org.acme.rest.v1', 'RootResourceDelegate', 'root-no-id')
+
+		when:
+		CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask
+
+		and:
+		cleanTask.cleanUp()
+
+		and:
+		javaFiles.clear()
+		temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+			if (it.name.endsWith('.java')) javaFiles << it
+		})
+
+		then:
+		javaFiles.isEmpty()
+	}
+
     private void assertPlantUmlFile(String filename, String testSetName) {
         final String ENCODING = 'UTF-8'
         File expectedFile = new File(temporaryFolder.getRoot(), filename)
