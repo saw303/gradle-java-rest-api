@@ -59,6 +59,12 @@ public class SpringRootResourceFactory extends AbstractResourceBuilder {
 
 	private static final ClassName STRING_CLASS = ClassName.get(String.class);
 
+	private boolean explicitExtensions;
+
+	public SpringRootResourceFactory(boolean explicitExtensions) {
+		this.explicitExtensions = explicitExtensions;
+	}
+
 	@Override
 	public boolean supportsInterfaces() {
 		return false;
@@ -141,7 +147,7 @@ public class SpringRootResourceFactory extends AbstractResourceBuilder {
 		builder.addMember("method", "$T." + httpMethod.toUpperCase(), SPRING_REQUEST_METHOD.getClassName());
 
 		if (applyId) {
-			if (representation.isJson()) {
+			if (representation.isJson() && !explicitExtensions) {
 				builder.addMember("path", "\"/{$L}\"", "id");
 			} else {
 				builder.addMember("path", "\"/{$L}.$L\"", "id", representation.getName());

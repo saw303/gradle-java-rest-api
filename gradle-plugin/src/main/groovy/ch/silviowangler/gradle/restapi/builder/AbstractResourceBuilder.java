@@ -95,7 +95,6 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 	private ArtifactType artifactType;
 	private Charset responseEncoding;
 
-
 	private Verb getCurrentVerb() {
 		return currentVerb;
 	}

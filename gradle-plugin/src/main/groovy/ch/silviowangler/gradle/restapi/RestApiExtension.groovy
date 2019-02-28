@@ -41,6 +41,7 @@ class RestApiExtension {
     Closure objectResourceModelMapping = { resource, field -> throw new RuntimeException("No object resource model mapping for field ${field.name} and resource ${description}") }
     boolean generateDateAttribute = true
     boolean enableSecurity = false
+    boolean explicitExtensions = false
     TargetFramework targetFramework = TargetFramework.JAX_RS
     Charset responseEncoding
     File diagramOutput = new File(project.buildDir, 'diagrams')

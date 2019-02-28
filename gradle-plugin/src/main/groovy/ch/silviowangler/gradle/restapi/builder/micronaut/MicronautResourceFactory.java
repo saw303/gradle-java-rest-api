@@ -63,6 +63,11 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
 
 	private static final ClassName STRING_CLASS = ClassName.get(String.class);
 	private static final String DELEGATE_VAR_NAME = "delegate";
+	private boolean explicitExtensions;
+
+	public MicronautResourceFactory(boolean explicitExtensions) {
+		this.explicitExtensions = explicitExtensions;
+	}
 
 	@Override
 	protected void createOptionsMethod() {
@@ -157,7 +162,7 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
 		Map<String, Object> annotationsFields = new HashMap<>();
 
 		if (applyId) {
-			if (representation.isJson()) {
+			if (representation.isJson() && !explicitExtensions) {
 				annotationsFields.put("uri", "/{id}");
 			} else {
 				annotationsFields.put("uri", String.format("/{id}.%s", representation.getName()));
