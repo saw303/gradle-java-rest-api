@@ -94,6 +94,7 @@ class GeneratorUtil {
             'datetime': SupportedDataTypes.DATETIME.className,
             'decimal' : SupportedDataTypes.DECIMAL.className,
             'int'     : SupportedDataTypes.INT.className,
+            'long'    : SupportedDataTypes.LONG.className,
             'double'  : SupportedDataTypes.DOUBLE.className,
             'float'   : SupportedDataTypes.DOUBLE.className,
             'bool'    : SupportedDataTypes.BOOL.className,
