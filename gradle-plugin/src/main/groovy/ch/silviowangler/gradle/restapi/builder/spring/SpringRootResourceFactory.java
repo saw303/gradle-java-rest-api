@@ -59,7 +59,7 @@ public class SpringRootResourceFactory extends AbstractResourceBuilder {
 
 	private static final ClassName STRING_CLASS = ClassName.get(String.class);
 
-	private boolean explicitExtensions;
+	private final boolean explicitExtensions;
 
 	public SpringRootResourceFactory(boolean explicitExtensions) {
 		this.explicitExtensions = explicitExtensions;

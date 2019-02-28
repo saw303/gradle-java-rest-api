@@ -63,7 +63,7 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
 
 	private static final ClassName STRING_CLASS = ClassName.get(String.class);
 	private static final String DELEGATE_VAR_NAME = "delegate";
-	private boolean explicitExtensions;
+	private final boolean explicitExtensions;
 
 	public MicronautResourceFactory(boolean explicitExtensions) {
 		this.explicitExtensions = explicitExtensions;
