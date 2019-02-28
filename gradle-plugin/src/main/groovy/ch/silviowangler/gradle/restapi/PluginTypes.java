@@ -99,6 +99,6 @@ public enum PluginTypes {
 	public ClassName getClassName() {
 
 		if (this.typeName instanceof ClassName) return (ClassName) this.typeName;
-		throw new RuntimeException(String.format("TypeName %s is not a ClassName", this.typeName.getClass().getCanonicalName()));
+		throw new UnsupportedOperationException(String.format("TypeName %s is not a ClassName", this.typeName.getClass().getCanonicalName()));
 	}
 }
