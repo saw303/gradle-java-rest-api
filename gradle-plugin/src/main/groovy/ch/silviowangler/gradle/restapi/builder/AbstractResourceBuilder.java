@@ -93,8 +93,17 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 	private Verb currentVerb;
 	private String currentPackageName;
 	private boolean printTimestamp = true;
+	private boolean explicitExtensions;
 	private ArtifactType artifactType;
 	private Charset responseEncoding;
+
+	public AbstractResourceBuilder(boolean explicitExtensions) {
+		this.explicitExtensions = explicitExtensions;
+	}
+
+	public boolean isExplicitExtensions() {
+		return explicitExtensions;
+	}
 
 	private Verb getCurrentVerb() {
 		return currentVerb;
@@ -386,6 +395,13 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 			List<String> fieldNamesApplied = new ArrayList<>();
 
 			TypeSpec.Builder builder = resourceModelBaseInstance(verb);
+
+			boolean hasOnlyJsonRepresentation = verbGet.getRepresentations().stream().allMatch(r -> "json".equals(r.getName()));
+
+			if(hasOnlyJsonRepresentation) {
+				this.explicitExtensions = false;
+			}
+
 			Optional<Representation> jsonRepresentation = verbGet.getRepresentations().stream().filter(r -> "json".equals(r.getName())).findAny();
 
 			if (jsonRepresentation.isPresent()) {

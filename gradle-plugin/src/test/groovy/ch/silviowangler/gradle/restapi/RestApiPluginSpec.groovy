@@ -558,7 +558,7 @@ class RestApiPluginSpec extends Specification {
 		new File(temporaryFolder.getRoot(), 'org/acme/rest').exists()
 
 		and:
-		assertGeneratedFiles javaFiles, 3
+		assertGeneratedFiles javaFiles, 6
 
 		and:
 		javaFiles.collect {
@@ -569,6 +569,9 @@ class RestApiPluginSpec extends Specification {
 		assertJavaFile('org.acme.rest.v1.input', 'InputResource', 'jsonAndCsv')
 		assertJavaFile('org.acme.rest.v1.input', 'InputResourceDelegate', 'jsonAndCsv')
 		assertJavaFile('org.acme.rest.v1.input', 'InputGetResourceModel', 'jsonAndCsv')
+		assertJavaFile('org.acme.rest.v1.mail', 'MailResource', 'jsonAndCsv')
+		assertJavaFile('org.acme.rest.v1.mail', 'MailResourceDelegate', 'jsonAndCsv')
+		assertJavaFile('org.acme.rest.v1.mail', 'MailGetResourceModel', 'jsonAndCsv')
 
 		when:
 		CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask

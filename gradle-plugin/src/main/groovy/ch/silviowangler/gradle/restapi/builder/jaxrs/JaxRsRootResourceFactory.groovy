@@ -38,10 +38,8 @@ import static ch.silviowangler.gradle.restapi.PluginTypes.*
 
 class JaxRsRootResourceFactory extends AbstractResourceBuilder {
 
-	private boolean explicitExtensions
-
 	JaxRsRootResourceFactory(boolean explicitExtensions) {
-		this.explicitExtensions = explicitExtensions
+		super(explicitExtensions)
 	}
 
     @Override

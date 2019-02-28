@@ -38,10 +38,7 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
 import javax.lang.model.element.Modifier;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_INJECT;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_SINGLETON;
@@ -63,10 +60,9 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
 
 	private static final ClassName STRING_CLASS = ClassName.get(String.class);
 	private static final String DELEGATE_VAR_NAME = "delegate";
-	private boolean explicitExtensions;
 
 	public MicronautResourceFactory(boolean explicitExtensions) {
-		this.explicitExtensions = explicitExtensions;
+		super(explicitExtensions);
 	}
 
 	@Override
@@ -162,7 +158,7 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
 		Map<String, Object> annotationsFields = new HashMap<>();
 
 		if (applyId) {
-			if (representation.isJson() && !explicitExtensions) {
+			if (representation.isJson() && !isExplicitExtensions()) {
 				annotationsFields.put("uri", "/{id}");
 			} else {
 				annotationsFields.put("uri", String.format("/{id}.%s", representation.getName()));
