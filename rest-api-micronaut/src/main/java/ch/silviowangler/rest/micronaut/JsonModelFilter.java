@@ -28,6 +28,7 @@ import ch.silviowangler.rest.model.EntityModel;
 import ch.silviowangler.rest.model.Identifiable;
 import ch.silviowangler.rest.model.ResourceLink;
 import ch.silviowangler.rest.model.ResourceModel;
+import ch.silviowangler.rest.model.SelfLinkProvider;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.MutableHttpResponse;
@@ -60,7 +61,13 @@ public class JsonModelFilter {
 
 						ResourceModel resourceModel = (ResourceModel) res.body();
 						EntityModel entityModel = new EntityModel(resourceModel);
-						entityModel.getLinks().add(ResourceLink.selfLink(uriRouteMatch.getUri()));
+
+						if (resourceModel instanceof SelfLinkProvider) {
+							((SelfLinkProvider)resourceModel).selfLink().ifPresent( selfLink -> entityModel.getLinks().add(selfLink));
+						}else {
+							entityModel.getLinks().add(ResourceLink.selfLink(uriRouteMatch.getUri()));
+						}
+
 						((MutableHttpResponse) res).body(entityModel);
 
 					} else if (res.body() instanceof Collection) {

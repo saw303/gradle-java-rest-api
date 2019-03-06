@@ -21,57 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package ch.silviowangler.rest.types;
+package ch.silviowangler.rest.model;
 
-import ch.silviowangler.rest.model.Identifiable;
-import ch.silviowangler.rest.model.ResourceLink;
-import ch.silviowangler.rest.model.ResourceModel;
-import ch.silviowangler.rest.model.SelfLinkProvider;
-
-import java.io.Serializable;
 import java.util.Optional;
 
 /**
- * Java type that is use when only an ID is return in the response. (POST/PUT)
- *
  * @author Silvio Wangler
  */
-public class IdType implements ResourceModel, Identifiable<String>, SelfLinkProvider, Serializable {
+public interface SelfLinkProvider {
 
-	private String id;
-	private transient String path;
-
-	public IdType() {
-		this(null);
-	}
-
-	public IdType(String id) {
-		this(id, null);
-	}
-
-	public IdType(String id, String path) {
-		this.id = id;
-		this.path = path;
-	}
-
-	@Override
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	@Override
-	public Optional<ResourceLink> selfLink() {
-
-		ResourceLink selfLink = null;
-
-		if (this.path != null) {
-			selfLink = ResourceLink.selfLink(this.path);
-		}
-
-		return Optional.ofNullable(selfLink);
-	}
+	Optional<ResourceLink> selfLink();
 }
