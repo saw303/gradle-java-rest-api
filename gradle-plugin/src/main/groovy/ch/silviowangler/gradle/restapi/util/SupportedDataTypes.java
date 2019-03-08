@@ -26,8 +26,8 @@ package ch.silviowangler.gradle.restapi.util;
 import com.squareup.javapoet.ClassName;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.util.Locale;
 
 /**
@@ -36,7 +36,7 @@ import java.util.Locale;
 public enum SupportedDataTypes {
   
   DATE(ClassName.get(LocalDate.class)),
-  DATETIME(ClassName.get(OffsetDateTime.class)),
+  DATETIME(ClassName.get(Instant.class)),
   DECIMAL(ClassName.get(BigDecimal.class)),
   INT(ClassName.get(Integer.class)),
   LONG(ClassName.get(Long.class)),

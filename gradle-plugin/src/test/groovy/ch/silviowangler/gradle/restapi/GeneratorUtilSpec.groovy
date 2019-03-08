@@ -27,8 +27,8 @@ import com.squareup.javapoet.ClassName
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import java.time.Instant
 import java.time.LocalDate
-import java.time.OffsetDateTime
 
 /**
  * Created by Silvio Wangler on 25/01/16.
@@ -75,7 +75,7 @@ class GeneratorUtilSpec extends Specification {
         'string'   || ClassName.get(String)
         'email'    || ClassName.get(String)
         'date'     || ClassName.get(LocalDate)
-        'datetime' || ClassName.get(OffsetDateTime)
+        'datetime' || ClassName.get(Instant)
         'decimal'  || ClassName.get(BigDecimal)
         'int'      || ClassName.get(Integer)
         'double'   || ClassName.get(Double)

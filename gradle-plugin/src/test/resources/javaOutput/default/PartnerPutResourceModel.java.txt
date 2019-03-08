@@ -4,8 +4,8 @@ import ch.silviowangler.rest.model.Identifiable;
 import ch.silviowangler.rest.model.ResourceModel;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.util.Locale;
 import java.util.Objects;
 import javax.annotation.Generated;
@@ -48,7 +48,7 @@ public class PartnerPutResourceModel implements Serializable, ResourceModel, Ide
   @NotNull
   private MonetaryAmount lohn;
 
-  private OffsetDateTime uhrzeit;
+  private Instant uhrzeit;
 
   @NotNull
   private Locale sprache;
@@ -117,11 +117,11 @@ public class PartnerPutResourceModel implements Serializable, ResourceModel, Ide
     this.lohn = lohn;
   }
 
-  public OffsetDateTime getUhrzeit() {
+  public Instant getUhrzeit() {
     return this.uhrzeit;
   }
 
-  public void setUhrzeit(OffsetDateTime uhrzeit) {
+  public void setUhrzeit(Instant uhrzeit) {
     this.uhrzeit = uhrzeit;
   }
 
