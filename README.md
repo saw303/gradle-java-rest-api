@@ -6,6 +6,9 @@ This Gradle plugin helps you to design REST API for Java backends in a unique wa
 - **JAX RS** - well, the specification dude!
 - **Spring Boot**, the way who Spring does it.
 
+
+Use this [link](https://bintray.com/saw303/gradle-plugins/gradle-java-rest-api?source=watch) to watch latest releases. 
+
 ## Build & Quality
 
 [![CircleCI](https://circleci.com/gh/saw303/gradle-java-rest-api/tree/master.svg?style=svg)](https://circleci.com/gh/saw303/gradle-java-rest-api/tree/master) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/daaa123d3d2c4023908ff8870bdbc7d2)](https://www.codacy.com/app/saw303/gradle-java-rest-api?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=saw303/gradle-java-rest-api&amp;utm_campaign=Badge_Grade)
@@ -34,3 +37,9 @@ The Gradle plugin will introduce a new build category named `rest api` to your G
 - **extractSpecs** - Reads and extracts the specs files from the classpath
 - **generateDiagrams** - Generates PlantUML diagrams of your REST API
 - **generateRestArtifacts** - Generates Java code from your REST specification
+
+## Demo application
+
+This repositories contains to very slim demo applications for **Spring Boot** and **Micronaut**.
+
+The Spring Boot repo is located at `./demo-app-springboot`. The Micronaut app is located at `./demo-app-micronaut`.
