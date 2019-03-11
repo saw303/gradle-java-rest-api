@@ -54,6 +54,7 @@ import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_POST;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_PRODUCES;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_PUT;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_QUERY_VALUE;
+import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_VALIDATED;
 import static ch.silviowangler.gradle.restapi.builder.ArtifactType.DELEGATOR_RESOURCE;
 
 /**
@@ -93,6 +94,7 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
 		args.put("value", getPath());
 
 		resourceBuilder.addAnnotation(createAnnotation(MICRONAUT_CONTROLLER, args));
+		resourceBuilder.addAnnotation(createAnnotation(MICRONAUT_VALIDATED));
 
 		ClassName delegatorClass = ClassName.get(getCurrentPackageName(), resourceDelegateName());
 
