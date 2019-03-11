@@ -26,8 +26,11 @@ package ch.silviowangler.gradle.restapi.builder;
 import ch.silviowangler.gradle.restapi.GeneratedSpecContainer;
 import ch.silviowangler.gradle.restapi.RestApiExtension;
 import ch.silviowangler.gradle.restapi.gson.GeneralDetailsDeserializer;
+import ch.silviowangler.gradle.restapi.gson.ResourceFieldDeserializer;
 import ch.silviowangler.rest.contract.model.v1.GeneralDetails;
 import ch.silviowangler.rest.contract.model.v1.ResourceContract;
+import ch.silviowangler.rest.contract.model.v1.ResourceField;
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeSpec;
@@ -35,7 +38,6 @@ import com.squareup.javapoet.TypeSpec;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -44,12 +46,22 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * @author Silvio Wangler
  */
 public class SpecGenerator {
 
     private static final Set<ClassName> resourceTypeCache = new HashSet<>();
+    private static final Gson gson;
+
+    static {
+		gson = new GsonBuilder()
+				.registerTypeAdapter(GeneralDetails.class, new GeneralDetailsDeserializer())
+				.registerTypeAdapter(ResourceField.class, new ResourceFieldDeserializer())
+				.create();
+	}
 
     public static GeneratedSpecContainer generateType(File specFile, RestApiExtension extension) {
 
@@ -97,15 +109,9 @@ public class SpecGenerator {
 		}
 
 		try {
-			ResourceContract resourceContract = new GsonBuilder()
-					.registerTypeAdapter(GeneralDetails.class, new GeneralDetailsDeserializer())
-					.create().fromJson(new FileReader(file), ResourceContract.class);
-
-
-			String plainText = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
-
+			ResourceContract resourceContract = gson.fromJson(new FileReader(file), ResourceContract.class);
+			String plainText = new String(Files.readAllBytes(file.toPath()), UTF_8);
 			return new ResourceContractContainer(resourceContract, plainText, file.getName());
-
 		} catch (IOException e) {
 			throw new RuntimeException("Unable to transform JSON file " + file.getAbsolutePath() + " to Java model", e);
 		}
