@@ -14,8 +14,14 @@ import javax.annotation.Generated;
 public class RootGetResourceModel implements Serializable, ResourceModel, Identifiable<String> {
   public static final String TYPE = "application/ch.silviowangler.root";
 
+  /**
+   * id
+   */
   private String id;
 
+  /**
+   * Name
+   */
   private String name;
 
   private List<InsuranceNeedsGroupType> needGroups = new java.util.ArrayList<>();

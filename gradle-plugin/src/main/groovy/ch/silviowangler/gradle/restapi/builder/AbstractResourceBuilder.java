@@ -177,8 +177,18 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 					this.typeBuilder.addModifiers(ABSTRACT);
 				}
 			}
+			addJavadocToClass();
 		}
+
 		return this.typeBuilder;
+	}
+
+	private void addJavadocToClass() {
+		ResourceContract resourceContract = this.resourceContractContainer.getResourceContract();
+		GeneralDetails general = resourceContract.getGeneral();
+		if (general != null && general.getDescription() != null) {
+			this.typeBuilder.addJavadoc(String.format("%s\n", general.getDescription()));
+		}
 	}
 
 	protected void reset() {
@@ -424,6 +434,10 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 					}
 
 					FieldSpec.Builder fieldBuilder = FieldSpec.builder(fieldType, field.getName(), PRIVATE);
+
+					if (field.getxComment() != null) {
+						fieldBuilder.addJavadoc(String.format("%s\n", field.getxComment()));
+					}
 
 					if (field.getMandatory().stream().anyMatch(v -> v.equalsIgnoreCase(verb.getVerb()))) {
 						fieldBuilder.addAnnotation(createAnnotation(JAVAX_VALIDATION_NOT_NULL));

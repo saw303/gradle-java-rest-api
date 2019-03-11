@@ -22,28 +22,58 @@ import javax.validation.constraints.NotNull;
 public class PartnerPostResourceModel implements Serializable, ResourceModel, Identifiable<String> {
   public static final String TYPE = "application/ch.silviowangler.partner";
 
+  /**
+   * VOKey
+   */
   private String id;
 
+  /**
+   * Partnername
+   */
   @NotNull
   private String name;
 
+  /**
+   * Partnervorname
+   */
   private String vorname = "unbekannt";
 
+  /**
+   * Titel
+   */
   private String titel;
 
+  /**
+   * Email des Partners
+   */
   @Email
   private String email;
 
+  /**
+   * Geburtsdatum
+   */
   private LocalDate geburtsdatum = LocalDate.now();
 
+  /**
+   * Gewicht
+   */
   @DecimalMin("0.0")
   @DecimalMax("400.0")
   private BigDecimal gewicht;
 
+  /**
+   * Lohn
+   */
   private MonetaryAmount lohn;
 
+  /**
+   * Aktuelle Uhrzeit
+   */
   private Instant uhrzeit;
 
+  /**
+   * Locale des Partners
+   */
   private Locale sprache;
 
   public String getId() {

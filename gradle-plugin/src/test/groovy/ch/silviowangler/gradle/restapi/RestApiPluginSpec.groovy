@@ -328,8 +328,8 @@ class RestApiPluginSpec extends Specification {
         assertJavaFile('org.acme.rest.v1.partner', 'PartnerResource')
         assertJavaFile('org.acme.rest.v1.partner', 'PartnerResourceImpl')
         assertJavaFile('org.acme.rest.v1.partner', 'PartnerGetResourceModel')
-        assertJavaFile('org.acme.rest.v1.partner', 'PartnerPutResourceModel')
         assertJavaFile('org.acme.rest.v1.partner', 'PartnerPostResourceModel')
+		assertJavaFile('org.acme.rest.v1.partner', 'PartnerPutResourceModel')
 
         when:
         CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask

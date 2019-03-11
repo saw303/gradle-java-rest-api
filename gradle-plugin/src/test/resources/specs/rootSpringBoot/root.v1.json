@@ -122,8 +122,7 @@
       "sortable": false,
       "readonly": false,
       "filterable": false,
-      "alias": [],
-      "x-comment": "Name"
+      "alias": []
     }
   ],
   "subresources": [],

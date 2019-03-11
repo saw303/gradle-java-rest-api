@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+/**
+ * Das ist die Root Resource der Version 1.0.0
+ */
 @Generated(
     comments = "Specification filename: root.v1.json",
     value = "ch.silviowangler.restapi"

@@ -15,14 +15,29 @@ import org.acme.rest.v1.CoordinatesType;
 public class LandGetResourceModel implements Serializable, ResourceModel, Identifiable<String> {
   public static final String TYPE = "application/ch.silviowangler.land";
 
+  /**
+   * VOKey
+   */
   private String id;
 
+  /**
+   * Name des Landes
+   */
   private String name;
 
+  /**
+   * Wann wurde das Land gegründet?
+   */
   private LocalDate gruendungsDatum;
 
+  /**
+   * Fläche in km
+   */
   private Integer flaeche;
 
+  /**
+   * Koordinaten
+   */
   private CoordinatesType koordinaten;
 
   public String getId() {

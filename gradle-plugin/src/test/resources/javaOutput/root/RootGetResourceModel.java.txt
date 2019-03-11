@@ -13,11 +13,20 @@ import javax.annotation.Generated;
 public class RootGetResourceModel implements Serializable, ResourceModel, Identifiable<String> {
   public static final String TYPE = "application/ch.silviowangler.land";
 
+  /**
+   * id
+   */
   private String id;
 
+  /**
+   * Name des Landes
+   */
   private String name;
 
-  private Boolean draft = Boolean.TRUE;
+  /**
+   * Ob Entwurf oder nicht
+   */
+  private Boolean draft = Boolean.FALSE;
 
   public String getId() {
     return this.id;

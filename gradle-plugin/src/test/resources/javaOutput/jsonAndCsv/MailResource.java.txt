@@ -9,6 +9,9 @@ import io.micronaut.validation.Validated;
 import javax.annotation.Generated;
 import javax.inject.Inject;
 
+/**
+ * Mail entry point
+ */
 @Generated(
     comments = "Specification filename: mail.json",
     value = "ch.silviowangler.restapi"

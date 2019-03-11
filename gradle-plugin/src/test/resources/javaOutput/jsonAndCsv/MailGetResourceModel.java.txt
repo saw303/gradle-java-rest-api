@@ -13,6 +13,9 @@ import javax.annotation.Generated;
 public class MailGetResourceModel implements Serializable, ResourceModel, Identifiable<String> {
   public static final String TYPE = "application/json";
 
+  /**
+   * my custom id
+   */
   private String id;
 
   public String getId() {

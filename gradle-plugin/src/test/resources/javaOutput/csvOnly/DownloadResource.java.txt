@@ -9,6 +9,9 @@ import io.micronaut.validation.Validated;
 import javax.annotation.Generated;
 import javax.inject.Inject;
 
+/**
+ * Download entry point
+ */
 @Generated(
     comments = "Specification filename: download.v1.json",
     value = "ch.silviowangler.restapi"

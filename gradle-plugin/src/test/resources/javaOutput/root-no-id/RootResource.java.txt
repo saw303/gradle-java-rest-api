@@ -8,6 +8,9 @@ import io.micronaut.validation.Validated;
 import javax.annotation.Generated;
 import javax.inject.Inject;
 
+/**
+ * Das ist die Root Resource der Version 1.0.0
+ */
 @Generated(
     comments = "Specification filename: root.v1.json",
     value = "ch.silviowangler.restapi"

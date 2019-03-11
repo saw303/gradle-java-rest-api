@@ -16,15 +16,24 @@ import org.acme.rest.v1.CoordinatesType;
 public class OrtPutResourceModel implements Serializable, ResourceModel, Identifiable<String> {
   public static final String TYPE = "application/ch.silviowangler.ort";
 
+  /**
+   * VOKey
+   */
   @NotNull
   private String id;
 
+  /**
+   * Ort
+   */
   @NotNull
   @Size(
       max = 20
   )
   private String name;
 
+  /**
+   * Koordinaten
+   */
   @NotNull
   private CoordinatesType koordinaten;
 

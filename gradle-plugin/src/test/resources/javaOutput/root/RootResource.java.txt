@@ -11,6 +11,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
+/**
+ * Das ist die Root Resource der Version 1.0.0
+ */
 @Generated(
     comments = "Specification filename: root.v1.json",
     value = "ch.silviowangler.restapi"

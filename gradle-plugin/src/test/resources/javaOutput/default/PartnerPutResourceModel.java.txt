@@ -22,34 +22,64 @@ import javax.validation.constraints.NotNull;
 public class PartnerPutResourceModel implements Serializable, ResourceModel, Identifiable<String> {
   public static final String TYPE = "application/ch.silviowangler.partner";
 
+  /**
+   * VOKey
+   */
   private String id;
 
+  /**
+   * Partnername
+   */
   @NotNull
   private String name;
 
+  /**
+   * Partnervorname
+   */
   @NotNull
   private String vorname = "unbekannt";
 
+  /**
+   * Titel
+   */
   @NotNull
   private String titel;
 
+  /**
+   * Email des Partners
+   */
   @NotNull
   @Email
   private String email;
 
+  /**
+   * Geburtsdatum
+   */
   @NotNull
   private LocalDate geburtsdatum = LocalDate.now();
 
+  /**
+   * Gewicht
+   */
   @NotNull
   @DecimalMin("0.0")
   @DecimalMax("400.0")
   private BigDecimal gewicht;
 
+  /**
+   * Lohn
+   */
   @NotNull
   private MonetaryAmount lohn;
 
+  /**
+   * Aktuelle Uhrzeit
+   */
   private Instant uhrzeit;
 
+  /**
+   * Locale des Partners
+   */
   @NotNull
   private Locale sprache;
 

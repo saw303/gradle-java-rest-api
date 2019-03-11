@@ -17,9 +17,15 @@ import org.acme.rest.v1.CoordinatesType;
 public class LandPutResourceModel implements Serializable, ResourceModel, Identifiable<String> {
   public static final String TYPE = "application/ch.silviowangler.land";
 
+  /**
+   * VOKey
+   */
   @NotNull
   private String id;
 
+  /**
+   * Name des Landes
+   */
   @NotNull
   @Size(
       min = 0,
@@ -27,12 +33,21 @@ public class LandPutResourceModel implements Serializable, ResourceModel, Identi
   )
   private String name;
 
+  /**
+   * Wann wurde das Land gegründet?
+   */
   @NotNull
   private LocalDate gruendungsDatum;
 
+  /**
+   * Fläche in km
+   */
   @NotNull
   private Integer flaeche;
 
+  /**
+   * Koordinaten
+   */
   @NotNull
   private CoordinatesType koordinaten;
 

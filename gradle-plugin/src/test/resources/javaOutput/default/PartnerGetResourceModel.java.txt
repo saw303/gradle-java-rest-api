@@ -18,26 +18,59 @@ import javax.money.MonetaryAmount;
 public class PartnerGetResourceModel implements Serializable, ResourceModel, Identifiable<String> {
   public static final String TYPE = "application/ch.silviowangler.partner";
 
+  /**
+   * VOKey
+   */
   private String id;
 
+  /**
+   * Partnername
+   */
   private String name;
 
+  /**
+   * Partnervorname
+   */
   private String vorname = "unbekannt";
 
+  /**
+   * Titel
+   */
   private String titel;
 
+  /**
+   * Email des Partners
+   */
   private String email;
 
+  /**
+   * Geburtsdatum
+   */
   private LocalDate geburtsdatum = LocalDate.now();
 
+  /**
+   * Gewicht
+   */
   private BigDecimal gewicht;
 
+  /**
+   * Lohn
+   */
   private MonetaryAmount lohn;
 
+  /**
+   * Tags
+   */
   private List<String> tags = new java.util.ArrayList<>();
 
+  /**
+   * Pflegeleistungsabrechnungspositionen
+   */
   private List<BigDecimal> leistungsabrechnungspositionen = new java.util.ArrayList<>();
 
+  /**
+   * Locale des Partners
+   */
   private Locale sprache;
 
   public String getId() {

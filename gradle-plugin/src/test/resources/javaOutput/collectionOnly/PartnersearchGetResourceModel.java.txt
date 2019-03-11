@@ -13,14 +13,29 @@ import javax.annotation.Generated;
 public class PartnersearchGetResourceModel implements Serializable, ResourceModel, Identifiable<String> {
   public static final String TYPE = "application/ch.silviowangler.partner.collection";
 
+  /**
+   * Eindeutige ID des Partners
+   */
   private String id;
 
+  /**
+   * Name des Partners
+   */
   private String name;
 
+  /**
+   * Vorname des Partners
+   */
   private String vorname;
 
+  /**
+   * Partnernummer
+   */
   private String partnerNummer;
 
+  /**
+   * Partnertype
+   */
   private String partnerTyp;
 
   public String getId() {
