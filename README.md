@@ -13,6 +13,7 @@ This Gradle plugin helps you to design REST API for Java backends in a unique wa
 ## Getting started
 
 The Gradle plugin is hosted my private Bintray repository https://dl.bintray.com/saw303/gradle-plugins. In order to get this running with Gradle you need to declare that repository and apply the plugin.
+If you feel uncomfortable on relying on a private repository feel free to create a mirror for it.
 
 ```
 buildscript {
@@ -30,6 +31,6 @@ apply plugin: 'ch.silviowangler.restapi'
 The Gradle plugin will introduce a new build category named `rest api` to your Gradle build. This category groups the following tasks:
 
 - **cleanRestArtifacts** - Removes everything that the plugin has generated (except the stuff under version control)
-- **extractSpecs** - Read the specs from the classpath
-- **generateDiagrams** - Generate PlantUML diagrams of your REST API
-- **generateRestArtifacts** - Generate Java code from your REST specification
+- **extractSpecs** - Reads and extracts the specs files from the classpath
+- **generateDiagrams** - Generates PlantUML diagrams of your REST API
+- **generateRestArtifacts** - Generates Java code from your REST specification
