@@ -15,7 +15,7 @@ Use this [link](https://bintray.com/saw303/gradle-plugins/gradle-java-rest-api?s
 
 ## Getting started
 
-The Gradle plugin is hosted my private Bintray repository https://dl.bintray.com/saw303/gradle-plugins. In order to get this running with Gradle you need to declare that repository and apply the plugin.
+The Gradle plugin is hosted at the following Bintray repository https://dl.bintray.com/saw303/gradle-plugins. In order to get this running with Gradle you need to declare that repository and apply the plugin.
 If you feel uncomfortable on relying on a private repository feel free to create a mirror for it.
 
 ```
@@ -40,6 +40,6 @@ The Gradle plugin will introduce a new build category named `rest api` to your G
 
 ## Demo application
 
-This repositories contains to very slim demo applications for **Spring Boot** and **Micronaut**.
+This repositoriy contains to very slim demo applications for **Spring Boot** and **Micronaut**.
 
 The Spring Boot repo is located at `./demo-app-springboot`. The Micronaut app is located at `./demo-app-micronaut`.
