@@ -40,6 +40,6 @@ The Gradle plugin will introduce a new build category named `rest api` to your G
 
 ## Demo application
 
-This repositoriy contains to very slim demo applications for **Spring Boot** and **Micronaut**.
+This repository contains to very slim demo applications for **Spring Boot** and **Micronaut**.
 
 The Spring Boot repo is located at `./demo-app-springboot`. The Micronaut app is located at `./demo-app-micronaut`.
