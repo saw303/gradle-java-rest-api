@@ -1,12 +1,13 @@
 package org.acme.rest.v1.search;
 
 import ch.silviowangler.rest.NotYetImplementedException;
+import java.time.Instant;
 import java.time.LocalDate;
 import javax.inject.Singleton;
 
 @Singleton
 public class SearchResourceDelegate {
-  public SearchGetResourceModel getEntity(String q, LocalDate startDate) {
+  public SearchGetResourceModel getEntity(String q, Instant endTime, LocalDate startDate) {
     throw new NotYetImplementedException();
   }
 }

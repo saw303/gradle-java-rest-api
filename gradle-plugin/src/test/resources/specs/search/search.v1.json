@@ -45,7 +45,7 @@
           "multiple": false,
           "defaultValue": null,
           "alias": [],
-          "x-comment": "Search"
+          "x-comment": "search"
         },
         {
           "name": "startDate",
@@ -58,6 +58,18 @@
           "defaultValue": null,
           "alias": [],
           "x-comment": "start date"
+        },
+        {
+          "name": "endTime",
+          "type": "datetime",
+          "options": null,
+          "mandatory": false,
+          "min": null,
+          "max": null,
+          "multiple": false,
+          "defaultValue": null,
+          "alias": [],
+          "x-comment": "end time date time"
         }
       ],
       "permissions": []

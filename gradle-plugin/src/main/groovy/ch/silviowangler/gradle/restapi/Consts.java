@@ -31,5 +31,5 @@ public class Consts {
 
     public static final String ISO_LOCAL_DATE_FORMAT = "yyyy-MM-dd";
     public static final String ISO_LOCAL_TIME_FORMAT = "HH:mm:ss";
-    public static final String ISO_LOCAL_DATE_TIME_FORMAT = String.format("%sT%s", ISO_LOCAL_DATE_FORMAT, ISO_LOCAL_TIME_FORMAT);
+    public static final String ISO_LOCAL_DATE_TIME_FORMAT = String.format("%s'T'%s'Z'", ISO_LOCAL_DATE_FORMAT, ISO_LOCAL_TIME_FORMAT);
 }
