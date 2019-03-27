@@ -238,10 +238,12 @@ public interface ResourceBuilder {
 			ParameterSpec.Builder builder = ParameterSpec.builder(GeneratorUtil.translateToJava(p.getType()), name);
 
 			final boolean isHandleMethod = methodNameCopy.startsWith("handle");
-			final boolean isResource = isResourceInterface || isAbstractResourceClass;
+			final boolean isResource = isResourceInterface || isAbstractResourceClass || isDelegateResourceClass;
 
 			if (isResource && !isHandleMethod) {
-				builder.addAnnotation(getQueryParamAnnotation(p));
+				for (AnnotationSpec queryParamAnnotation : getQueryParamAnnotations(p)) {
+					builder.addAnnotation(queryParamAnnotation);
+				}
 			}
 
 			ParameterSpec parameter = builder.build();
@@ -314,7 +316,7 @@ public interface ResourceBuilder {
 		return methodName.endsWith("AutoAnswer") && ArtifactType.RESOURCE.equals(getArtifactType());
 	}
 
-	AnnotationSpec getQueryParamAnnotation(VerbParameter paramName);
+	List<AnnotationSpec> getQueryParamAnnotations(VerbParameter paramName);
 
 	Iterable<AnnotationSpec> getResourceMethodAnnotations(boolean applyId, Representation representation, String methodName);
 

@@ -32,7 +32,7 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.artifacts.Configuration
 
-import static ch.silviowangler.gradle.restapi.Consts.CONFIGUATION_REST_API
+import static ch.silviowangler.gradle.restapi.Consts.CONFIGURATION_REST_API
 import static ch.silviowangler.gradle.restapi.Consts.TASK_GROUP_REST_API
 import static ch.silviowangler.gradle.restapi.TargetFramework.MICRONAUT
 import static ch.silviowangler.gradle.restapi.TargetFramework.SPRING_BOOT
@@ -67,10 +67,10 @@ class RestApiPlugin implements Plugin<Project> {
 
         project.sourceSets.main.java.srcDir { project.restApi.generatorOutput }
 
-        Configuration restApiSpecification = project.configurations.findByName(CONFIGUATION_REST_API)
+        Configuration restApiSpecification = project.configurations.findByName(CONFIGURATION_REST_API)
 
         if (!restApiSpecification) {
-            project.configurations.create(CONFIGUATION_REST_API)
+            project.configurations.create(CONFIGURATION_REST_API)
         }
 
         final String springVersion = '5.1.3.RELEASE'

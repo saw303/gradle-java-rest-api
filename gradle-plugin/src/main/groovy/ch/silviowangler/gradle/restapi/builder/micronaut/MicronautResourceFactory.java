@@ -27,6 +27,7 @@ import ch.silviowangler.gradle.restapi.GeneratorUtil;
 import ch.silviowangler.gradle.restapi.PluginTypes;
 import ch.silviowangler.gradle.restapi.builder.AbstractResourceBuilder;
 import ch.silviowangler.gradle.restapi.builder.ArtifactType;
+import ch.silviowangler.gradle.restapi.util.SupportedDataTypes;
 import ch.silviowangler.rest.contract.model.v1.Representation;
 import ch.silviowangler.rest.contract.model.v1.Verb;
 import ch.silviowangler.rest.contract.model.v1.VerbParameter;
@@ -38,23 +39,11 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
 import javax.lang.model.element.Modifier;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_INJECT;
-import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_SINGLETON;
-import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_CONTROLLER;
-import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_DELETE;
-import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_GET;
-import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_HTTP_RESPONSE;
-import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_OPTIONS;
-import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_POST;
-import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_PRODUCES;
-import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_PUT;
-import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_QUERY_VALUE;
-import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_VALIDATED;
+import static ch.silviowangler.gradle.restapi.Consts.ISO_LOCAL_DATE_FORMAT;
+import static ch.silviowangler.gradle.restapi.Consts.ISO_LOCAL_DATE_TIME_FORMAT;
+import static ch.silviowangler.gradle.restapi.PluginTypes.*;
 import static ch.silviowangler.gradle.restapi.builder.ArtifactType.DELEGATOR_RESOURCE;
 
 /**
@@ -145,14 +134,27 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
 	}
 
 	@Override
-	public AnnotationSpec getQueryParamAnnotation(VerbParameter param) {
-		AnnotationSpec.Builder builder = AnnotationSpec.builder(MICRONAUT_QUERY_VALUE.getClassName())
-				.addMember("value", "$S", param.getName());
+	public List<AnnotationSpec> getQueryParamAnnotations(VerbParameter param) {
+		List<AnnotationSpec> annotationSpecs = new ArrayList<>();
+
+		annotationSpecs.add(AnnotationSpec.builder(JAVAX_VALIDATION_VALID.getClassName()).build());
+		annotationSpecs.add(AnnotationSpec.builder(MICRONAUT_QUERY_VALUE.getClassName()).build());
+
+		if ("date".equals(param.getType())) {
+			AnnotationSpec.Builder formatBuilder = AnnotationSpec.builder(MICRONAUT_FORMAT.getClassName());
+			formatBuilder.addMember("value", "$S", ISO_LOCAL_DATE_FORMAT);
+			annotationSpecs.add(formatBuilder.build());
+		} else if ("datetime".equals(param.getType())) {
+			AnnotationSpec.Builder formatBuilder = AnnotationSpec.builder(MICRONAUT_FORMAT.getClassName());
+			formatBuilder.addMember("value", "$S", ISO_LOCAL_DATE_TIME_FORMAT);
+			annotationSpecs.add(formatBuilder.build());
+		}
 
 		if (!param.getMandatory()) {
-			builder.addMember("required", "$L", false);
+			annotationSpecs.add(AnnotationSpec.builder(JAVAX_NULLABLE.getClassName()).build());
 		}
-		return builder.build();
+
+		return annotationSpecs;
 	}
 
 	@Override
@@ -169,7 +171,7 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
 			} else {
 				annotationsFields.put("uri", String.format("/{id}.%s", representation.getName()));
 			}
-		} else if(explicitExtensions) {
+		} else if (explicitExtensions) {
 			annotationsFields.put("uri", String.format("/.%s", representation.getName()));
 		}
 
