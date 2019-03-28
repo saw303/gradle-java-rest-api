@@ -46,7 +46,7 @@ class ExtractRestApiSpecsTask extends AbstractTask {
     @TaskAction
     void extract() {
 
-        Configuration configuration = project.configurations.findByName(Consts.CONFIGUATION_REST_API)
+        Configuration configuration = project.configurations.findByName(Consts.CONFIGURATION_REST_API)
 
         if (configuration && !configuration.files.isEmpty()) {
 

@@ -58,6 +58,7 @@ public enum PluginTypes {
 	JAVAX_VALIDATION_EMAIL(ClassName.get("javax.validation.constraints", "Email")),
 	JAVAX_VALIDATION_VALID(ClassName.get("javax.validation", "Valid")),
 	JAVAX_GENERATED(ClassName.get("javax.annotation", "Generated")),
+	JAVAX_NULLABLE(ClassName.get("javax.annotation", "Nullable")),
 	JAVA_OVERRIDE(ClassName.get(Override.class)),
 	PLUGIN_NOT_YET_IMPLEMENTED_EXCEPTION(ClassName.get("ch.silviowangler.rest", "NotYetImplementedException")),
 	SPRING_REQUEST_MAPPING(ClassName.get("org.springframework.web.bind.annotation", "RequestMapping")),
@@ -84,8 +85,10 @@ public enum PluginTypes {
 	MICRONAUT_DELETE(ClassName.get("io.micronaut.http.annotation", "Delete")),
 	MICRONAUT_HTTP_RESPONSE(ClassName.get("io.micronaut.http", "HttpResponse")),
 	MICRONAUT_QUERY_VALUE(ClassName.get("io.micronaut.http.annotation", "QueryValue")),
-	MICRONAUT_HTTP_STATUS(ClassName.get("io.micronaut.http", "HttpStatus"));
-
+	MICRONAUT_FORMAT(ClassName.get("io.micronaut.core.convert.format", "Format")),
+	MICRONAUT_HTTP_STATUS(ClassName.get("io.micronaut.http", "HttpStatus")),
+	MICRONAUT_DATE_FORMAT(ClassName.get("ch.silviowangler.rest.micronaut.binding", "DateFormat")),
+	MICRONAUT_DATE_TIME_FORMAT(ClassName.get("ch.silviowangler.rest.micronaut.binding", "DateTimeFormat"));
 
 	private final TypeName typeName;
 

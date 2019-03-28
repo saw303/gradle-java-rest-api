@@ -233,21 +233,23 @@ public interface ResourceBuilder {
 
 		List<String> names = new ArrayList<>(context.getParams().size());
 
-		context.getParams().forEach((name, p) -> {
+		context.getParams().forEach(p -> {
 
-			ParameterSpec.Builder builder = ParameterSpec.builder(GeneratorUtil.translateToJava(p.getType()), name);
+			ParameterSpec.Builder builder = ParameterSpec.builder(GeneratorUtil.translateToJava(p.getType()), p.getName());
 
 			final boolean isHandleMethod = methodNameCopy.startsWith("handle");
-			final boolean isResource = isResourceInterface || isAbstractResourceClass;
+			final boolean isResource = isResourceInterface || isAbstractResourceClass || isDelegateResourceClass;
 
 			if (isResource && !isHandleMethod) {
-				builder.addAnnotation(getQueryParamAnnotation(p));
+				for (AnnotationSpec queryParamAnnotation : getQueryParamAnnotations(p)) {
+					builder.addAnnotation(queryParamAnnotation);
+				}
 			}
 
 			ParameterSpec parameter = builder.build();
 
 			methodBuilder.addParameter(parameter);
-			names.add(name);
+			names.add(p.getName());
 		});
 
 		context.getParamClasses().forEach((name, className) -> {
@@ -314,7 +316,7 @@ public interface ResourceBuilder {
 		return methodName.endsWith("AutoAnswer") && ArtifactType.RESOURCE.equals(getArtifactType());
 	}
 
-	AnnotationSpec getQueryParamAnnotation(VerbParameter paramName);
+	List<AnnotationSpec> getQueryParamAnnotations(VerbParameter paramName);
 
 	Iterable<AnnotationSpec> getResourceMethodAnnotations(boolean applyId, Representation representation, String methodName);
 

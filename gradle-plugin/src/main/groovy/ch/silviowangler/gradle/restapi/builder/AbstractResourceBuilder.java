@@ -238,7 +238,6 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
 			this.currentVerb = verb;
 
-			Map<String, VerbParameter> params = verb.getParameters().stream().collect(Collectors.toMap(VerbParameter::getName, Function.identity()));
 			Map<String, TypeName> paramClasses = new HashMap<>();
 
 			for (Representation representation : verb.getRepresentations()) {
@@ -247,7 +246,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
 				List<ParameterSpec> pathParams = getPathParams(parser, isAbstractOrInterfaceResource() && !isDelegatorResource());
 
-				MethodContext context = new MethodContext(resourceMethodReturnType(verb, representation), params, paramClasses, representation, pathParams, directEntity);
+				MethodContext context = new MethodContext(resourceMethodReturnType(verb, representation), verb.getParameters(), paramClasses, representation, pathParams, directEntity);
 
 				if (GenerateRestApiTask.GET_COLLECTION.equals(verb.getVerb())) {
 

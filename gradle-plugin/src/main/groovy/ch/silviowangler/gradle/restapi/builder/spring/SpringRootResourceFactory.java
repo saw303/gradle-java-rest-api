@@ -37,11 +37,7 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_HTTP_MEDIA_TYPE;
 import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_HTTP_STATUS;
@@ -124,7 +120,7 @@ public class SpringRootResourceFactory extends AbstractResourceBuilder {
 	}
 
 	@Override
-	public AnnotationSpec getQueryParamAnnotation(VerbParameter param) {
+	public List<AnnotationSpec> getQueryParamAnnotations(VerbParameter param) {
 		AnnotationSpec.Builder builder = AnnotationSpec.builder(SPRING_REQUEST_PARAM.getClassName())
 				.addMember("value", "$S", param.getName());
 
@@ -133,7 +129,7 @@ public class SpringRootResourceFactory extends AbstractResourceBuilder {
 		}
 		// TODO handle other VerbParameter options like defaultValue
 
-		return builder.build();
+		return Collections.singletonList(builder.build());
 	}
 
 	@Override

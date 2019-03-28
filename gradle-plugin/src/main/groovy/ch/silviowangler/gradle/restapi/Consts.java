@@ -25,7 +25,7 @@ package ch.silviowangler.gradle.restapi;
 
 public class Consts {
 
-    public static final String CONFIGUATION_REST_API = "restApiSpecification";
+    public static final String CONFIGURATION_REST_API = "restApiSpecification";
 
     public static final String TASK_GROUP_REST_API = "REST API";
 }
