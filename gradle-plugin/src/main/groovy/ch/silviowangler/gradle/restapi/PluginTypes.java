@@ -86,8 +86,9 @@ public enum PluginTypes {
 	MICRONAUT_HTTP_RESPONSE(ClassName.get("io.micronaut.http", "HttpResponse")),
 	MICRONAUT_QUERY_VALUE(ClassName.get("io.micronaut.http.annotation", "QueryValue")),
 	MICRONAUT_FORMAT(ClassName.get("io.micronaut.core.convert.format", "Format")),
-	MICRONAUT_HTTP_STATUS(ClassName.get("io.micronaut.http", "HttpStatus"));
-
+	MICRONAUT_HTTP_STATUS(ClassName.get("io.micronaut.http", "HttpStatus")),
+	MICRONAUT_DATE_FORMAT(ClassName.get("ch.silviowangler.rest.micronaut.binding", "DateFormat")),
+	MICRONAUT_DATE_TIME_FORMAT(ClassName.get("ch.silviowangler.rest.micronaut.binding", "DateTimeFormat"));
 
 	private final TypeName typeName;
 

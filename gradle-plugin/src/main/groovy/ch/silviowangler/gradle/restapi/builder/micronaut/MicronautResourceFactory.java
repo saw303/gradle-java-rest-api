@@ -30,18 +30,11 @@ import ch.silviowangler.gradle.restapi.builder.ArtifactType;
 import ch.silviowangler.rest.contract.model.v1.Representation;
 import ch.silviowangler.rest.contract.model.v1.Verb;
 import ch.silviowangler.rest.contract.model.v1.VerbParameter;
-import com.squareup.javapoet.AnnotationSpec;
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.FieldSpec;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.*;
 
 import javax.lang.model.element.Modifier;
 import java.util.*;
 
-import static ch.silviowangler.gradle.restapi.Consts.ISO_LOCAL_DATE_FORMAT;
-import static ch.silviowangler.gradle.restapi.Consts.ISO_LOCAL_DATE_TIME_FORMAT;
 import static ch.silviowangler.gradle.restapi.PluginTypes.*;
 import static ch.silviowangler.gradle.restapi.builder.ArtifactType.DELEGATOR_RESOURCE;
 
@@ -140,12 +133,10 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
 		annotationSpecs.add(AnnotationSpec.builder(MICRONAUT_QUERY_VALUE.getClassName()).build());
 
 		if ("date".equals(param.getType())) {
-			AnnotationSpec.Builder formatBuilder = AnnotationSpec.builder(MICRONAUT_FORMAT.getClassName());
-			formatBuilder.addMember("value", "$S", ISO_LOCAL_DATE_FORMAT);
+			AnnotationSpec.Builder formatBuilder = AnnotationSpec.builder(MICRONAUT_DATE_FORMAT.getClassName());
 			annotationSpecs.add(formatBuilder.build());
 		} else if ("datetime".equals(param.getType())) {
-			AnnotationSpec.Builder formatBuilder = AnnotationSpec.builder(MICRONAUT_FORMAT.getClassName());
-			formatBuilder.addMember("value", "$S", ISO_LOCAL_DATE_TIME_FORMAT);
+			AnnotationSpec.Builder formatBuilder = AnnotationSpec.builder(MICRONAUT_DATE_TIME_FORMAT.getClassName());
 			annotationSpecs.add(formatBuilder.build());
 		}
 

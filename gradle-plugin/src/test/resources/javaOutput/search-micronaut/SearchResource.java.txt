@@ -1,6 +1,7 @@
 package org.acme.rest.v1.search;
 
-import io.micronaut.core.convert.format.Format;
+import ch.silviowangler.rest.micronaut.binding.DateFormat;
+import ch.silviowangler.rest.micronaut.binding.DateTimeFormat;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.Options;
@@ -46,8 +47,8 @@ public class SearchResource {
       uri = "/.json"
   )
   public SearchGetResourceModel getEntity(@Valid @QueryValue String q,
-      @Valid @QueryValue @Format("yyyy-MM-dd'T'HH:mm:ss'Z'") @Nullable Instant endTime,
-      @Valid @QueryValue @Format("yyyy-MM-dd") @Nullable LocalDate startDate) {
-    return delegate.getEntity(q, endTime, startDate);
+      @Valid @QueryValue @DateFormat @Nullable LocalDate startDate,
+      @Valid @QueryValue @DateTimeFormat @Nullable Instant endTime) {
+    return delegate.getEntity(q, startDate, endTime);
   }
 }

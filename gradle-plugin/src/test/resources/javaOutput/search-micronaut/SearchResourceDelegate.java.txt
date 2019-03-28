@@ -7,7 +7,7 @@ import javax.inject.Singleton;
 
 @Singleton
 public class SearchResourceDelegate {
-  public SearchGetResourceModel getEntity(String q, Instant endTime, LocalDate startDate) {
+  public SearchGetResourceModel getEntity(String q, LocalDate startDate, Instant endTime) {
     throw new NotYetImplementedException();
   }
 }

@@ -28,8 +28,4 @@ public class Consts {
     public static final String CONFIGURATION_REST_API = "restApiSpecification";
 
     public static final String TASK_GROUP_REST_API = "REST API";
-
-    public static final String ISO_LOCAL_DATE_FORMAT = "yyyy-MM-dd";
-    public static final String ISO_LOCAL_TIME_FORMAT = "HH:mm:ss";
-    public static final String ISO_LOCAL_DATE_TIME_FORMAT = String.format("%s'T'%s'Z'", ISO_LOCAL_DATE_FORMAT, ISO_LOCAL_TIME_FORMAT);
 }

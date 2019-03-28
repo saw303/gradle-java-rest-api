@@ -37,7 +37,7 @@ class MethodContext {
 
     String methodName
     TypeName returnType
-    Map<String, VerbParameter> params = [:]
+    List<VerbParameter> params = []
     Map<String, TypeName> paramClasses = [:]
     Representation representation
     List<ParameterSpec> pathParams = []
@@ -49,7 +49,7 @@ class MethodContext {
         this.representation = representation
     }
 
-    MethodContext(TypeName returnType, Map<String, VerbParameter> params, Map<String, TypeName> paramClasses, Representation representation, List<ParameterSpec> pathParams, boolean directEntity) {
+    MethodContext(TypeName returnType, List<VerbParameter> params, Map<String, TypeName> paramClasses, Representation representation, List<ParameterSpec> pathParams, boolean directEntity) {
         this.returnType = returnType
         this.params = params
         this.representation = representation

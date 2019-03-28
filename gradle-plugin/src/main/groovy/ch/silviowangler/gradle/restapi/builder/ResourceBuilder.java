@@ -233,9 +233,9 @@ public interface ResourceBuilder {
 
 		List<String> names = new ArrayList<>(context.getParams().size());
 
-		context.getParams().forEach((name, p) -> {
+		context.getParams().forEach(p -> {
 
-			ParameterSpec.Builder builder = ParameterSpec.builder(GeneratorUtil.translateToJava(p.getType()), name);
+			ParameterSpec.Builder builder = ParameterSpec.builder(GeneratorUtil.translateToJava(p.getType()), p.getName());
 
 			final boolean isHandleMethod = methodNameCopy.startsWith("handle");
 			final boolean isResource = isResourceInterface || isAbstractResourceClass || isDelegateResourceClass;
@@ -249,7 +249,7 @@ public interface ResourceBuilder {
 			ParameterSpec parameter = builder.build();
 
 			methodBuilder.addParameter(parameter);
-			names.add(name);
+			names.add(p.getName());
 		});
 
 		context.getParamClasses().forEach((name, className) -> {
