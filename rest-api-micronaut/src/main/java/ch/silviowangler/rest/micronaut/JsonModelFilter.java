@@ -55,6 +55,7 @@ public class JsonModelFilter {
 
 			if (potUriRouteMatch.isPresent()) {
 				UriRouteMatch uriRouteMatch = potUriRouteMatch.get();
+
 				if (uriRouteMatch.getProduces().contains(MediaType.APPLICATION_JSON_TYPE)) {
 
 					if (res.body() instanceof ResourceModel) {
@@ -63,8 +64,8 @@ public class JsonModelFilter {
 						EntityModel entityModel = new EntityModel(resourceModel);
 
 						if (resourceModel instanceof SelfLinkProvider) {
-							((SelfLinkProvider)resourceModel).selfLink().ifPresent( selfLink -> entityModel.getLinks().add(selfLink));
-						}else {
+							((SelfLinkProvider) resourceModel).selfLink().ifPresent(selfLink -> entityModel.getLinks().add(selfLink));
+						} else {
 							entityModel.getLinks().add(ResourceLink.selfLink(uriRouteMatch.getUri()));
 						}
 
@@ -83,7 +84,7 @@ public class JsonModelFilter {
 								EntityModel entityModel = new EntityModel(resourceModel);
 
 								if (model instanceof Identifiable) {
-									entityModel.getLinks().add(ResourceLink.selfLink(uriRouteMatch.getUri() + "/" + ((Identifiable)resourceModel).getId()));
+									entityModel.getLinks().add(ResourceLink.selfLink(uriRouteMatch.getUri() + "/" + ((Identifiable) resourceModel).getId()));
 								}
 
 								collectionModel.getData().add(entityModel);
