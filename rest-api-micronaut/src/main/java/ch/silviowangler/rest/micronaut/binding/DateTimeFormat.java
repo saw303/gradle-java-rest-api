@@ -23,8 +23,6 @@
  */
 package ch.silviowangler.rest.micronaut.binding;
 
-import io.micronaut.core.convert.format.Format;
-
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -37,7 +35,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *
  * @author Silvio Wangler
  */
-@Format("yyyy-MM-dd'T'HH:mm:ss'Z'")
 @Retention(RUNTIME)
 @Target(PARAMETER)
 @Documented
