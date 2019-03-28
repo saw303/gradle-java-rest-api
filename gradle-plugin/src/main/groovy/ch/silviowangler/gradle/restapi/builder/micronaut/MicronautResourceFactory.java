@@ -210,7 +210,7 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
 			}
 
 			AnnotationSpec.Builder b = AnnotationSpec.builder(MICRONAUT_STATUS.getClassName());
-			b.addMember("code", v, MICRONAUT_HTTP_STATUS.getClassName());
+			b.addMember("value", v, MICRONAUT_HTTP_STATUS.getClassName());
 			methodAnnotations.add(b.build());
 		}
 

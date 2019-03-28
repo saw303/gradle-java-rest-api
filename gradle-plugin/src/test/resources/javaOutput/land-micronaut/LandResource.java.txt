@@ -63,11 +63,9 @@ public class LandResource {
     return delegate.getEntityPdf(id);
   }
 
+  @Status(HttpStatus.CREATED)
   @Post
   @Produces("application/json;charset=UTF-8")
-  @Status(
-      code = HttpStatus.CREATED
-  )
   public IdType createEntity(@Valid LandPostResourceModel model) {
     return delegate.createEntity(model);
   }
