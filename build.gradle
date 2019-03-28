@@ -13,9 +13,10 @@ buildscript {
 
 subprojects {
 
-    version = '1.4.2'
+    version = '1.4.3'
 
     apply from: "${rootDir}/gradle/java.gradle"
+    apply from: "${rootDir}/gradle/groovy.gradle"
     apply from: "${rootDir}/gradle/bintray.gradle"
 
     apply plugin: 'com.github.ben-manes.versions'
@@ -29,5 +30,11 @@ subprojects {
         ext.email = 'silvio.wangler@gmail.com'
 
         excludes(["**/*.json", "**/*.java.txt"])
+    }
+    
+    dependencies {
+        testImplementation("org.spockframework:spock-core:${spockVersion}") {
+            exclude group: 'org.codehaus.groovy', module: 'groovy-all'
+        }
     }
 }
