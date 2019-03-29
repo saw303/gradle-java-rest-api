@@ -287,7 +287,6 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 					} else if (GenerateRestApiTask.DELETE_COLLECTION.equals(verb.getVerb())) {
 
 						context.setMethodName("deleteCollection");
-
 						methodBuilder = createMethod(context);
 
 					} else if (GenerateRestApiTask.DELETE_ENTITY.equals(verb.getVerb())) {

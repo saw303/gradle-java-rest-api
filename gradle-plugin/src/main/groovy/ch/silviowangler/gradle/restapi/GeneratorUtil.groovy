@@ -192,7 +192,7 @@ class GeneratorUtil {
                 case TargetFramework.SPRING_BOOT:
                     return PluginTypes.SPRING_RESPONSE_ENTITY.typeName
                 case TargetFramework.MICRONAUT:
-                    return PluginTypes.MICRONAUT_HTTP_RESPONSE.typeName
+                    return PluginTypes.JAVA_VOID.typeName
                 default:
                     throw new RuntimeException("Unknown framework ${targetFramework}")
             }
