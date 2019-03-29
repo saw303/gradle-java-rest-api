@@ -2,12 +2,14 @@ package org.acme.rest.v1.laender;
 
 import ch.silviowangler.rest.types.IdType;
 import io.micronaut.http.HttpResponse;
+import io.micronaut.http.HttpStatus;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.Options;
 import io.micronaut.http.annotation.Post;
 import io.micronaut.http.annotation.Produces;
 import io.micronaut.http.annotation.Put;
+import io.micronaut.http.annotation.Status;
 import io.micronaut.validation.Validated;
 import java.util.Collection;
 import javax.annotation.Generated;
@@ -61,6 +63,7 @@ public class LandResource {
     return delegate.getEntityPdf(id);
   }
 
+  @Status(HttpStatus.CREATED)
   @Post
   @Produces("application/json;charset=UTF-8")
   public IdType createEntity(@Valid LandPostResourceModel model) {
