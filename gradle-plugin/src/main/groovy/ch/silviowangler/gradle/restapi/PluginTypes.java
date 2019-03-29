@@ -60,7 +60,6 @@ public enum PluginTypes {
 	JAVAX_GENERATED(ClassName.get("javax.annotation", "Generated")),
 	JAVAX_NULLABLE(ClassName.get("javax.annotation", "Nullable")),
 	JAVA_OVERRIDE(ClassName.get(Override.class)),
-	JAVA_VOID(ClassName.get(Void.class)),
 	PLUGIN_NOT_YET_IMPLEMENTED_EXCEPTION(ClassName.get("ch.silviowangler.rest", "NotYetImplementedException")),
 	SPRING_REQUEST_MAPPING(ClassName.get("org.springframework.web.bind.annotation", "RequestMapping")),
 	SPRING_REQUEST_PARAM(ClassName.get("org.springframework.web.bind.annotation", "RequestParam")),

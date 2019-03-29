@@ -47,7 +47,7 @@ public class OrtResource {
   @Delete(
       uri = "/{id}"
   )
-  public Void deleteEntity(String id, String land) {
+  public void deleteEntity(String id, String land) {
     return delegate.deleteEntity(id, land);
   }
 
