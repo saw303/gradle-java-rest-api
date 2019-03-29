@@ -75,6 +75,7 @@ public enum PluginTypes {
 	JAVAX_SINGLETON(ClassName.get("javax.inject", "Singleton")),
 	JAVAX_INJECT(ClassName.get("javax.inject", "Inject")),
 	MICRONAUT_CONTROLLER(ClassName.get("io.micronaut.http.annotation", "Controller")),
+	MICRONAUT_STATUS(ClassName.get("io.micronaut.http.annotation", "Status")),
 	MICRONAUT_VALIDATED(ClassName.get("io.micronaut.validation", "Validated")),
 	MICRONAUT_CONSUMES(ClassName.get("io.micronaut.http.annotation", "Consumes")),
 	MICRONAUT_PRODUCES(ClassName.get("io.micronaut.http.annotation", "Produces")),

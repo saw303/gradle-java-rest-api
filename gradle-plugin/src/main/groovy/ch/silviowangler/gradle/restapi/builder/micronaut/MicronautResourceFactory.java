@@ -196,6 +196,24 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
 		}
 		methodAnnotations.add(createAnnotation(MICRONAUT_PRODUCES, annotationsFields));
 
+		List<String> responseStatusRequired = Arrays.asList("createEntity", "deleteEntity", "deleteCollection");
+
+		if (responseStatusRequired.contains(methodName)) {
+
+			String v;
+			if (methodName.startsWith("create")) {
+				v = "$T.CREATED";
+			} else if (methodName.startsWith("delete")) {
+				v = "$T.NO_CONTENT";
+			} else {
+				throw new IllegalArgumentException("Unknown method name " + methodName);
+			}
+
+			AnnotationSpec.Builder b = AnnotationSpec.builder(MICRONAUT_STATUS.getClassName());
+			b.addMember("value", v, MICRONAUT_HTTP_STATUS.getClassName());
+			methodAnnotations.add(b.build());
+		}
+
 		return methodAnnotations;
 	}
 

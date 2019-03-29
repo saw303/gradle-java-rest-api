@@ -8,7 +8,7 @@ import javax.inject.Singleton;
 
 @Singleton
 public class OrtResourceDelegate {
-  public HttpResponse deleteEntity(String id, String land) {
+  public void deleteEntity(String id, String land) {
     throw new NotYetImplementedException();
   }
 
