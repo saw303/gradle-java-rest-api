@@ -34,7 +34,16 @@ import java.util.List;
 public class Expand {
 
 	private String name;
-	private List<ResourceModel> data = new ArrayList<>();
+	private List<ResourceModel> data;
+
+	public Expand() {
+		this.data  = new ArrayList<>();
+	}
+
+	public Expand(String name, List<ResourceModel> data) {
+		this.name = name;
+		this.data = data;
+	}
 
 	public String getName() {
 		return name;
