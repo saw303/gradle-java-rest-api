@@ -24,7 +24,7 @@ buildscript {
         maven { url "https://dl.bintray.com/saw303/gradle-plugins" }
     }
     dependencies {
-        classpath 'ch.silviowangler.rest:gradle-java-rest-api:1.4.2'
+        classpath 'ch.silviowangler.rest:gradle-java-rest-api:1.5.0'
     }
 }
 
