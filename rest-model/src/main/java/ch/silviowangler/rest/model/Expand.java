@@ -23,57 +23,32 @@
  */
 package ch.silviowangler.rest.model;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Entity model data type that contains the {@link ResourceModel} in the {@code data} field.
- * The {@code links} contains HATEOAS {@link ResourceLink} links.
+ * Model for expanded GETs. Stores a named collection of {@link ResourceModel}.
  *
  * @author Silvio Wangler
  */
-public class EntityModel implements Serializable {
+public class Expand {
 
-    private ResourceModel data;
-    private List<ResourceLink> links;
-    private List<Expand> expands;
+	private String name;
+	private List<ResourceModel> data = new ArrayList<>();
 
-	public EntityModel() {
-		this(null);
+	public String getName() {
+		return name;
 	}
 
-	public EntityModel(ResourceModel data) {
-		this(data, new ArrayList<>());
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public EntityModel(ResourceModel data, List<ResourceLink> links) {
+	public List<ResourceModel> getData() {
+		return data;
+	}
+
+	public void setData(List<ResourceModel> data) {
 		this.data = data;
-		this.links = links;
-		this.expands = new ArrayList<>();
-	}
-
-	public ResourceModel getData() {
-        return data;
-    }
-
-    public void setData(ResourceModel data) {
-        this.data = data;
-    }
-
-    public List<ResourceLink> getLinks() {
-        return links;
-    }
-
-    public void setLinks(List<ResourceLink> links) {
-        this.links = links;
-    }
-
-	public List<Expand> getExpands() {
-		return expands;
-	}
-
-	public void setExpands(List<Expand> expands) {
-		this.expands = expands;
 	}
 }
