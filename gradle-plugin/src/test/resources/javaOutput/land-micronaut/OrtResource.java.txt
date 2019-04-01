@@ -48,7 +48,7 @@ public class OrtResource {
       uri = "/{id}"
   )
   public void deleteEntity(String id, String land) {
-    return delegate.deleteEntity(id, land);
+    delegate.deleteEntity(id, land);
   }
 
   @Produces("application/json;charset=UTF-8")
