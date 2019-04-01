@@ -210,8 +210,7 @@ public interface ResourceBuilder {
 			methodBuilder.addStatement("throw new $T()", PLUGIN_NOT_YET_IMPLEMENTED_EXCEPTION.getClassName());
 		} else if (isDelegateResourceClass) {
 			// do nothing
-		}
-		else if ("getOptions".equals(methodName) || isDefaultMethodNotAllowed(methodName)) {
+		} else if ("getOptions".equals(methodName) || isDefaultMethodNotAllowed(methodName)) {
 
 			if (isResourceInterface) {
 				methodBuilder.addModifiers(DEFAULT);
@@ -288,9 +287,12 @@ public interface ResourceBuilder {
 
 		if (!supportsInterfaces() && !isHandlerMethod(methodName) && ArtifactType.ABSTRACT_RESOURCE.equals(artifactType) && !methodName.endsWith("AutoAnswer") && !methodName.equals("getOptions")) {
 			methodBuilder.addStatement("return handle$L($L)", CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, methodName), paramNames);
-		}
-		else if (isDelegateResourceClass && !methodName.equals("getOptions")) {
-			methodBuilder.addStatement("return delegate.$L($L)", methodName, paramNames);
+		} else if (isDelegateResourceClass && !methodName.equals("getOptions")) {
+			if (TypeName.VOID.equals(context.getReturnType())) {
+				methodBuilder.addStatement("delegate.$L($L)", methodName, paramNames);
+			} else {
+				methodBuilder.addStatement("return delegate.$L($L)", methodName, paramNames);
+			}
 		}
 		return methodBuilder;
 	}
