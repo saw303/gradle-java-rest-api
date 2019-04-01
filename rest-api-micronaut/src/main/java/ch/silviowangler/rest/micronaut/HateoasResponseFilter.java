@@ -29,9 +29,12 @@ import ch.silviowangler.rest.model.Identifiable;
 import ch.silviowangler.rest.model.ResourceLink;
 import ch.silviowangler.rest.model.ResourceModel;
 import ch.silviowangler.rest.model.SelfLinkProvider;
+import io.micronaut.context.annotation.Requires;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.MutableHttpResponse;
+import io.micronaut.http.annotation.Filter;
+import io.micronaut.http.filter.HttpServerFilter;
 import io.micronaut.http.filter.ServerFilterChain;
 import io.micronaut.web.router.UriRouteMatch;
 import io.reactivex.Flowable;
@@ -45,8 +48,16 @@ import java.util.Optional;
  *
  * @author Silvio Wangler
  */
-public class JsonModelFilter {
+@Filter("${restapi.hateoas.filter.uri}")
+@Requires(property = "restapi.hateoas.filter.enabled")
+public class HateoasResponseFilter implements HttpServerFilter {
 
+	@Override
+	public int getOrder() {
+		return FilterOrder.HATEOAS_MODEL_CREATION;
+	}
+
+	@Override
 	public Publisher<MutableHttpResponse<?>> doFilter(HttpRequest<?> request, ServerFilterChain chain) {
 
 		return Flowable.fromPublisher(chain.proceed(request)).doOnNext(res -> {
@@ -96,4 +107,6 @@ public class JsonModelFilter {
 			}
 		});
 	}
+
+
 }

@@ -4,3 +4,10 @@ micronaut:
 
 jackson:
     dateFormat: yyyyMMdd
+
+
+restapi:
+    hateoas:
+        filter:
+            enabled: true
+            uri: /v1/**
