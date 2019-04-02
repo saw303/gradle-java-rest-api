@@ -36,10 +36,16 @@ def pomConfig = {
     }
 }
 
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    archiveClassifier = 'sources'
+}
+
 publishing {
     publications {
         MyPublication(MavenPublication) {
             from components.java
+            artifact sourcesJar
             groupId 'ch.silviowangler.rest'
             artifactId project.name
             version project.version
