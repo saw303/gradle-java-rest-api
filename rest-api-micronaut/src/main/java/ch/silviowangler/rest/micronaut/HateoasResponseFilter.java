@@ -46,6 +46,26 @@ import java.util.Optional;
 /**
  * Transforms a {@link ResourceModel} into a {@link EntityModel} or a {@link CollectionModel}.
  *
+ * The JSON structure of an {@link EntityModel} will look like this:
+ *
+ * <pre>
+ * {
+ *   "data": {
+ *     "id": "CHE",
+ *     "name": "Switzerland",
+ *     "foundationDate": "1291-08-01",
+ *     "surface": 41285
+ *   },
+ *   "links": [
+ *     {
+ *       "rel": "self",
+ *       "method": "GET",
+ *       "href": "/v1/countries/CHE"
+ *     }
+ *   ]
+ * }
+ * </pre>
+ *
  * @author Silvio Wangler
  */
 @Filter("${restapi.hateoas.filter.uri}")
@@ -58,6 +78,7 @@ public class HateoasResponseFilter implements HttpServerFilter {
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public Publisher<MutableHttpResponse<?>> doFilter(HttpRequest<?> request, ServerFilterChain chain) {
 
 		return Flowable.fromPublisher(chain.proceed(request)).doOnNext(res -> {

@@ -45,6 +45,23 @@ import java.util.List;
 import java.util.Optional;
 
 /**
+ * Enables "Expanded GET" requests.
+ *
+ * Without "Expanded Gets" a client has to execute at least two HTTP calls to read a person and its addresses.
+ *
+ * <ul>
+ *     <li>/persons/123 - to read the person</li>
+ *     <li>/persons/123/addresses/ - to read all addresses for that person</li>
+ * </ul>
+ *
+ * With "Expanded Gets" a client can read the person and its addresses in only one request.
+ *
+ * <ul>
+ *     <li>/persons/123?expands=addresses</li>
+ * </ul>
+ *
+ * This filter modifies the response after {@link HateoasResponseFilter} has finished its work.
+ *
  * @author Silvio Wangler
  */
 @Filter("${restapi.hateoas.filter.uri}")
@@ -66,6 +83,7 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public Publisher<MutableHttpResponse<?>> doFilter(HttpRequest<?> request, ServerFilterChain chain) {
 
 		return Flowable.fromPublisher(chain.proceed(request)).doOnNext(res -> {
