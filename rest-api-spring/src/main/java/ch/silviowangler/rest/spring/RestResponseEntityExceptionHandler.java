@@ -52,7 +52,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     }
 
 	/**
-	 * Converts {@link MethodArgumentNotValidException} into {@ValidationErrorModel}.
+	 * Converts {@link MethodArgumentNotValidException} into {@link ValidationErrorModel}.
 	 * @param ex the exception
 	 * @param headers headers
 	 * @param status http status
