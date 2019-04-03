@@ -74,7 +74,7 @@ class RestApiPlugin implements Plugin<Project> {
         }
 
         final String springVersion = '5.1.3.RELEASE'
-        final String pluginVersion = "2.0.0-SNAPSHOT"
+        final String pluginVersion = "2.0.0"
 
         project.afterEvaluate {
             project.dependencies {
