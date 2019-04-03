@@ -2,6 +2,6 @@ GET http://localhost:8080/v1/laender
 
 ###
 
-GET http://localhost:8080/v1/laender/CHE?expands=orte
+GET http://localhost:8080/v1/laender/CHE?expands=land.ort
 
 ###

@@ -250,7 +250,7 @@
       "name": "land.ort",
       "type": "application/vnd.ch.silviowangler.ort.collection",
       "rel": "orte",
-      "href": "/v1/laender/{land}/orte/",
+      "href": "/v1/laender/{:entity}/orte/",
       "method": "GET",
       "expandable": true
     }

@@ -23,9 +23,12 @@
  */
 package ch.silviowangler.rest.micronaut;
 
+import ch.silviowangler.rest.contract.model.v1.ResourceContract;
+import ch.silviowangler.rest.contract.model.v1.SubResource;
 import ch.silviowangler.rest.model.EntityModel;
 import ch.silviowangler.rest.model.Expand;
 import ch.silviowangler.rest.model.ResourceModel;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.ApplicationContext;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.http.HttpMethod;
@@ -39,27 +42,34 @@ import io.micronaut.web.router.Router;
 import io.micronaut.web.router.UriRouteMatch;
 import io.reactivex.Flowable;
 import org.reactivestreams.Publisher;
+import org.slf4j.Logger;
 
+import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Enables "Expanded GET" requests.
- *
+ * <p>
  * Without "Expanded Gets" a client has to execute at least two HTTP calls to read a person and its addresses.
  *
  * <ul>
- *     <li>/persons/123 - to read the person</li>
- *     <li>/persons/123/addresses/ - to read all addresses for that person</li>
+ * <li>/persons/123 - to read the person</li>
+ * <li>/persons/123/addresses/ - to read all addresses for that person</li>
  * </ul>
- *
+ * <p>
  * With "Expanded Gets" a client can read the person and its addresses in only one request.
  *
  * <ul>
- *     <li>/persons/123?expands=addresses</li>
+ * <li>/persons/123?expands=addresses</li>
  * </ul>
- *
+ * <p>
  * This filter modifies the response after {@link HateoasResponseFilter} has finished its work.
  *
  * @author Silvio Wangler
@@ -71,10 +81,17 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
 	private final ApplicationContext applicationContext;
 	private final Router router;
 	private final static String EXPAND_PARAM_NAME = "expands";
+	private Map<Class, ResourceContract> contractStore;
+	private static final Logger log = getLogger(ExpandedGetResponseFilter.class);
+	private final ObjectMapper objectMapper;
+	private final UriPlaceholderReplacer uriPlaceholderReplacer;
 
-	public ExpandedGetResponseFilter(ApplicationContext applicationContext, Router router) {
+	public ExpandedGetResponseFilter(ApplicationContext applicationContext, Router router, ObjectMapper objectMapper) {
 		this.applicationContext = applicationContext;
 		this.router = router;
+		this.objectMapper = objectMapper;
+		this.contractStore = new HashMap<>();
+		this.uriPlaceholderReplacer = new UriPlaceholderReplacer();
 	}
 
 	@Override
@@ -91,36 +108,105 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
 			if (request.getMethod().equals(HttpMethod.GET) && request.getParameters().contains(EXPAND_PARAM_NAME)) {
 				String expands = request.getParameters().get(EXPAND_PARAM_NAME);
 
-				/*
-				TODO expands are comma separated. iterate each expand
-				TODO make sure the route is read from the resource spec section sub resources
-				 */
-				Optional<UriRouteMatch<Object, Object>> routeMatch = router.GET(request.getPath() + "/" + expands);
+				UriRouteMatch routeMatchCurrentResource = request.getAttributes().get("micronaut.http.route.match", UriRouteMatch.class).get();
+				Object currentResource = applicationContext.getBean(routeMatchCurrentResource.getExecutableMethod().getDeclaringType());
 
-				if (routeMatch.isPresent()) {
+				ResourceContract contract = fetchContract(currentResource).get();
 
-					Object initialBody = res.body();
+				for (String expand : expands.split(",")) {
 
-					if (initialBody instanceof EntityModel) {
-						EntityModel entityModel = (EntityModel) initialBody;
+					Optional<SubResource> potSubResource = contract.getSubresources().stream().filter(subResource -> expand.equals(subResource.getName())).findAny();
 
-						UriRouteMatch<Object, Object> perfectMatch = routeMatch.get();
-						ExecutableMethod<Object, Object> executableMethod = (ExecutableMethod<Object, Object>) perfectMatch.getExecutableMethod();
+					if (!potSubResource.isPresent()) {
+						log.debug("Expand '{}' is not a sub resource of '{}'", expand, contract.getGeneral().getName());
+						continue;
+					}
 
-						Class declaringType = executableMethod.getDeclaringType();
+					SubResource subResourceContract = potSubResource.get();
 
-						Object bean = applicationContext.getBean(declaringType);
+					if (!subResourceContract.isExpandable()) {
+						log.debug("Sub resource '{}' is not expandable", subResourceContract.getName());
+						continue;
+					}
 
-						Collection<Object> values = request.getAttributes().get("micronaut.http.route.match", UriRouteMatch.class).get().getVariableValues().values();
+					String targetUri = uriPlaceholderReplacer.replacePlaceholders(subResourceContract.getHref(), routeMatchCurrentResource);
 
-						Object result = executableMethod.invoke(bean, values.iterator().next().toString());
+					Optional<UriRouteMatch<Object, Object>> routeMatch = router.GET(targetUri);
 
-						entityModel.getExpands().add(new Expand("huhu", (List<ResourceModel>) result));
+					if (routeMatch.isPresent()) {
 
-						((MutableHttpResponse) res).body(entityModel);
+						Object initialBody = res.body();
+
+						if (initialBody instanceof EntityModel) {
+							EntityModel entityModel = (EntityModel) initialBody;
+
+							UriRouteMatch<Object, Object> routeMatchSubResource = routeMatch.get();
+							ExecutableMethod<Object, Object> executableMethod = (ExecutableMethod<Object, Object>) routeMatchSubResource.getExecutableMethod();
+
+							Class declaringType = executableMethod.getDeclaringType();
+
+							Object bean = applicationContext.getBean(declaringType);
+
+							Collection<Object> values = routeMatchCurrentResource.getVariableValues().values();
+
+							Object result = executableMethod.invoke(bean, values.toArray());
+
+							entityModel.getExpands().add(new Expand(expand, (List<ResourceModel>) result));
+
+							((MutableHttpResponse) res).body(entityModel);
+						}
 					}
 				}
 			}
 		});
+	}
+
+	private Optional<ResourceContract> fetchContract(Object resourceBean) {
+
+		Class<?> key = resourceBean.getClass();
+
+		if (this.contractStore.containsKey(key)) {
+			return Optional.of(this.contractStore.get(key));
+		}
+
+		try {
+			Field contractField = resourceBean.getClass().getField("OPTIONS_CONTENT");
+			String json = (String) contractField.get(resourceBean);
+
+			ResourceContract contract = this.objectMapper.readValue(json, ResourceContract.class);
+
+			this.contractStore.put(key, contract);
+
+			return Optional.of(contract);
+
+		} catch (IllegalAccessException | NoSuchFieldException | IOException ex) {
+			log.error("Unable to read contract from class '{}'", resourceBean.getClass().getSimpleName());
+			return Optional.empty();
+		}
+	}
+
+	private static class UriPlaceholderReplacer {
+
+		/**
+		 * Replaces placeholder in a URI.
+		 * <p>
+		 * Given the following example:
+		 *
+		 * <pre>
+		 * /v1/countries/{:country}/cities/  => /v1/countries/CHE/cities/
+		 * </pre>
+		 *
+		 * @param uriWithPlaceholders
+		 * @param uriRouteMatch
+		 * @return a string with all placeholders resolved.
+		 */
+		public String replacePlaceholders(String uriWithPlaceholders, UriRouteMatch uriRouteMatch) {
+
+			Map<String, Object> variableValues = uriRouteMatch.getVariableValues();
+			for (String argumentName : uriRouteMatch.getArgumentNames()) {
+				uriWithPlaceholders = uriWithPlaceholders.replaceFirst("\\{:\\w*\\}", String.valueOf(variableValues.get(argumentName)));
+			}
+			return uriWithPlaceholders;
+		}
 	}
 }
