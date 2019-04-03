@@ -21,43 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package ch.silviowangler.rest.model;
-
-import java.util.ArrayList;
-import java.util.Collection;
+package ch.silviowangler.rest.micronaut;
 
 /**
- * Model for expanded GETs. Stores a named collection of {@link ResourceModel}.
- *
  * @author Silvio Wangler
  */
-public class Expand {
+public class FilterOrder {
 
-	private String name;
-	private Collection<ResourceModel> data;
-
-	public Expand() {
-		this.data  = new ArrayList<>();
-	}
-
-	public Expand(String name, Collection<ResourceModel> data) {
-		this.name = name;
-		this.data = data;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public Collection<ResourceModel> getData() {
-		return data;
-	}
-
-	public void setData(Collection<ResourceModel> data) {
-		this.data = data;
-	}
+	public static final int HATEOAS_MODEL_CREATION = 100;
+	public static final int EXPANDED_GETS = HATEOAS_MODEL_CREATION - 1;
 }

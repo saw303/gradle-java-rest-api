@@ -1,11 +1,16 @@
 buildscript {
+
+    ext {
+        restApiVersion = '2.0.0-SNAPSHOT'
+    }
+
     repositories {
         mavenLocal()
         maven { url "https://repo.schaltzentrale.ch/artifactory/gesus/" }
     }
 
     dependencies {
-        classpath "ch.silviowangler.rest:gradle-java-rest-api:1.4.2"
+        classpath "ch.silviowangler.rest:gradle-java-rest-api:${restApiVersion}"
     }
 }
 
@@ -34,7 +39,7 @@ repositories {
 
 dependencyManagement {
     imports {
-        mavenBom 'io.micronaut:micronaut-bom:1.0.4'
+        mavenBom 'io.micronaut:micronaut-bom:1.1.0.RC2'
     }
 }
 
@@ -53,7 +58,7 @@ dependencies {
     testCompile "io.micronaut:micronaut-inject-java"
     testCompile "org.hamcrest:hamcrest-all:1.3"
 
-    compile "ch.silviowangler.rest:rest-api-micronaut:1.3.7"
+    compile "ch.silviowangler.rest:rest-api-micronaut:${restApiVersion}"
 }
 
 shadowJar {
@@ -71,5 +76,5 @@ tasks.withType(JavaCompile){
 restApi {
     packageName = 'demo.app.micronaut'
     targetFramework = ch.silviowangler.gradle.restapi.TargetFramework.MICRONAUT
-    optionsSource = file("${rootDir}/../gradle-plugin/src/test/resources/specs/v1")
+    optionsSource = file("${projectDir}/src/main/spec/v1")
 }

@@ -1,6 +1,7 @@
 dependencies {
 
     api project(':rest-model')
+    implementation "org.slf4j:slf4j-api:${slf4jVersion}"
 
     compileOnly "org.springframework:spring-webmvc:${springVersion}"
 }

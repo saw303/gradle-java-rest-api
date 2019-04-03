@@ -1,0 +1,11 @@
+GET http://localhost:8080/v1/countries/
+
+###
+
+GET http://localhost:8080/v1/countries/CHE?expands=cities
+
+###
+
+GET http://localhost:8080/v1/countries/CHE/cities/ZH?expands=districts
+
+###

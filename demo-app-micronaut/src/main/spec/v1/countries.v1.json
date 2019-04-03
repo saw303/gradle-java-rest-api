@@ -1,7 +1,7 @@
 {
   "general": {
-    "name": "land",
-    "description": "Land",
+    "name": "countries",
+    "description": "Countries resource",
     "version": "1.0.0",
     "lifecycle": {
       "deprecated": false,
@@ -9,12 +9,12 @@
     },
     "searchable": true,
     "countable": false,
-    "x-route": "/:version/laender/:entity"
+    "x-route": "/:version/countries/:entity"
   },
   "verbs": [
     {
       "verb": "GET_ENTITY",
-      "rel": "Land laden",
+      "rel": "Read a country",
       "responseStates": [
         {
           "code": 200,
@@ -188,7 +188,7 @@
       "x-comment": "Name des Landes"
     },
     {
-      "name": "gruendungsDatum",
+      "name": "foundationDate",
       "type": "date",
       "options": null,
       "mandatory": [
@@ -207,7 +207,7 @@
       "x-comment": "Wann wurde das Land gegründet?"
     },
     {
-      "name": "flaeche",
+      "name": "surface",
       "type": "int",
       "options": null,
       "mandatory": [
@@ -223,10 +223,10 @@
       "readonly": false,
       "filterable": false,
       "alias": [],
-      "x-comment": "Fläche in km"
+      "x-comment": "Surface in km^2"
     },
     {
-      "name": "koordinaten",
+      "name": "coordinates",
       "type": "coordinates",
       "options": null,
       "mandatory": [
@@ -242,15 +242,15 @@
       "readonly": false,
       "filterable": false,
       "alias": [],
-      "x-comment": "Koordinaten"
+      "x-comment": "Coordinates"
     }
   ],
   "subresources": [
     {
-      "name": "land.ort",
+      "name": "cities",
       "type": "application/vnd.ch.silviowangler.ort.collection",
       "rel": "orte",
-      "href": "/v1/laender/{:entity}/orte/",
+      "href": "/v1/countries/{:entity}/cities/",
       "method": "GET",
       "expandable": true
     }

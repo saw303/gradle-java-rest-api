@@ -29,9 +29,13 @@ import ch.silviowangler.rest.model.Identifiable;
 import ch.silviowangler.rest.model.ResourceLink;
 import ch.silviowangler.rest.model.ResourceModel;
 import ch.silviowangler.rest.model.SelfLinkProvider;
+import io.micronaut.context.annotation.Requires;
+import io.micronaut.http.HttpAttributes;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.MutableHttpResponse;
+import io.micronaut.http.annotation.Filter;
+import io.micronaut.http.filter.HttpServerFilter;
 import io.micronaut.http.filter.ServerFilterChain;
 import io.micronaut.web.router.UriRouteMatch;
 import io.reactivex.Flowable;
@@ -43,15 +47,44 @@ import java.util.Optional;
 /**
  * Transforms a {@link ResourceModel} into a {@link EntityModel} or a {@link CollectionModel}.
  *
+ * The JSON structure of an {@link EntityModel} will look like this:
+ *
+ * <pre>
+ * {
+ *   "data": {
+ *     "id": "CHE",
+ *     "name": "Switzerland",
+ *     "foundationDate": "1291-08-01",
+ *     "surface": 41285
+ *   },
+ *   "links": [
+ *     {
+ *       "rel": "self",
+ *       "method": "GET",
+ *       "href": "/v1/countries/CHE"
+ *     }
+ *   ]
+ * }
+ * </pre>
+ *
  * @author Silvio Wangler
  */
-public class JsonModelFilter {
+@Filter("${restapi.hateoas.filter.uri}")
+@Requires(property = "restapi.hateoas.filter.enabled")
+public class HateoasResponseFilter implements HttpServerFilter {
 
+	@Override
+	public int getOrder() {
+		return FilterOrder.HATEOAS_MODEL_CREATION;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
 	public Publisher<MutableHttpResponse<?>> doFilter(HttpRequest<?> request, ServerFilterChain chain) {
 
 		return Flowable.fromPublisher(chain.proceed(request)).doOnNext(res -> {
 
-			Optional<UriRouteMatch> potUriRouteMatch = res.getAttributes().get("micronaut.http.route.match", UriRouteMatch.class);
+			Optional<UriRouteMatch> potUriRouteMatch = res.getAttributes().get(HttpAttributes.ROUTE_MATCH.toString(), UriRouteMatch.class);
 
 			if (potUriRouteMatch.isPresent()) {
 				UriRouteMatch uriRouteMatch = potUriRouteMatch.get();
@@ -96,4 +129,6 @@ public class JsonModelFilter {
 			}
 		});
 	}
+
+
 }

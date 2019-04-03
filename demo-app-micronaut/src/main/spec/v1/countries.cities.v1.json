@@ -1,7 +1,7 @@
 {
   "general": {
-    "name": "land",
-    "description": "Land",
+    "name": "cities",
+    "description": "Cities",
     "version": "1.0.0",
     "lifecycle": {
       "deprecated": false,
@@ -9,12 +9,12 @@
     },
     "searchable": true,
     "countable": false,
-    "x-route": "/:version/laender/:entity"
+    "x-route": "/:version/countries/:country/cities/:entity"
   },
   "verbs": [
     {
       "verb": "GET_ENTITY",
-      "rel": "Land laden",
+      "rel": "Ort laden",
       "responseStates": [
         {
           "code": 200,
@@ -33,29 +33,22 @@
           "comment": "",
           "responseExample": "{...}",
           "isDefault": true,
-          "mimetype": "application/ch.silviowangler.land"
+          "mimetype": "application/ch.silviowangler.ort"
         },
         {
-          "name": "pdf",
+          "name": "jpeg",
           "comment": "",
           "responseExample": "{...}",
-          "isDefault": false,
-          "mimetype": "application/pdf"
+          "isDefault": true,
+          "mimetype": "image/jpeg"
         }
       ],
-      "parameters": [],
-      "permissions": [],
-      "caching": {
-        "no-cache": true,
-        "private": false,
-        "max-age": -2,
-        "Expires": -1,
-        "ETag": true
-      }
+      "options": [],
+      "permissions": []
     },
     {
       "verb": "GET_COLLECTION",
-      "rel": "Länder holen",
+      "rel": "Orte holen",
       "collectionLimit": 19,
       "maxCollectionLimit": 101,
       "responseStates": [
@@ -76,14 +69,16 @@
           "comment": "",
           "responseExample": "{...}",
           "isDefault": true,
-          "mimetype": "application/ch.silviowangler.land.collection"
+          "mimetype": "application/ch.silviowangler.ort.collection"
         }
       ],
+
+      "options": [],
       "permissions": []
     },
     {
       "verb": "PUT",
-      "rel": "Land ändern",
+      "rel": "Ort ändern",
       "responseStates": [
         {
           "code": 200,
@@ -105,18 +100,12 @@
           "mimetype": "application/json"
         }
       ],
-      "parameters": [],
-      "permissions": [
-        {
-          "name": "mitarbeiter",
-          "mode": "all",
-          "comment": "Jeder darf ein Land ändern"
-        }
-      ]
+      "options": [],
+      "permissions": []
     },
     {
       "verb": "POST",
-      "rel": "Land anlegen",
+      "rel": "Ort ändern",
       "responseStates": [
         {
           "code": 200,
@@ -138,14 +127,35 @@
           "mimetype": "application/json"
         }
       ],
-      "parameters": [],
-      "permissions": [
+      "options": [],
+      "permissions": []
+    },
+    {
+      "verb": "DELETE_ENTITY",
+      "rel": "Ort löschen",
+      "responseStates": [
         {
-          "name": "mitarbeiter",
-          "mode": "all",
-          "comment": "Jeder darf Länder ändern"
+          "code": 200,
+          "message": "200 Ok",
+          "comment": "content in response body"
+        },
+        {
+          "code": 503,
+          "message": "503 Service Unavailable",
+          "comment": "Backend server eventually not reachable or to slow"
         }
-      ]
+      ],
+      "representations": [
+        {
+          "name": "json",
+          "comment": "",
+          "responseExample": "{...}",
+          "isDefault": true,
+          "mimetype": "application/json"
+        }
+      ],
+      "options": [],
+      "permissions": []
     }
   ],
   "fields": [
@@ -175,27 +185,8 @@
       "mandatory": [
         "PUT", "POST"
       ],
-      "min": 0,
-      "max": 100,
-      "multiple": false,
-      "defaultValue": null,
-      "protected": [],
-      "visible": true,
-      "sortable": false,
-      "readonly": false,
-      "filterable": false,
-      "alias": [],
-      "x-comment": "Name des Landes"
-    },
-    {
-      "name": "gruendungsDatum",
-      "type": "date",
-      "options": null,
-      "mandatory": [
-        "PUT", "POST"
-      ],
       "min": null,
-      "max": null,
+      "max": 20,
       "multiple": false,
       "defaultValue": null,
       "protected": [],
@@ -204,29 +195,10 @@
       "readonly": false,
       "filterable": false,
       "alias": [],
-      "x-comment": "Wann wurde das Land gegründet?"
+      "x-comment": "Ort"
     },
     {
-      "name": "flaeche",
-      "type": "int",
-      "options": null,
-      "mandatory": [
-        "PUT", "POST"
-      ],
-      "min": null,
-      "max": null,
-      "multiple": false,
-      "defaultValue": null,
-      "protected": [],
-      "visible": true,
-      "sortable": false,
-      "readonly": false,
-      "filterable": false,
-      "alias": [],
-      "x-comment": "Fläche in km"
-    },
-    {
-      "name": "koordinaten",
+      "name": "coordinates",
       "type": "coordinates",
       "options": null,
       "mandatory": [
@@ -242,15 +214,16 @@
       "readonly": false,
       "filterable": false,
       "alias": [],
-      "x-comment": "Koordinaten"
+      "x-comment": "Coordinates"
     }
   ],
+  "parameters": [],
   "subresources": [
     {
-      "name": "land.ort",
-      "type": "application/vnd.ch.silviowangler.ort.collection",
-      "rel": "orte",
-      "href": "/v1/laender/{:entity}/orte/",
+      "name": "districts",
+      "type": "application/vnd.ch.silviowangler.districts.collection",
+      "rel": "subresource",
+      "href": "/v1/countries/{:country}/cities/{:entity}/districts/",
       "method": "GET",
       "expandable": true
     }

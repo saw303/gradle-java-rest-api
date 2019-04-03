@@ -43,3 +43,120 @@ The Gradle plugin will introduce a new build category named `rest api` to your G
 This repository contains to very slim demo applications for **Spring Boot** and **Micronaut**.
 
 The Spring Boot repo is located at `./demo-app-springboot`. The Micronaut app is located at `./demo-app-micronaut`.
+
+## Hateoas Functionality
+
+### Micronaut
+
+To enable HATEOAS support you simply need to add the following config to your `application.yml`.
+
+```
+restapi:
+    hateoas:
+        filter:
+            enabled: true
+            uri: /v1/**
+```
+
+`restapi.hateoas.filter.enable` enables the following Micronaut specific HttpFilters.
+
+- `HateoasResponseFilter` - creating the HATEOAS response model
+- `ExpandedGetResponseFilter` - supports expanded gets
+
+When HATEOAS is enabled you will get JSON responses containing _SELF_ links such as this example.
+
+```
+{
+  "data": {
+    "id": "CHE",
+    "name": "Switzerland",
+    "foundationDate": "1291-08-01",
+    "surface": 41285
+  },
+  "links": [
+    {
+      "rel": "self",
+      "method": "GET",
+      "href": "/v1/countries/CHE"
+    }
+  ]
+}
+```
+
+#### Expanded GETs
+
+For our REST clients I would like to provide a feature I call "Expanded Gets" similar to table joins in SQL.
+
+**Without "Expanded Gets"** a client has to execute at least two HTTP calls to read a person and its addresses.
+
+- `/countries/CHE` - to read a country
+- `/countries/CHE/cities/` - read all cities of that country
+
+**With "Expanded Gets"** a client can read the person and its addresses in only one request.
+
+- `/countries/CHE?expands=countries`
+
+```
+{
+  "data": {
+    "id": "CHE",
+    "name": "Switzerland",
+    "foundationDate": "1291-08-01",
+    "surface": 41285
+  },
+  "links": [
+    {
+      "rel": "self",
+      "method": "GET",
+      "href": "/v1/countries/CHE"
+    }
+  ],
+  "expands": [
+    {
+      "name": "cities",
+      "data": [
+        {
+          "id": "ZH",
+          "name": "Zurich",
+          "coordinates": {
+            "longitude": 10,
+            "latitude": 2147483647
+          }
+        },
+        {
+          "id": "BE",
+          "name": "Berne",
+          "coordinates": {
+            "longitude": 10,
+            "latitude": 2147483647
+          }
+        },
+        {
+          "id": "GE",
+          "name": "Geneva",
+          "coordinates": {
+            "longitude": 10,
+            "latitude": 2147483647
+          }
+        },
+        {
+          "id": "LVA",
+          "name": "Lugano",
+          "coordinates": {
+            "longitude": 10,
+            "latitude": 2147483647
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+### Spring Boot
+
+Not yet supported
+
+### JAX-RS
+
+Not yet supported
