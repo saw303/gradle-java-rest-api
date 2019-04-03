@@ -31,6 +31,7 @@ import ch.silviowangler.rest.model.ResourceModel;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.ApplicationContext;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.http.HttpAttributes;
 import io.micronaut.http.HttpMethod;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.MutableHttpResponse;
@@ -108,7 +109,7 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
 			if (request.getMethod().equals(HttpMethod.GET) && request.getParameters().contains(EXPAND_PARAM_NAME)) {
 				String expands = request.getParameters().get(EXPAND_PARAM_NAME);
 
-				UriRouteMatch routeMatchCurrentResource = request.getAttributes().get("micronaut.http.route.match", UriRouteMatch.class).get();
+				UriRouteMatch routeMatchCurrentResource = request.getAttributes().get(HttpAttributes.ROUTE_MATCH, UriRouteMatch.class).get();
 				Object currentResource = applicationContext.getBean(routeMatchCurrentResource.getExecutableMethod().getDeclaringType());
 
 				ResourceContract contract = fetchContract(currentResource).get();

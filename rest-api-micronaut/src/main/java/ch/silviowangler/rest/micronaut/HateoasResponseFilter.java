@@ -30,6 +30,7 @@ import ch.silviowangler.rest.model.ResourceLink;
 import ch.silviowangler.rest.model.ResourceModel;
 import ch.silviowangler.rest.model.SelfLinkProvider;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.http.HttpAttributes;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.MutableHttpResponse;
@@ -83,7 +84,7 @@ public class HateoasResponseFilter implements HttpServerFilter {
 
 		return Flowable.fromPublisher(chain.proceed(request)).doOnNext(res -> {
 
-			Optional<UriRouteMatch> potUriRouteMatch = res.getAttributes().get("micronaut.http.route.match", UriRouteMatch.class);
+			Optional<UriRouteMatch> potUriRouteMatch = res.getAttributes().get(HttpAttributes.ROUTE_MATCH, UriRouteMatch.class);
 
 			if (potUriRouteMatch.isPresent()) {
 				UriRouteMatch uriRouteMatch = potUriRouteMatch.get();
