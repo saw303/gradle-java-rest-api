@@ -109,6 +109,7 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
 				Optional<UriRouteMatch> uriRouteMatch = request.getAttributes().get(HttpAttributes.ROUTE_MATCH.toString(), UriRouteMatch.class);
 
 				if (uriRouteMatch.isPresent()) {
+
 					UriRouteMatch routeMatchCurrentResource = uriRouteMatch.get();
 					Object currentResource = applicationContext.getBean(routeMatchCurrentResource.getExecutableMethod().getDeclaringType());
 
@@ -118,7 +119,7 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
 
 					if (initialBody instanceof EntityModel) {
 
-						for (String expand : expands.split(",")) {
+						for (String expand : expands.trim().split(",")) {
 
 							Optional<SubResource> potSubResource = contract.getSubresources().stream().filter(subResource -> expand.equals(subResource.getName())).findAny();
 
@@ -140,7 +141,6 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
 
 							if (routeMatch.isPresent()) {
 
-
 								EntityModel entityModel = (EntityModel) initialBody;
 
 								UriRouteMatch<Object, Object> routeMatchSubResource = routeMatch.get();
@@ -158,7 +158,6 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
 
 								((MutableHttpResponse) res).body(entityModel);
 							}
-
 						}
 					} else {
 						log.debug("Return type '{}' and not as expected '{}'", initialBody.getClass().getCanonicalName(), EntityModel.class.getCanonicalName());
@@ -208,7 +207,7 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
 		 * </pre>
 		 *
 		 * @param uriWithPlaceholders URI template containing placeholders in path such as {@code {:country}}.
-		 * @param uriRouteMatch URI that matches the template.
+		 * @param uriRouteMatch       URI that matches the template.
 		 * @return a string with all placeholders resolved.
 		 */
 		public static String replacePlaceholders(String uriWithPlaceholders, UriRouteMatch uriRouteMatch) {
