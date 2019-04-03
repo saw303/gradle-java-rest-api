@@ -24,7 +24,7 @@
 package ch.silviowangler.rest.model;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Model for expanded GETs. Stores a named collection of {@link ResourceModel}.
@@ -34,13 +34,13 @@ import java.util.List;
 public class Expand {
 
 	private String name;
-	private List<ResourceModel> data;
+	private Collection<ResourceModel> data;
 
 	public Expand() {
 		this.data  = new ArrayList<>();
 	}
 
-	public Expand(String name, List<ResourceModel> data) {
+	public Expand(String name, Collection<ResourceModel> data) {
 		this.name = name;
 		this.data = data;
 	}
@@ -53,11 +53,11 @@ public class Expand {
 		this.name = name;
 	}
 
-	public List<ResourceModel> getData() {
+	public Collection<ResourceModel> getData() {
 		return data;
 	}
 
-	public void setData(List<ResourceModel> data) {
+	public void setData(Collection<ResourceModel> data) {
 		this.data = data;
 	}
 }

@@ -76,5 +76,5 @@ tasks.withType(JavaCompile){
 restApi {
     packageName = 'demo.app.micronaut'
     targetFramework = ch.silviowangler.gradle.restapi.TargetFramework.MICRONAUT
-    optionsSource = file("${rootDir}/../gradle-plugin/src/test/resources/specs/v1")
+    optionsSource = file("${projectDir}/src/main/spec/v1")
 }

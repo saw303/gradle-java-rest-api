@@ -25,16 +25,13 @@ package ch.silviowangler.rest.micronaut
 
 import io.micronaut.web.router.UriRouteMatch
 import spock.lang.Specification
-import spock.lang.Subject
+
+import static ch.silviowangler.rest.micronaut.ExpandedGetResponseFilter.UriPlaceholderReplacer.replacePlaceholders
 
 /**
  * @author Silvio Wangler
  */
 class UriPlaceholderReplacerSpec extends Specification {
-
-    @Subject
-    ExpandedGetResponseFilter.UriPlaceholderReplacer uriPlaceholderReplacer = new ExpandedGetResponseFilter.UriPlaceholderReplacer()
-
 
     void "replace one placeholder placeholder"() {
 
@@ -42,7 +39,7 @@ class UriPlaceholderReplacerSpec extends Specification {
         UriRouteMatch uriRouteMatch = Mock()
 
         when:
-        String result = uriPlaceholderReplacer.replacePlaceholders('/v1/countries/{:entity}/cities/', uriRouteMatch)
+        String result = replacePlaceholders('/v1/countries/{:entity}/cities/', uriRouteMatch)
 
         then:
         result == '/v1/countries/CHE/cities/'
@@ -59,7 +56,7 @@ class UriPlaceholderReplacerSpec extends Specification {
         UriRouteMatch uriRouteMatch = Mock()
 
         when:
-        String result = uriPlaceholderReplacer.replacePlaceholders('/v1/countries/{:country}/cities/{:entity}/municipalities', uriRouteMatch)
+        String result = replacePlaceholders('/v1/countries/{:country}/cities/{:entity}/municipalities', uriRouteMatch)
 
         then:
         result == '/v1/countries/CHE/cities/ZH/municipalities'

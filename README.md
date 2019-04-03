@@ -118,7 +118,7 @@ For our REST clients I would like to provide a feature I call "Expanded Gets" si
         {
           "id": "ZH",
           "name": "Zurich",
-          "koordinaten": {
+          "coordinates": {
             "longitude": 10,
             "latitude": 2147483647
           }
@@ -126,7 +126,7 @@ For our REST clients I would like to provide a feature I call "Expanded Gets" si
         {
           "id": "BE",
           "name": "Berne",
-          "koordinaten": {
+          "coordinates": {
             "longitude": 10,
             "latitude": 2147483647
           }
@@ -134,7 +134,7 @@ For our REST clients I would like to provide a feature I call "Expanded Gets" si
         {
           "id": "GE",
           "name": "Geneva",
-          "koordinaten": {
+          "coordinates": {
             "longitude": 10,
             "latitude": 2147483647
           }
@@ -142,7 +142,7 @@ For our REST clients I would like to provide a feature I call "Expanded Gets" si
         {
           "id": "LVA",
           "name": "Lugano",
-          "koordinaten": {
+          "coordinates": {
             "longitude": 10,
             "latitude": 2147483647
           }

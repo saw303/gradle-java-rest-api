@@ -84,7 +84,7 @@ public class HateoasResponseFilter implements HttpServerFilter {
 
 		return Flowable.fromPublisher(chain.proceed(request)).doOnNext(res -> {
 
-			Optional<UriRouteMatch> potUriRouteMatch = res.getAttributes().get(HttpAttributes.ROUTE_MATCH, UriRouteMatch.class);
+			Optional<UriRouteMatch> potUriRouteMatch = res.getAttributes().get(HttpAttributes.ROUTE_MATCH.toString(), UriRouteMatch.class);
 
 			if (potUriRouteMatch.isPresent()) {
 				UriRouteMatch uriRouteMatch = potUriRouteMatch.get();

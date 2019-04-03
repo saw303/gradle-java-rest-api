@@ -49,7 +49,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -85,14 +84,12 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
 	private Map<Class, ResourceContract> contractStore;
 	private static final Logger log = getLogger(ExpandedGetResponseFilter.class);
 	private final ObjectMapper objectMapper;
-	private final UriPlaceholderReplacer uriPlaceholderReplacer;
 
 	public ExpandedGetResponseFilter(ApplicationContext applicationContext, Router router, ObjectMapper objectMapper) {
 		this.applicationContext = applicationContext;
 		this.router = router;
 		this.objectMapper = objectMapper;
 		this.contractStore = new HashMap<>();
-		this.uriPlaceholderReplacer = new UriPlaceholderReplacer();
 	}
 
 	@Override
@@ -109,53 +106,62 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
 			if (request.getMethod().equals(HttpMethod.GET) && request.getParameters().contains(EXPAND_PARAM_NAME)) {
 				String expands = request.getParameters().get(EXPAND_PARAM_NAME);
 
-				UriRouteMatch routeMatchCurrentResource = request.getAttributes().get(HttpAttributes.ROUTE_MATCH, UriRouteMatch.class).get();
-				Object currentResource = applicationContext.getBean(routeMatchCurrentResource.getExecutableMethod().getDeclaringType());
+				Optional<UriRouteMatch> uriRouteMatch = request.getAttributes().get(HttpAttributes.ROUTE_MATCH.toString(), UriRouteMatch.class);
 
-				ResourceContract contract = fetchContract(currentResource).get();
+				if (uriRouteMatch.isPresent()) {
+					UriRouteMatch routeMatchCurrentResource = uriRouteMatch.get();
+					Object currentResource = applicationContext.getBean(routeMatchCurrentResource.getExecutableMethod().getDeclaringType());
 
-				for (String expand : expands.split(",")) {
+					ResourceContract contract = fetchContract(currentResource).get();
 
-					Optional<SubResource> potSubResource = contract.getSubresources().stream().filter(subResource -> expand.equals(subResource.getName())).findAny();
+					Object initialBody = res.body();
 
-					if (!potSubResource.isPresent()) {
-						log.debug("Expand '{}' is not a sub resource of '{}'", expand, contract.getGeneral().getName());
-						continue;
-					}
+					if (initialBody instanceof EntityModel) {
 
-					SubResource subResourceContract = potSubResource.get();
+						for (String expand : expands.split(",")) {
 
-					if (!subResourceContract.isExpandable()) {
-						log.debug("Sub resource '{}' is not expandable", subResourceContract.getName());
-						continue;
-					}
+							Optional<SubResource> potSubResource = contract.getSubresources().stream().filter(subResource -> expand.equals(subResource.getName())).findAny();
 
-					String targetUri = uriPlaceholderReplacer.replacePlaceholders(subResourceContract.getHref(), routeMatchCurrentResource);
+							if (!potSubResource.isPresent()) {
+								log.debug("Expand '{}' is not a sub resource of '{}'", expand, contract.getGeneral().getName());
+								continue;
+							}
 
-					Optional<UriRouteMatch<Object, Object>> routeMatch = router.GET(targetUri);
+							SubResource subResourceContract = potSubResource.get();
 
-					if (routeMatch.isPresent()) {
+							if (!subResourceContract.isExpandable()) {
+								log.debug("Sub resource '{}' is not expandable", subResourceContract.getName());
+								continue;
+							}
 
-						Object initialBody = res.body();
+							String targetUri = UriPlaceholderReplacer.replacePlaceholders(subResourceContract.getHref(), routeMatchCurrentResource);
 
-						if (initialBody instanceof EntityModel) {
-							EntityModel entityModel = (EntityModel) initialBody;
+							Optional<UriRouteMatch<Object, Object>> routeMatch = router.GET(targetUri);
 
-							UriRouteMatch<Object, Object> routeMatchSubResource = routeMatch.get();
-							ExecutableMethod<Object, Object> executableMethod = (ExecutableMethod<Object, Object>) routeMatchSubResource.getExecutableMethod();
+							if (routeMatch.isPresent()) {
 
-							Class declaringType = executableMethod.getDeclaringType();
 
-							Object bean = applicationContext.getBean(declaringType);
+								EntityModel entityModel = (EntityModel) initialBody;
 
-							Collection<Object> values = routeMatchCurrentResource.getVariableValues().values();
+								UriRouteMatch<Object, Object> routeMatchSubResource = routeMatch.get();
+								ExecutableMethod<Object, Object> executableMethod = (ExecutableMethod<Object, Object>) routeMatchSubResource.getExecutableMethod();
 
-							Object result = executableMethod.invoke(bean, values.toArray());
+								Class declaringType = executableMethod.getDeclaringType();
 
-							entityModel.getExpands().add(new Expand(expand, (List<ResourceModel>) result));
+								Object bean = applicationContext.getBean(declaringType);
 
-							((MutableHttpResponse) res).body(entityModel);
+								Collection<Object> values = routeMatchCurrentResource.getVariableValues().values();
+
+								Object result = executableMethod.invoke(bean, values.toArray());
+
+								entityModel.getExpands().add(new Expand(expand, (Collection<ResourceModel>) result));
+
+								((MutableHttpResponse) res).body(entityModel);
+							}
+
 						}
+					} else {
+						log.debug("Return type '{}' and not as expected '{}'", initialBody.getClass().getCanonicalName(), EntityModel.class.getCanonicalName());
 					}
 				}
 			}
@@ -188,6 +194,10 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
 
 	private static class UriPlaceholderReplacer {
 
+		private UriPlaceholderReplacer() {
+			// do not create instances of me please
+		}
+
 		/**
 		 * Replaces placeholder in a URI.
 		 * <p>
@@ -197,16 +207,19 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
 		 * /v1/countries/{:country}/cities/  => /v1/countries/CHE/cities/
 		 * </pre>
 		 *
-		 * @param uriWithPlaceholders
-		 * @param uriRouteMatch
+		 * @param uriWithPlaceholders URI template containing placeholders in path such as {@code {:country}}.
+		 * @param uriRouteMatch URI that matches the template.
 		 * @return a string with all placeholders resolved.
 		 */
-		public String replacePlaceholders(String uriWithPlaceholders, UriRouteMatch uriRouteMatch) {
+		public static String replacePlaceholders(String uriWithPlaceholders, UriRouteMatch uriRouteMatch) {
 
 			Map<String, Object> variableValues = uriRouteMatch.getVariableValues();
+
 			for (String argumentName : uriRouteMatch.getArgumentNames()) {
-				uriWithPlaceholders = uriWithPlaceholders.replaceFirst("\\{:\\w*\\}", String.valueOf(variableValues.get(argumentName)));
+				String regex = String.format("\\{:%s\\}", "id".equals(argumentName) ? "entity" : argumentName);
+				uriWithPlaceholders = uriWithPlaceholders.replaceFirst(regex, String.valueOf(variableValues.get(argumentName)));
 			}
+
 			return uriWithPlaceholders;
 		}
 	}
