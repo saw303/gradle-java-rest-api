@@ -25,7 +25,6 @@ package ch.silviowangler.gradle.restapi.builder;
 
 import ch.silviowangler.gradle.restapi.GeneratorUtil;
 import ch.silviowangler.gradle.restapi.LinkParser;
-import ch.silviowangler.gradle.restapi.tasks.GenerateRestApiTask;
 import ch.silviowangler.rest.contract.model.v1.*;
 import com.squareup.javapoet.*;
 import io.github.getify.minify.Minify;
@@ -200,7 +199,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
 			this.currentVerb = verb;
 
-			if(Arrays.asList(HEAD_ENTITY, HEAD_COLLECTION).contains(verb.getVerb()) && supportsHttpHeadMethodAutoGeneration()) {
+			if (HEAD_METHODS.contains(verb.getVerb()) && supportsHttpHeadMethodAutoGeneration()) {
 				continue;
 			}
 
@@ -375,7 +374,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
 		for (Verb verb : verbs) {
 
-			if (HEAD_ENTITY.equals(verb.getVerb()) || HEAD_COLLECTION.equals(verb.getVerb())) {
+			if (HEAD_METHODS.contains(verb.getVerb())) {
 				continue;
 			}
 
@@ -600,7 +599,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 			this.typeBuilder.addMethod(createMethodNotAllowedHandler("getEntityAutoAnswer").build());
 		}
 
-		if(!supportsHttpHeadMethodAutoGeneration()) {
+		if (!supportsHttpHeadMethodAutoGeneration()) {
 			if (!hasHeadCollectionVerb() && !directEntity) {
 				this.currentVerb = new Verb(HEAD_COLLECTION);
 				this.typeBuilder.addMethod(createMethodNotAllowedHandler("headCollectionAutoAnswer").build());

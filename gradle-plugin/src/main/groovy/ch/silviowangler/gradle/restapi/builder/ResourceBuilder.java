@@ -30,30 +30,15 @@ import ch.silviowangler.rest.contract.model.v1.Representation;
 import ch.silviowangler.rest.contract.model.v1.Verb;
 import ch.silviowangler.rest.contract.model.v1.VerbParameter;
 import com.google.common.base.CaseFormat;
-import com.squareup.javapoet.AnnotationSpec;
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.ParameterSpec;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.*;
 
 import java.nio.charset.Charset;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_GENERATED;
-import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_VALID;
-import static ch.silviowangler.gradle.restapi.PluginTypes.JAVA_OVERRIDE;
-import static ch.silviowangler.gradle.restapi.PluginTypes.PLUGIN_NOT_YET_IMPLEMENTED_EXCEPTION;
-import static javax.lang.model.element.Modifier.ABSTRACT;
-import static javax.lang.model.element.Modifier.DEFAULT;
-import static javax.lang.model.element.Modifier.PUBLIC;
+import static ch.silviowangler.gradle.restapi.PluginTypes.*;
+import static javax.lang.model.element.Modifier.*;
 
 public interface ResourceBuilder {
 
@@ -68,6 +53,11 @@ public interface ResourceBuilder {
 	String DELETE_ENTITY = "DELETE_ENTITY";
 	String DELETE_COLLECTION = "DELETE_COLLECTION";
 	String OPTIONS = "OPTIONS";
+
+	List<String> GET_METHODS = Arrays.asList(GET_ENTITY, GET_COLLECTION);
+	List<String> HEAD_METHODS = Arrays.asList(HEAD_ENTITY, HEAD_COLLECTION);
+	List<String> DELETE_METHODS = Arrays.asList(DELETE_ENTITY, DELETE_COLLECTION);
+	List<String> PUT_METHODS = Arrays.asList(PUT, PUT_ENTITY, PUT_COLLECTION);
 
 	String getCurrentPackageName();
 
@@ -99,24 +89,23 @@ public interface ResourceBuilder {
 	TypeName resourceMethodReturnType(Verb verb, Representation representation);
 
 	default String toHttpMethod(Verb verb) {
+		String verbName = verb.getVerb();
 		String v;
 
-		List<String> put = Arrays.asList(PUT, PUT_ENTITY, PUT_COLLECTION);
-
-		if (GET_ENTITY.equals(verb.getVerb()) || GET_COLLECTION.equals(verb.getVerb())) {
+		if (GET_METHODS.contains(verbName)) {
 			v = "Get";
-		} else if (DELETE_ENTITY.equals(verb.getVerb()) || DELETE_COLLECTION.equals(verb.getVerb())) {
+		} else if (DELETE_METHODS.contains(verbName)) {
 			v = "Delete";
-		} else if (HEAD_ENTITY.contains(verb.getVerb()) || HEAD_COLLECTION.equals(verb.getVerb())) {
+		} else if (HEAD_METHODS.contains(verbName)) {
 			v = "Head";
-		} else if (put.contains(verb.getVerb())) {
+		} else if (PUT_METHODS.contains(verbName)) {
 			v = "Put";
-		} else if (POST.equals(verb.getVerb())) {
+		} else if (POST.equals(verbName)) {
 			v = "Post";
-		} else if (OPTIONS.equals(verb.getVerb())) {
+		} else if (OPTIONS.equals(verbName)) {
 			v = "Options";
 		} else {
-			throw new IllegalArgumentException("Unknown verb " + verb.getVerb());
+			throw new IllegalArgumentException("Unknown verb " + verbName);
 		}
 		return v;
 	}
