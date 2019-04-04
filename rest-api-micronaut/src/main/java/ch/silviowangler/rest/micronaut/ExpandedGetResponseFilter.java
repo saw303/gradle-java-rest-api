@@ -213,13 +213,16 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
 		public static String replacePlaceholders(String uriWithPlaceholders, UriRouteMatch uriRouteMatch) {
 
 			Map<String, Object> variableValues = uriRouteMatch.getVariableValues();
+			StringBuilder sb = new StringBuilder(uriWithPlaceholders);
 
 			for (String argumentName : uriRouteMatch.getArgumentNames()) {
-				String regex = String.format("\\{:%s\\}", "id".equals(argumentName) ? "entity" : argumentName);
-				uriWithPlaceholders = uriWithPlaceholders.replaceFirst(regex, String.valueOf(variableValues.get(argumentName)));
+				String regex = String.format("{:%s}", "id".equals(argumentName) ? "entity" : argumentName);
+
+				int index = sb.indexOf(regex);
+				sb.replace(index, index + regex.length(), String.valueOf(variableValues.get(argumentName)));
 			}
 
-			return uriWithPlaceholders;
+			return sb.toString();
 		}
 	}
 }
