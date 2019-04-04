@@ -132,9 +132,11 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder {
 
         if (method == 'GET') {
             specs << createAnnotation(JAX_RS_GET_VERB)
-        } else if (method == 'POST') {
-            specs << createAnnotation(JAX_RS_POST_VERB)
-        } else if (method == 'PUT') {
+        } else if (method == 'HEAD') {
+			specs << createAnnotation(JAX_RS_HEAD_VERB)
+		}else if (method == 'POST') {
+			specs << createAnnotation(JAX_RS_POST_VERB)
+		} else if (method == 'PUT') {
             specs << createAnnotation(JAX_RS_PUT_VERB)
         } else if (method == 'DELETE') {
             specs << createAnnotation(JAX_RS_DELETE_VERB)

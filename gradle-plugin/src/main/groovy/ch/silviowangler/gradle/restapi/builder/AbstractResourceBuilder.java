@@ -265,10 +265,15 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 				} else {
 					ClassName model = resourceModelName(verb);
 
-					if (GenerateRestApiTask.POST.equals(verb.getVerb())) {
+					if (GenerateRestApiTask.HEAD.equals(verb.getVerb())) {
 
 						paramClasses.put("model", model);
+						context.setMethodName("head");
+						methodBuilder = createMethod(context);
 
+					} else if (GenerateRestApiTask.POST.equals(verb.getVerb())) {
+
+						paramClasses.put("model", model);
 						context.setMethodName("createEntity");
 						methodBuilder = createMethod(context);
 
@@ -594,6 +599,12 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
 	private void generatedDefaultMethodNotAllowedHandlersForMissingVerbs(boolean directEntity) {
 
+		// TODO:
+//		if (!hasHeadVerb()) {
+//			this.currentVerb = new Verb(HEAD);
+//			this.typeBuilder.addMethod(createMethodNotAllowedHandler("headAutoAnswer").build());
+//		}
+
 		if (!hasPostVerb()) {
 			this.currentVerb = new Verb(POST);
 			this.typeBuilder.addMethod(createMethodNotAllowedHandler("createEntityAutoAnswer").build());
@@ -630,6 +641,10 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
 	private boolean hasGetCollectionVerb() {
 		return hasVerb(GET_COLLECTION);
+	}
+
+	private boolean hasHeadVerb() {
+		return hasVerb(HEAD);
 	}
 
 	private boolean hasPostVerb() {

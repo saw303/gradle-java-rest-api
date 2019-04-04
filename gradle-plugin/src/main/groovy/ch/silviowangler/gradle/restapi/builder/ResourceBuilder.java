@@ -65,6 +65,7 @@ public interface ResourceBuilder {
 	String PUT_COLLECTION = "PUT_COLLECTION";
 	String DELETE_ENTITY = "DELETE_ENTITY";
 	String DELETE_COLLECTION = "DELETE_COLLECTION";
+	String HEAD = "HEAD";
 	String OPTIONS = "OPTIONS";
 
 	String getCurrentPackageName();
@@ -105,6 +106,8 @@ public interface ResourceBuilder {
 			v = "Get";
 		} else if (DELETE_ENTITY.equals(verb.getVerb()) || DELETE_COLLECTION.equals(verb.getVerb())) {
 			v = "Delete";
+		} else if (HEAD.contains(verb.getVerb())) {
+			v = "Head";
 		} else if (put.contains(verb.getVerb())) {
 			v = "Put";
 		} else if (POST.equals(verb.getVerb())) {

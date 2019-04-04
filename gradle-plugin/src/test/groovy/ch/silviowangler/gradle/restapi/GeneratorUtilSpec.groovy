@@ -96,6 +96,7 @@ class GeneratorUtilSpec extends Specification {
         'GET_COLLECTION'    || 'Get'
         'GET_ENTITY'        || 'Get'
         'GET'               || 'Get'
+        'HEAD'              || 'Head'
         'POST'              || 'Post'
         'PUT'               || 'Put'
         'PATCH'             || 'Patch'

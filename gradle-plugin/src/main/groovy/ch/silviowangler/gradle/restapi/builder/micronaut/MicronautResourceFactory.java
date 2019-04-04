@@ -172,7 +172,9 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
 			case "options":
 				methodAnnotations.add(createAnnotation(MICRONAUT_OPTIONS, annotationsFields));
 				break;
-
+			case "head":
+				methodAnnotations.add(createAnnotation(MICRONAUT_HEAD, annotationsFields));
+				break;
 			case "post":
 				methodAnnotations.add(createAnnotation(MICRONAUT_POST, annotationsFields));
 				break;
