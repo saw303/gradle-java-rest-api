@@ -530,6 +530,31 @@ class RestApiPluginSpec extends Specification {
         javaFiles.isEmpty()
     }
 
+	void "The plugin refuses to generate a resource containing a HEAD verb without a corresponding GET verb"() {
+
+		given:
+		project.restApi.generatorOutput = temporaryFolder.getRoot()
+		project.restApi.generatorImplOutput = temporaryFolder.getRoot()
+		project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/invalid")
+		project.restApi.packageName = 'org.acme.rest'
+		project.restApi.generateDateAttribute = false
+		project.restApi.targetFramework = MICRONAUT
+		project.restApi.explicitExtensions = true
+		project.restApi.objectResourceModelMapping = customFieldModelMapping
+
+		and:
+		GenerateRestApiTask task = project.tasks.generateRestArtifacts as GenerateRestApiTask
+
+		when:
+		task.exec()
+
+		then:
+		RuntimeException ex = thrown(RuntimeException)
+
+		and:
+		ex.message == "Verb: [HEAD_ENTITY] Representation: [json] has no GET counterpart"
+	}
+
 	void "Das Plugin generiert auch read only Ressourcen mit JSON und CSV GET und explicit extensions (Micronaut)"() {
 
 		given:

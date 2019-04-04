@@ -1,0 +1,191 @@
+{
+  "general": {
+    "name": "land",
+    "description": "Land",
+    "version": "1.0.0",
+    "lifecycle": {
+      "deprecated": false,
+      "info": "Diese Version ist noch immer gültig"
+    },
+    "searchable": true,
+    "countable": false,
+    "x-route": "/:version/laender/:entity"
+  },
+  "verbs": [
+    {
+      "verb": "GET_COLLECTION",
+      "rel": "Länder holen",
+      "collectionLimit": 19,
+      "maxCollectionLimit": 101,
+      "responseStates": [
+        {
+          "code": 200,
+          "message": "200 Ok",
+          "comment": "content in response body"
+        },
+        {
+          "code": 503,
+          "message": "503 Service Unavailable",
+          "comment": "Backend server eventually not reachable or to slow"
+        }
+      ],
+      "representations": [
+        {
+          "name": "json",
+          "comment": "",
+          "responseExample": "{...}",
+          "isDefault": true,
+          "mimetype": "application/ch.silviowangler.land.collection"
+        }
+      ],
+      "permissions": []
+    },
+    {
+      "verb": "HEAD_ENTITY",
+      "rel": "Land laden check",
+      "responseStates": [
+        {
+          "code": 200,
+          "message": "200 Ok",
+          "comment": "content in response body"
+        },
+        {
+          "code": 503,
+          "message": "503 Service Unavailable",
+          "comment": "Backend server eventually not reachable or to slow"
+        }
+      ],
+      "representations": [
+        {
+          "name": "json",
+          "comment": "",
+          "responseExample": "{...}",
+          "isDefault": true,
+          "mimetype": "application/ch.silviowangler.land"
+        },
+        {
+          "name": "pdf",
+          "comment": "",
+          "responseExample": "{...}",
+          "isDefault": false,
+          "mimetype": "application/pdf"
+        }
+      ],
+      "parameters": [],
+      "permissions": []
+    },
+    {
+      "verb": "HEAD_COLLECTION",
+      "rel": "Länder holen check",
+      "collectionLimit": 19,
+      "maxCollectionLimit": 101,
+      "responseStates": [
+        {
+          "code": 200,
+          "message": "200 Ok",
+          "comment": "content in response body"
+        },
+        {
+          "code": 503,
+          "message": "503 Service Unavailable",
+          "comment": "Backend server eventually not reachable or to slow"
+        }
+      ],
+      "representations": [
+        {
+          "name": "json",
+          "comment": "",
+          "responseExample": "{...}",
+          "isDefault": true,
+          "mimetype": "application/ch.silviowangler.land.collection"
+        }
+      ],
+      "permissions": []
+    },
+    {
+      "verb": "PUT",
+      "rel": "Land ändern",
+      "responseStates": [
+        {
+          "code": 200,
+          "message": "200 Ok",
+          "comment": "content in response body"
+        },
+        {
+          "code": 503,
+          "message": "503 Service Unavailable",
+          "comment": "Backend server eventually not reachable or to slow"
+        }
+      ],
+      "representations": [
+        {
+          "name": "json",
+          "comment": "",
+          "responseExample": "{...}",
+          "isDefault": true,
+          "mimetype": "application/json"
+        }
+      ],
+      "parameters": [],
+      "permissions": [
+        {
+          "name": "mitarbeiter",
+          "mode": "all",
+          "comment": "Jeder darf ein Land ändern"
+        }
+      ]
+    },
+    {
+      "verb": "POST",
+      "rel": "Land anlegen",
+      "responseStates": [
+        {
+          "code": 200,
+          "message": "200 Ok",
+          "comment": "content in response body"
+        },
+        {
+          "code": 503,
+          "message": "503 Service Unavailable",
+          "comment": "Backend server eventually not reachable or to slow"
+        }
+      ],
+      "representations": [
+        {
+          "name": "json",
+          "comment": "",
+          "responseExample": "{...}",
+          "isDefault": true,
+          "mimetype": "application/json"
+        }
+      ],
+      "parameters": [],
+      "permissions": [
+        {
+          "name": "mitarbeiter",
+          "mode": "all",
+          "comment": "Jeder darf Länder ändern"
+        }
+      ]
+    }
+  ],
+  "fields": [
+    {
+      "name": "id",
+      "type": "uuid",
+      "options": null,
+      "mandatory": [],
+      "min": null,
+      "max": null,
+      "multiple": false,
+      "defaultValue": null,
+      "protected": [],
+      "visible": true,
+      "sortable": false,
+      "readonly": false,
+      "filterable": false,
+      "alias": []
+    }
+  ],
+  "subresources": []
+}

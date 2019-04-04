@@ -350,6 +350,8 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
 		List<Verb> verbs;
 		List<Verb> declaredVerbs = resourceContract.getVerbs();
+		ensureHeadVerbHasGetVerbCounterpart(declaredVerbs);
+
 		if (declaredVerbs.size() == 1 && declaredVerbs.get(0).getVerb().equals(GET_COLLECTION)) {
 			verbs = declaredVerbs;
 		} else {
@@ -365,8 +367,8 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
 			verbs = declaredVerbs.stream().filter(v -> !excludeVerbs.contains(v.getVerb())).collect(Collectors.toList());
 		}
-		Set<TypeSpec> specTypes = new HashSet<>(verbs.size());
 
+		Set<TypeSpec> specTypes = new HashSet<>(verbs.size());
 
 		Verb verbGet = verbs.stream().filter(v -> v.getVerb().equals(GET_ENTITY)).findAny().orElse(verbs.isEmpty() ? null : verbs.get(0));
 
@@ -523,6 +525,30 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 		}
 
 		return specTypes;
+	}
+
+	private void ensureHeadVerbHasGetVerbCounterpart(List<Verb> verbs) {
+		Set<String> headRepresentations = new TreeSet<>();
+		Set<String> getRepresentations = new TreeSet<>();
+
+		for (Verb verb : verbs) {
+			String verbName = verb.getVerb();
+			for (Representation representation : verb.getRepresentations()) {
+				String verbRepresentation = String.format("Verb: [%s] Representation: [%s]", verbName, representation.getName());
+
+				if (HEAD_METHODS.contains(verbName)) {
+					headRepresentations.add(verbRepresentation);
+				} else if (GET_METHODS.contains(verbName)) {
+					getRepresentations.add(verbRepresentation);
+				}
+			}
+		}
+
+		for (String headRepresentation : headRepresentations) {
+			if (!getRepresentations.contains(headRepresentation.replace("HEAD", "GET"))) {
+				throw new RuntimeException(String.format("%s has no GET counterpart", headRepresentation));
+			}
+		}
 	}
 
 	private TypeName getFieldType(Set<ClassName> types, String fieldType) {
