@@ -1,7 +1,7 @@
 buildscript {
 
     ext {
-        restApiVersion = '2.0.0-SNAPSHOT'
+        restApiVersion = '2.0.0'
     }
 
     repositories {
