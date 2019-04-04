@@ -26,62 +26,24 @@ package ch.silviowangler.gradle.restapi.builder;
 import ch.silviowangler.gradle.restapi.GeneratorUtil;
 import ch.silviowangler.gradle.restapi.LinkParser;
 import ch.silviowangler.gradle.restapi.tasks.GenerateRestApiTask;
-import ch.silviowangler.rest.contract.model.v1.GeneralDetails;
-import ch.silviowangler.rest.contract.model.v1.Representation;
-import ch.silviowangler.rest.contract.model.v1.ResourceContract;
-import ch.silviowangler.rest.contract.model.v1.ResourceField;
-import ch.silviowangler.rest.contract.model.v1.ResourceTypeField;
-import ch.silviowangler.rest.contract.model.v1.ResourceTypes;
-import ch.silviowangler.rest.contract.model.v1.Verb;
-import ch.silviowangler.rest.contract.model.v1.VerbParameter;
-import com.squareup.javapoet.AnnotationSpec;
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.FieldSpec;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.ParameterSpec;
-import com.squareup.javapoet.ParameterizedTypeName;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
+import ch.silviowangler.rest.contract.model.v1.*;
+import com.squareup.javapoet.*;
 import io.github.getify.minify.Minify;
 
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Function;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_DECIMAL_MAX;
-import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_DECIMAL_MIN;
-import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_EMAIL;
-import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_NOT_NULL;
-import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_SIZE;
-import static ch.silviowangler.gradle.restapi.PluginTypes.RESTAPI_IDENTIFIABLE;
-import static ch.silviowangler.gradle.restapi.PluginTypes.RESTAPI_RESOURCE_MODEL;
+import static ch.silviowangler.gradle.restapi.PluginTypes.*;
 import static ch.silviowangler.gradle.restapi.builder.ArtifactType.RESOURCE;
-import static ch.silviowangler.gradle.restapi.util.SupportedDataTypes.BOOL;
-import static ch.silviowangler.gradle.restapi.util.SupportedDataTypes.DATE;
-import static ch.silviowangler.gradle.restapi.util.SupportedDataTypes.DATETIME;
-import static ch.silviowangler.gradle.restapi.util.SupportedDataTypes.STRING;
+import static ch.silviowangler.gradle.restapi.util.SupportedDataTypes.*;
 import static com.google.common.base.CaseFormat.LOWER_CAMEL;
 import static com.google.common.base.CaseFormat.UPPER_CAMEL;
 import static com.squareup.javapoet.TypeName.INT;
-import static javax.lang.model.element.Modifier.ABSTRACT;
-import static javax.lang.model.element.Modifier.FINAL;
-import static javax.lang.model.element.Modifier.PRIVATE;
-import static javax.lang.model.element.Modifier.PUBLIC;
-import static javax.lang.model.element.Modifier.STATIC;
+import static javax.lang.model.element.Modifier.*;
 
 /**
  * @author Silvio Wangler
@@ -238,6 +200,10 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
 			this.currentVerb = verb;
 
+			if(Arrays.asList(HEAD_ENTITY, HEAD_COLLECTION).contains(verb.getVerb()) && supportsHttpHeadMethodAutoGeneration()) {
+				continue;
+			}
+
 			Map<String, TypeName> paramClasses = new HashMap<>();
 
 			for (Representation representation : verb.getRepresentations()) {
@@ -248,7 +214,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
 				MethodContext context = new MethodContext(resourceMethodReturnType(verb, representation), verb.getParameters(), paramClasses, representation, pathParams, directEntity);
 
-				if (GenerateRestApiTask.GET_COLLECTION.equals(verb.getVerb())) {
+				if (GET_COLLECTION.equals(verb.getVerb())) {
 
 					if (directEntity) {
 						continue;
@@ -257,44 +223,52 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 					context.setMethodName("getCollection");
 					methodBuilder = createMethod(context);
 
-				} else if (GenerateRestApiTask.GET_ENTITY.equals(verb.getVerb())) {
+				} else if (GET_ENTITY.equals(verb.getVerb())) {
 
 					context.setMethodName("getEntity");
+					methodBuilder = createMethod(context);
+
+				} else if (HEAD_COLLECTION.equals(verb.getVerb())) {
+
+					if (directEntity) {
+						continue;
+					}
+
+					context.setMethodName("headCollection");
+					methodBuilder = createMethod(context);
+
+				} else if (HEAD_ENTITY.equals(verb.getVerb())) {
+
+					context.setMethodName("headEntity");
 					methodBuilder = createMethod(context);
 
 				} else {
 					ClassName model = resourceModelName(verb);
 
-					if (GenerateRestApiTask.HEAD.equals(verb.getVerb())) {
-
-						paramClasses.put("model", model);
-						context.setMethodName("head");
-						methodBuilder = createMethod(context);
-
-					} else if (GenerateRestApiTask.POST.equals(verb.getVerb())) {
+					if (POST.equals(verb.getVerb())) {
 
 						paramClasses.put("model", model);
 						context.setMethodName("createEntity");
 						methodBuilder = createMethod(context);
 
-					} else if (GenerateRestApiTask.PUT.equals(verb.getVerb()) || GenerateRestApiTask.PUT_ENTITY.equals(verb.getVerb())) {
+					} else if (PUT.equals(verb.getVerb()) || PUT_ENTITY.equals(verb.getVerb())) {
 
 						paramClasses.put("model", model);
 						context.setMethodName("updateEntity");
 						methodBuilder = createMethod(context);
 
-					} else if (GenerateRestApiTask.PUT_COLLECTION.equals(verb.getVerb())) {
+					} else if (PUT_COLLECTION.equals(verb.getVerb())) {
 
 						paramClasses.put("model", ParameterizedTypeName.get(ClassName.get(Collection.class), model));
 						context.setMethodName("updateEntities");
 						methodBuilder = createMethod(context);
 
-					} else if (GenerateRestApiTask.DELETE_COLLECTION.equals(verb.getVerb())) {
+					} else if (DELETE_COLLECTION.equals(verb.getVerb())) {
 
 						context.setMethodName("deleteCollection");
 						methodBuilder = createMethod(context);
 
-					} else if (GenerateRestApiTask.DELETE_ENTITY.equals(verb.getVerb())) {
+					} else if (DELETE_ENTITY.equals(verb.getVerb())) {
 
 						context.setMethodName("deleteEntity");
 						methodBuilder = createMethod(context);
@@ -400,6 +374,10 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 		List<ResourceField> fields = resourceContract.getFields();
 
 		for (Verb verb : verbs) {
+
+			if (HEAD_ENTITY.equals(verb.getVerb()) || HEAD_COLLECTION.equals(verb.getVerb())) {
+				continue;
+			}
 
 			List<String> fieldNamesApplied = new ArrayList<>();
 
@@ -599,12 +577,6 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
 	private void generatedDefaultMethodNotAllowedHandlersForMissingVerbs(boolean directEntity) {
 
-		// TODO:
-//		if (!hasHeadVerb()) {
-//			this.currentVerb = new Verb(HEAD);
-//			this.typeBuilder.addMethod(createMethodNotAllowedHandler("headAutoAnswer").build());
-//		}
-
 		if (!hasPostVerb()) {
 			this.currentVerb = new Verb(POST);
 			this.typeBuilder.addMethod(createMethodNotAllowedHandler("createEntityAutoAnswer").build());
@@ -628,6 +600,16 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 			this.typeBuilder.addMethod(createMethodNotAllowedHandler("getEntityAutoAnswer").build());
 		}
 
+		if(!supportsHttpHeadMethodAutoGeneration()) {
+			if (!hasHeadCollectionVerb() && !directEntity) {
+				this.currentVerb = new Verb(HEAD_COLLECTION);
+				this.typeBuilder.addMethod(createMethodNotAllowedHandler("headCollectionAutoAnswer").build());
+			} else if (!hasHeadEntityVerb()) {
+				this.currentVerb = new Verb(HEAD_ENTITY);
+				this.typeBuilder.addMethod(createMethodNotAllowedHandler("headEntityAutoAnswer").build());
+			}
+		}
+
 		if (!hasPutVerb()) {
 			this.currentVerb = new Verb(PUT);
 			this.typeBuilder.addMethod(createMethodNotAllowedHandler("updateEntityAutoAnswer").build());
@@ -643,8 +625,12 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 		return hasVerb(GET_COLLECTION);
 	}
 
-	private boolean hasHeadVerb() {
-		return hasVerb(HEAD);
+	private boolean hasHeadEntityVerb() {
+		return hasVerb(HEAD_ENTITY);
+	}
+
+	private boolean hasHeadCollectionVerb() {
+		return hasVerb(HEAD_COLLECTION);
 	}
 
 	private boolean hasPostVerb() {

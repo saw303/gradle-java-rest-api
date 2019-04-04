@@ -6,6 +6,7 @@ import javax.annotation.Generated;
 import javax.validation.Valid;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.HEAD;
 import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -64,6 +65,12 @@ public interface OrtResource {
   @DELETE
   @Produces({ "application/json; charset=UTF-8" })
   default Response deleteCollectionAutoAnswer() {
+    return Response.status(405).build();
+  }
+
+  @HEAD
+  @Produces({ "application/json; charset=UTF-8" })
+  default Response headCollectionAutoAnswer() {
     return Response.status(405).build();
   }
 }

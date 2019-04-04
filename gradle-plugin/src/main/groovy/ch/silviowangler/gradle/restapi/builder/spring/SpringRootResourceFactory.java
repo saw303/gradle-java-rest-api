@@ -199,6 +199,11 @@ public class SpringRootResourceFactory extends AbstractResourceBuilder {
 	}
 
 	@Override
+	public boolean supportsHttpHeadMethodAutoGeneration() {
+		return true;
+	}
+
+	@Override
 	public void generateMethodNotAllowedStatement(MethodSpec.Builder builder) {
 		builder.addStatement("return new $T<>($T.METHOD_NOT_ALLOWED)", getMethodNowAllowedReturnType(), SPRING_HTTP_STATUS.getClassName());
 	}

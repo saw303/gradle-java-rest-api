@@ -3,6 +3,7 @@ package org.acme.rest.v1;
 import javax.annotation.Generated;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.HEAD;
 import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -49,6 +50,13 @@ public interface RootResource {
   @Produces({ "application/json; charset=UTF-8" })
   @Path("{id}")
   default Response deleteEntityAutoAnswer(@PathParam("id") String id) {
+    return Response.status(405).build();
+  }
+
+  @HEAD
+  @Produces({ "application/json; charset=UTF-8" })
+  @Path("{id}")
+  default Response headEntityAutoAnswer(@PathParam("id") String id) {
     return Response.status(405).build();
   }
 

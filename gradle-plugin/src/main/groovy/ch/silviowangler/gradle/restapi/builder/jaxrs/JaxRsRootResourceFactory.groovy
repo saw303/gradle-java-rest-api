@@ -158,7 +158,12 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder {
         return JAX_RS_PATH_PARAM
     }
 
-    @Override
+	@Override
+	boolean supportsHttpHeadMethodAutoGeneration() {
+		return false
+	}
+
+	@Override
     void generateMethodNotAllowedStatement(MethodSpec.Builder builder) {
         builder.addStatement('return $T.status(405).build()', JAX_RS_RESPONSE.typeName)
     }

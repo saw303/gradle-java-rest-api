@@ -225,6 +225,11 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
 	}
 
 	@Override
+	public boolean supportsHttpHeadMethodAutoGeneration() {
+		return false;
+	}
+
+	@Override
 	public boolean supportsInterfaces() {
 		return false;
 	}

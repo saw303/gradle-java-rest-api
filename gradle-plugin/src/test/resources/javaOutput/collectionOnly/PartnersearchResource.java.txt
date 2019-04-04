@@ -4,6 +4,7 @@ import java.util.Collection;
 import javax.annotation.Generated;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.HEAD;
 import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -58,6 +59,12 @@ public interface PartnersearchResource {
   @Produces({ "application/json" })
   @Path("{id}")
   default Response getEntityAutoAnswer(@PathParam("id") String id) {
+    return Response.status(405).build();
+  }
+
+  @HEAD
+  @Produces({ "application/json" })
+  default Response headCollectionAutoAnswer() {
     return Response.status(405).build();
   }
 

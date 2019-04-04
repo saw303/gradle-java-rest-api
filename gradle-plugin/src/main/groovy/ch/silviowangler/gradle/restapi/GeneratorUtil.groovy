@@ -171,10 +171,9 @@ class GeneratorUtil {
         } else if (verb == 'Head') {
 			switch (targetFramework) {
 				case TargetFramework.JAX_RS:
-					// TODO:
 					return PluginTypes.JAX_RS_RESPONSE.typeName
 				case TargetFramework.SPRING_BOOT:
-					return PluginTypes.SPRING_HTTP_STATUS.typeName
+					return PluginTypes.SPRING_RESPONSE_ENTITY.typeName
 				case TargetFramework.MICRONAUT:
 					return PluginTypes.MICRONAUT_HTTP_STATUS.typeName
 				default:

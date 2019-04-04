@@ -59,13 +59,14 @@ public interface ResourceBuilder {
 
 	String GET_COLLECTION = "GET_COLLECTION";
 	String GET_ENTITY = "GET_ENTITY";
+	String HEAD_COLLECTION = "HEAD_COLLECTION";
+	String HEAD_ENTITY = "HEAD_ENTITY";
 	String POST = "POST";
 	String PUT = "PUT";
 	String PUT_ENTITY = "PUT_ENTITY";
 	String PUT_COLLECTION = "PUT_COLLECTION";
 	String DELETE_ENTITY = "DELETE_ENTITY";
 	String DELETE_COLLECTION = "DELETE_COLLECTION";
-	String HEAD = "HEAD";
 	String OPTIONS = "OPTIONS";
 
 	String getCurrentPackageName();
@@ -106,7 +107,7 @@ public interface ResourceBuilder {
 			v = "Get";
 		} else if (DELETE_ENTITY.equals(verb.getVerb()) || DELETE_COLLECTION.equals(verb.getVerb())) {
 			v = "Delete";
-		} else if (HEAD.contains(verb.getVerb())) {
+		} else if (HEAD_ENTITY.contains(verb.getVerb()) || HEAD_COLLECTION.equals(verb.getVerb())) {
 			v = "Head";
 		} else if (put.contains(verb.getVerb())) {
 			v = "Put";
@@ -275,7 +276,7 @@ public interface ResourceBuilder {
 			names.add(name);
 		});
 
-		if (!context.isDirectEntity() && methodName.matches("(handle){0,1}(get|update|delete|Get|Update|Delete)Entity.*")) {
+		if (!context.isDirectEntity() && methodName.matches("(handle)?(get|head|update|delete|Get|Head|Update|Delete)Entity.*")) {
 			ParameterSpec id = generateIdParam(generateIdParamAnnotation);
 			methodBuilder.addParameter(id);
 			names.add(id.name);
@@ -305,7 +306,7 @@ public interface ResourceBuilder {
 	}
 
 	default boolean isIdGenerationRequired(MethodContext context) {
-		List<String> noId = Arrays.asList("getOptions", "createEntity", "getCollection", "deleteCollection");
+		List<String> noId = Arrays.asList("getOptions", "createEntity", "getCollection", "headCollection", "deleteCollection");
 
 		if (context.isDirectEntity()) return false;
 
@@ -348,6 +349,8 @@ public interface ResourceBuilder {
 	Set<TypeSpec> buildResourceTypes(Set<ClassName> types, String packageName);
 
 	Set<TypeSpec> buildResourceModels(Set<ClassName> types);
+
+	boolean supportsHttpHeadMethodAutoGeneration();
 
 	boolean supportsInterfaces();
 
