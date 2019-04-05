@@ -332,7 +332,13 @@ public interface ResourceBuilder {
 
 	Set<TypeSpec> buildResourceModels(Set<ClassName> types);
 
-	boolean supportsHttpHeadMethodAutoGeneration();
+	/**
+	 * Some frameworks such as Spring already provide a HEAD method implicitly for every GET method.
+	 * However frameworks like e.g. Micronaut need to have such a HEAD method generated explicitly.
+	 *
+	 * @return yes or no
+	 */
+	boolean shouldGenerateHeadMethod();
 
 	boolean supportsInterfaces();
 

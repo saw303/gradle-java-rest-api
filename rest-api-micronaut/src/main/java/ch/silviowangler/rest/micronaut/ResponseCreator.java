@@ -30,7 +30,7 @@ import io.micronaut.http.MutableHttpResponse;
 public class ResponseCreator {
 
 	@SuppressWarnings("unchecked")
-	HttpResponse buildHeadResponse(Object entity, MediaType contentType) {
+	public static HttpResponse buildHeadResponse(Object entity, MediaType contentType) {
 		if (entity == null) {
 			return HttpResponse.notFound().header("Content-Type", contentType);
 		} else if (entity instanceof HttpResponse) {

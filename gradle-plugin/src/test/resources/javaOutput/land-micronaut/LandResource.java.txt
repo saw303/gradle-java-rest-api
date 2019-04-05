@@ -68,7 +68,7 @@ public class LandResource {
 
   @Head
   @Produces("application/json; charset=UTF-8")
-  public HttpStatus headCollection() {
+  public HttpResponse headCollection() {
     return ResponseCreator.buildHeadResponse(this.getCollection(), MediaType.of("application/json; charset=UTF-8"));
   }
 
@@ -76,7 +76,7 @@ public class LandResource {
       uri = "/{id}"
   )
   @Produces("application/json; charset=UTF-8")
-  public HttpStatus headEntity(String id) {
+  public HttpResponse headEntity(String id) {
     return ResponseCreator.buildHeadResponse(this.getEntity(id), MediaType.of("application/json; charset=UTF-8"));
   }
 

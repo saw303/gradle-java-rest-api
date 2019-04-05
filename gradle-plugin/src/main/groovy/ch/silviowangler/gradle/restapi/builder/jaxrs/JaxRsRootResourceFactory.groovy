@@ -150,8 +150,8 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder {
     }
 
 	@Override
-	boolean supportsHttpHeadMethodAutoGeneration() {
-		return true
+	boolean shouldGenerateHeadMethod() {
+		return false
 	}
 
 	@Override

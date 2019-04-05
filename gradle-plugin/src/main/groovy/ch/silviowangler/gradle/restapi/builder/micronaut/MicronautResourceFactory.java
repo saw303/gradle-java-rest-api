@@ -38,6 +38,7 @@ import java.util.*;
 
 import static ch.silviowangler.gradle.restapi.PluginTypes.*;
 import static ch.silviowangler.gradle.restapi.builder.ArtifactType.DELEGATOR_RESOURCE;
+import static ch.silviowangler.gradle.restapi.builder.ArtifactType.RESOURCE_IMPL;
 
 /**
  * @author Silvio Wangler
@@ -221,8 +222,8 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
 	}
 
 	@Override
-	public boolean supportsHttpHeadMethodAutoGeneration() {
-		return false;
+	public boolean shouldGenerateHeadMethod() {
+		return DELEGATOR_RESOURCE.equals(getArtifactType());
 	}
 
 	@Override

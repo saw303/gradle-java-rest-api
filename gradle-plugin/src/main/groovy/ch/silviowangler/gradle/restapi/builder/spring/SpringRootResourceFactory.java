@@ -172,8 +172,8 @@ public class SpringRootResourceFactory extends AbstractResourceBuilder {
 	}
 
 	@Override
-	public boolean supportsHttpHeadMethodAutoGeneration() {
-		return true;
+	public boolean shouldGenerateHeadMethod() {
+		return false;
 	}
 
 	@Override

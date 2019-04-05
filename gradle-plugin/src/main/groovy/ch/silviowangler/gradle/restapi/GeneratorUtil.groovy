@@ -175,13 +175,12 @@ class GeneratorUtil {
 				case TargetFramework.SPRING_BOOT:
 					return PluginTypes.SPRING_RESPONSE_ENTITY.typeName
 				case TargetFramework.MICRONAUT:
-					return PluginTypes.MICRONAUT_HTTP_STATUS.typeName
+					return PluginTypes.MICRONAUT_HTTP_RESPONSE.typeName
 				default:
 					throw new RuntimeException("Unknown framework ${targetFramework}")
 			}
 		} else if (verb == 'Put' || verb == 'Post') {
 			if (collection) {
-
 				switch (targetFramework) {
 					case TargetFramework.JAX_RS:
 						return PluginTypes.JAX_RS_RESPONSE.typeName

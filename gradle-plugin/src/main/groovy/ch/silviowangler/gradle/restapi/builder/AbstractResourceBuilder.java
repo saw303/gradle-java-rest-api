@@ -218,7 +218,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
 			this.currentVerb = verb;
 
-			if (HEAD_METHODS.contains(verb.getVerb()) && supportsHttpHeadMethodAutoGeneration()) {
+			if (HEAD_METHODS.contains(verb.getVerb()) && !shouldGenerateHeadMethod()) {
 				continue;
 			}
 
@@ -636,7 +636,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 			this.typeBuilder.addMethod(createMethodNotAllowedHandler("getEntityAutoAnswer").build());
 		}
 
-		if (!supportsHttpHeadMethodAutoGeneration()) {
+		if (shouldGenerateHeadMethod()) {
 			if (!hasHeadCollectionVerb() && !directEntity) {
 				this.currentVerb = new Verb(HEAD_COLLECTION);
 				this.typeBuilder.addMethod(createMethodNotAllowedHandler("headCollectionAutoAnswer").build());
