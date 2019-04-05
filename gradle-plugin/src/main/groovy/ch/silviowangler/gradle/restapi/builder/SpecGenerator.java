@@ -42,7 +42,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -52,10 +56,10 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 public class SpecGenerator {
 
-    private static final Set<ClassName> resourceTypeCache = new HashSet<>();
-    private static final Gson gson;
+	private static final Set<ClassName> resourceTypeCache = new HashSet<>();
+	private static final Gson gson;
 
-    static {
+	static {
 		gson = new GsonBuilder()
 				.registerTypeAdapter(GeneralDetails.class, new GeneralDetailsDeserializer())
 				.registerTypeAdapter(ResourceField.class, new ResourceFieldDeserializer())
@@ -63,46 +67,46 @@ public class SpecGenerator {
 				.create();
 	}
 
-    public static GeneratedSpecContainer generateType(File specFile, RestApiExtension extension) {
+	public static GeneratedSpecContainer generateType(File specFile, RestApiExtension extension) {
 
-        ResourceContractContainer resourceContractContainer = parseResourceContract(specFile, extension.getResponseEncoding());
+		ResourceContractContainer resourceContractContainer = parseResourceContract(specFile, extension.getResponseEncoding());
 
-        String packageName = String.format("%s.%s", extension.getPackageName(),
-                generatePackageName(resourceContractContainer.getResourceContract())).toLowerCase();
+		String packageName = String.format("%s.%s", extension.getPackageName(),
+				generatePackageName(resourceContractContainer.getResourceContract())).toLowerCase();
 
-        ResourceBuilder resourceBuilder = ResourceBuilderFactory
-                .getRootResourceBuilder(extension)
-                .withResourceContractContainer(resourceContractContainer)
-                .withCurrentPackageName(packageName)
-                .withTimestampInGeneratedAnnotation(extension.isGenerateDateAttribute());
+		ResourceBuilder resourceBuilder = ResourceBuilderFactory
+				.getRootResourceBuilder(extension)
+				.withResourceContractContainer(resourceContractContainer)
+				.withCurrentPackageName(packageName)
+				.withTimestampInGeneratedAnnotation(extension.isGenerateDateAttribute());
 
-        if (extension.getResponseEncoding() != null) {
-            resourceBuilder.withResponseEncoding(extension.getResponseEncoding());
-        }
+		if (extension.getResponseEncoding() != null) {
+			resourceBuilder.withResponseEncoding(extension.getResponseEncoding());
+		}
 
-        Set<TypeSpec> types = resourceBuilder.buildResourceTypes(resourceTypeCache, packageName);
+		Set<TypeSpec> types = resourceBuilder.buildResourceTypes(resourceTypeCache, packageName);
 
-        for (TypeSpec type : types) {
-            resourceTypeCache.add(ClassName.get(packageName, type.name));
-        }
+		for (TypeSpec type : types) {
+			resourceTypeCache.add(ClassName.get(packageName, type.name));
+		}
 
-        Set<TypeSpec> models = resourceBuilder.buildResourceModels(resourceTypeCache);
+		Set<TypeSpec> models = resourceBuilder.buildResourceModels(resourceTypeCache);
 
-        TypeSpec restInterface = resourceBuilder.buildResource();
-        TypeSpec restImplementation = resourceBuilder.buildResourceImpl();
+		TypeSpec restInterface = resourceBuilder.buildResource();
+		TypeSpec restImplementation = resourceBuilder.buildResourceImpl();
 
-        GeneratedSpecContainer result = new GeneratedSpecContainer();
-        result.setPackageName(packageName);
-        result.setRestInterface(restInterface);
-        result.setRestImplementation(restImplementation);
-        result.setModels(models);
-        result.setTypes(types);
+		GeneratedSpecContainer result = new GeneratedSpecContainer();
+		result.setPackageName(packageName);
+		result.setRestInterface(restInterface);
+		result.setRestImplementation(restImplementation);
+		result.setModels(models);
+		result.setTypes(types);
 
-        return result;
-    }
+		return result;
+	}
 
 	public static ResourceContractContainer parseResourceContract(File file) {
-    	return parseResourceContract(file, null);
+		return parseResourceContract(file, null);
 	}
 
 	public static ResourceContractContainer parseResourceContract(File file, Charset encoding) {
@@ -129,22 +133,22 @@ public class SpecGenerator {
 		}
 	}
 
-    private static String generatePackageName(ResourceContract resourceContract) {
+	private static String generatePackageName(ResourceContract resourceContract) {
 
-        GeneralDetails general = resourceContract.getGeneral();
-        String version = readVersion(general.getVersion());
-        String route = general.getxRoute().replace(":version", version);
+		GeneralDetails general = resourceContract.getGeneral();
+		String version = readVersion(general.getVersion());
+		String route = general.getxRoute().replace(":version", version);
 
-        List<String> tokens = Arrays.stream(route.split("\\/")).filter(r -> !r.startsWith(":") && r.length() > 0).collect(Collectors.toList());
+		List<String> tokens = Arrays.stream(route.split("\\/")).filter(r -> !r.startsWith(":") && r.length() > 0).collect(Collectors.toList());
 
-        if (tokens.size() <= 1) {
-            return version;
-        } else {
-            return String.join(".", tokens.toArray(new String[0]));
-        }
-    }
+		if (tokens.size() <= 1) {
+			return version;
+		} else {
+			return String.join(".", tokens.toArray(new String[0]));
+		}
+	}
 
-    private static String readVersion(String versionString) {
-        return String.format("v%s", versionString.split("\\.")[0]);
-    }
+	private static String readVersion(String versionString) {
+		return String.format("v%s", versionString.split("\\.")[0]);
+	}
 }
