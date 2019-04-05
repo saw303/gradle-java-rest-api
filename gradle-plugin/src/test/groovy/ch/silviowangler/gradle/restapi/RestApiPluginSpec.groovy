@@ -549,7 +549,7 @@ class RestApiPluginSpec extends Specification {
 		task.exec()
 
 		then:
-		RuntimeException ex = thrown(RuntimeException)
+		IllegalStateException ex = thrown(IllegalStateException)
 
 		and:
 		ex.message == "Verb: [HEAD_ENTITY] Representation: [json] has no GET counterpart"

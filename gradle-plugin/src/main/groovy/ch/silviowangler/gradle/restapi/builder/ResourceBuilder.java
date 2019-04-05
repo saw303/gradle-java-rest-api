@@ -267,7 +267,7 @@ public interface ResourceBuilder {
 
 		if (methodName.startsWith("head") && isDelegateResourceClass) {
 			addHeadStatement(methodBuilder, context, paramNames);
-		} else if (!supportsInterfaces() && !isHandlerMethod(methodName) && ArtifactType.ABSTRACT_RESOURCE.equals(artifactType) && !methodName.endsWith("AutoAnswer") && !methodName.equals("getOptions")) {
+		} else if (!supportsInterfaces() && !isHandlerMethod(methodName) && ArtifactType.ABSTRACT_RESOURCE.equals(artifactType) && !methodName.endsWith("AutoAnswer") && !"getOptions".equals(methodName)) {
 			methodBuilder.addStatement("return handle$L($L)", CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, methodName), paramNames);
 		} else if (isDelegateResourceClass && !methodName.equals("getOptions")) {
 			if (TypeName.VOID.equals(context.getReturnType())) {

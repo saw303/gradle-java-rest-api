@@ -112,7 +112,7 @@ public class Representation implements Serializable {
 
 			representation.setMimetype(mimetype);
 		} catch (MimeTypeParseException e) {
-			throw new RuntimeException("unable to create json mime type", e);
+			throw new UnsupportedOperationException("Unable to create JSON mime type", e);
 		}
 		representation.setName("json");
 		return representation;

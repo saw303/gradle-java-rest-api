@@ -557,7 +557,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
 		for (String headRepresentation : headRepresentations) {
 			if (!getRepresentations.contains(headRepresentation.replace("HEAD", "GET"))) {
-				throw new RuntimeException(String.format("%s has no GET counterpart", headRepresentation));
+				throw new IllegalStateException(String.format("%s has no GET counterpart", headRepresentation));
 			}
 		}
 	}
