@@ -20,8 +20,6 @@ import javax.validation.constraints.NotNull;
     value = "ch.silviowangler.restapi"
 )
 public class PartnerPutResourceModel implements Serializable, ResourceModel, Identifiable<String> {
-  public static final String TYPE = "application/ch.silviowangler.partner";
-
   /**
    * VOKey
    */

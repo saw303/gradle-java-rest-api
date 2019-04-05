@@ -16,8 +16,6 @@ import javax.money.MonetaryAmount;
     value = "ch.silviowangler.restapi"
 )
 public class PartnerGetResourceModel implements Serializable, ResourceModel, Identifiable<String> {
-  public static final String TYPE = "application/ch.silviowangler.partner";
-
   /**
    * VOKey
    */

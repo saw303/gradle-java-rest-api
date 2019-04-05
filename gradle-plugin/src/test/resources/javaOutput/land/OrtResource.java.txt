@@ -47,7 +47,7 @@ public interface OrtResource {
   OrtGetResourceModel getEntity(@PathParam("id") String id, @PathParam("land") String land);
 
   @GET
-  @Produces({ "image/jpeg; charset=UTF-8" })
+  @Produces({ "image/jpeg" })
   @Path("{id}.jpeg")
   Response getEntityJpeg(@PathParam("id") String id, @PathParam("land") String land);
 

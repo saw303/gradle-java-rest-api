@@ -30,26 +30,11 @@ import ch.silviowangler.gradle.restapi.builder.ArtifactType;
 import ch.silviowangler.rest.contract.model.v1.Representation;
 import ch.silviowangler.rest.contract.model.v1.Verb;
 import ch.silviowangler.rest.contract.model.v1.VerbParameter;
-import com.squareup.javapoet.AnnotationSpec;
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.*;
 
-import java.nio.charset.Charset;
 import java.util.*;
 
-import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_HTTP_MEDIA_TYPE;
-import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_HTTP_STATUS;
-import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_PATH_VARIABLE;
-import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_REQUEST_BODY;
-import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_REQUEST_MAPPING;
-import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_REQUEST_METHOD;
-import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_REQUEST_PARAM;
-import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_RESPONSE_BODY;
-import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_RESPONSE_ENTITY;
-import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_RESPONSE_STATUS;
-import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_REST_CONTROLLER;
+import static ch.silviowangler.gradle.restapi.PluginTypes.*;
 
 public class SpringRootResourceFactory extends AbstractResourceBuilder {
 
@@ -148,23 +133,11 @@ public class SpringRootResourceFactory extends AbstractResourceBuilder {
 			} else {
 				builder.addMember("path", "\"/{$L}.$L\"", "id", representation.getName());
 			}
-		} else if(explicitExtensions) {
+		} else if (explicitExtensions) {
 			builder.addMember("path", "\"/.$L\"", representation.getName());
 		}
 
-		if (representation.isJson() && getResponseEncoding() != null) {
-
-			if (Charset.forName("UTF-8").equals(getResponseEncoding())) {
-				builder.addMember("produces", "$T.APPLICATION_JSON_UTF8_VALUE", SPRING_HTTP_MEDIA_TYPE.getClassName());
-			} else {
-				builder.addMember("produces", "application/json;charset=$L", getResponseEncoding().name());
-			}
-
-		} else if (representation.isJson()) {
-			builder.addMember("produces", "$T.APPLICATION_JSON_VALUE", SPRING_HTTP_MEDIA_TYPE.getClassName());
-		} else {
-			builder.addMember("produces", "$S", representation.getMimetype());
-		}
+		builder.addMember("produces", "$S", representation.getMimetype().toString());
 
 		annotations.add(builder.build());
 
@@ -196,6 +169,11 @@ public class SpringRootResourceFactory extends AbstractResourceBuilder {
 	@Override
 	public PluginTypes getPathVariableAnnotationType() {
 		return SPRING_PATH_VARIABLE;
+	}
+
+	@Override
+	public boolean shouldGenerateHeadMethod() {
+		return false;
 	}
 
 	@Override

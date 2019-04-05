@@ -4,7 +4,6 @@ import java.util.Collection;
 import javax.annotation.Generated;
 import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,7 +24,7 @@ public abstract class RootResource {
 
   @RequestMapping(
       method = RequestMethod.OPTIONS,
-      produces = MediaType.APPLICATION_JSON_VALUE
+      produces = "application/json"
   )
   @ResponseBody
   public String getOptions() {
@@ -36,7 +35,7 @@ public abstract class RootResource {
 
   @RequestMapping(
       method = RequestMethod.GET,
-      produces = MediaType.APPLICATION_JSON_VALUE
+      produces = "application/json"
   )
   @ResponseBody
   public RootGetResourceModel getEntity() {
@@ -47,7 +46,7 @@ public abstract class RootResource {
 
   @RequestMapping(
       method = RequestMethod.PUT,
-      produces = MediaType.APPLICATION_JSON_VALUE
+      produces = "application/json"
   )
   @ResponseBody
   public ResponseEntity updateEntities(@Valid @RequestBody Collection<RootPutResourceModel> model) {
@@ -56,7 +55,7 @@ public abstract class RootResource {
 
   @RequestMapping(
       method = RequestMethod.POST,
-      produces = MediaType.APPLICATION_JSON_VALUE
+      produces = "application/json"
   )
   @ResponseBody
   public ResponseEntity createEntityAutoAnswer() {
@@ -65,7 +64,7 @@ public abstract class RootResource {
 
   @RequestMapping(
       method = RequestMethod.DELETE,
-      produces = MediaType.APPLICATION_JSON_VALUE
+      produces = "application/json"
   )
   @ResponseBody
   public ResponseEntity deleteCollectionAutoAnswer() {
@@ -75,7 +74,7 @@ public abstract class RootResource {
   @RequestMapping(
       method = RequestMethod.DELETE,
       path = "/{id}",
-      produces = MediaType.APPLICATION_JSON_VALUE
+      produces = "application/json"
   )
   @ResponseBody
   public ResponseEntity deleteEntityAutoAnswer(@PathVariable("id") String id) {
@@ -85,7 +84,7 @@ public abstract class RootResource {
   @RequestMapping(
       method = RequestMethod.PUT,
       path = "/{id}",
-      produces = MediaType.APPLICATION_JSON_VALUE
+      produces = "application/json"
   )
   @ResponseBody
   public ResponseEntity updateEntityAutoAnswer(@PathVariable("id") String id) {

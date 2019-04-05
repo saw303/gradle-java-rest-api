@@ -12,8 +12,6 @@ import javax.annotation.Generated;
     value = "ch.silviowangler.restapi"
 )
 public class RootGetResourceModel implements Serializable, ResourceModel, Identifiable<String> {
-  public static final String TYPE = "application/ch.silviowangler.root";
-
   /**
    * id
    */

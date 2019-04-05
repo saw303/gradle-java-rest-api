@@ -30,13 +30,7 @@ import com.google.gson.JsonPrimitive;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -118,7 +112,7 @@ public class FilterModel {
 
       if (value.startsWith("[") && value.endsWith("]")) {
         String values = value.replace("[", "").replace("]", "");
-        return Arrays.asList(values.split(",")).stream().collect(Collectors.toList());
+        return new ArrayList<>(Arrays.asList(values.split(",")));
       }
 
       throw new IllegalStateException("Value ist kein Array");

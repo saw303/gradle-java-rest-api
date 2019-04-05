@@ -1,4 +1,7 @@
-
 ext {
-    pomDescription = 'Java model for Gradle plugin'
+  pomDescription = 'Java model for Gradle plugin'
+}
+
+dependencies {
+  api 'javax.activation:activation:1.1.1'
 }

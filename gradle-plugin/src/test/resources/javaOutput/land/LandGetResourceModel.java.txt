@@ -13,8 +13,6 @@ import org.acme.rest.v1.CoordinatesType;
     value = "ch.silviowangler.restapi"
 )
 public class LandGetResourceModel implements Serializable, ResourceModel, Identifiable<String> {
-  public static final String TYPE = "application/ch.silviowangler.land";
-
   /**
    * VOKey
    */

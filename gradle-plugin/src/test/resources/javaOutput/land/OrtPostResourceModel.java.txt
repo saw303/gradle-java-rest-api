@@ -14,8 +14,6 @@ import org.acme.rest.v1.CoordinatesType;
     value = "ch.silviowangler.restapi"
 )
 public class OrtPostResourceModel implements Serializable, ResourceModel, Identifiable<String> {
-  public static final String TYPE = "application/ch.silviowangler.ort";
-
   /**
    * VOKey
    */
