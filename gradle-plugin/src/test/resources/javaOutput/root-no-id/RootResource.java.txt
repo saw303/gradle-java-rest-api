@@ -28,13 +28,13 @@ public class RootResource {
   }
 
   @Options
-  @Produces("application/json;charset=UTF-8")
+  @Produces("application/json; charset=UTF-8")
   public String getOptions() {
     return OPTIONS_CONTENT;
   }
 
-  @Produces("application/json;charset=UTF-8")
   @Get
+  @Produces("application/json; charset=UTF-8")
   public RootGetResourceModel getEntity() {
     return delegate.getEntity();
   }

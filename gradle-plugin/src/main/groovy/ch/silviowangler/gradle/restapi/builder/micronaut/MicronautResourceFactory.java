@@ -27,6 +27,7 @@ import ch.silviowangler.gradle.restapi.GeneratorUtil;
 import ch.silviowangler.gradle.restapi.PluginTypes;
 import ch.silviowangler.gradle.restapi.builder.AbstractResourceBuilder;
 import ch.silviowangler.gradle.restapi.builder.ArtifactType;
+import ch.silviowangler.gradle.restapi.builder.MethodContext;
 import ch.silviowangler.rest.contract.model.v1.Representation;
 import ch.silviowangler.rest.contract.model.v1.Verb;
 import ch.silviowangler.rest.contract.model.v1.VerbParameter;
@@ -150,7 +151,7 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
 	@Override
 	public Iterable<AnnotationSpec> getResourceMethodAnnotations(boolean applyId, Representation representation, String methodName) {
 
-		Set<AnnotationSpec> methodAnnotations = new HashSet<>();
+		List<AnnotationSpec> methodAnnotations = new ArrayList<>();
 		String httpMethod = getHttpMethod();
 
 		Map<String, Object> annotationsFields = new HashMap<>();
@@ -189,13 +190,8 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
 		}
 		annotationsFields.clear();
 
-		if (representation.isJson() && getResponseEncoding() != null) {
-			annotationsFields.put("value", String.format("application/json;charset=%s", getResponseEncoding().name()));
-		} else if (representation.isJson()) {
-			annotationsFields.put("value", "application/json");
-		} else {
-			annotationsFields.put("value", representation.getMimetype());
-		}
+		annotationsFields.put("value", representation.getMimetype());
+
 		methodAnnotations.add(createAnnotation(MICRONAUT_PRODUCES, annotationsFields));
 
 		List<String> responseStatusRequired = Arrays.asList("createEntity", "deleteEntity", "deleteCollection");
@@ -262,5 +258,19 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
 	@Override
 	public boolean inheritsFromResource() {
 		return false;
+	}
+
+	@Override
+	public void addHeadStatement(MethodSpec.Builder methodBuilder, MethodContext context, String params) {
+		String nameGetMethod = context.getMethodName().replace("head", "get");
+
+		methodBuilder.addStatement(
+				"return $T.buildHeadResponse(this.$L($L), $T.of($S))",
+				RESTAPI_RESPONSE_CREATOR.getClassName(),
+				nameGetMethod,
+				params,
+				MICRONAUT_HTTP_MEDIA_TYPE.getClassName(),
+				context.getRepresentation().getMimetype().toString()
+		);
 	}
 }

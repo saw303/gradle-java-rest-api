@@ -11,8 +11,6 @@ import javax.annotation.Generated;
     value = "ch.silviowangler.restapi"
 )
 public class SearchGetResourceModel implements Serializable, ResourceModel, Identifiable<String> {
-  public static final String TYPE = "application/json";
-
   /**
    * id
    */

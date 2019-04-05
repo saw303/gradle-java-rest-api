@@ -113,6 +113,25 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 	}
 
 	@Override
+	public MethodSpec.Builder createMethodNotAllowedHandler(String methodName) {
+		Representation representation = Representation.json(this.responseEncoding);
+
+		MethodContext context = new MethodContext(methodName, getMethodNowAllowedReturnType(), representation);
+		MethodSpec.Builder builder = createMethod(context);
+		generateMethodNotAllowedStatement(builder);
+
+		return builder;
+	}
+
+	@Override
+	public MethodSpec.Builder createMethod(String methodName, TypeName returnType) {
+		Representation representation = Representation.json(this.responseEncoding);
+
+		MethodContext context = new MethodContext(methodName, returnType, representation);
+		return createMethod(context);
+	}
+
+	@Override
 	public ResourceContractContainer getResourceContractContainer() {
 		return this.resourceContractContainer;
 	}
@@ -386,14 +405,6 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 			Optional<Representation> jsonRepresentation = verbGet.getRepresentations().stream().filter(r -> "json".equals(r.getName())).findAny();
 
 			if (jsonRepresentation.isPresent()) {
-				String mimeType = jsonRepresentation.get().getMimetype();
-
-				builder.addField(
-						FieldSpec.builder(String.class, "TYPE")
-								.addModifiers(PUBLIC, FINAL, STATIC)
-								.initializer("$S", mimeType)
-								.build()
-				);
 
 				Optional<ResourceField> idField = fields.stream().filter(f -> "id".equals(f.getName())).findAny();
 

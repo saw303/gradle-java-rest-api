@@ -23,7 +23,10 @@
  */
 package ch.silviowangler.rest.contract.model.v1;
 
+import javax.activation.MimeType;
+import javax.activation.MimeTypeParseException;
 import java.io.Serializable;
+import java.nio.charset.Charset;
 import java.util.Objects;
 
 /**
@@ -31,77 +34,87 @@ import java.util.Objects;
  */
 public class Representation implements Serializable {
 
-    private String name;
-    private String comment;
-    private String responseExample;
-    private boolean standard;
-    private String mimetype;
+	private String name;
+	private String comment;
+	private String responseExample;
+	private boolean standard;
+	private MimeType mimetype;
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public String getComment() {
-        return comment;
-    }
+	public String getComment() {
+		return comment;
+	}
 
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
 
-    public String getResponseExample() {
-        return responseExample;
-    }
+	public String getResponseExample() {
+		return responseExample;
+	}
 
-    public void setResponseExample(String responseExample) {
-        this.responseExample = responseExample;
-    }
+	public void setResponseExample(String responseExample) {
+		this.responseExample = responseExample;
+	}
 
-    public boolean isStandard() {
-        return standard;
-    }
+	public boolean isStandard() {
+		return standard;
+	}
 
-    public void setStandard(boolean standard) {
-        this.standard = standard;
-    }
+	public void setStandard(boolean standard) {
+		this.standard = standard;
+	}
 
-    public String getMimetype() {
-        return mimetype;
-    }
+	public MimeType getMimetype() {
+		return mimetype;
+	}
 
-    public void setMimetype(String mimetype) {
-        this.mimetype = mimetype;
-    }
+	public void setMimetype(MimeType mimetype) {
+		this.mimetype = mimetype;
+	}
 
-    public boolean isJson() {
-        return getName() != null && getName().equals("json");
-    }
+	public boolean isJson() {
+		return getName() != null && getName().equals("json");
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Representation that = (Representation) o;
-        return standard == that.standard &&
-                Objects.equals(name, that.name) &&
-                Objects.equals(comment, that.comment) &&
-                Objects.equals(responseExample, that.responseExample) &&
-                Objects.equals(mimetype, that.mimetype);
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Representation that = (Representation) o;
+		return standard == that.standard &&
+				Objects.equals(name, that.name) &&
+				Objects.equals(comment, that.comment) &&
+				Objects.equals(responseExample, that.responseExample) &&
+				Objects.equals(mimetype, that.mimetype);
+	}
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, comment, responseExample, standard, mimetype);
-    }
+	@Override
+	public int hashCode() {
+		return Objects.hash(name, comment, responseExample, standard, mimetype);
+	}
 
-    public static Representation json() {
-        Representation representation = new Representation();
-        representation.setMimetype("application/json");
-        representation.setName("json");
-        return representation;
-    }
+	public static Representation json(Charset charset) {
+		Representation representation = new Representation();
+		try {
+			MimeType mimetype = new MimeType("application", "json");
+
+			if (charset != null) {
+				mimetype.setParameter("charset", charset.toString());
+			}
+
+			representation.setMimetype(mimetype);
+		} catch (MimeTypeParseException e) {
+			throw new RuntimeException("unable to create json mime type", e);
+		}
+		representation.setName("json");
+		return representation;
+	}
 }

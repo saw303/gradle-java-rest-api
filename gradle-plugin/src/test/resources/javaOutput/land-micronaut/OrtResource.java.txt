@@ -37,22 +37,22 @@ public class OrtResource {
   }
 
   @Options
-  @Produces("application/json;charset=UTF-8")
+  @Produces("application/json; charset=UTF-8")
   public String getOptions() {
     return OPTIONS_CONTENT;
   }
 
-  @Status(HttpStatus.NO_CONTENT)
-  @Produces("application/json;charset=UTF-8")
   @Delete(
       uri = "/{id}"
   )
+  @Produces("application/json; charset=UTF-8")
+  @Status(HttpStatus.NO_CONTENT)
   public void deleteEntity(String id, String land) {
     delegate.deleteEntity(id, land);
   }
 
-  @Produces("application/json;charset=UTF-8")
   @Get
+  @Produces("application/json; charset=UTF-8")
   public Collection<OrtGetResourceModel> getCollection(String land) {
     return delegate.getCollection(land);
   }
@@ -60,30 +60,30 @@ public class OrtResource {
   @Get(
       uri = "/{id}"
   )
-  @Produces("application/json;charset=UTF-8")
+  @Produces("application/json; charset=UTF-8")
   public OrtGetResourceModel getEntity(String id, String land) {
     return delegate.getEntity(id, land);
   }
 
-  @Produces("image/jpeg")
   @Get(
       uri = "/{id}.jpeg"
   )
+  @Produces("image/jpeg")
   public HttpResponse getEntityJpeg(String id, String land) {
     return delegate.getEntityJpeg(id, land);
   }
 
-  @Status(HttpStatus.CREATED)
   @Post
-  @Produces("application/json;charset=UTF-8")
+  @Produces("application/json; charset=UTF-8")
+  @Status(HttpStatus.CREATED)
   public IdType createEntity(@Valid OrtPostResourceModel model, String land) {
     return delegate.createEntity(model, land);
   }
 
-  @Produces("application/json;charset=UTF-8")
   @Put(
       uri = "/{id}"
   )
+  @Produces("application/json; charset=UTF-8")
   public IdType updateEntity(@Valid OrtPutResourceModel model, String id, String land) {
     return delegate.updateEntity(model, id, land);
   }

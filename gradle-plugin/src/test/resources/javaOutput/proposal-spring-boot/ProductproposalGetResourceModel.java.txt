@@ -12,8 +12,6 @@ import javax.money.MonetaryAmount;
     value = "ch.silviowangler.restapi"
 )
 public class ProductproposalGetResourceModel implements Serializable, ResourceModel {
-  public static final String TYPE = "application/gesus.productproposal";
-
   /**
    * list-element for product proposal
    */

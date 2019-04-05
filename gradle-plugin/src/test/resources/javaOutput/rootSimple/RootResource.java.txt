@@ -2,7 +2,6 @@ package org.acme.rest.v1;
 
 import javax.annotation.Generated;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +21,7 @@ public abstract class RootResource {
 
   @RequestMapping(
       method = RequestMethod.OPTIONS,
-      produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+      produces = "application/json; charset=UTF-8"
   )
   @ResponseBody
   public String getOptions() {
@@ -31,7 +30,7 @@ public abstract class RootResource {
 
   @RequestMapping(
       method = RequestMethod.POST,
-      produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+      produces = "application/json; charset=UTF-8"
   )
   @ResponseBody
   public ResponseEntity createEntityAutoAnswer() {
@@ -40,7 +39,7 @@ public abstract class RootResource {
 
   @RequestMapping(
       method = RequestMethod.DELETE,
-      produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+      produces = "application/json; charset=UTF-8"
   )
   @ResponseBody
   public ResponseEntity deleteCollectionAutoAnswer() {
@@ -50,7 +49,7 @@ public abstract class RootResource {
   @RequestMapping(
       method = RequestMethod.DELETE,
       path = "/{id}",
-      produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+      produces = "application/json; charset=UTF-8"
   )
   @ResponseBody
   public ResponseEntity deleteEntityAutoAnswer(@PathVariable("id") String id) {
@@ -60,7 +59,7 @@ public abstract class RootResource {
   @RequestMapping(
       method = RequestMethod.GET,
       path = "/{id}",
-      produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+      produces = "application/json; charset=UTF-8"
   )
   @ResponseBody
   public ResponseEntity getEntityAutoAnswer(@PathVariable("id") String id) {
@@ -70,7 +69,7 @@ public abstract class RootResource {
   @RequestMapping(
       method = RequestMethod.PUT,
       path = "/{id}",
-      produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+      produces = "application/json; charset=UTF-8"
   )
   @ResponseBody
   public ResponseEntity updateEntityAutoAnswer(@PathVariable("id") String id) {

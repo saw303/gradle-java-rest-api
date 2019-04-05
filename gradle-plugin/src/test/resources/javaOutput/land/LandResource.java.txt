@@ -6,7 +6,6 @@ import javax.annotation.Generated;
 import javax.validation.Valid;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.HEAD;
 import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -43,23 +42,9 @@ public interface LandResource {
   LandGetResourceModel getEntity(@PathParam("id") String id);
 
   @GET
-  @Produces({ "application/pdf; charset=UTF-8" })
+  @Produces({ "application/pdf" })
   @Path("{id}.pdf")
   Response getEntityPdf(@PathParam("id") String id);
-
-  @HEAD
-  @Produces({ "application/json; charset=UTF-8" })
-  Response headCollection();
-
-  @HEAD
-  @Produces({ "application/json; charset=UTF-8" })
-  @Path("{id}")
-  Response headEntity(@PathParam("id") String id);
-
-  @HEAD
-  @Produces({ "application/pdf; charset=UTF-8" })
-  @Path("{id}.pdf")
-  Response headEntityPdf(@PathParam("id") String id);
 
   @POST
   @Produces({ "application/json; charset=UTF-8" })

@@ -154,22 +154,9 @@ public interface ResourceBuilder {
 
 	ClassName getMethodNowAllowedReturnType();
 
-	default MethodSpec.Builder createMethodNotAllowedHandler(String methodName) {
-		Representation representation = Representation.json();
+	MethodSpec.Builder createMethodNotAllowedHandler(String methodName);
 
-		MethodContext context = new MethodContext(methodName, getMethodNowAllowedReturnType(), representation);
-		MethodSpec.Builder builder = createMethod(context);
-		generateMethodNotAllowedStatement(builder);
-
-		return builder;
-	}
-
-	default MethodSpec.Builder createMethod(String methodName, TypeName returnType) {
-		Representation representation = Representation.json();
-
-		MethodContext context = new MethodContext(methodName, returnType, representation);
-		return createMethod(context);
-	}
+	MethodSpec.Builder createMethod(String methodName, TypeName returnType);
 
 	default MethodSpec.Builder createMethod(MethodContext context) {
 
@@ -278,7 +265,9 @@ public interface ResourceBuilder {
 
 		String paramNames = String.join(", ", names);
 
-		if (!supportsInterfaces() && !isHandlerMethod(methodName) && ArtifactType.ABSTRACT_RESOURCE.equals(artifactType) && !methodName.endsWith("AutoAnswer") && !methodName.equals("getOptions")) {
+		if (methodName.startsWith("head") && isDelegateResourceClass) {
+			addHeadStatement(methodBuilder, context, paramNames);
+		} else if (!supportsInterfaces() && !isHandlerMethod(methodName) && ArtifactType.ABSTRACT_RESOURCE.equals(artifactType) && !methodName.endsWith("AutoAnswer") && !methodName.equals("getOptions")) {
 			methodBuilder.addStatement("return handle$L($L)", CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, methodName), paramNames);
 		} else if (isDelegateResourceClass && !methodName.equals("getOptions")) {
 			if (TypeName.VOID.equals(context.getReturnType())) {
@@ -288,6 +277,10 @@ public interface ResourceBuilder {
 			}
 		}
 		return methodBuilder;
+	}
+
+	default void addHeadStatement(MethodSpec.Builder methodBuilder, MethodContext context, String params) {
+		throw new UnsupportedOperationException("Head method generation is not supported for the selected framework");
 	}
 
 	default boolean isHandlerMethod(String methodName) {

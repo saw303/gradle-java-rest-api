@@ -22,21 +22,6 @@ public class LandResourceImpl implements LandResource {
   }
 
   @Override
-  public Response headCollection() {
-    throw new NotYetImplementedException();
-  }
-
-  @Override
-  public Response headEntity(String id) {
-    throw new NotYetImplementedException();
-  }
-
-  @Override
-  public Response headEntityPdf(String id) {
-    throw new NotYetImplementedException();
-  }
-
-  @Override
   public IdType createEntity(LandPostResourceModel model) {
     throw new NotYetImplementedException();
   }

@@ -32,8 +32,6 @@ import ch.silviowangler.rest.contract.model.v1.Verb
 import ch.silviowangler.rest.contract.model.v1.VerbParameter
 import com.squareup.javapoet.*
 
-import java.nio.charset.Charset
-
 import static ch.silviowangler.gradle.restapi.PluginTypes.*
 
 class JaxRsRootResourceFactory extends AbstractResourceBuilder {
@@ -102,18 +100,7 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder {
     }
 
     private AnnotationSpec createProducesAnnotation(Representation representation) {
-
-        Charset charset = getResponseEncoding()
-        String mimetype = Objects.requireNonNull(representation.getMimetype(), "mime type must not be null")
-
-        if (charset && representation.isJson()) {
-            mimetype = "application/json; charset=${charset.name()}"
-        } else if (representation.isJson()) {
-            mimetype = "application/json"
-        } else if (charset) {
-            mimetype = "${mimetype}; charset=${charset.name()}"
-        }
-        AnnotationSpec.builder(JAX_RS_PRODUCES.typeName).addMember('value', '{ $S }', mimetype).build()
+        return AnnotationSpec.builder(JAX_RS_PRODUCES.typeName).addMember('value', '{ $S }', representation.getMimetype().toString()).build()
     }
 
 
@@ -145,7 +132,7 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder {
         specs << createProducesAnnotation(representation)
 
         if (applyId) {
-            specs << createAnnotation(JAX_RS_PATH, ['value': "{id}${representation.isJson() && !explicitExtensions ? '' : ".${representation.name}"}"])
+            specs << createAnnotation(JAX_RS_PATH, ['value': "{id}${jsonExtension(representation)}"])
         } else if(explicitExtensions) {
 			specs << createAnnotation(JAX_RS_PATH, ['value': ".${representation.name}"])
 		}
@@ -153,14 +140,18 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder {
         return specs
     }
 
-    @Override
+	private String jsonExtension(Representation representation) {
+		return representation.isJson() && !explicitExtensions ? '' : ".${representation.name}"
+	}
+
+	@Override
     PluginTypes getPathVariableAnnotationType() {
         return JAX_RS_PATH_PARAM
     }
 
 	@Override
 	boolean supportsHttpHeadMethodAutoGeneration() {
-		return false
+		return true
 	}
 
 	@Override

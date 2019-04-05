@@ -10,8 +10,6 @@ import javax.annotation.Generated;
     value = "ch.silviowangler.restapi"
 )
 public class RootGetResourceModel implements Serializable, ResourceModel {
-  public static final String TYPE = "application/ch.silviowangler.land";
-
   /**
    * Name des Landes
    */

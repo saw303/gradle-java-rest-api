@@ -36,10 +36,10 @@ public class MailResource {
     return OPTIONS_CONTENT;
   }
 
-  @Produces("application/json")
   @Get(
       uri = "/.json"
   )
+  @Produces("application/json")
   public MailGetResourceModel getEntity(String input) {
     return delegate.getEntity(input);
   }

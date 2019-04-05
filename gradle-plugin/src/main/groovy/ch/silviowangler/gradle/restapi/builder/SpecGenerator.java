@@ -26,8 +26,10 @@ package ch.silviowangler.gradle.restapi.builder;
 import ch.silviowangler.gradle.restapi.GeneratedSpecContainer;
 import ch.silviowangler.gradle.restapi.RestApiExtension;
 import ch.silviowangler.gradle.restapi.gson.GeneralDetailsDeserializer;
+import ch.silviowangler.gradle.restapi.gson.RepresentationDeserializer;
 import ch.silviowangler.gradle.restapi.gson.ResourceFieldDeserializer;
 import ch.silviowangler.rest.contract.model.v1.GeneralDetails;
+import ch.silviowangler.rest.contract.model.v1.Representation;
 import ch.silviowangler.rest.contract.model.v1.ResourceContract;
 import ch.silviowangler.rest.contract.model.v1.ResourceField;
 import com.google.gson.Gson;
@@ -38,12 +40,9 @@ import com.squareup.javapoet.TypeSpec;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -60,12 +59,13 @@ public class SpecGenerator {
 		gson = new GsonBuilder()
 				.registerTypeAdapter(GeneralDetails.class, new GeneralDetailsDeserializer())
 				.registerTypeAdapter(ResourceField.class, new ResourceFieldDeserializer())
+				.registerTypeAdapter(Representation.class, new RepresentationDeserializer())
 				.create();
 	}
 
     public static GeneratedSpecContainer generateType(File specFile, RestApiExtension extension) {
 
-        ResourceContractContainer resourceContractContainer = parseResourceContract(specFile);
+        ResourceContractContainer resourceContractContainer = parseResourceContract(specFile, extension.getResponseEncoding());
 
         String packageName = String.format("%s.%s", extension.getPackageName(),
                 generatePackageName(resourceContractContainer.getResourceContract())).toLowerCase();
@@ -102,6 +102,10 @@ public class SpecGenerator {
     }
 
 	public static ResourceContractContainer parseResourceContract(File file) {
+    	return parseResourceContract(file, null);
+	}
+
+	public static ResourceContractContainer parseResourceContract(File file, Charset encoding) {
 		Objects.requireNonNull(file, "file must not be null");
 
 		if (!file.exists()) {
@@ -110,6 +114,14 @@ public class SpecGenerator {
 
 		try {
 			ResourceContract resourceContract = gson.fromJson(new FileReader(file), ResourceContract.class);
+
+			if (encoding != null) {
+				resourceContract.getVerbs().stream()
+						.flatMap(verb -> verb.getRepresentations().stream())
+						.filter(representation -> "json".equals(representation.getMimetype().getSubType()))
+						.forEach(representation -> representation.getMimetype().setParameter("charset", encoding.toString()));
+			}
+
 			String plainText = new String(Files.readAllBytes(file.toPath()), UTF_8);
 			return new ResourceContractContainer(resourceContract, plainText, file.getName());
 		} catch (IOException e) {

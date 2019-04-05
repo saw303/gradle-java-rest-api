@@ -32,7 +32,6 @@ import ch.silviowangler.rest.contract.model.v1.Verb;
 import ch.silviowangler.rest.contract.model.v1.VerbParameter;
 import com.squareup.javapoet.*;
 
-import java.nio.charset.Charset;
 import java.util.*;
 
 import static ch.silviowangler.gradle.restapi.PluginTypes.*;
@@ -138,19 +137,7 @@ public class SpringRootResourceFactory extends AbstractResourceBuilder {
 			builder.addMember("path", "\"/.$L\"", representation.getName());
 		}
 
-		if (representation.isJson() && getResponseEncoding() != null) {
-
-			if (Charset.forName("UTF-8").equals(getResponseEncoding())) {
-				builder.addMember("produces", "$T.APPLICATION_JSON_UTF8_VALUE", SPRING_HTTP_MEDIA_TYPE.getClassName());
-			} else {
-				builder.addMember("produces", "application/json;charset=$L", getResponseEncoding().name());
-			}
-
-		} else if (representation.isJson()) {
-			builder.addMember("produces", "$T.APPLICATION_JSON_VALUE", SPRING_HTTP_MEDIA_TYPE.getClassName());
-		} else {
-			builder.addMember("produces", "$S", representation.getMimetype());
-		}
+		builder.addMember("produces", "$S", representation.getMimetype().toString());
 
 		annotations.add(builder.build());
 

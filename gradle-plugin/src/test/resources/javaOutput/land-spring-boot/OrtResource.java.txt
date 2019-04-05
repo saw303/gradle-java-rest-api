@@ -5,7 +5,6 @@ import java.util.Collection;
 import javax.annotation.Generated;
 import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,7 +26,7 @@ public abstract class OrtResource {
 
   @RequestMapping(
       method = RequestMethod.OPTIONS,
-      produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+      produces = "application/json; charset=UTF-8"
   )
   @ResponseBody
   public String getOptions() {
@@ -39,7 +38,7 @@ public abstract class OrtResource {
   @RequestMapping(
       method = RequestMethod.DELETE,
       path = "/{id}",
-      produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+      produces = "application/json; charset=UTF-8"
   )
   @ResponseBody
   @ResponseStatus(
@@ -54,7 +53,7 @@ public abstract class OrtResource {
 
   @RequestMapping(
       method = RequestMethod.GET,
-      produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+      produces = "application/json; charset=UTF-8"
   )
   @ResponseBody
   public Collection<OrtGetResourceModel> getCollection(@PathVariable("land") String land) {
@@ -66,7 +65,7 @@ public abstract class OrtResource {
   @RequestMapping(
       method = RequestMethod.GET,
       path = "/{id}",
-      produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+      produces = "application/json; charset=UTF-8"
   )
   @ResponseBody
   public OrtGetResourceModel getEntity(@PathVariable("id") String id,
@@ -90,7 +89,7 @@ public abstract class OrtResource {
 
   @RequestMapping(
       method = RequestMethod.POST,
-      produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+      produces = "application/json; charset=UTF-8"
   )
   @ResponseBody
   @ResponseStatus(
@@ -106,7 +105,7 @@ public abstract class OrtResource {
   @RequestMapping(
       method = RequestMethod.PUT,
       path = "/{id}",
-      produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+      produces = "application/json; charset=UTF-8"
   )
   @ResponseBody
   public IdType updateEntity(@Valid @RequestBody OrtPutResourceModel model,
@@ -116,7 +115,7 @@ public abstract class OrtResource {
 
   @RequestMapping(
       method = RequestMethod.DELETE,
-      produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+      produces = "application/json; charset=UTF-8"
   )
   @ResponseBody
   public ResponseEntity deleteCollectionAutoAnswer() {

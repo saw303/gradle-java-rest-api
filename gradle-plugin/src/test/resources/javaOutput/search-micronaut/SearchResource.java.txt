@@ -42,10 +42,10 @@ public class SearchResource {
     return OPTIONS_CONTENT;
   }
 
-  @Produces("application/json")
   @Get(
       uri = "/.json"
   )
+  @Produces("application/json")
   public SearchGetResourceModel getEntity(@Valid @QueryValue String q,
       @Valid @QueryValue @DateFormat @Nullable LocalDate startDate,
       @Valid @QueryValue @DateTimeFormat @Nullable Instant endTime) {
