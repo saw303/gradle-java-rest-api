@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
@@ -34,55 +34,56 @@ import java.util.Objects;
  */
 public class ResourceLink implements Serializable {
 
-    private String rel;
-    private String method;
-    private URI href;
+  private String rel;
+  private String method;
+  private URI href;
 
-    public ResourceLink(URI href) {
-        this.href = href;
-        this.rel = "self";
-        this.method = "GET";
-    }
+  public ResourceLink(URI href) {
+    this.href = href;
+    this.rel = "self";
+    this.method = "GET";
+  }
 
-    public ResourceLink(String rel, String method, URI href) {
-        this.rel = rel;
-        this.method = method;
-        this.href = href;
-    }
+  public ResourceLink(String rel, String method, URI href) {
+    this.rel = rel;
+    this.method = method;
+    this.href = href;
+  }
 
-    public String getRel() {
-        return rel;
-    }
+  public String getRel() {
+    return rel;
+  }
 
-    public String getMethod() {
-        return method;
-    }
+  public String getMethod() {
+    return method;
+  }
 
-    public URI getHref() {
-        return href;
-    }
+  public URI getHref() {
+    return href;
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ResourceLink that = (ResourceLink) o;
-        return Objects.equals(rel, that.rel) &&
-                Objects.equals(method, that.method) &&
-                Objects.equals(href, that.href);
-    }
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    ResourceLink that = (ResourceLink) o;
+    return Objects.equals(rel, that.rel)
+        && Objects.equals(method, that.method)
+        && Objects.equals(href, that.href);
+  }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(rel, method, href);
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hash(rel, method, href);
+  }
 
-	/**
-	 * Generates a self link from URI string representation.
-	 * @param uri the URI
-	 * @return a self link with that URI.
-	 */
-	public static ResourceLink selfLink(String uri) {
-    	return new ResourceLink(URI.create(uri));
-	}
+  /**
+   * Generates a self link from URI string representation.
+   *
+   * @param uri the URI
+   * @return a self link with that URI.
+   */
+  public static ResourceLink selfLink(String uri) {
+    return new ResourceLink(URI.create(uri));
+  }
 }

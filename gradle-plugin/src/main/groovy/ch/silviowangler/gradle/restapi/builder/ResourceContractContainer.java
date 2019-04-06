@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
@@ -25,30 +25,29 @@ package ch.silviowangler.gradle.restapi.builder;
 
 import ch.silviowangler.rest.contract.model.v1.ResourceContract;
 
-/**
- * @author Silvio Wangler
- */
+/** @author Silvio Wangler */
 public class ResourceContractContainer {
 
-    private final ResourceContract resourceContract;
-    private final String resourceContractPlainText;
-    private final String sourceFileName;
+  private final ResourceContract resourceContract;
+  private final String resourceContractPlainText;
+  private final String sourceFileName;
 
-    public ResourceContractContainer(ResourceContract resourceContract, String resourceContractPlainText, String sourceFileName) {
-        this.resourceContract = resourceContract;
-        this.resourceContractPlainText = resourceContractPlainText;
-        this.sourceFileName = sourceFileName;
-    }
+  public ResourceContractContainer(
+      ResourceContract resourceContract, String resourceContractPlainText, String sourceFileName) {
+    this.resourceContract = resourceContract;
+    this.resourceContractPlainText = resourceContractPlainText;
+    this.sourceFileName = sourceFileName;
+  }
 
-    public ResourceContract getResourceContract() {
-        return resourceContract;
-    }
+  public ResourceContract getResourceContract() {
+    return resourceContract;
+  }
 
-    public String getResourceContractPlainText() {
-        return resourceContractPlainText;
-    }
+  public String getResourceContractPlainText() {
+    return resourceContractPlainText;
+  }
 
-    public String getSourceFileName() {
-        return sourceFileName;
-    }
+  public String getSourceFileName() {
+    return sourceFileName;
+  }
 }

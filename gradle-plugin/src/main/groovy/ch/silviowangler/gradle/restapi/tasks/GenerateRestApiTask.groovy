@@ -39,93 +39,93 @@ import org.gradle.api.tasks.TaskAction
 class GenerateRestApiTask extends AbstractTask implements Specification {
 
 
-    public static final String GET_COLLECTION = 'GET_COLLECTION'
-    public static final String GET_ENTITY = 'GET_ENTITY'
-    public static final String HEAD_COLLECTION = 'HEAD_COLLECTION'
-    public static final String HEAD_ENTITY = 'HEAD_ENTITY'
-    public static final String POST = 'POST'
-    public static final String PUT = 'PUT'
-    public static final String PUT_ENTITY = 'PUT_ENTITY'
-    public static final String PUT_COLLECTION = 'PUT_COLLECTION'
-    public static final String DELETE_ENTITY = 'DELETE_ENTITY'
-    public static final String DELETE_COLLECTION = 'DELETE_COLLECTION'
+	public static final String GET_COLLECTION = 'GET_COLLECTION'
+	public static final String GET_ENTITY = 'GET_ENTITY'
+	public static final String HEAD_COLLECTION = 'HEAD_COLLECTION'
+	public static final String HEAD_ENTITY = 'HEAD_ENTITY'
+	public static final String POST = 'POST'
+	public static final String PUT = 'PUT'
+	public static final String PUT_ENTITY = 'PUT_ENTITY'
+	public static final String PUT_COLLECTION = 'PUT_COLLECTION'
+	public static final String DELETE_ENTITY = 'DELETE_ENTITY'
+	public static final String DELETE_COLLECTION = 'DELETE_COLLECTION'
 
-    @InputDirectory
-    File getOptionsSource() {
-        if (project.restApi.optionsSource) {
-            return project.restApi.optionsSource
-        }
-        return new File(GeneratorUtil.generatorInput(project), "spec")
-    }
+	@InputDirectory
+	File getOptionsSource() {
+		if (project.restApi.optionsSource) {
+			return project.restApi.optionsSource
+		}
+		return new File(GeneratorUtil.generatorInput(project), "spec")
+	}
 
 
-    @OutputDirectory
-    File getRootOutputDir() {
-        project.restApi.generatorOutput
-    }
+	@OutputDirectory
+	File getRootOutputDir() {
+		project.restApi.generatorOutput
+	}
 
-    @TaskAction
-    void exec() {
+	@TaskAction
+	void exec() {
 
-        if (!getRootOutputDir()) {
-            throw new GradleException("generatorOutput dir must be set")
-        }
+		if (!getRootOutputDir()) {
+			throw new GradleException("generatorOutput dir must be set")
+		}
 
-        logger.lifecycle "Generating REST artifacts ..."
-        long start = System.currentTimeMillis()
-        int amountOfGeneratedJavaSourceFiles = 0
-        final String fileSeparator = '/'
+		logger.lifecycle "Generating REST artifacts ..."
+		long start = System.currentTimeMillis()
+		int amountOfGeneratedJavaSourceFiles = 0
+		final String fileSeparator = '/'
 
-        RestApiExtension restApiExtension = project.restApi
+		RestApiExtension restApiExtension = project.restApi
 
-        List<File> specs = findSpecifications(getOptionsSource())
+		List<File> specs = findSpecifications(getOptionsSource())
 
-        logger.lifecycle("Found ${specs.size()} specification files (${specs.collect { it.name}})")
+		logger.lifecycle("Found ${specs.size()} specification files (${specs.collect { it.name}})")
 
-        for (File specFile in specs) {
+		for (File specFile in specs) {
 
-            println "Processing spec ${specFile.name}"
-            GeneratedSpecContainer specContainer = SpecGenerator.generateType(specFile, project.restApi as RestApiExtension)
+			println "Processing spec ${specFile.name}"
+			GeneratedSpecContainer specContainer = SpecGenerator.generateType(specFile, project.restApi as RestApiExtension)
 
-            for (TypeSpec model in specContainer.collectGeneratedTypes()) {
-                amountOfGeneratedJavaSourceFiles++
-                writeToFileSystem(specContainer.packageName, model, getRootOutputDir())
-            }
-            File file = new File(restApiExtension.generatorImplOutput, "${specContainer.packageName.replaceAll('\\.', fileSeparator)}${fileSeparator}${specContainer.restImplementation.name}.java")
+			for (TypeSpec model in specContainer.collectGeneratedTypes()) {
+				amountOfGeneratedJavaSourceFiles++
+				writeToFileSystem(specContainer.packageName, model, getRootOutputDir())
+			}
+			File file = new File(restApiExtension.generatorImplOutput, "${specContainer.packageName.replaceAll('\\.', fileSeparator)}${fileSeparator}${specContainer.restImplementation.name}.java")
 
-            if (!file.exists()) {
-                logger.lifecycle('Writing implementation {} to {}', file.name, restApiExtension.generatorImplOutput)
-                amountOfGeneratedJavaSourceFiles++
-                writeToFileSystem(specContainer.packageName, specContainer.restImplementation, restApiExtension.generatorImplOutput)
-            } else {
-                logger.lifecycle('Resource implementation {} exists. Skipping this one', file.name)
-            }
-        }
+			if (!file.exists()) {
+				logger.lifecycle('Writing implementation {} to {}', file.name, restApiExtension.generatorImplOutput)
+				amountOfGeneratedJavaSourceFiles++
+				writeToFileSystem(specContainer.packageName, specContainer.restImplementation, restApiExtension.generatorImplOutput)
+			} else {
+				logger.lifecycle('Resource implementation {} exists. Skipping this one', file.name)
+			}
+		}
 
-        logger.lifecycle "Done generating REST artifacts in {} milliseconds. (Processed JSON {} files and generated {} Java source code files)", System.currentTimeMillis() - start, specs.size(), amountOfGeneratedJavaSourceFiles
-    }
+		logger.lifecycle "Done generating REST artifacts in {} milliseconds. (Processed JSON {} files and generated {} Java source code files)", System.currentTimeMillis() - start, specs.size(), amountOfGeneratedJavaSourceFiles
+	}
 
-    private void writeToFileSystem(String packageName, TypeSpec typeSpec, File outputDir) {
+	private void writeToFileSystem(String packageName, TypeSpec typeSpec, File outputDir) {
 
-        Objects.requireNonNull(packageName, "Package name must be present")
-        Objects.requireNonNull(typeSpec, "Type spec must be present")
-        Objects.requireNonNull(outputDir, "output dir must be present")
+		Objects.requireNonNull(packageName, "Package name must be present")
+		Objects.requireNonNull(typeSpec, "Type spec must be present")
+		Objects.requireNonNull(outputDir, "output dir must be present")
 
-        if (!outputDir.canWrite()) {
-            throw new IllegalStateException("I must have permission to write to ${outputDir.absolutePath}")
-        }
+		if (!outputDir.canWrite()) {
+			throw new IllegalStateException("I must have permission to write to ${outputDir.absolutePath}")
+		}
 
-        JavaFile javaFile = JavaFile.builder(packageName, typeSpec).skipJavaLangImports(true).build()
+		JavaFile javaFile = JavaFile.builder(packageName, typeSpec).skipJavaLangImports(true).build()
 
-        logger.info("Writing {} ...", typeSpec)
-        if (isWriteToConsoleEnabled()) {
-            javaFile.writeTo(System.out)
-        }
-        logger.debug('Writing to {}', outputDir.absolutePath)
-        javaFile.writeTo(outputDir)
-    }
+		logger.info("Writing {} ...", typeSpec)
+		if (isWriteToConsoleEnabled()) {
+			javaFile.writeTo(System.out)
+		}
+		logger.debug('Writing to {}', outputDir.absolutePath)
+		javaFile.writeTo(outputDir)
+	}
 
-    private boolean isWriteToConsoleEnabled() {
-        getLogger().isDebugEnabled() || System.getProperty('silviowangler.rest-plugin.debug', 'false') != 'false'
-    }
+	private boolean isWriteToConsoleEnabled() {
+		getLogger().isDebugEnabled() || System.getProperty('silviowangler.rest-plugin.debug', 'false') != 'false'
+	}
 }

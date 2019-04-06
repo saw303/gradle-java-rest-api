@@ -28,16 +28,16 @@ package ch.silviowangler.gradle.restapi.diagrams
  */
 class Knot<T> {
 
-    T data
-    Knot<T> parent
-    List<Knot<T>> children = []
+	T data
+	Knot<T> parent
+	List<Knot<T>> children = []
 
-    Knot(T data) {
-        this(data, null)
-    }
+	Knot(T data) {
+		this(data, null)
+	}
 
-    Knot(T data, Knot<T> parent) {
-        this.data = data
-        this.parent = parent
-    }
+	Knot(T data, Knot<T> parent) {
+		this.data = data
+		this.parent = parent
+	}
 }

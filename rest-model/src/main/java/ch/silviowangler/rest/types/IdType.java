@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
@@ -27,7 +27,6 @@ import ch.silviowangler.rest.model.Identifiable;
 import ch.silviowangler.rest.model.ResourceLink;
 import ch.silviowangler.rest.model.ResourceModel;
 import ch.silviowangler.rest.model.SelfLinkProvider;
-
 import java.io.Serializable;
 import java.util.Optional;
 
@@ -38,40 +37,40 @@ import java.util.Optional;
  */
 public class IdType implements ResourceModel, Identifiable<String>, SelfLinkProvider, Serializable {
 
-	private String id;
-	private transient String path;
+  private String id;
+  private transient String path;
 
-	public IdType() {
-		this(null);
-	}
+  public IdType() {
+    this(null);
+  }
 
-	public IdType(String id) {
-		this(id, null);
-	}
+  public IdType(String id) {
+    this(id, null);
+  }
 
-	public IdType(String id, String path) {
-		this.id = id;
-		this.path = path;
-	}
+  public IdType(String id, String path) {
+    this.id = id;
+    this.path = path;
+  }
 
-	@Override
-	public String getId() {
-		return id;
-	}
+  @Override
+  public String getId() {
+    return id;
+  }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+  public void setId(String id) {
+    this.id = id;
+  }
 
-	@Override
-	public Optional<ResourceLink> selfLink() {
+  @Override
+  public Optional<ResourceLink> selfLink() {
 
-		ResourceLink selfLink = null;
+    ResourceLink selfLink = null;
 
-		if (this.path != null) {
-			selfLink = ResourceLink.selfLink(this.path);
-		}
+    if (this.path != null) {
+      selfLink = ResourceLink.selfLink(this.path);
+    }
 
-		return Optional.ofNullable(selfLink);
-	}
+    return Optional.ofNullable(selfLink);
+  }
 }

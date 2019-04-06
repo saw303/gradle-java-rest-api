@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
@@ -29,16 +29,16 @@ import io.micronaut.http.MutableHttpResponse;
 
 public class ResponseCreator {
 
-	@SuppressWarnings("unchecked")
-	public static HttpResponse buildHeadResponse(Object entity, MediaType contentType) {
-		if (entity == null) {
-			return HttpResponse.notFound().header("Content-Type", contentType);
-		} else if (entity instanceof HttpResponse) {
-			if (entity instanceof MutableHttpResponse) {
-				((MutableHttpResponse)entity).body(null);
-			}
-			return (HttpResponse) entity;
-		}
-		return HttpResponse.ok().header("Content-Type", contentType);
-	}
+  @SuppressWarnings("unchecked")
+  public static HttpResponse buildHeadResponse(Object entity, MediaType contentType) {
+    if (entity == null) {
+      return HttpResponse.notFound().header("Content-Type", contentType);
+    } else if (entity instanceof HttpResponse) {
+      if (entity instanceof MutableHttpResponse) {
+        ((MutableHttpResponse) entity).body(null);
+      }
+      return (HttpResponse) entity;
+    }
+    return HttpResponse.ok().header("Content-Type", contentType);
+  }
 }

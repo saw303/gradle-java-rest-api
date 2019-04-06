@@ -30,21 +30,21 @@ import com.squareup.javapoet.TypeSpec
  */
 class GeneratedSpecContainer {
 
-    String packageName
-    TypeSpec restInterface
-    TypeSpec restImplementation
-    Collection<TypeSpec> models
-    Collection<TypeSpec> types
+	String packageName
+	TypeSpec restInterface
+	TypeSpec restImplementation
+	Collection<TypeSpec> models
+	Collection<TypeSpec> types
 
 
-    Iterable<TypeSpec> collectGeneratedTypes() {
+	Iterable<TypeSpec> collectGeneratedTypes() {
 
-        List<TypeSpec> all = []
+		List<TypeSpec> all = []
 
-        all << restInterface
-        all.addAll(models)
-        all.addAll(types)
+		all << restInterface
+		all.addAll(models)
+		all.addAll(types)
 
-        return all
-    }
+		return all
+	}
 }

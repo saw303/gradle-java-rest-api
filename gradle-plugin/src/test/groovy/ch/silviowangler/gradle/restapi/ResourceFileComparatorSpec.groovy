@@ -28,43 +28,53 @@ import spock.lang.Specification
 class ResourceFileComparatorSpec extends Specification {
 
 
-    void "Sort files in the correct order"() {
+	void "Sort files in the correct order"() {
 
-        given:
-        def files = [
-                new File('zen.a.v1.json'),
-                new File('zen.v1.json'),
-                new File('zan.v1.json'),
-                new File('zen.b.v1.json'),
-                new File('root.v1.json')
-        ]
+		given:
+		def files = [
+			new File('zen.a.v1.json'),
+			new File('zen.v1.json'),
+			new File('zan.v1.json'),
+			new File('zen.b.v1.json'),
+			new File('root.v1.json')
+		]
 
-        and:
-        Collections.sort(files, new ResourceFileComparator())
+		and:
+		Collections.sort(files, new ResourceFileComparator())
 
-        and:
-        def names = files.collect { f -> f.name }
+		and:
+		def names = files.collect { f -> f.name }
 
-        expect:
-        names == ['root.v1.json', 'zan.v1.json', 'zen.v1.json', 'zen.a.v1.json', 'zen.b.v1.json']
-    }
+		expect:
+		names == [
+			'root.v1.json',
+			'zan.v1.json',
+			'zen.v1.json',
+			'zen.a.v1.json',
+			'zen.b.v1.json'
+		]
+	}
 
-    void "Sort files in the correct order 2"() {
+	void "Sort files in the correct order 2"() {
 
-        given:
-        def files = [
-                new File('root.v1.json'),
-                new File('land.ort.v1.json'),
-                new File('land.v1.json')
-        ]
+		given:
+		def files = [
+			new File('root.v1.json'),
+			new File('land.ort.v1.json'),
+			new File('land.v1.json')
+		]
 
-        and:
-        Collections.sort(files, new ResourceFileComparator())
+		and:
+		Collections.sort(files, new ResourceFileComparator())
 
-        and:
-        def names = files.collect { f -> f.name }
+		and:
+		def names = files.collect { f -> f.name }
 
-        expect:
-        names == ['root.v1.json', 'land.v1.json', 'land.ort.v1.json']
-    }
+		expect:
+		names == [
+			'root.v1.json',
+			'land.v1.json',
+			'land.ort.v1.json'
+		]
+	}
 }

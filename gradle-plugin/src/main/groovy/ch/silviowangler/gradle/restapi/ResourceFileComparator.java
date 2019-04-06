@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
@@ -23,39 +23,36 @@
  */
 package ch.silviowangler.gradle.restapi;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.util.Comparator;
 import java.util.Objects;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ResourceFileComparator implements Comparator<File> {
 
-	private static final Logger log = LoggerFactory.getLogger(ResourceFileComparator.class);
+  private static final Logger log = LoggerFactory.getLogger(ResourceFileComparator.class);
 
+  @Override
+  public int compare(File fileA, File fileB) {
+    final String fileNameA = Objects.requireNonNull(fileA, "fileA must not be null").getName();
+    final String fileNameB = Objects.requireNonNull(fileB, "fileB must not be null").getName();
 
-	@Override
-	public int compare(File fileA, File fileB) {
-		final String fileNameA = Objects.requireNonNull(fileA, "fileA must not be null").getName();
-		final String fileNameB = Objects.requireNonNull(fileB, "fileB must not be null").getName();
+    if (fileNameA.startsWith("root")) return -1;
+    if (fileNameB.startsWith("root")) return 1;
 
-		if (fileNameA.startsWith("root")) return -1;
-		if (fileNameB.startsWith("root")) return 1;
+    long countA = fileNameA.codePoints().filter(ch -> ch == '.').count();
+    long countB = fileNameB.codePoints().filter(ch -> ch == '.').count();
 
+    int result;
 
-		long countA = fileNameA.codePoints().filter(ch -> ch == '.').count();
-		long countB = fileNameB.codePoints().filter(ch -> ch == '.').count();
-
-		int result;
-
-		if (countA == countB) {
-			result = fileNameA.compareTo(fileNameB);
-		}
-		else {
-			result = Long.valueOf(countA).compareTo(Long.valueOf(countB));
-		}
-		log.debug("Comparison between {} and {} results in {}", fileA.getName(), fileB.getName(), result);
-		return result;
-	}
+    if (countA == countB) {
+      result = fileNameA.compareTo(fileNameB);
+    } else {
+      result = Long.valueOf(countA).compareTo(Long.valueOf(countB));
+    }
+    log.debug(
+        "Comparison between {} and {} results in {}", fileA.getName(), fileB.getName(), result);
+    return result;
+  }
 }

@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
@@ -28,52 +28,52 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Entity model data type that contains the {@link ResourceModel} in the {@code data} field.
- * The {@code links} contains HATEOAS {@link ResourceLink} links.
+ * Entity model data type that contains the {@link ResourceModel} in the {@code data} field. The
+ * {@code links} contains HATEOAS {@link ResourceLink} links.
  *
  * @author Silvio Wangler
  */
 public class EntityModel implements Serializable {
 
-    private ResourceModel data;
-    private List<ResourceLink> links;
-    private List<Expand> expands;
+  private ResourceModel data;
+  private List<ResourceLink> links;
+  private List<Expand> expands;
 
-	public EntityModel() {
-		this(null);
-	}
+  public EntityModel() {
+    this(null);
+  }
 
-	public EntityModel(ResourceModel data) {
-		this(data, new ArrayList<>());
-	}
+  public EntityModel(ResourceModel data) {
+    this(data, new ArrayList<>());
+  }
 
-	public EntityModel(ResourceModel data, List<ResourceLink> links) {
-		this.data = data;
-		this.links = links;
-		this.expands = new ArrayList<>();
-	}
+  public EntityModel(ResourceModel data, List<ResourceLink> links) {
+    this.data = data;
+    this.links = links;
+    this.expands = new ArrayList<>();
+  }
 
-	public ResourceModel getData() {
-        return data;
-    }
+  public ResourceModel getData() {
+    return data;
+  }
 
-    public void setData(ResourceModel data) {
-        this.data = data;
-    }
+  public void setData(ResourceModel data) {
+    this.data = data;
+  }
 
-    public List<ResourceLink> getLinks() {
-        return links;
-    }
+  public List<ResourceLink> getLinks() {
+    return links;
+  }
 
-    public void setLinks(List<ResourceLink> links) {
-        this.links = links;
-    }
+  public void setLinks(List<ResourceLink> links) {
+    this.links = links;
+  }
 
-	public List<Expand> getExpands() {
-		return expands;
-	}
+  public List<Expand> getExpands() {
+    return expands;
+  }
 
-	public void setExpands(List<Expand> expands) {
-		this.expands = expands;
-	}
+  public void setExpands(List<Expand> expands) {
+    this.expands = expands;
+  }
 }

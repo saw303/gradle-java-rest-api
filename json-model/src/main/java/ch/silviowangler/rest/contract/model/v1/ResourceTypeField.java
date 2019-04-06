@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
@@ -26,92 +26,90 @@ package ch.silviowangler.rest.contract.model.v1;
 import java.io.Serializable;
 import java.util.Objects;
 
-/**
- * @author Silvio Wangler
- */
+/** @author Silvio Wangler */
 public class ResourceTypeField implements Serializable {
 
-    private String name;
-    private String type;
-    private String options;
-    private String min;
-    private String max;
-    private String multiple;
-    private String defaultValue;
+  private String name;
+  private String type;
+  private String options;
+  private String min;
+  private String max;
+  private String multiple;
+  private String defaultValue;
 
-    public String getName() {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public String getType() {
-        return type;
-    }
+  public String getType() {
+    return type;
+  }
 
-    public void setType(String type) {
-        this.type = type;
-    }
+  public void setType(String type) {
+    this.type = type;
+  }
 
-    public String getOptions() {
-        return options;
-    }
+  public String getOptions() {
+    return options;
+  }
 
-    public void setOptions(String options) {
-        this.options = options;
-    }
+  public void setOptions(String options) {
+    this.options = options;
+  }
 
-    public String getMin() {
-        return min;
-    }
+  public String getMin() {
+    return min;
+  }
 
-    public void setMin(String min) {
-        this.min = min;
-    }
+  public void setMin(String min) {
+    this.min = min;
+  }
 
-    public String getMax() {
-        return max;
-    }
+  public String getMax() {
+    return max;
+  }
 
-    public void setMax(String max) {
-        this.max = max;
-    }
+  public void setMax(String max) {
+    this.max = max;
+  }
 
-    public String getMultiple() {
-        return multiple;
-    }
+  public String getMultiple() {
+    return multiple;
+  }
 
-    public void setMultiple(String multiple) {
-        this.multiple = multiple;
-    }
+  public void setMultiple(String multiple) {
+    this.multiple = multiple;
+  }
 
-    public String getDefaultValue() {
-        return defaultValue;
-    }
+  public String getDefaultValue() {
+    return defaultValue;
+  }
 
-    public void setDefaultValue(String defaultValue) {
-        this.defaultValue = defaultValue;
-    }
+  public void setDefaultValue(String defaultValue) {
+    this.defaultValue = defaultValue;
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ResourceTypeField that = (ResourceTypeField) o;
-        return Objects.equals(name, that.name) &&
-                Objects.equals(type, that.type) &&
-                Objects.equals(options, that.options) &&
-                Objects.equals(min, that.min) &&
-                Objects.equals(max, that.max) &&
-                Objects.equals(multiple, that.multiple) &&
-                Objects.equals(defaultValue, that.defaultValue);
-    }
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    ResourceTypeField that = (ResourceTypeField) o;
+    return Objects.equals(name, that.name)
+        && Objects.equals(type, that.type)
+        && Objects.equals(options, that.options)
+        && Objects.equals(min, that.min)
+        && Objects.equals(max, that.max)
+        && Objects.equals(multiple, that.multiple)
+        && Objects.equals(defaultValue, that.defaultValue);
+  }
 
-    @Override
-    public int hashCode() {
+  @Override
+  public int hashCode() {
 
-        return Objects.hash(name, type, options, min, max, multiple, defaultValue);
-    }
+    return Objects.hash(name, type, options, min, max, multiple, defaultValue);
+  }
 }

@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
@@ -27,42 +27,39 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * @author Silvio Wangler
- */
+/** @author Silvio Wangler */
 public class ResourceTypes implements Serializable {
 
-    private String name;
-    private List<ResourceTypeField> fields;
+  private String name;
+  private List<ResourceTypeField> fields;
 
-    public String getName() {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public List<ResourceTypeField> getFields() {
-        return fields;
-    }
+  public List<ResourceTypeField> getFields() {
+    return fields;
+  }
 
-    public void setFields(List<ResourceTypeField> fields) {
-        this.fields = fields;
-    }
+  public void setFields(List<ResourceTypeField> fields) {
+    this.fields = fields;
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ResourceTypes that = (ResourceTypes) o;
-        return Objects.equals(name, that.name) &&
-                Objects.equals(fields, that.fields);
-    }
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    ResourceTypes that = (ResourceTypes) o;
+    return Objects.equals(name, that.name) && Objects.equals(fields, that.fields);
+  }
 
-    @Override
-    public int hashCode() {
+  @Override
+  public int hashCode() {
 
-        return Objects.hash(name, fields);
-    }
+    return Objects.hash(name, fields);
+  }
 }

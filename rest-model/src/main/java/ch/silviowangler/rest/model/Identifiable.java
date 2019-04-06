@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
@@ -30,10 +30,10 @@ package ch.silviowangler.rest.model;
  */
 public interface Identifiable<T> {
 
-	/**
-	 * Returns the id of the identifiable.
-	 *
-	 * @return its id
-	 */
-	T getId();
+  /**
+   * Returns the id of the identifiable.
+   *
+   * @return its id
+   */
+  T getId();
 }

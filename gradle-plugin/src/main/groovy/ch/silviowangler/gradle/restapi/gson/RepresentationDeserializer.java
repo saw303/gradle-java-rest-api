@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
@@ -25,44 +25,45 @@ package ch.silviowangler.gradle.restapi.gson;
 
 import ch.silviowangler.rest.contract.model.v1.Representation;
 import com.google.gson.*;
-
-import javax.activation.MimeType;
-import javax.activation.MimeTypeParseException;
 import java.lang.reflect.Type;
 import java.util.Optional;
+import javax.activation.MimeType;
+import javax.activation.MimeTypeParseException;
 
 public class RepresentationDeserializer implements JsonDeserializer<Representation> {
-	@Override
-	public Representation deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-		Representation representation = new Representation();
+  @Override
+  public Representation deserialize(
+      JsonElement json, Type typeOfT, JsonDeserializationContext context)
+      throws JsonParseException {
+    Representation representation = new Representation();
 
-		JsonObject jsonObject = json.getAsJsonObject();
-		representation.setName(jsonObject.get("name").getAsString());
-		representation.setComment(jsonObject.get("comment").getAsString());
-		representation.setResponseExample(jsonObject.get("responseExample").getAsString());
-		representation.setStandard(readBool(jsonObject.get("isDefault")).orElse(Boolean.FALSE));
-		String mimeType = jsonObject.get("mimetype").getAsString();
+    JsonObject jsonObject = json.getAsJsonObject();
+    representation.setName(jsonObject.get("name").getAsString());
+    representation.setComment(jsonObject.get("comment").getAsString());
+    representation.setResponseExample(jsonObject.get("responseExample").getAsString());
+    representation.setStandard(readBool(jsonObject.get("isDefault")).orElse(Boolean.FALSE));
+    String mimeType = jsonObject.get("mimetype").getAsString();
 
-		try {
+    try {
 
-			if ("json".equals(representation.getName())) {
-				representation.setMimetype(new MimeType("application", "json"));
-			} else {
-				representation.setMimetype(new MimeType(mimeType));
-			}
+      if ("json".equals(representation.getName())) {
+        representation.setMimetype(new MimeType("application", "json"));
+      } else {
+        representation.setMimetype(new MimeType(mimeType));
+      }
 
-		} catch (MimeTypeParseException e) {
-			throw new JsonParseException("Cannot parse mime type " + mimeType, e);
-		}
+    } catch (MimeTypeParseException e) {
+      throw new JsonParseException("Cannot parse mime type " + mimeType, e);
+    }
 
-		return representation;
-	}
+    return representation;
+  }
 
-	private Optional<Boolean> readBool(JsonElement jsonElement) {
+  private Optional<Boolean> readBool(JsonElement jsonElement) {
 
-		if (jsonElement != null) {
-			return Optional.of(jsonElement.getAsBoolean());
-		}
-		return Optional.empty();
-	}
+    if (jsonElement != null) {
+      return Optional.of(jsonElement.getAsBoolean());
+    }
+    return Optional.empty();
+  }
 }

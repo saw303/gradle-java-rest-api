@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
@@ -23,26 +23,27 @@
  */
 package ch.silviowangler.gradle.restapi.builder;
 
+import static ch.silviowangler.gradle.restapi.TargetFramework.MICRONAUT;
+import static ch.silviowangler.gradle.restapi.TargetFramework.SPRING_BOOT;
+
 import ch.silviowangler.gradle.restapi.RestApiExtension;
 import ch.silviowangler.gradle.restapi.builder.jaxrs.JaxRsRootResourceFactory;
 import ch.silviowangler.gradle.restapi.builder.micronaut.MicronautResourceFactory;
 import ch.silviowangler.gradle.restapi.builder.spring.SpringRootResourceFactory;
-
 import java.util.Objects;
-
-import static ch.silviowangler.gradle.restapi.TargetFramework.MICRONAUT;
-import static ch.silviowangler.gradle.restapi.TargetFramework.SPRING_BOOT;
 
 class ResourceBuilderFactory {
 
-	public static ResourceBuilder getRootResourceBuilder(RestApiExtension restApiExtension) {
+  public static ResourceBuilder getRootResourceBuilder(RestApiExtension restApiExtension) {
 
-		if (SPRING_BOOT == Objects.requireNonNull(restApiExtension, "restApiExtension must not be null").getTargetFramework()) {
-			return new SpringRootResourceFactory(restApiExtension.getExplicitExtensions());
-		} else if (MICRONAUT == restApiExtension.getTargetFramework()) {
-			return new MicronautResourceFactory(restApiExtension.getExplicitExtensions());
-		} else {
-			return new JaxRsRootResourceFactory(restApiExtension.getExplicitExtensions());
-		}
-	}
+    if (SPRING_BOOT
+        == Objects.requireNonNull(restApiExtension, "restApiExtension must not be null")
+            .getTargetFramework()) {
+      return new SpringRootResourceFactory(restApiExtension.getExplicitExtensions());
+    } else if (MICRONAUT == restApiExtension.getTargetFramework()) {
+      return new MicronautResourceFactory(restApiExtension.getExplicitExtensions());
+    } else {
+      return new JaxRsRootResourceFactory(restApiExtension.getExplicitExtensions());
+    }
+  }
 }

@@ -1,40 +1,30 @@
 buildscript {
-    repositories {
-        jcenter()
-        maven { url "https://repo.grails.org/grails/core" }
-    }
+  repositories {
+    jcenter()
+    maven { url "https://repo.grails.org/grails/core" }
+  }
 
-    dependencies {
-        classpath "gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.13.1"
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.1'
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.20.0'
-    }
+  dependencies {
+    classpath "gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.13.1"
+    classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.1'
+    classpath 'com.github.ben-manes:gradle-versions-plugin:0.20.0'
+    classpath 'com.diffplug.spotless:spotless-plugin-gradle:3.21.1'
+  }
 }
 
 subprojects {
 
-    version = '2.0.1'
+  version = '2.0.1'
 
-    apply from: "${rootDir}/gradle/java.gradle"
-    apply from: "${rootDir}/gradle/groovy.gradle"
-    apply from: "${rootDir}/gradle/bintray.gradle"
+  apply from: "${rootDir}/gradle/java.gradle"
+  apply from: "${rootDir}/gradle/groovy.gradle"
+  apply from: "${rootDir}/gradle/bintray.gradle"
 
-    apply plugin: 'com.github.ben-manes.versions'
-    apply plugin: "com.github.hierynomus.license"
+  apply plugin: 'com.github.ben-manes.versions'
 
-    license {
-        header = file("${rootDir}/LICENSE-SHORT")
-
-        ext.year = Calendar.getInstance().get(Calendar.YEAR)
-        ext.name = 'Silvio Wangler'
-        ext.email = 'silvio.wangler@gmail.com'
-
-        excludes(["**/*.json", "**/*.java.txt"])
+  dependencies {
+    testImplementation("org.spockframework:spock-core:${spockVersion}") {
+      exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
-    
-    dependencies {
-        testImplementation("org.spockframework:spock-core:${spockVersion}") {
-            exclude group: 'org.codehaus.groovy', module: 'groovy-all'
-        }
-    }
+  }
 }

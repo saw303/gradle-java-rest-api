@@ -5,4 +5,5 @@ include 'rest-model'
 include 'rest-api-micronaut'
 include 'rest-api-spring'
 include 'gradle-plugin'
+
 project(':gradle-plugin').name = 'gradle-java-rest-api'

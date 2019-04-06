@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
@@ -21,21 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-//
-//  Minify.java
-//  jsonminifier - Ported from https://github.com/getify/JSON.minify
-//
-//  Created by Bernhard Gass on 8/01/13.
-//  Copyright © 2013 Bernhard Gass. All rights reserved.
-
 package io.github.getify.minify;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- *
- */
+/** */
 public abstract class Minify {
 
   private static final String TOKENIZER = "\"|(/\\*)|(\\*/)|(//)|\\n|\\r";
@@ -98,19 +89,26 @@ public abstract class Minify {
         }
         from--;
         rc = jsonString.substring(from);
-      } else if (tmp.startsWith("/*") && !in_string && !in_multiline_comment &&
-          !in_singleline_comment) {
+      } else if (tmp.startsWith("/*")
+          && !in_string
+          && !in_multiline_comment
+          && !in_singleline_comment) {
         in_multiline_comment = true;
       } else if (tmp.startsWith("*/") && !in_string && in_multiline_comment) {
         in_multiline_comment = false;
-      } else if (tmp.startsWith("//") && !in_string && !in_multiline_comment &&
-          !in_singleline_comment) {
+      } else if (tmp.startsWith("//")
+          && !in_string
+          && !in_multiline_comment
+          && !in_singleline_comment) {
         in_singleline_comment = true;
-      } else if ((tmp.startsWith("\n") || tmp.startsWith("\r")) && !in_string &&
-          !in_multiline_comment && in_singleline_comment) {
+      } else if ((tmp.startsWith("\n") || tmp.startsWith("\r"))
+          && !in_string
+          && !in_multiline_comment
+          && in_singleline_comment) {
         in_singleline_comment = false;
-      } else if (!in_multiline_comment && !in_singleline_comment && !tmp.substring(0, 1).matches
-          ("\\n|\\r|\\s")) {
+      } else if (!in_multiline_comment
+          && !in_singleline_comment
+          && !tmp.substring(0, 1).matches("\\n|\\r|\\s")) {
         new_str.append(tmp);
       }
     }
@@ -118,5 +116,4 @@ public abstract class Minify {
 
     return new_str.toString();
   }
-
 }

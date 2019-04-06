@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
@@ -23,9 +23,9 @@
  */
 package ch.silviowangler.gradle.restapi;
 
-/**
- * @author Silvio Wangler
- */
+/** @author Silvio Wangler */
 public enum TargetFramework {
-	JAX_RS, SPRING_BOOT, MICRONAUT
+  JAX_RS,
+  SPRING_BOOT,
+  MICRONAUT
 }

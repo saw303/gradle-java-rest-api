@@ -33,66 +33,65 @@ import java.nio.charset.Charset
 class RestApiExtension {
 
 
-    Project project
-    String packageName
-    File optionsSource
-    File generatorOutput = project.file("${project.projectDir}/src/generated/java")
-    File generatorImplOutput = project.file("${project.projectDir}/src/main/java")
-    Closure objectResourceModelMapping = { resource, field -> throw new RuntimeException("No object resource model mapping for field ${field.name} and resource ${description}") }
-    boolean generateDateAttribute = true
-    boolean enableSecurity = false
-    boolean explicitExtensions = false
-    TargetFramework targetFramework = TargetFramework.JAX_RS
-    Charset responseEncoding
-    File diagramOutput = new File(project.buildDir, 'diagrams')
+	Project project
+	String packageName
+	File optionsSource
+	File generatorOutput = project.file("${project.projectDir}/src/generated/java")
+	File generatorImplOutput = project.file("${project.projectDir}/src/main/java")
+	Closure objectResourceModelMapping = { resource, field -> throw new RuntimeException("No object resource model mapping for field ${field.name} and resource ${description}") }
+	boolean generateDateAttribute = true
+	boolean enableSecurity = false
+	boolean explicitExtensions = false
+	TargetFramework targetFramework = TargetFramework.JAX_RS
+	Charset responseEncoding
+	File diagramOutput = new File(project.buildDir, 'diagrams')
 
-    RestApiExtension(Project project) {
-        this.project = project
-    }
+	RestApiExtension(Project project) {
+		this.project = project
+	}
 
-    void setSubresourceConversion(Map<String, String> subresourceConversion) {
-        this.subresourceConversion = subresourceConversion
-    }
+	void setSubresourceConversion(Map<String, String> subresourceConversion) {
+		this.subresourceConversion = subresourceConversion
+	}
 
-    void setObjectResourceModelMapping(Closure objectResourceModelMapping) {
-        this.objectResourceModelMapping = objectResourceModelMapping
-    }
+	void setObjectResourceModelMapping(Closure objectResourceModelMapping) {
+		this.objectResourceModelMapping = objectResourceModelMapping
+	}
 
-    void setOptionsSource(File optionsSource) {
+	void setOptionsSource(File optionsSource) {
 
-        if (!optionsSource?.isDirectory()) {
-            throw new IllegalArgumentException("optionsSource '${optionsSource.absolutePath}' must be a directory")
-        }
-        this.optionsSource = optionsSource
-    }
+		if (!optionsSource?.isDirectory()) {
+			throw new IllegalArgumentException("optionsSource '${optionsSource.absolutePath}' must be a directory")
+		}
+		this.optionsSource = optionsSource
+	}
 
-    void setGeneratorOutput(File generatorOutput) {
+	void setGeneratorOutput(File generatorOutput) {
 
-        if (!generatorOutput.exists()) {
-            generatorOutput.mkdirs()
-        }
+		if (!generatorOutput.exists()) {
+			generatorOutput.mkdirs()
+		}
 
-        if (!generatorOutput?.isDirectory()) {
-            throw new IllegalArgumentException("generatorOutput must be a directory")
-        }
+		if (!generatorOutput?.isDirectory()) {
+			throw new IllegalArgumentException("generatorOutput must be a directory")
+		}
 
-        this.generatorOutput = generatorOutput
-    }
+		this.generatorOutput = generatorOutput
+	}
 
-    void setGeneratorImplOutput(File generatorImplOutput) {
+	void setGeneratorImplOutput(File generatorImplOutput) {
 
-        if (!generatorImplOutput?.isDirectory()) {
-            throw new IllegalArgumentException("generatorImplOutput must be a directory")
-        }
+		if (!generatorImplOutput?.isDirectory()) {
+			throw new IllegalArgumentException("generatorImplOutput must be a directory")
+		}
 
-        this.generatorImplOutput = generatorImplOutput
-    }
+		this.generatorImplOutput = generatorImplOutput
+	}
 
-    void setDiagramOutput(File diagramOutput) {
-        if (!diagramOutput?.isDirectory()) {
-            throw new IllegalArgumentException("diagramOutput must be a directory")
-        }
-        this.diagramOutput = diagramOutput
-    }
+	void setDiagramOutput(File diagramOutput) {
+		if (!diagramOutput?.isDirectory()) {
+			throw new IllegalArgumentException("diagramOutput must be a directory")
+		}
+		this.diagramOutput = diagramOutput
+	}
 }
-

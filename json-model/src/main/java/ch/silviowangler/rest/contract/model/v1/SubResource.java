@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
@@ -26,83 +26,80 @@ package ch.silviowangler.rest.contract.model.v1;
 import java.io.Serializable;
 import java.util.Objects;
 
-/**
- * @author Silvio Wangler
- */
+/** @author Silvio Wangler */
 public class SubResource implements Serializable {
 
-    private String name;
-    private String type;
-    private String rel;
-    private String href;
-    private String method;
-    private boolean expandable;
+  private String name;
+  private String type;
+  private String rel;
+  private String href;
+  private String method;
+  private boolean expandable;
 
-    public String getName() {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public String getType() {
-        return type;
-    }
+  public String getType() {
+    return type;
+  }
 
-    public void setType(String type) {
-        this.type = type;
-    }
+  public void setType(String type) {
+    this.type = type;
+  }
 
-    public String getRel() {
-        return rel;
-    }
+  public String getRel() {
+    return rel;
+  }
 
-    public void setRel(String rel) {
-        this.rel = rel;
-    }
+  public void setRel(String rel) {
+    this.rel = rel;
+  }
 
-    public String getHref() {
-        return href;
-    }
+  public String getHref() {
+    return href;
+  }
 
-    public void setHref(String href) {
-        this.href = href;
-    }
+  public void setHref(String href) {
+    this.href = href;
+  }
 
-    public String getMethod() {
-        return method;
-    }
+  public String getMethod() {
+    return method;
+  }
 
-    public void setMethod(String method) {
-        this.method = method;
-    }
+  public void setMethod(String method) {
+    this.method = method;
+  }
 
-    public boolean isExpandable() {
-        return expandable;
-    }
+  public boolean isExpandable() {
+    return expandable;
+  }
 
-    public void setExpandable(boolean expandable) {
-        this.expandable = expandable;
-    }
+  public void setExpandable(boolean expandable) {
+    this.expandable = expandable;
+  }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    SubResource that = (SubResource) o;
+    return expandable == that.expandable
+        && Objects.equals(name, that.name)
+        && Objects.equals(type, that.type)
+        && Objects.equals(rel, that.rel)
+        && Objects.equals(href, that.href)
+        && Objects.equals(method, that.method);
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        SubResource that = (SubResource) o;
-        return expandable == that.expandable &&
-                Objects.equals(name, that.name) &&
-                Objects.equals(type, that.type) &&
-                Objects.equals(rel, that.rel) &&
-                Objects.equals(href, that.href) &&
-                Objects.equals(method, that.method);
-    }
+  @Override
+  public int hashCode() {
 
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(name, type, rel, href, method, expandable);
-    }
+    return Objects.hash(name, type, rel, href, method, expandable);
+  }
 }

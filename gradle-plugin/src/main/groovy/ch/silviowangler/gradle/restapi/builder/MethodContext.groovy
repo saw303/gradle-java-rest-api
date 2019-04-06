@@ -35,26 +35,26 @@ import groovy.transform.ToString
 @ToString
 class MethodContext {
 
-    String methodName
-    TypeName returnType
-    List<VerbParameter> params = []
-    Map<String, TypeName> paramClasses = [:]
-    Representation representation
-    List<ParameterSpec> pathParams = []
-    boolean directEntity
+	String methodName
+	TypeName returnType
+	List<VerbParameter> params = []
+	Map<String, TypeName> paramClasses = [:]
+	Representation representation
+	List<ParameterSpec> pathParams = []
+	boolean directEntity
 
-    MethodContext(String methodName, TypeName returnType, Representation representation) {
-        this.methodName = methodName
-        this.returnType = returnType
-        this.representation = representation
-    }
+	MethodContext(String methodName, TypeName returnType, Representation representation) {
+		this.methodName = methodName
+		this.returnType = returnType
+		this.representation = representation
+	}
 
-    MethodContext(TypeName returnType, List<VerbParameter> params, Map<String, TypeName> paramClasses, Representation representation, List<ParameterSpec> pathParams, boolean directEntity) {
-        this.returnType = returnType
-        this.params = params
-        this.representation = representation
-        this.pathParams = pathParams
-        this.directEntity = directEntity
-        this.paramClasses = paramClasses
-    }
+	MethodContext(TypeName returnType, List<VerbParameter> params, Map<String, TypeName> paramClasses, Representation representation, List<ParameterSpec> pathParams, boolean directEntity) {
+		this.returnType = returnType
+		this.params = params
+		this.representation = representation
+		this.pathParams = pathParams
+		this.directEntity = directEntity
+		this.paramClasses = paramClasses
+	}
 }

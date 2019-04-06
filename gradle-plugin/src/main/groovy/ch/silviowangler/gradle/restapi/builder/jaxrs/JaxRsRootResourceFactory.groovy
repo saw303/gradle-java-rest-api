@@ -42,66 +42,66 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder {
 		this.explicitExtensions = explicitExtensions
 	}
 
-    @Override
-    boolean supportsInterfaces() {
-        return true
-    }
+	@Override
+	boolean supportsInterfaces() {
+		return true
+	}
 
-    @Override
-    protected void createOptionsMethod() {
-        Verb verb = new Verb()
-        verb.setVerb("OPTIONS")
+	@Override
+	protected void createOptionsMethod() {
+		Verb verb = new Verb()
+		verb.setVerb("OPTIONS")
 
-        setCurrentVerb(verb)
-        MethodSpec.Builder optionsMethod = createMethod("getOptions", JAX_RS_RESPONSE.typeName)
+		setCurrentVerb(verb)
+		MethodSpec.Builder optionsMethod = createMethod("getOptions", JAX_RS_RESPONSE.typeName)
 
-        optionsMethod.addAnnotation(
-                createAnnotation(JAX_RS_OPTIONS_VERB)
-        )
-        optionsMethod.addAnnotation(
-                createAnnotation(JAX_RS_PATH, [value: ''])
-        )
-        optionsMethod.addStatement('return $T.ok(OPTIONS_CONTENT).build()', JAX_RS_RESPONSE.typeName)
+		optionsMethod.addAnnotation(
+				createAnnotation(JAX_RS_OPTIONS_VERB)
+				)
+		optionsMethod.addAnnotation(
+				createAnnotation(JAX_RS_PATH, [value: ''])
+				)
+		optionsMethod.addStatement('return $T.ok(OPTIONS_CONTENT).build()', JAX_RS_RESPONSE.typeName)
 
-        resourceBaseTypeBuilder().addMethod(optionsMethod.build())
-        setCurrentVerb(null)
-    }
+		resourceBaseTypeBuilder().addMethod(optionsMethod.build())
+		setCurrentVerb(null)
+	}
 
-    @Override
-    AnnotationSpec buildRequestBodyAnnotation() {
-        throw new UnsupportedOperationException("Not supported for JAX-RS")
-    }
+	@Override
+	AnnotationSpec buildRequestBodyAnnotation() {
+		throw new UnsupportedOperationException("Not supported for JAX-RS")
+	}
 
-    @Override
-    TypeSpec buildResource() {
+	@Override
+	TypeSpec buildResource() {
 
-        reset()
-        setArtifactType(ArtifactType.RESOURCE)
-        TypeSpec.Builder builder = resourceBaseTypeBuilder()
+		reset()
+		setArtifactType(ArtifactType.RESOURCE)
+		TypeSpec.Builder builder = resourceBaseTypeBuilder()
 
-        Map<String, Object> args = ['value': getPath()]
+		Map<String, Object> args = ['value': getPath()]
 
-        builder.addAnnotation(createAnnotation(JAX_RS_PATH, args))
+		builder.addAnnotation(createAnnotation(JAX_RS_PATH, args))
 
-        generateResourceMethods()
+		generateResourceMethods()
 
-        return builder.build()
-    }
+		return builder.build()
+	}
 
-    @Override
-    TypeSpec buildResourceImpl() {
-        reset()
-        setArtifactType(ArtifactType.RESOURCE_IMPL)
-        TypeSpec.Builder builder = classBaseInstance()
-        builder.addSuperinterface(ClassName.get(getCurrentPackageName(), resourceName()))
+	@Override
+	TypeSpec buildResourceImpl() {
+		reset()
+		setArtifactType(ArtifactType.RESOURCE_IMPL)
+		TypeSpec.Builder builder = classBaseInstance()
+		builder.addSuperinterface(ClassName.get(getCurrentPackageName(), resourceName()))
 
-        generateResourceMethods()
-        return builder.build()
-    }
+		generateResourceMethods()
+		return builder.build()
+	}
 
-    private AnnotationSpec createProducesAnnotation(Representation representation) {
-        return AnnotationSpec.builder(JAX_RS_PRODUCES.typeName).addMember('value', '{ $S }', representation.getMimetype().toString()).build()
-    }
+	private AnnotationSpec createProducesAnnotation(Representation representation) {
+		return AnnotationSpec.builder(JAX_RS_PRODUCES.typeName).addMember('value', '{ $S }', representation.getMimetype().toString()).build()
+	}
 
 
 	@Override
@@ -111,43 +111,43 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder {
 	}
 
 	@Override
-    Iterable<AnnotationSpec> getResourceMethodAnnotations(boolean applyId, Representation representation, String methodName) {
+	Iterable<AnnotationSpec> getResourceMethodAnnotations(boolean applyId, Representation representation, String methodName) {
 
-        List<AnnotationSpec> specs = []
+		List<AnnotationSpec> specs = []
 
-        String method = getHttpMethod()
+		String method = getHttpMethod()
 
-        if (method == 'GET') {
-            specs << createAnnotation(JAX_RS_GET_VERB)
-        } else if (method == 'HEAD') {
-            specs << createAnnotation(JAX_RS_HEAD_VERB)
+		if (method == 'GET') {
+			specs << createAnnotation(JAX_RS_GET_VERB)
+		} else if (method == 'HEAD') {
+			specs << createAnnotation(JAX_RS_HEAD_VERB)
 		} else if (method == 'POST') {
-            specs << createAnnotation(JAX_RS_POST_VERB)
+			specs << createAnnotation(JAX_RS_POST_VERB)
 		} else if (method == 'PUT') {
-            specs << createAnnotation(JAX_RS_PUT_VERB)
-        } else if (method == 'DELETE') {
-            specs << createAnnotation(JAX_RS_DELETE_VERB)
-        }
+			specs << createAnnotation(JAX_RS_PUT_VERB)
+		} else if (method == 'DELETE') {
+			specs << createAnnotation(JAX_RS_DELETE_VERB)
+		}
 
-        specs << createProducesAnnotation(representation)
+		specs << createProducesAnnotation(representation)
 
-        if (applyId) {
-            specs << createAnnotation(JAX_RS_PATH, ['value': "{id}${jsonExtension(representation)}"])
-        } else if(explicitExtensions) {
+		if (applyId) {
+			specs << createAnnotation(JAX_RS_PATH, ['value': "{id}${jsonExtension(representation)}"])
+		} else if(explicitExtensions) {
 			specs << createAnnotation(JAX_RS_PATH, ['value': ".${representation.name}"])
 		}
 
-        return specs
-    }
+		return specs
+	}
 
 	private String jsonExtension(Representation representation) {
 		return representation.isJson() && !explicitExtensions ? '' : ".${representation.name}"
 	}
 
 	@Override
-    PluginTypes getPathVariableAnnotationType() {
-        return JAX_RS_PATH_PARAM
-    }
+	PluginTypes getPathVariableAnnotationType() {
+		return JAX_RS_PATH_PARAM
+	}
 
 	@Override
 	boolean shouldGenerateHeadMethod() {
@@ -155,18 +155,18 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder {
 	}
 
 	@Override
-    void generateMethodNotAllowedStatement(MethodSpec.Builder builder) {
-        builder.addStatement('return $T.status(405).build()', JAX_RS_RESPONSE.typeName)
-    }
+	void generateMethodNotAllowedStatement(MethodSpec.Builder builder) {
+		builder.addStatement('return $T.status(405).build()', JAX_RS_RESPONSE.typeName)
+	}
 
-    @Override
-    ClassName getMethodNowAllowedReturnType() {
-        return JAX_RS_RESPONSE.className
-    }
+	@Override
+	ClassName getMethodNowAllowedReturnType() {
+		return JAX_RS_RESPONSE.className
+	}
 
-    @Override
-    TypeName resourceMethodReturnType(Verb verb, Representation representation) {
-        String v = toHttpMethod(verb)
-        return GeneratorUtil.getJaxRsReturnType(getResourceContractContainer().getSourceFileName(), v, verb.getVerb().endsWith("_COLLECTION"), getCurrentPackageName(), representation)
-    }
+	@Override
+	TypeName resourceMethodReturnType(Verb verb, Representation representation) {
+		String v = toHttpMethod(verb)
+		return GeneratorUtil.getJaxRsReturnType(getResourceContractContainer().getSourceFileName(), v, verb.getVerb().endsWith("_COLLECTION"), getCurrentPackageName(), representation)
+	}
 }

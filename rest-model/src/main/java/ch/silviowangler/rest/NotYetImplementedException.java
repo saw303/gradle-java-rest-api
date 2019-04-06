@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
@@ -23,12 +23,10 @@
  */
 package ch.silviowangler.rest;
 
-/**
- * @author Silvio Wangler
- */
+/** @author Silvio Wangler */
 public class NotYetImplementedException extends RuntimeException {
 
-    public NotYetImplementedException() {
-        super("Not yet implemented");
-    }
+  public NotYetImplementedException() {
+    super("Not yet implemented");
+  }
 }

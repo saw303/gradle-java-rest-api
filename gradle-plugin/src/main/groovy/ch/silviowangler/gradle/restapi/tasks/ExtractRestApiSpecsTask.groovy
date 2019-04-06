@@ -32,32 +32,32 @@ import org.gradle.api.tasks.TaskAction
 
 class ExtractRestApiSpecsTask extends AbstractTask {
 
-    File extractOutputDir
+	File extractOutputDir
 
-    ExtractRestApiSpecsTask() {
-        this.extractOutputDir = GeneratorUtil.generatorInput(project)
-    }
+	ExtractRestApiSpecsTask() {
+		this.extractOutputDir = GeneratorUtil.generatorInput(project)
+	}
 
-    @OutputDirectory
-    File getExtractOutputDir() {
-        return extractOutputDir
-    }
+	@OutputDirectory
+	File getExtractOutputDir() {
+		return extractOutputDir
+	}
 
-    @TaskAction
-    void extract() {
+	@TaskAction
+	void extract() {
 
-        Configuration configuration = project.configurations.findByName(Consts.CONFIGURATION_REST_API)
+		Configuration configuration = project.configurations.findByName(Consts.CONFIGURATION_REST_API)
 
-        if (configuration && !configuration.files.isEmpty()) {
+		if (configuration && !configuration.files.isEmpty()) {
 
-            Set<File> files = configuration.files
+			Set<File> files = configuration.files
 
-            for (File file in files) {
-                project.copy {
-                    from project.zipTree(file)
-                    into this.extractOutputDir
-                }
-            }
-        }
-    }
+			for (File file in files) {
+				project.copy {
+					from project.zipTree(file)
+					into this.extractOutputDir
+				}
+			}
+		}
+	}
 }

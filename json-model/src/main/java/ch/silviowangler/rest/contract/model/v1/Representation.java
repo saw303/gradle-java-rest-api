@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
@@ -23,98 +23,96 @@
  */
 package ch.silviowangler.rest.contract.model.v1;
 
-import javax.activation.MimeType;
-import javax.activation.MimeTypeParseException;
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.Objects;
+import javax.activation.MimeType;
+import javax.activation.MimeTypeParseException;
 
-/**
- * @author Silvio Wangler
- */
+/** @author Silvio Wangler */
 public class Representation implements Serializable {
 
-	private String name;
-	private String comment;
-	private String responseExample;
-	private boolean standard;
-	private MimeType mimetype;
+  private String name;
+  private String comment;
+  private String responseExample;
+  private boolean standard;
+  private MimeType mimetype;
 
-	public String getName() {
-		return name;
-	}
+  public static Representation json(Charset charset) {
+    Representation representation = new Representation();
+    try {
+      MimeType mimetype = new MimeType("application", "json");
 
-	public void setName(String name) {
-		this.name = name;
-	}
+      if (charset != null) {
+        mimetype.setParameter("charset", charset.toString());
+      }
 
-	public String getComment() {
-		return comment;
-	}
+      representation.setMimetype(mimetype);
+    } catch (MimeTypeParseException e) {
+      throw new UnsupportedOperationException("Unable to create JSON mime type", e);
+    }
+    representation.setName("json");
+    return representation;
+  }
 
-	public void setComment(String comment) {
-		this.comment = comment;
-	}
+  public String getName() {
+    return name;
+  }
 
-	public String getResponseExample() {
-		return responseExample;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
-	public void setResponseExample(String responseExample) {
-		this.responseExample = responseExample;
-	}
+  public String getComment() {
+    return comment;
+  }
 
-	public boolean isStandard() {
-		return standard;
-	}
+  public void setComment(String comment) {
+    this.comment = comment;
+  }
 
-	public void setStandard(boolean standard) {
-		this.standard = standard;
-	}
+  public String getResponseExample() {
+    return responseExample;
+  }
 
-	public MimeType getMimetype() {
-		return mimetype;
-	}
+  public void setResponseExample(String responseExample) {
+    this.responseExample = responseExample;
+  }
 
-	public void setMimetype(MimeType mimetype) {
-		this.mimetype = mimetype;
-	}
+  public boolean isStandard() {
+    return standard;
+  }
 
-	public boolean isJson() {
-		return getName() != null && getName().equals("json");
-	}
+  public void setStandard(boolean standard) {
+    this.standard = standard;
+  }
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		Representation that = (Representation) o;
-		return standard == that.standard &&
-				Objects.equals(name, that.name) &&
-				Objects.equals(comment, that.comment) &&
-				Objects.equals(responseExample, that.responseExample) &&
-				Objects.equals(mimetype, that.mimetype);
-	}
+  public MimeType getMimetype() {
+    return mimetype;
+  }
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(name, comment, responseExample, standard, mimetype);
-	}
+  public void setMimetype(MimeType mimetype) {
+    this.mimetype = mimetype;
+  }
 
-	public static Representation json(Charset charset) {
-		Representation representation = new Representation();
-		try {
-			MimeType mimetype = new MimeType("application", "json");
+  public boolean isJson() {
+    return getName() != null && getName().equals("json");
+  }
 
-			if (charset != null) {
-				mimetype.setParameter("charset", charset.toString());
-			}
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Representation that = (Representation) o;
+    return standard == that.standard
+        && Objects.equals(name, that.name)
+        && Objects.equals(comment, that.comment)
+        && Objects.equals(responseExample, that.responseExample)
+        && Objects.equals(mimetype, that.mimetype);
+  }
 
-			representation.setMimetype(mimetype);
-		} catch (MimeTypeParseException e) {
-			throw new UnsupportedOperationException("Unable to create JSON mime type", e);
-		}
-		representation.setName("json");
-		return representation;
-	}
+  @Override
+  public int hashCode() {
+    return Objects.hash(name, comment, responseExample, standard, mimetype);
+  }
 }

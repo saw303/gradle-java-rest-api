@@ -1,35 +1,32 @@
-
-ext {
-    pomDescription = 'Gradle plugin to generate REST APIs for JAX-RS or Spring-Boot projects'
-}
+ext { pomDescription = 'Gradle plugin to generate REST APIs for JAX-RS or Spring-Boot projects' }
 
 dependencies {
 
-    implementation project(':json-model')
+	implementation project(':json-model')
 
-    compileOnly gradleApi()
-    testImplementation gradleTestKit()
+	compileOnly gradleApi()
+	testImplementation gradleTestKit()
 
-    implementation "com.squareup:javapoet:${javaPoetVersion}"
-    implementation "com.google.guava:guava:${guavaVersion}"
-    implementation "com.google.code.gson:gson:${gsonVersion}"
+	implementation "com.squareup:javapoet:${javaPoetVersion}"
+	implementation "com.google.guava:guava:${guavaVersion}"
+	implementation "com.google.code.gson:gson:${gsonVersion}"
 }
 
 task checkVersion(type: Test) {
-    File file = file("${projectDir}/src/main/groovy/ch/silviowangler/gradle/restapi/RestApiPlugin.groovy")
-    String content = file.text
+	File file = file("${projectDir}/src/main/groovy/ch/silviowangler/gradle/restapi/RestApiPlugin.groovy")
+	String content = file.text
 
-    String msg = "Wrong version in ${file.absolutePath}"
+	String msg = "Wrong version in ${file.absolutePath}"
 
-    if (! content.contains("final String pluginVersion = \"${project.version}\"")) {
-        throw new RuntimeException(msg)
-    }
+	if (!content.contains("final String pluginVersion = \"${project.version}\"")) {
+		throw new RuntimeException(msg)
+	}
 
-    if (! content.contains("implementation \"ch.silviowangler.rest:rest-api-spring:\${pluginVersion}\"")) {
-        throw new RuntimeException(msg)
-    }
+	if (!content.contains("implementation \"ch.silviowangler.rest:rest-api-spring:\${pluginVersion}\"")) {
+		throw new RuntimeException(msg)
+	}
 
-    if (! content.contains("implementation \"ch.silviowangler.rest:rest-api-micronaut:\${pluginVersion}\"")) {
-        throw new RuntimeException(msg)
-    }
+	if (!content.contains("implementation \"ch.silviowangler.rest:rest-api-micronaut:\${pluginVersion}\"")) {
+		throw new RuntimeException(msg)
+	}
 }

@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
@@ -31,30 +31,29 @@ import java.io.Serializable;
  */
 public class FieldError implements Serializable {
 
-	private String name;
-	private Object rejectedValue;
+  private String name;
+  private Object rejectedValue;
 
-	public FieldError() {
-	}
+  public FieldError() {}
 
-	public FieldError(String name, Object rejectedValue) {
-		this.name = name;
-		this.rejectedValue = rejectedValue;
-	}
+  public FieldError(String name, Object rejectedValue) {
+    this.name = name;
+    this.rejectedValue = rejectedValue;
+  }
 
-	public String getName() {
-		return name;
-	}
+  public String getName() {
+    return name;
+  }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
-	public Object getRejectedValue() {
-		return rejectedValue;
-	}
+  public Object getRejectedValue() {
+    return rejectedValue;
+  }
 
-	public void setRejectedValue(Object rejectedValue) {
-		this.rejectedValue = rejectedValue;
-	}
+  public void setRejectedValue(Object rejectedValue) {
+    this.rejectedValue = rejectedValue;
+  }
 }

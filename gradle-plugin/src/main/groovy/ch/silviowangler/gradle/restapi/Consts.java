@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
@@ -25,7 +25,7 @@ package ch.silviowangler.gradle.restapi;
 
 public class Consts {
 
-    public static final String CONFIGURATION_REST_API = "restApiSpecification";
+  public static final String CONFIGURATION_REST_API = "restApiSpecification";
 
-    public static final String TASK_GROUP_REST_API = "REST API";
+  public static final String TASK_GROUP_REST_API = "REST API";
 }
