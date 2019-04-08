@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
@@ -29,23 +29,22 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-
 import java.lang.reflect.Type;
 
-/**
- * @author Silvio Wangler
- */
+/** @author Silvio Wangler */
 public class GeneralDetailsDeserializer implements JsonDeserializer<GeneralDetails> {
-    @Override
-    public GeneralDetails deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        GeneralDetails generalDetails = new GeneralDetails();
+  @Override
+  public GeneralDetails deserialize(
+      JsonElement json, Type typeOfT, JsonDeserializationContext context)
+      throws JsonParseException {
+    GeneralDetails generalDetails = new GeneralDetails();
 
-        JsonObject jsonObject = json.getAsJsonObject();
-        generalDetails.setDescription(jsonObject.get("description").getAsString());
-        generalDetails.setVersion(jsonObject.get("version").getAsString());
-        generalDetails.setxRoute(jsonObject.get("x-route").getAsString());
-        generalDetails.setName(jsonObject.get("name").getAsString());
+    JsonObject jsonObject = json.getAsJsonObject();
+    generalDetails.setDescription(jsonObject.get("description").getAsString());
+    generalDetails.setVersion(jsonObject.get("version").getAsString());
+    generalDetails.setxRoute(jsonObject.get("x-route").getAsString());
+    generalDetails.setName(jsonObject.get("name").getAsString());
 
-        return generalDetails;
-    }
+    return generalDetails;
+  }
 }

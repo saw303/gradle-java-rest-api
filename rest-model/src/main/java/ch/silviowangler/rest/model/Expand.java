@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
@@ -33,31 +33,31 @@ import java.util.Collection;
  */
 public class Expand {
 
-	private String name;
-	private Collection<ResourceModel> data;
+  private String name;
+  private Collection<ResourceModel> data;
 
-	public Expand() {
-		this.data  = new ArrayList<>();
-	}
+  public Expand() {
+    this.data = new ArrayList<>();
+  }
 
-	public Expand(String name, Collection<ResourceModel> data) {
-		this.name = name;
-		this.data = data;
-	}
+  public Expand(String name, Collection<ResourceModel> data) {
+    this.name = name;
+    this.data = data;
+  }
 
-	public String getName() {
-		return name;
-	}
+  public String getName() {
+    return name;
+  }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
-	public Collection<ResourceModel> getData() {
-		return data;
-	}
+  public Collection<ResourceModel> getData() {
+    return data;
+  }
 
-	public void setData(Collection<ResourceModel> data) {
-		this.data = data;
-	}
+  public void setData(Collection<ResourceModel> data) {
+    this.data = data;
+  }
 }

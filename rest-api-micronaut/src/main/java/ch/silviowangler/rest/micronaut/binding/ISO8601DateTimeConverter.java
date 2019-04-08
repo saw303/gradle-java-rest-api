@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
@@ -25,33 +25,35 @@ package ch.silviowangler.rest.micronaut.binding;
 
 import io.micronaut.core.convert.ConversionContext;
 import io.micronaut.core.convert.format.FormattingTypeConverter;
-
-import javax.inject.Singleton;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.util.Optional;
+import javax.inject.Singleton;
 
 /**
  * Converts an ISO 8601 UTC {@link CharSequence} such as 2007-12-24T18:21:00Z to a {@link Instant}.
- * <p>
- * Further information about ISO 8601 can be found <a href="https://en.wikipedia.org/wiki/ISO_8601" target="_blank">here</a>.
+ *
+ * <p>Further information about ISO 8601 can be found <a
+ * href="https://en.wikipedia.org/wiki/ISO_8601" target="_blank">here</a>.
  *
  * @author Silvio Wangler
  */
 @Singleton
-public class ISO8601DateTimeConverter implements FormattingTypeConverter<CharSequence, Instant, DateTimeFormat> {
+public class ISO8601DateTimeConverter
+    implements FormattingTypeConverter<CharSequence, Instant, DateTimeFormat> {
 
-	@Override
-	public Class<DateTimeFormat> annotationType() {
-		return DateTimeFormat.class;
-	}
+  @Override
+  public Class<DateTimeFormat> annotationType() {
+    return DateTimeFormat.class;
+  }
 
-	@Override
-	public Optional<Instant> convert(CharSequence object, Class<Instant> targetType, ConversionContext context) {
-		try {
-			return Optional.of(Instant.parse(object));
-		} catch (DateTimeParseException ex) {
-			return Optional.empty();
-		}
-	}
+  @Override
+  public Optional<Instant> convert(
+      CharSequence object, Class<Instant> targetType, ConversionContext context) {
+    try {
+      return Optional.of(Instant.parse(object));
+    } catch (DateTimeParseException ex) {
+      return Optional.empty();
+    }
+  }
 }

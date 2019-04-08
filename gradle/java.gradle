@@ -1,4 +1,29 @@
 apply plugin: 'java-library'
+apply plugin: "com.diffplug.gradle.spotless"
+
+spotless {
+  java {
+    licenseHeaderFile rootProject.file('LICENSE-SHORT'), "package "
+
+    googleJavaFormat()
+
+    removeUnusedImports()
+    endWithNewline()
+  }
+  groovy {
+    licenseHeaderFile rootProject.file('LICENSE-SHORT'), "package "
+    excludeJava()
+    targetExclude '**/*Spec.groovy'
+    greclipse()
+    endWithNewline()
+  }
+  groovyGradle {
+    // same as groovy, but for .gradle (defaults to '*.gradle')
+    target '*.gradle', 'gradle/*.gradle'
+    greclipse()
+    endWithNewline()
+  }
+}
 
 repositories {
     jcenter()

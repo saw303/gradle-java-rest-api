@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
@@ -35,21 +35,21 @@ import java.util.List;
  */
 public class ValidationErrorModel implements Serializable {
 
-	private List<FieldError> fieldErrors;
+  private List<FieldError> fieldErrors;
 
-	public ValidationErrorModel() {
-		this(new ArrayList<>());
-	}
+  public ValidationErrorModel() {
+    this(new ArrayList<>());
+  }
 
-	public ValidationErrorModel(List<FieldError> fieldErrors) {
-		this.fieldErrors = fieldErrors;
-	}
+  public ValidationErrorModel(List<FieldError> fieldErrors) {
+    this.fieldErrors = fieldErrors;
+  }
 
-	public List<FieldError> getFieldErrors() {
-		return fieldErrors;
-	}
+  public List<FieldError> getFieldErrors() {
+    return fieldErrors;
+  }
 
-	public void setFieldErrors(List<FieldError> fieldErrors) {
-		this.fieldErrors = fieldErrors;
-	}
+  public void setFieldErrors(List<FieldError> fieldErrors) {
+    this.fieldErrors = fieldErrors;
+  }
 }

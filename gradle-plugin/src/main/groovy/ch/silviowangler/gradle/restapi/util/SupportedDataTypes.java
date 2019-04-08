@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
@@ -24,17 +24,13 @@
 package ch.silviowangler.gradle.restapi.util;
 
 import com.squareup.javapoet.ClassName;
-
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Locale;
 
-/**
- * @author Silvio Wangler
- */
+/** @author Silvio Wangler */
 public enum SupportedDataTypes {
-  
   DATE(ClassName.get(LocalDate.class)),
   DATETIME(ClassName.get(Instant.class)),
   DECIMAL(ClassName.get(BigDecimal.class)),
@@ -48,7 +44,7 @@ public enum SupportedDataTypes {
   UUID(ClassName.get(String.class)),
   OBJECT(ClassName.get(Object.class)),
   LOCALE(ClassName.get(Locale.class)),
-  MONEY(ClassName.get("javax.money","MonetaryAmount"));
+  MONEY(ClassName.get("javax.money", "MonetaryAmount"));
 
   private final ClassName className;
 

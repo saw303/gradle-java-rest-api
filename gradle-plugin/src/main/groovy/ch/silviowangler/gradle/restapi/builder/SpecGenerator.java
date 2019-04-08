@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
@@ -23,6 +23,8 @@
  */
 package ch.silviowangler.gradle.restapi.builder;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import ch.silviowangler.gradle.restapi.GeneratedSpecContainer;
 import ch.silviowangler.gradle.restapi.RestApiExtension;
 import ch.silviowangler.gradle.restapi.gson.GeneralDetailsDeserializer;
@@ -36,7 +38,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeSpec;
-
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -49,106 +50,116 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
-/**
- * @author Silvio Wangler
- */
+/** @author Silvio Wangler */
 public class SpecGenerator {
 
-	private static final Set<ClassName> resourceTypeCache = new HashSet<>();
-	private static final Gson gson;
+  private static final Set<ClassName> resourceTypeCache = new HashSet<>();
+  private static final Gson gson;
 
-	static {
-		gson = new GsonBuilder()
-				.registerTypeAdapter(GeneralDetails.class, new GeneralDetailsDeserializer())
-				.registerTypeAdapter(ResourceField.class, new ResourceFieldDeserializer())
-				.registerTypeAdapter(Representation.class, new RepresentationDeserializer())
-				.create();
-	}
+  static {
+    gson =
+        new GsonBuilder()
+            .registerTypeAdapter(GeneralDetails.class, new GeneralDetailsDeserializer())
+            .registerTypeAdapter(ResourceField.class, new ResourceFieldDeserializer())
+            .registerTypeAdapter(Representation.class, new RepresentationDeserializer())
+            .create();
+  }
 
-	public static GeneratedSpecContainer generateType(File specFile, RestApiExtension extension) {
+  public static GeneratedSpecContainer generateType(File specFile, RestApiExtension extension) {
 
-		ResourceContractContainer resourceContractContainer = parseResourceContract(specFile, extension.getResponseEncoding());
+    ResourceContractContainer resourceContractContainer =
+        parseResourceContract(specFile, extension.getResponseEncoding());
 
-		String packageName = String.format("%s.%s", extension.getPackageName(),
-				generatePackageName(resourceContractContainer.getResourceContract())).toLowerCase();
+    String packageName =
+        String.format(
+                "%s.%s",
+                extension.getPackageName(),
+                generatePackageName(resourceContractContainer.getResourceContract()))
+            .toLowerCase();
 
-		ResourceBuilder resourceBuilder = ResourceBuilderFactory
-				.getRootResourceBuilder(extension)
-				.withResourceContractContainer(resourceContractContainer)
-				.withCurrentPackageName(packageName)
-				.withTimestampInGeneratedAnnotation(extension.isGenerateDateAttribute());
+    ResourceBuilder resourceBuilder =
+        ResourceBuilderFactory.getRootResourceBuilder(extension)
+            .withResourceContractContainer(resourceContractContainer)
+            .withCurrentPackageName(packageName)
+            .withTimestampInGeneratedAnnotation(extension.isGenerateDateAttribute());
 
-		if (extension.getResponseEncoding() != null) {
-			resourceBuilder.withResponseEncoding(extension.getResponseEncoding());
-		}
+    if (extension.getResponseEncoding() != null) {
+      resourceBuilder.withResponseEncoding(extension.getResponseEncoding());
+    }
 
-		Set<TypeSpec> types = resourceBuilder.buildResourceTypes(resourceTypeCache, packageName);
+    Set<TypeSpec> types = resourceBuilder.buildResourceTypes(resourceTypeCache, packageName);
 
-		for (TypeSpec type : types) {
-			resourceTypeCache.add(ClassName.get(packageName, type.name));
-		}
+    for (TypeSpec type : types) {
+      resourceTypeCache.add(ClassName.get(packageName, type.name));
+    }
 
-		Set<TypeSpec> models = resourceBuilder.buildResourceModels(resourceTypeCache);
+    Set<TypeSpec> models = resourceBuilder.buildResourceModels(resourceTypeCache);
 
-		TypeSpec restInterface = resourceBuilder.buildResource();
-		TypeSpec restImplementation = resourceBuilder.buildResourceImpl();
+    TypeSpec restInterface = resourceBuilder.buildResource();
+    TypeSpec restImplementation = resourceBuilder.buildResourceImpl();
 
-		GeneratedSpecContainer result = new GeneratedSpecContainer();
-		result.setPackageName(packageName);
-		result.setRestInterface(restInterface);
-		result.setRestImplementation(restImplementation);
-		result.setModels(models);
-		result.setTypes(types);
+    GeneratedSpecContainer result = new GeneratedSpecContainer();
+    result.setPackageName(packageName);
+    result.setRestInterface(restInterface);
+    result.setRestImplementation(restImplementation);
+    result.setModels(models);
+    result.setTypes(types);
 
-		return result;
-	}
+    return result;
+  }
 
-	public static ResourceContractContainer parseResourceContract(File file) {
-		return parseResourceContract(file, null);
-	}
+  public static ResourceContractContainer parseResourceContract(File file) {
+    return parseResourceContract(file, null);
+  }
 
-	public static ResourceContractContainer parseResourceContract(File file, Charset encoding) {
-		Objects.requireNonNull(file, "file must not be null");
+  public static ResourceContractContainer parseResourceContract(File file, Charset encoding) {
+    Objects.requireNonNull(file, "file must not be null");
 
-		if (!file.exists()) {
-			throw new IllegalArgumentException(String.format("File %s does not exist", file.getAbsolutePath()));
-		}
+    if (!file.exists()) {
+      throw new IllegalArgumentException(
+          String.format("File %s does not exist", file.getAbsolutePath()));
+    }
 
-		try {
-			ResourceContract resourceContract = gson.fromJson(new FileReader(file), ResourceContract.class);
+    try {
+      ResourceContract resourceContract =
+          gson.fromJson(new FileReader(file), ResourceContract.class);
 
-			if (encoding != null) {
-				resourceContract.getVerbs().stream()
-						.flatMap(verb -> verb.getRepresentations().stream())
-						.filter(representation -> "json".equals(representation.getMimetype().getSubType()))
-						.forEach(representation -> representation.getMimetype().setParameter("charset", encoding.toString()));
-			}
+      if (encoding != null) {
+        resourceContract.getVerbs().stream()
+            .flatMap(verb -> verb.getRepresentations().stream())
+            .filter(representation -> "json".equals(representation.getMimetype().getSubType()))
+            .forEach(
+                representation ->
+                    representation.getMimetype().setParameter("charset", encoding.toString()));
+      }
 
-			String plainText = new String(Files.readAllBytes(file.toPath()), UTF_8);
-			return new ResourceContractContainer(resourceContract, plainText, file.getName());
-		} catch (IOException e) {
-			throw new RuntimeException("Unable to transform JSON file " + file.getAbsolutePath() + " to Java model", e);
-		}
-	}
+      String plainText = new String(Files.readAllBytes(file.toPath()), UTF_8);
+      return new ResourceContractContainer(resourceContract, plainText, file.getName());
+    } catch (IOException e) {
+      throw new IllegalArgumentException(
+          "Unable to transform JSON file " + file.getAbsolutePath() + " to Java model", e);
+    }
+  }
 
-	private static String generatePackageName(ResourceContract resourceContract) {
+  private static String generatePackageName(ResourceContract resourceContract) {
 
-		GeneralDetails general = resourceContract.getGeneral();
-		String version = readVersion(general.getVersion());
-		String route = general.getxRoute().replace(":version", version);
+    GeneralDetails general = resourceContract.getGeneral();
+    String version = readVersion(general.getVersion());
+    String route = general.getxRoute().replace(":version", version);
 
-		List<String> tokens = Arrays.stream(route.split("\\/")).filter(r -> !r.startsWith(":") && r.length() > 0).collect(Collectors.toList());
+    List<String> tokens =
+        Arrays.stream(route.split("\\/"))
+            .filter(r -> !r.startsWith(":") && r.length() > 0)
+            .collect(Collectors.toList());
 
-		if (tokens.size() <= 1) {
-			return version;
-		} else {
-			return String.join(".", tokens.toArray(new String[0]));
-		}
-	}
+    if (tokens.size() <= 1) {
+      return version;
+    } else {
+      return String.join(".", tokens.toArray(new String[0]));
+    }
+  }
 
-	private static String readVersion(String versionString) {
-		return String.format("v%s", versionString.split("\\.")[0]);
-	}
+  private static String readVersion(String versionString) {
+    return String.format("v%s", versionString.split("\\.")[0]);
+  }
 }

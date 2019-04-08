@@ -45,490 +45,490 @@ import static ch.silviowangler.gradle.restapi.TargetFramework.SPRING_BOOT
 
 class RestApiPluginSpec extends Specification {
 
-    Project project = ProjectBuilder.builder().build()
+	Project project = ProjectBuilder.builder().build()
 
-    @Rule
-    TemporaryFolder temporaryFolder
+	@Rule
+	TemporaryFolder temporaryFolder
 
-    @Shared
-    def customFieldModelMapping = { resource, field ->
+	@Shared
+	def customFieldModelMapping = { resource, field ->
 
-        if (resource.general.description == 'Natürliche Person') {
+		if (resource.general.description == 'Natürliche Person') {
 
-            if (field.name == 'leistungsabrechnungspositionen') {
-                return ClassName.get(BigDecimal)
-            } else if (field.name == 'sprache') {
-                return ClassName.get('java.util', 'Locale')
-            }
-        }
-        throw new RuntimeException("Mapping no defined for ${field.name} of resource '${resource.general.description}'")
-    }
+			if (field.name == 'leistungsabrechnungspositionen') {
+				return ClassName.get(BigDecimal)
+			} else if (field.name == 'sprache') {
+				return ClassName.get('java.util', 'Locale')
+			}
+		}
+		throw new RuntimeException("Mapping no defined for ${field.name} of resource '${resource.general.description}'")
+	}
 
-    void setup() {
-        project.apply plugin: 'java'
-        project.apply plugin: RestApiPlugin.PLUGIN_ID
-    }
+	void setup() {
+		project.apply plugin: 'java'
+		project.apply plugin: RestApiPlugin.PLUGIN_ID
+	}
 
-    void "The plugin provides the following tasks"() {
+	void "The plugin provides the following tasks"() {
 
-        expect:
-        project.tasks.findAll { Task task -> task.group == TASK_GROUP_REST_API }.size() == 4
+		expect:
+		project.tasks.findAll { Task task -> task.group == TASK_GROUP_REST_API }.size() == 4
 
-        project.tasks.generateRestArtifacts instanceof GenerateRestApiTask
-        project.tasks.generateRestArtifacts.group == TASK_GROUP_REST_API
+		project.tasks.generateRestArtifacts instanceof GenerateRestApiTask
+		project.tasks.generateRestArtifacts.group == TASK_GROUP_REST_API
 
-        and:
-        project.tasks.extractSpecs instanceof ExtractRestApiSpecsTask
-        project.tasks.extractSpecs.group == TASK_GROUP_REST_API
+		and:
+		project.tasks.extractSpecs instanceof ExtractRestApiSpecsTask
+		project.tasks.extractSpecs.group == TASK_GROUP_REST_API
 
-        and:
-        project.tasks.cleanRestArtifacts instanceof CleanRestApiTask
-        project.tasks.cleanRestArtifacts.group == TASK_GROUP_REST_API
+		and:
+		project.tasks.cleanRestArtifacts instanceof CleanRestApiTask
+		project.tasks.cleanRestArtifacts.group == TASK_GROUP_REST_API
 
-        and:
-        project.tasks.generateDiagrams instanceof PlantUmlTask
-        project.tasks.generateDiagrams.group == TASK_GROUP_REST_API
+		and:
+		project.tasks.generateDiagrams instanceof PlantUmlTask
+		project.tasks.generateDiagrams.group == TASK_GROUP_REST_API
 
-        and:
-        project.extensions.restApi != null
-    }
-
-
-    void "The plugin generates valid Java 8 code for Spring Boot"() {
-        given:
-        project.restApi.generatorOutput = temporaryFolder.getRoot()
-        project.restApi.generatorImplOutput = temporaryFolder.getRoot()
-        project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/rootSpringBoot")
-        project.restApi.packageName = 'org.acme.rest.v1'
-        project.restApi.generateDateAttribute = false
-        project.restApi.objectResourceModelMapping = customFieldModelMapping
-        project.restApi.targetFramework = SPRING_BOOT
-
-        and:
-        GenerateRestApiTask task = project.tasks.generateRestArtifacts as GenerateRestApiTask
-
-        and:
-        String path = project.restApi.packageName.replaceAll('\\.', '/')
-
-        when:
-        task.exec()
-
-        and:
-        def javaFiles = []
-        temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
-            if (it.name.endsWith('.java')) javaFiles << it
-        })
-
-        then:
-        new File(temporaryFolder.getRoot(), path).exists()
-
-        and:
-        assertGeneratedFiles javaFiles, 6
-
-        and:
-        javaFiles.collect {
-            it.parent == new File(temporaryFolder.getRoot(), path)
-        }.size() == javaFiles.size()
-
-        and: 'Ressourcen validieren'
-        assertJavaFile("${project.restApi.packageName}/api/v1", 'RootResource', 'rootSpringBoot')
-        assertJavaFile("${project.restApi.packageName}/api/v1", 'RootResourceImpl', 'rootSpringBoot')
-        assertJavaFile("${project.restApi.packageName}/api/v1", 'RootGetResourceModel', 'rootSpringBoot')
-        assertJavaFile("${project.restApi.packageName}/api/v1", 'RootPutResourceModel', 'rootSpringBoot')
-        assertJavaFile("${project.restApi.packageName}/api/v1", 'NeedType', 'rootSpringBoot')
-        assertJavaFile("${project.restApi.packageName}/api/v1", 'InsuranceNeedsGroupType', 'rootSpringBoot')
-
-        when:
-        CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask
-
-        and:
-        cleanTask.cleanUp()
-
-        and:
-        javaFiles.clear()
-        temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
-            if (it.name.endsWith('.java')) javaFiles << it
-        })
-
-        then:
-        javaFiles.isEmpty()
-    }
+		and:
+		project.extensions.restApi != null
+	}
 
 
-    void "The plugin generates valid Java 8 code for Spring Boot and the Land/Ort specs"() {
+	void "The plugin generates valid Java 8 code for Spring Boot"() {
+		given:
+		project.restApi.generatorOutput = temporaryFolder.getRoot()
+		project.restApi.generatorImplOutput = temporaryFolder.getRoot()
+		project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/rootSpringBoot")
+		project.restApi.packageName = 'org.acme.rest.v1'
+		project.restApi.generateDateAttribute = false
+		project.restApi.objectResourceModelMapping = customFieldModelMapping
+		project.restApi.targetFramework = SPRING_BOOT
 
-        given:
-        project.restApi.generatorOutput = temporaryFolder.getRoot()
-        project.restApi.generatorImplOutput = temporaryFolder.getRoot()
-        project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/v1")
-        project.restApi.packageName = 'org.acme.rest'
-        project.restApi.generateDateAttribute = false
-        project.restApi.objectResourceModelMapping = customFieldModelMapping
-        project.restApi.targetFramework = SPRING_BOOT
-        project.restApi.responseEncoding = Charset.forName('UTF-8')
+		and:
+		GenerateRestApiTask task = project.tasks.generateRestArtifacts as GenerateRestApiTask
 
-        and:
-        GenerateRestApiTask task = project.tasks.generateRestArtifacts as GenerateRestApiTask
+		and:
+		String path = project.restApi.packageName.replaceAll('\\.', '/')
 
-        when:
-        task.exec()
+		when:
+		task.exec()
 
-        and:
-        List<File> javaFiles = []
-        temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
-            if (it.name.endsWith('.java')) javaFiles << it
-        })
+		and:
+		def javaFiles = []
+		temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+			if (it.name.endsWith('.java')) javaFiles << it
+		})
 
-        then:
-        new File(temporaryFolder.getRoot(), 'org/acme/rest').exists()
+		then:
+		new File(temporaryFolder.getRoot(), path).exists()
 
-        and:
-        assertGeneratedFiles javaFiles, 14
+		and:
+		assertGeneratedFiles javaFiles, 6
 
-        and:
-        javaFiles.collect {
-            it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
-        }.size() == javaFiles.size()
+		and:
+		javaFiles.collect {
+			it.parent == new File(temporaryFolder.getRoot(), path)
+		}.size() == javaFiles.size()
 
-        and: 'Ressourcen validieren'
-        assertJavaFile('org.acme.rest.v1', 'CoordinatesType', 'land')
-        assertJavaFile('org.acme.rest.v1.laender', 'LandGetResourceModel', 'land')
-        assertJavaFile('org.acme.rest.v1.laender', 'LandPostResourceModel', 'land')
-        assertJavaFile('org.acme.rest.v1.laender', 'LandPutResourceModel', 'land')
-        assertJavaFile('org.acme.rest.v1.laender', 'LandResource', 'land-spring-boot')
-        assertJavaFile('org.acme.rest.v1.laender', 'LandResourceImpl', 'land-spring-boot')
-        assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtGetResourceModel', 'land')
-        assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtPostResourceModel', 'land')
-        assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtPutResourceModel', 'land')
-        assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtResource', 'land-spring-boot')
-        assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtResourceImpl', 'land-spring-boot')
-        assertJavaFile('org.acme.rest.v1', 'RootGetResourceModel', 'land')
-        assertJavaFile('org.acme.rest.v1', 'RootResource', 'land-spring-boot')
-        assertJavaFile('org.acme.rest.v1', 'RootResourceImpl', 'land-spring-boot')
+		and: 'Ressourcen validieren'
+		assertJavaFile("${project.restApi.packageName}/api/v1", 'RootResource', 'rootSpringBoot')
+		assertJavaFile("${project.restApi.packageName}/api/v1", 'RootResourceImpl', 'rootSpringBoot')
+		assertJavaFile("${project.restApi.packageName}/api/v1", 'RootGetResourceModel', 'rootSpringBoot')
+		assertJavaFile("${project.restApi.packageName}/api/v1", 'RootPutResourceModel', 'rootSpringBoot')
+		assertJavaFile("${project.restApi.packageName}/api/v1", 'NeedType', 'rootSpringBoot')
+		assertJavaFile("${project.restApi.packageName}/api/v1", 'InsuranceNeedsGroupType', 'rootSpringBoot')
 
-        when:
-        CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask
+		when:
+		CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask
 
-        and:
-        cleanTask.cleanUp()
+		and:
+		cleanTask.cleanUp()
 
-        and:
-        javaFiles.clear()
-        temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
-            if (it.name.endsWith('.java')) javaFiles << it
-        })
+		and:
+		javaFiles.clear()
+		temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+			if (it.name.endsWith('.java')) javaFiles << it
+		})
 
-        then:
-        javaFiles.isEmpty()
-    }
+		then:
+		javaFiles.isEmpty()
+	}
 
-    void "The plugin generates valid Java 8 code for Micronaut and the Land/Ort specs"() {
 
-        given:
-        project.restApi.generatorOutput = temporaryFolder.getRoot()
-        project.restApi.generatorImplOutput = temporaryFolder.getRoot()
-        project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/v1")
-        project.restApi.packageName = 'org.acme.rest'
-        project.restApi.generateDateAttribute = false
-        project.restApi.objectResourceModelMapping = customFieldModelMapping
-        project.restApi.targetFramework = MICRONAUT
-        project.restApi.responseEncoding = Charset.forName('UTF-8')
+	void "The plugin generates valid Java 8 code for Spring Boot and the Land/Ort specs"() {
 
-        String testName = 'land-micronaut'
+		given:
+		project.restApi.generatorOutput = temporaryFolder.getRoot()
+		project.restApi.generatorImplOutput = temporaryFolder.getRoot()
+		project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/v1")
+		project.restApi.packageName = 'org.acme.rest'
+		project.restApi.generateDateAttribute = false
+		project.restApi.objectResourceModelMapping = customFieldModelMapping
+		project.restApi.targetFramework = SPRING_BOOT
+		project.restApi.responseEncoding = Charset.forName('UTF-8')
 
-        and:
-        GenerateRestApiTask task = project.tasks.generateRestArtifacts as GenerateRestApiTask
+		and:
+		GenerateRestApiTask task = project.tasks.generateRestArtifacts as GenerateRestApiTask
 
-        when:
-        task.exec()
+		when:
+		task.exec()
 
-        and:
-        List<File> javaFiles = []
-        temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
-            if (it.name.endsWith('.java')) javaFiles << it
-        })
+		and:
+		List<File> javaFiles = []
+		temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+			if (it.name.endsWith('.java')) javaFiles << it
+		})
 
-        then:
-        new File(temporaryFolder.getRoot(), 'org/acme/rest').exists()
+		then:
+		new File(temporaryFolder.getRoot(), 'org/acme/rest').exists()
 
-        and:
-        assertGeneratedFiles javaFiles, 14
+		and:
+		assertGeneratedFiles javaFiles, 14
 
-        and:
-        javaFiles.collect {
-            it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
-        }.size() == javaFiles.size()
+		and:
+		javaFiles.collect {
+			it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
+		}.size() == javaFiles.size()
 
-        and: 'Ressourcen validieren'
-        assertJavaFile('org.acme.rest.v1', 'CoordinatesType', 'land')
-        assertJavaFile('org.acme.rest.v1.laender', 'LandGetResourceModel', 'land')
-        assertJavaFile('org.acme.rest.v1.laender', 'LandPostResourceModel', 'land')
-        assertJavaFile('org.acme.rest.v1.laender', 'LandPutResourceModel', 'land')
-        assertJavaFile('org.acme.rest.v1.laender', 'LandResource', testName)
-        assertJavaFile('org.acme.rest.v1.laender', 'LandResourceDelegate', testName)
-        assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtGetResourceModel', 'land')
-        assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtPostResourceModel', 'land')
-        assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtPutResourceModel', 'land')
-        assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtResource', testName)
-        assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtResourceDelegate', testName)
-        assertJavaFile('org.acme.rest.v1', 'RootGetResourceModel', 'land')
-        assertJavaFile('org.acme.rest.v1', 'RootResource', testName)
-        assertJavaFile('org.acme.rest.v1', 'RootResourceDelegate', testName)
+		and: 'Ressourcen validieren'
+		assertJavaFile('org.acme.rest.v1', 'CoordinatesType', 'land')
+		assertJavaFile('org.acme.rest.v1.laender', 'LandGetResourceModel', 'land')
+		assertJavaFile('org.acme.rest.v1.laender', 'LandPostResourceModel', 'land')
+		assertJavaFile('org.acme.rest.v1.laender', 'LandPutResourceModel', 'land')
+		assertJavaFile('org.acme.rest.v1.laender', 'LandResource', 'land-spring-boot')
+		assertJavaFile('org.acme.rest.v1.laender', 'LandResourceImpl', 'land-spring-boot')
+		assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtGetResourceModel', 'land')
+		assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtPostResourceModel', 'land')
+		assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtPutResourceModel', 'land')
+		assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtResource', 'land-spring-boot')
+		assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtResourceImpl', 'land-spring-boot')
+		assertJavaFile('org.acme.rest.v1', 'RootGetResourceModel', 'land')
+		assertJavaFile('org.acme.rest.v1', 'RootResource', 'land-spring-boot')
+		assertJavaFile('org.acme.rest.v1', 'RootResourceImpl', 'land-spring-boot')
 
-        when:
-        CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask
+		when:
+		CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask
 
-        and:
-        cleanTask.cleanUp()
+		and:
+		cleanTask.cleanUp()
 
-        and:
-        javaFiles.clear()
-        temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
-            if (it.name.endsWith('.java')) javaFiles << it
-        })
+		and:
+		javaFiles.clear()
+		temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+			if (it.name.endsWith('.java')) javaFiles << it
+		})
 
-        then:
-        javaFiles.isEmpty()
-    }
+		then:
+		javaFiles.isEmpty()
+	}
 
-    void "The plugin generates valid JAX-RS Java 8 code"() {
+	void "The plugin generates valid Java 8 code for Micronaut and the Land/Ort specs"() {
 
-        given:
-        project.restApi.generatorOutput = temporaryFolder.getRoot()
-        project.restApi.generatorImplOutput = temporaryFolder.getRoot()
-        project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/demo")
-        project.restApi.packageName = 'org.acme.rest'
-        project.restApi.generateDateAttribute = false
-        project.restApi.objectResourceModelMapping = customFieldModelMapping
+		given:
+		project.restApi.generatorOutput = temporaryFolder.getRoot()
+		project.restApi.generatorImplOutput = temporaryFolder.getRoot()
+		project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/v1")
+		project.restApi.packageName = 'org.acme.rest'
+		project.restApi.generateDateAttribute = false
+		project.restApi.objectResourceModelMapping = customFieldModelMapping
+		project.restApi.targetFramework = MICRONAUT
+		project.restApi.responseEncoding = Charset.forName('UTF-8')
 
-        and:
-        GenerateRestApiTask task = project.tasks.generateRestArtifacts as GenerateRestApiTask
+		String testName = 'land-micronaut'
 
-        when:
-        task.exec()
+		and:
+		GenerateRestApiTask task = project.tasks.generateRestArtifacts as GenerateRestApiTask
 
-        and:
-        def javaFiles = []
-        temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
-            if (it.name.endsWith('.java')) javaFiles << it
-        })
+		when:
+		task.exec()
 
-        then:
-        new File(temporaryFolder.getRoot(), 'org/acme/rest').exists()
+		and:
+		List<File> javaFiles = []
+		temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+			if (it.name.endsWith('.java')) javaFiles << it
+		})
 
-        and:
-        assertGeneratedFiles javaFiles, 13
+		then:
+		new File(temporaryFolder.getRoot(), 'org/acme/rest').exists()
 
-        and:
-        javaFiles.collect {
-            it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
-        }.size() == javaFiles.size()
+		and:
+		assertGeneratedFiles javaFiles, 14
 
-        and: 'Ressourcen validieren'
-        assertJavaFile('org.acme.rest.v1.partner', 'PartnerResource')
-        assertJavaFile('org.acme.rest.v1.partner', 'PartnerResourceImpl')
-        assertJavaFile('org.acme.rest.v1.partner', 'PartnerGetResourceModel')
-        assertJavaFile('org.acme.rest.v1.partner', 'PartnerPostResourceModel')
+		and:
+		javaFiles.collect {
+			it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
+		}.size() == javaFiles.size()
+
+		and: 'Ressourcen validieren'
+		assertJavaFile('org.acme.rest.v1', 'CoordinatesType', 'land')
+		assertJavaFile('org.acme.rest.v1.laender', 'LandGetResourceModel', 'land')
+		assertJavaFile('org.acme.rest.v1.laender', 'LandPostResourceModel', 'land')
+		assertJavaFile('org.acme.rest.v1.laender', 'LandPutResourceModel', 'land')
+		assertJavaFile('org.acme.rest.v1.laender', 'LandResource', testName)
+		assertJavaFile('org.acme.rest.v1.laender', 'LandResourceDelegate', testName)
+		assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtGetResourceModel', 'land')
+		assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtPostResourceModel', 'land')
+		assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtPutResourceModel', 'land')
+		assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtResource', testName)
+		assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtResourceDelegate', testName)
+		assertJavaFile('org.acme.rest.v1', 'RootGetResourceModel', 'land')
+		assertJavaFile('org.acme.rest.v1', 'RootResource', testName)
+		assertJavaFile('org.acme.rest.v1', 'RootResourceDelegate', testName)
+
+		when:
+		CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask
+
+		and:
+		cleanTask.cleanUp()
+
+		and:
+		javaFiles.clear()
+		temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+			if (it.name.endsWith('.java')) javaFiles << it
+		})
+
+		then:
+		javaFiles.isEmpty()
+	}
+
+	void "The plugin generates valid JAX-RS Java 8 code"() {
+
+		given:
+		project.restApi.generatorOutput = temporaryFolder.getRoot()
+		project.restApi.generatorImplOutput = temporaryFolder.getRoot()
+		project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/demo")
+		project.restApi.packageName = 'org.acme.rest'
+		project.restApi.generateDateAttribute = false
+		project.restApi.objectResourceModelMapping = customFieldModelMapping
+
+		and:
+		GenerateRestApiTask task = project.tasks.generateRestArtifacts as GenerateRestApiTask
+
+		when:
+		task.exec()
+
+		and:
+		def javaFiles = []
+		temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+			if (it.name.endsWith('.java')) javaFiles << it
+		})
+
+		then:
+		new File(temporaryFolder.getRoot(), 'org/acme/rest').exists()
+
+		and:
+		assertGeneratedFiles javaFiles, 13
+
+		and:
+		javaFiles.collect {
+			it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
+		}.size() == javaFiles.size()
+
+		and: 'Ressourcen validieren'
+		assertJavaFile('org.acme.rest.v1.partner', 'PartnerResource')
+		assertJavaFile('org.acme.rest.v1.partner', 'PartnerResourceImpl')
+		assertJavaFile('org.acme.rest.v1.partner', 'PartnerGetResourceModel')
+		assertJavaFile('org.acme.rest.v1.partner', 'PartnerPostResourceModel')
 		assertJavaFile('org.acme.rest.v1.partner', 'PartnerPutResourceModel')
 
-        when:
-        CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask
+		when:
+		CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask
 
-        and:
-        cleanTask.cleanUp()
+		and:
+		cleanTask.cleanUp()
 
-        and:
-        javaFiles.clear()
-        temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
-            if (it.name.endsWith('.java')) javaFiles << it
-        })
+		and:
+		javaFiles.clear()
+		temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+			if (it.name.endsWith('.java')) javaFiles << it
+		})
 
-        then:
-        javaFiles.isEmpty()
-    }
+		then:
+		javaFiles.isEmpty()
+	}
 
 
-    void "Typ Definitionen in der Root Ressource werden berücksichtigt"() {
+	void "Typ Definitionen in der Root Ressource werden berücksichtigt"() {
 
-        given:
-        project.restApi.generatorOutput = temporaryFolder.getRoot()
-        project.restApi.generatorImplOutput = temporaryFolder.getRoot()
-        project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/v1/")
-        project.restApi.packageName = 'org.acme.rest'
-        project.restApi.generateDateAttribute = false
-        project.restApi.objectResourceModelMapping = customFieldModelMapping
-        project.restApi.enableSecurity = true
-        project.restApi.responseEncoding = Charset.forName('UTF-8')
+		given:
+		project.restApi.generatorOutput = temporaryFolder.getRoot()
+		project.restApi.generatorImplOutput = temporaryFolder.getRoot()
+		project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/v1/")
+		project.restApi.packageName = 'org.acme.rest'
+		project.restApi.generateDateAttribute = false
+		project.restApi.objectResourceModelMapping = customFieldModelMapping
+		project.restApi.enableSecurity = true
+		project.restApi.responseEncoding = Charset.forName('UTF-8')
 
 		and:
 		final String testName = 'land'
 
-        and:
-        GenerateRestApiTask task = project.tasks.generateRestArtifacts as GenerateRestApiTask
+		and:
+		GenerateRestApiTask task = project.tasks.generateRestArtifacts as GenerateRestApiTask
 
-        when:
-        task.exec()
+		when:
+		task.exec()
 
-        and:
-        def javaFiles = []
-        temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
-            if (it.name.endsWith('.java')) javaFiles << it
-        })
+		and:
+		def javaFiles = []
+		temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+			if (it.name.endsWith('.java')) javaFiles << it
+		})
 
-        then:
-        new File(temporaryFolder.getRoot(), 'org/acme/rest').exists()
+		then:
+		new File(temporaryFolder.getRoot(), 'org/acme/rest').exists()
 
-        and:
-        assertGeneratedFiles javaFiles, 14
+		and:
+		assertGeneratedFiles javaFiles, 14
 
-        and:
-        javaFiles.collect {
-            it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
-        }.size() == javaFiles.size()
+		and:
+		javaFiles.collect {
+			it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
+		}.size() == javaFiles.size()
 
-        and: 'Ressourcen validieren'
-        assertJavaFile('org.acme.rest.v1', 'CoordinatesType', testName)
-        assertJavaFile('org.acme.rest.v1.laender', 'LandGetResourceModel',testName)
+		and: 'Ressourcen validieren'
+		assertJavaFile('org.acme.rest.v1', 'CoordinatesType', testName)
+		assertJavaFile('org.acme.rest.v1.laender', 'LandGetResourceModel',testName)
 		assertJavaFile('org.acme.rest.v1.laender', 'LandPostResourceModel',testName)
 		assertJavaFile('org.acme.rest.v1.laender', 'LandPutResourceModel',testName)
-        assertJavaFile('org.acme.rest.v1.laender', 'LandResource',testName)
-        assertJavaFile('org.acme.rest.v1.laender', 'LandResourceImpl',testName)
+		assertJavaFile('org.acme.rest.v1.laender', 'LandResource',testName)
+		assertJavaFile('org.acme.rest.v1.laender', 'LandResourceImpl',testName)
 
-        assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtGetResourceModel', testName)
+		assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtGetResourceModel', testName)
 		assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtPostResourceModel', testName)
 		assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtPutResourceModel', testName)
 		assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtResource', testName)
 		assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtResourceImpl', testName)
 
-        assertJavaFile('org.acme.rest.v1', 'RootGetResourceModel', testName)
+		assertJavaFile('org.acme.rest.v1', 'RootGetResourceModel', testName)
 		assertJavaFile('org.acme.rest.v1', 'RootResource', testName)
 		assertJavaFile('org.acme.rest.v1', 'RootResourceImpl', testName)
 
-        when:
-        CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask
+		when:
+		CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask
 
-        and:
-        cleanTask.cleanUp()
+		and:
+		cleanTask.cleanUp()
 
-        and:
-        javaFiles.clear()
-        temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
-            if (it.name.endsWith('.java')) javaFiles << it
-        })
+		and:
+		javaFiles.clear()
+		temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+			if (it.name.endsWith('.java')) javaFiles << it
+		})
 
-        then:
-        javaFiles.isEmpty()
-    }
+		then:
+		javaFiles.isEmpty()
+	}
 
-    void "Empty verbs and fields in root works"() {
+	void "Empty verbs and fields in root works"() {
 
-        given:
-        project.restApi.generatorOutput = temporaryFolder.getRoot()
-        project.restApi.generatorImplOutput = temporaryFolder.getRoot()
-        project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/rootSimple/")
-        project.restApi.packageName = 'org.acme.rest'
-        project.restApi.generateDateAttribute = false
-        project.restApi.objectResourceModelMapping = customFieldModelMapping
-        project.restApi.responseEncoding = Charset.forName('UTF-8')
-        project.restApi.targetFramework = SPRING_BOOT
+		given:
+		project.restApi.generatorOutput = temporaryFolder.getRoot()
+		project.restApi.generatorImplOutput = temporaryFolder.getRoot()
+		project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/rootSimple/")
+		project.restApi.packageName = 'org.acme.rest'
+		project.restApi.generateDateAttribute = false
+		project.restApi.objectResourceModelMapping = customFieldModelMapping
+		project.restApi.responseEncoding = Charset.forName('UTF-8')
+		project.restApi.targetFramework = SPRING_BOOT
 
-        and:
-        GenerateRestApiTask task = project.tasks.generateRestArtifacts as GenerateRestApiTask
+		and:
+		GenerateRestApiTask task = project.tasks.generateRestArtifacts as GenerateRestApiTask
 
-        when:
-        task.exec()
+		when:
+		task.exec()
 
-        and:
-        def javaFiles = []
-        temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
-            if (it.name.endsWith('.java')) javaFiles << it
-        })
+		and:
+		def javaFiles = []
+		temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+			if (it.name.endsWith('.java')) javaFiles << it
+		})
 
-        then:
-        new File(temporaryFolder.getRoot(), 'org/acme/rest').exists()
+		then:
+		new File(temporaryFolder.getRoot(), 'org/acme/rest').exists()
 
-        and:
-        assertGeneratedFiles javaFiles, 2
+		and:
+		assertGeneratedFiles javaFiles, 2
 
-        and:
-        javaFiles.collect {
-            it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
-        }.size() == javaFiles.size()
+		and:
+		javaFiles.collect {
+			it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
+		}.size() == javaFiles.size()
 
-        and: 'Ressourcen validieren'
-        assertJavaFile('org.acme.rest.v1', 'RootResource', 'rootSimple')
-        assertJavaFile('org.acme.rest.v1', 'RootResourceImpl', 'rootSimple')
+		and: 'Ressourcen validieren'
+		assertJavaFile('org.acme.rest.v1', 'RootResource', 'rootSimple')
+		assertJavaFile('org.acme.rest.v1', 'RootResourceImpl', 'rootSimple')
 
-        when:
-        CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask
+		when:
+		CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask
 
-        and:
-        cleanTask.cleanUp()
+		and:
+		cleanTask.cleanUp()
 
-        and:
-        javaFiles.clear()
-        temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
-            if (it.name.endsWith('.java')) javaFiles << it
-        })
+		and:
+		javaFiles.clear()
+		temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+			if (it.name.endsWith('.java')) javaFiles << it
+		})
 
-        then:
-        javaFiles.isEmpty()
-    }
+		then:
+		javaFiles.isEmpty()
+	}
 
-    void "Not specified verbs are explicitly excluded"() {
+	void "Not specified verbs are explicitly excluded"() {
 
-        given:
-        project.restApi.generatorOutput = temporaryFolder.getRoot()
-        project.restApi.generatorImplOutput = temporaryFolder.getRoot()
-        project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/root/")
-        project.restApi.packageName = 'org.acme.rest'
-        project.restApi.generateDateAttribute = false
-        project.restApi.objectResourceModelMapping = customFieldModelMapping
-        project.restApi.responseEncoding = Charset.forName('UTF-8')
+		given:
+		project.restApi.generatorOutput = temporaryFolder.getRoot()
+		project.restApi.generatorImplOutput = temporaryFolder.getRoot()
+		project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/root/")
+		project.restApi.packageName = 'org.acme.rest'
+		project.restApi.generateDateAttribute = false
+		project.restApi.objectResourceModelMapping = customFieldModelMapping
+		project.restApi.responseEncoding = Charset.forName('UTF-8')
 
-        and:
-        GenerateRestApiTask task = project.tasks.generateRestArtifacts as GenerateRestApiTask
+		and:
+		GenerateRestApiTask task = project.tasks.generateRestArtifacts as GenerateRestApiTask
 
-        when:
-        task.exec()
+		when:
+		task.exec()
 
-        and:
-        def javaFiles = []
-        temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
-            if (it.name.endsWith('.java')) javaFiles << it
-        })
+		and:
+		def javaFiles = []
+		temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+			if (it.name.endsWith('.java')) javaFiles << it
+		})
 
-        then:
-        new File(temporaryFolder.getRoot(), 'org/acme/rest').exists()
+		then:
+		new File(temporaryFolder.getRoot(), 'org/acme/rest').exists()
 
-        and:
-        assertGeneratedFiles javaFiles, 3
+		and:
+		assertGeneratedFiles javaFiles, 3
 
-        and:
-        javaFiles.collect {
-            it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
-        }.size() == javaFiles.size()
+		and:
+		javaFiles.collect {
+			it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
+		}.size() == javaFiles.size()
 
-        and: 'Ressourcen validieren'
-        assertJavaFile('org.acme.rest.v1', 'RootGetResourceModel', 'root')
-        assertJavaFile('org.acme.rest.v1', 'RootResource', 'root')
-        assertJavaFile('org.acme.rest.v1', 'RootResourceImpl', 'root')
+		and: 'Ressourcen validieren'
+		assertJavaFile('org.acme.rest.v1', 'RootGetResourceModel', 'root')
+		assertJavaFile('org.acme.rest.v1', 'RootResource', 'root')
+		assertJavaFile('org.acme.rest.v1', 'RootResourceImpl', 'root')
 
-        when:
-        CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask
+		when:
+		CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask
 
-        and:
-        cleanTask.cleanUp()
+		and:
+		cleanTask.cleanUp()
 
-        and:
-        javaFiles.clear()
-        temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
-            if (it.name.endsWith('.java')) javaFiles << it
-        })
+		and:
+		javaFiles.clear()
+		temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+			if (it.name.endsWith('.java')) javaFiles << it
+		})
 
-        then:
-        javaFiles.isEmpty()
-    }
+		then:
+		javaFiles.isEmpty()
+	}
 
 	void "The plugin refuses to generate a resource containing a HEAD verb without a corresponding GET verb"() {
 
@@ -670,233 +670,233 @@ class RestApiPluginSpec extends Specification {
 		javaFiles.isEmpty()
 	}
 
-    void "Das Plugin generiert auch read only Ressourcen mit nur einem CSV GET (Micronaut)"() {
+	void "Das Plugin generiert auch read only Ressourcen mit nur einem CSV GET (Micronaut)"() {
 
-        given:
-        project.restApi.generatorOutput = temporaryFolder.getRoot()
-        project.restApi.generatorImplOutput = temporaryFolder.getRoot()
-        project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/csvOnly")
-        project.restApi.packageName = 'org.acme.rest'
-        project.restApi.generateDateAttribute = false
+		given:
+		project.restApi.generatorOutput = temporaryFolder.getRoot()
+		project.restApi.generatorImplOutput = temporaryFolder.getRoot()
+		project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/csvOnly")
+		project.restApi.packageName = 'org.acme.rest'
+		project.restApi.generateDateAttribute = false
 		project.restApi.targetFramework = MICRONAUT
-        project.restApi.objectResourceModelMapping = customFieldModelMapping
+		project.restApi.objectResourceModelMapping = customFieldModelMapping
 
-        and:
-        GenerateRestApiTask task = project.tasks.generateRestArtifacts as GenerateRestApiTask
+		and:
+		GenerateRestApiTask task = project.tasks.generateRestArtifacts as GenerateRestApiTask
 
-        when:
-        task.exec()
+		when:
+		task.exec()
 
-        and:
-        def javaFiles = []
-        temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
-            if (it.name.endsWith('.java')) javaFiles << it
-        })
+		and:
+		def javaFiles = []
+		temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+			if (it.name.endsWith('.java')) javaFiles << it
+		})
 
-        then:
-        new File(temporaryFolder.getRoot(), 'org/acme/rest').exists()
+		then:
+		new File(temporaryFolder.getRoot(), 'org/acme/rest').exists()
 
-        and:
-        assertGeneratedFiles javaFiles, 2
+		and:
+		assertGeneratedFiles javaFiles, 2
 
-        and:
-        javaFiles.collect {
-            it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
-        }.size() == javaFiles.size()
+		and:
+		javaFiles.collect {
+			it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
+		}.size() == javaFiles.size()
 
-        and: 'Ressourcen validieren'
-        assertJavaFile('org.acme.rest.v1.download', 'DownloadResource', 'csvOnly')
-        assertJavaFile('org.acme.rest.v1.download', 'DownloadResourceDelegate', 'csvOnly')
+		and: 'Ressourcen validieren'
+		assertJavaFile('org.acme.rest.v1.download', 'DownloadResource', 'csvOnly')
+		assertJavaFile('org.acme.rest.v1.download', 'DownloadResourceDelegate', 'csvOnly')
 
-        when:
-        CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask
+		when:
+		CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask
 
-        and:
-        cleanTask.cleanUp()
+		and:
+		cleanTask.cleanUp()
 
-        and:
-        javaFiles.clear()
-        temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
-            if (it.name.endsWith('.java')) javaFiles << it
-        })
+		and:
+		javaFiles.clear()
+		temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+			if (it.name.endsWith('.java')) javaFiles << it
+		})
 
-        then:
-        javaFiles.isEmpty()
-    }
+		then:
+		javaFiles.isEmpty()
+	}
 
-    void "Das Plugin generiert auch read only Ressourcen mit nur einem Collection GET"() {
+	void "Das Plugin generiert auch read only Ressourcen mit nur einem Collection GET"() {
 
-        given:
-        project.restApi.generatorOutput = temporaryFolder.getRoot()
-        project.restApi.generatorImplOutput = temporaryFolder.getRoot()
-        project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/collectionOnly")
-        project.restApi.packageName = 'org.acme.rest'
-        project.restApi.generateDateAttribute = false
-        project.restApi.objectResourceModelMapping = customFieldModelMapping
+		given:
+		project.restApi.generatorOutput = temporaryFolder.getRoot()
+		project.restApi.generatorImplOutput = temporaryFolder.getRoot()
+		project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/collectionOnly")
+		project.restApi.packageName = 'org.acme.rest'
+		project.restApi.generateDateAttribute = false
+		project.restApi.objectResourceModelMapping = customFieldModelMapping
 
-        and:
-        GenerateRestApiTask task = project.tasks.generateRestArtifacts as GenerateRestApiTask
+		and:
+		GenerateRestApiTask task = project.tasks.generateRestArtifacts as GenerateRestApiTask
 
-        when:
-        task.exec()
+		when:
+		task.exec()
 
-        and:
-        def javaFiles = []
-        temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
-            if (it.name.endsWith('.java')) javaFiles << it
-        })
+		and:
+		def javaFiles = []
+		temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+			if (it.name.endsWith('.java')) javaFiles << it
+		})
 
-        then:
-        new File(temporaryFolder.getRoot(), 'org/acme/rest').exists()
+		then:
+		new File(temporaryFolder.getRoot(), 'org/acme/rest').exists()
 
-        and:
-        assertGeneratedFiles javaFiles, 3
+		and:
+		assertGeneratedFiles javaFiles, 3
 
-        and:
-        javaFiles.collect {
-            it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
-        }.size() == javaFiles.size()
+		and:
+		javaFiles.collect {
+			it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
+		}.size() == javaFiles.size()
 
-        and: 'Ressourcen validieren'
-        assertJavaFile('org.acme.rest.v1.partner', 'PartnersearchResource', 'collectionOnly')
-        assertJavaFile('org.acme.rest.v1.partner', 'PartnersearchResourceImpl', 'collectionOnly')
-        assertJavaFile('org.acme.rest.v1.partner', 'PartnersearchGetResourceModel', 'collectionOnly')
+		and: 'Ressourcen validieren'
+		assertJavaFile('org.acme.rest.v1.partner', 'PartnersearchResource', 'collectionOnly')
+		assertJavaFile('org.acme.rest.v1.partner', 'PartnersearchResourceImpl', 'collectionOnly')
+		assertJavaFile('org.acme.rest.v1.partner', 'PartnersearchGetResourceModel', 'collectionOnly')
 
-        when:
-        CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask
+		when:
+		CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask
 
-        and:
-        cleanTask.cleanUp()
+		and:
+		cleanTask.cleanUp()
 
-        and:
-        javaFiles.clear()
-        temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
-            if (it.name.endsWith('.java')) javaFiles << it
-        })
+		and:
+		javaFiles.clear()
+		temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+			if (it.name.endsWith('.java')) javaFiles << it
+		})
 
-        then:
-        javaFiles.isEmpty()
-    }
+		then:
+		javaFiles.isEmpty()
+	}
 
-    void "Das Plugin generiert auch read only Ressourcen mit nur einem Collection GET (Spring Boot)"() {
+	void "Das Plugin generiert auch read only Ressourcen mit nur einem Collection GET (Spring Boot)"() {
 
-        given:
-        project.restApi.generatorOutput = temporaryFolder.getRoot()
-        project.restApi.generatorImplOutput = temporaryFolder.getRoot()
-        project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/proposal")
-        project.restApi.packageName = 'org.acme.rest'
-        project.restApi.generateDateAttribute = false
-        project.restApi.objectResourceModelMapping = customFieldModelMapping
-        project.restApi.targetFramework = SPRING_BOOT
+		given:
+		project.restApi.generatorOutput = temporaryFolder.getRoot()
+		project.restApi.generatorImplOutput = temporaryFolder.getRoot()
+		project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/proposal")
+		project.restApi.packageName = 'org.acme.rest'
+		project.restApi.generateDateAttribute = false
+		project.restApi.objectResourceModelMapping = customFieldModelMapping
+		project.restApi.targetFramework = SPRING_BOOT
 
-        and:
-        GenerateRestApiTask task = project.tasks.generateRestArtifacts as GenerateRestApiTask
+		and:
+		GenerateRestApiTask task = project.tasks.generateRestArtifacts as GenerateRestApiTask
 
-        when:
-        task.exec()
+		when:
+		task.exec()
 
-        and:
-        def javaFiles = []
-        temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
-            if (it.name.endsWith('.java')) javaFiles << it
-        })
+		and:
+		def javaFiles = []
+		temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+			if (it.name.endsWith('.java')) javaFiles << it
+		})
 
-        then:
-        new File(temporaryFolder.getRoot(), 'org/acme/rest').exists()
+		then:
+		new File(temporaryFolder.getRoot(), 'org/acme/rest').exists()
 
-        and:
-        assertGeneratedFiles javaFiles, 6
+		and:
+		assertGeneratedFiles javaFiles, 6
 
-        and:
-        javaFiles.collect {
-            it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
-        }.size() == javaFiles.size()
+		and:
+		javaFiles.collect {
+			it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
+		}.size() == javaFiles.size()
 
-        and: 'Ressourcen validieren'
-        assertJavaFile('org.acme.rest.v1.session.insurableperson.insuranceneeds.productproposal', 'ProductproposalResource', 'proposal-spring-boot')
-        assertJavaFile('org.acme.rest.v1.session.insurableperson.insuranceneeds.productproposal', 'ProductproposalResourceImpl', 'proposal-spring-boot')
-        assertJavaFile('org.acme.rest.v1.session.insurableperson.insuranceneeds.productproposal', 'ProductproposalGetResourceModel', 'proposal-spring-boot')
-        assertJavaFile('org.acme.rest.v1.session.insurableperson.insuranceneeds.productproposal', 'ProductproposalPostResourceModel', 'proposal-spring-boot')
-        assertJavaFile('org.acme.rest.v1.session.insurableperson.insuranceneeds.productproposal', 'ProductproposalPutResourceModel', 'proposal-spring-boot')
-        assertJavaFile('org.acme.rest.v1.session.insurableperson.insuranceneeds.productproposal', 'ProposalType', 'proposal-spring-boot')
+		and: 'Ressourcen validieren'
+		assertJavaFile('org.acme.rest.v1.session.insurableperson.insuranceneeds.productproposal', 'ProductproposalResource', 'proposal-spring-boot')
+		assertJavaFile('org.acme.rest.v1.session.insurableperson.insuranceneeds.productproposal', 'ProductproposalResourceImpl', 'proposal-spring-boot')
+		assertJavaFile('org.acme.rest.v1.session.insurableperson.insuranceneeds.productproposal', 'ProductproposalGetResourceModel', 'proposal-spring-boot')
+		assertJavaFile('org.acme.rest.v1.session.insurableperson.insuranceneeds.productproposal', 'ProductproposalPostResourceModel', 'proposal-spring-boot')
+		assertJavaFile('org.acme.rest.v1.session.insurableperson.insuranceneeds.productproposal', 'ProductproposalPutResourceModel', 'proposal-spring-boot')
+		assertJavaFile('org.acme.rest.v1.session.insurableperson.insuranceneeds.productproposal', 'ProposalType', 'proposal-spring-boot')
 
-        when:
-        CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask
+		when:
+		CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask
 
-        and:
-        cleanTask.cleanUp()
+		and:
+		cleanTask.cleanUp()
 
-        and:
-        javaFiles.clear()
-        temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
-            if (it.name.endsWith('.java')) javaFiles << it
-        })
+		and:
+		javaFiles.clear()
+		temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+			if (it.name.endsWith('.java')) javaFiles << it
+		})
 
-        then:
-        javaFiles.isEmpty()
-    }
+		then:
+		javaFiles.isEmpty()
+	}
 
-    void "The plugin can generate resource diagrams"() {
+	void "The plugin can generate resource diagrams"() {
 
-        given:
-        project.restApi.generatorOutput = temporaryFolder.getRoot()
-        project.restApi.generatorImplOutput = temporaryFolder.getRoot()
-        project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/rootSpringBoot")
-        project.restApi.packageName = 'org.acme.rest'
-        project.restApi.generateDateAttribute = false
-        project.restApi.objectResourceModelMapping = customFieldModelMapping
-        project.restApi.targetFramework = SPRING_BOOT
-        project.restApi.diagramOutput = temporaryFolder.getRoot()
+		given:
+		project.restApi.generatorOutput = temporaryFolder.getRoot()
+		project.restApi.generatorImplOutput = temporaryFolder.getRoot()
+		project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/rootSpringBoot")
+		project.restApi.packageName = 'org.acme.rest'
+		project.restApi.generateDateAttribute = false
+		project.restApi.objectResourceModelMapping = customFieldModelMapping
+		project.restApi.targetFramework = SPRING_BOOT
+		project.restApi.diagramOutput = temporaryFolder.getRoot()
 
-        and:
-        PlantUmlTask task = project.tasks.generateDiagrams as PlantUmlTask
+		and:
+		PlantUmlTask task = project.tasks.generateDiagrams as PlantUmlTask
 
-        when:
-        task.generateDiagrams()
+		when:
+		task.generateDiagrams()
 
-        and:
-        def files = []
-        temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
-            if (it.name.endsWith('.puml')) files << it
-        })
+		and:
+		def files = []
+		temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+			if (it.name.endsWith('.puml')) files << it
+		})
 
-        then:
-        files.size() == 1
+		then:
+		files.size() == 1
 
-        and:
-        assertPlantUmlFile('resources-overview.puml', 'rootSpringBoot')
-    }
+		and:
+		assertPlantUmlFile('resources-overview.puml', 'rootSpringBoot')
+	}
 
-    void "The plugin can generate resource diagrams for land/ort"() {
+	void "The plugin can generate resource diagrams for land/ort"() {
 
-        given:
-        project.restApi.generatorOutput = temporaryFolder.getRoot()
-        project.restApi.generatorImplOutput = temporaryFolder.getRoot()
-        project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/v1")
-        project.restApi.packageName = 'org.acme.rest'
-        project.restApi.generateDateAttribute = false
-        project.restApi.objectResourceModelMapping = customFieldModelMapping
-        project.restApi.targetFramework = SPRING_BOOT
-        project.restApi.diagramOutput = temporaryFolder.getRoot()
+		given:
+		project.restApi.generatorOutput = temporaryFolder.getRoot()
+		project.restApi.generatorImplOutput = temporaryFolder.getRoot()
+		project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/v1")
+		project.restApi.packageName = 'org.acme.rest'
+		project.restApi.generateDateAttribute = false
+		project.restApi.objectResourceModelMapping = customFieldModelMapping
+		project.restApi.targetFramework = SPRING_BOOT
+		project.restApi.diagramOutput = temporaryFolder.getRoot()
 
-        and:
-        PlantUmlTask task = project.tasks.generateDiagrams as PlantUmlTask
+		and:
+		PlantUmlTask task = project.tasks.generateDiagrams as PlantUmlTask
 
-        when:
-        task.generateDiagrams()
+		when:
+		task.generateDiagrams()
 
-        and:
-        def files = []
-        temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
-            if (it.name.endsWith('.puml')) files << it
-        })
+		and:
+		def files = []
+		temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+			if (it.name.endsWith('.puml')) files << it
+		})
 
-        then:
-        files.size() == 1
+		then:
+		files.size() == 1
 
-        and:
-        assertPlantUmlFile('resources-overview.puml', 'land')
-    }
+		and:
+		assertPlantUmlFile('resources-overview.puml', 'land')
+	}
 
 	void "No id field is present in a resource"() {
 
@@ -954,36 +954,36 @@ class RestApiPluginSpec extends Specification {
 		javaFiles.isEmpty()
 	}
 
-    private void assertPlantUmlFile(String filename, String testSetName) {
-        final String ENCODING = 'UTF-8'
-        File expectedFile = new File(temporaryFolder.getRoot(), filename)
-        URL resource = getClass().getResource("/puml/${testSetName}/${filename}")
-        File actualFile = new File(resource.file)
+	private void assertPlantUmlFile(String filename, String testSetName) {
+		final String ENCODING = 'UTF-8'
+		File expectedFile = new File(temporaryFolder.getRoot(), filename)
+		URL resource = getClass().getResource("/puml/${testSetName}/${filename}")
+		File actualFile = new File(resource.file)
 
-        final String expectedSourceCode = expectedFile.exists() ? expectedFile.getText(ENCODING) : "File ${expectedFile.absolutePath} not found"
-        final String actualSourceCode = actualFile.exists() ? actualFile.getText(ENCODING) : "File ${actualFile.absolutePath} not found"
+		final String expectedSourceCode = expectedFile.exists() ? expectedFile.getText(ENCODING) : "File ${expectedFile.absolutePath} not found"
+		final String actualSourceCode = actualFile.exists() ? actualFile.getText(ENCODING) : "File ${actualFile.absolutePath} not found"
 
-        assert expectedSourceCode == actualSourceCode
-    }
+		assert expectedSourceCode == actualSourceCode
+	}
 
-    private void assertJavaFile(String packageName, String className) {
-        assertJavaFile(packageName, className, 'default')
-    }
+	private void assertJavaFile(String packageName, String className) {
+		assertJavaFile(packageName, className, 'default')
+	}
 
-    private void assertJavaFile(String packageName, String className, String testName) {
-        final String ENCODING = 'UTF-8'
-        File expectedJavaFile = new File(temporaryFolder.getRoot().absolutePath + '/' + packageName.replaceAll('\\.', '/'), "${className}.java")
-        URL resource = getClass().getResource("/javaOutput/${testName}/${className}.java.txt")
-        File actualJavaFile = resource ? new File(resource.file) : new File(className)
+	private void assertJavaFile(String packageName, String className, String testName) {
+		final String ENCODING = 'UTF-8'
+		File expectedJavaFile = new File(temporaryFolder.getRoot().absolutePath + '/' + packageName.replaceAll('\\.', '/'), "${className}.java")
+		URL resource = getClass().getResource("/javaOutput/${testName}/${className}.java.txt")
+		File actualJavaFile = resource ? new File(resource.file) : new File(className)
 
-        final String expectedJavaSourceCode = expectedJavaFile.exists() ? expectedJavaFile.getText(ENCODING) : "File ${expectedJavaFile.absolutePath} not found"
-        final String actualJavaSourceCode = actualJavaFile.exists() ? actualJavaFile.getText(ENCODING) : "File ${actualJavaFile.absolutePath} not found"
+		final String expectedJavaSourceCode = expectedJavaFile.exists() ? expectedJavaFile.getText(ENCODING) : "File ${expectedJavaFile.absolutePath} not found"
+		final String actualJavaSourceCode = actualJavaFile.exists() ? actualJavaFile.getText(ENCODING) : "File ${actualJavaFile.absolutePath} not found"
 
-        assert expectedJavaSourceCode == actualJavaSourceCode
-    }
+		assert expectedJavaSourceCode == actualJavaSourceCode
+	}
 
-    private void assertGeneratedFiles(List<File> files, int amount) {
-        files.sort { it.name }.each { f -> println "There is file ${f.absolutePath}" }
-        assert files.size() == amount
-    }
+	private void assertGeneratedFiles(List<File> files, int amount) {
+		files.sort { it.name }.each { f -> println "There is file ${f.absolutePath}" }
+		assert files.size() == amount
+	}
 }

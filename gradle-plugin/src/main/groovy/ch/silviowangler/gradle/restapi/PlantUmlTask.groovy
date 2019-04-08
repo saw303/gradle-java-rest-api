@@ -24,6 +24,6 @@
 package ch.silviowangler.gradle.restapi
 
 /**
-* @author Silvio Wangler
-*/class PlantUmlTask {
+ * @author Silvio Wangler
+ */class PlantUmlTask {
 }

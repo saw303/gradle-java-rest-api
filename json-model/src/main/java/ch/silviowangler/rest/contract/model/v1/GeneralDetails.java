@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
@@ -23,66 +23,63 @@
  */
 package ch.silviowangler.rest.contract.model.v1;
 
-
 import java.io.Serializable;
 import java.util.Objects;
 
-/**
- * @author Silvio Wangler
- */
+/** @author Silvio Wangler */
 public class GeneralDetails implements Serializable {
 
-	private String name;
-    private String description;
-    private String version;
-    private String xRoute;
+  private String name;
+  private String description;
+  private String version;
+  private String xRoute;
 
-    public String getDescription() {
-        return description;
-    }
+  public String getDescription() {
+    return description;
+  }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-    public String getVersion() {
-        return version;
-    }
+  public String getVersion() {
+    return version;
+  }
 
-    public void setVersion(String version) {
-        this.version = version;
-    }
+  public void setVersion(String version) {
+    this.version = version;
+  }
 
-    public String getxRoute() {
-        return xRoute;
-    }
+  public String getxRoute() {
+    return xRoute;
+  }
 
-    public void setxRoute(String xRoute) {
-        this.xRoute = xRoute;
-    }
+  public void setxRoute(String xRoute) {
+    this.xRoute = xRoute;
+  }
 
-	public String getName() {
-		return name;
-	}
+  public String getName() {
+    return name;
+  }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		GeneralDetails that = (GeneralDetails) o;
-		return Objects.equals(getName(), that.getName()) &&
-				Objects.equals(getDescription(), that.getDescription()) &&
-				Objects.equals(getVersion(), that.getVersion()) &&
-				Objects.equals(getxRoute(), that.getxRoute());
-	}
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    GeneralDetails that = (GeneralDetails) o;
+    return Objects.equals(getName(), that.getName())
+        && Objects.equals(getDescription(), that.getDescription())
+        && Objects.equals(getVersion(), that.getVersion())
+        && Objects.equals(getxRoute(), that.getxRoute());
+  }
 
-	@Override
-	public int hashCode() {
+  @Override
+  public int hashCode() {
 
-		return Objects.hash(getName(), getDescription(), getVersion(), getxRoute());
-	}
+    return Objects.hash(getName(), getDescription(), getVersion(), getxRoute());
+  }
 }

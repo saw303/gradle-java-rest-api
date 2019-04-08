@@ -25,40 +25,40 @@ package ch.silviowangler.gradle.restapi
 
 class LinkParser {
 
-    String link
-    String version
-    List<String> pathVariables = []
-    boolean directEntity
+	String link
+	String version
+	List<String> pathVariables = []
+	boolean directEntity
 
 
-    LinkParser(String link, String version) {
-        this.directEntity = !link.contains(':entity')
-        this.link = link.replace(':version', "v${version}").replace('/:entity', '')
-        this.version = version
+	LinkParser(String link, String version) {
+		this.directEntity = !link.contains(':entity')
+		this.link = link.replace(':version', "v${version}").replace('/:entity', '')
+		this.version = version
 
-        if (this.link.contains(':')) {
-            initializePathVariables()
-        }
-    }
+		if (this.link.contains(':')) {
+			initializePathVariables()
+		}
+	}
 
-    private void initializePathVariables() {
+	private void initializePathVariables() {
 
-        def finder = (this.link =~ /:[a-z]*/)
+		def finder = (this.link =~ /:[a-z]*/)
 
-        for (token in finder) {
-            pathVariables << "${token[1..token.length() - 1]}".toString()
-        }
+		for (token in finder) {
+			pathVariables << "${token[1..token.length() - 1]}".toString()
+		}
 
-        for (String pathVar in pathVariables) {
-            this.link = this.link.replaceAll(":${pathVar}/", "{${pathVar}}/")
-        }
-    }
+		for (String pathVar in pathVariables) {
+			this.link = this.link.replaceAll(":${pathVar}/", "{${pathVar}}/")
+		}
+	}
 
-    String toBasePath() {
-        link
-    }
+	String toBasePath() {
+		link
+	}
 
-    String toEntityPath() {
-        '{id}'
-    }
+	String toEntityPath() {
+		'{id}'
+	}
 }

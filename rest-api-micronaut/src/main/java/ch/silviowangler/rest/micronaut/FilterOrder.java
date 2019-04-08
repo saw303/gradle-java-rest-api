@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
@@ -23,11 +23,9 @@
  */
 package ch.silviowangler.rest.micronaut;
 
-/**
- * @author Silvio Wangler
- */
+/** @author Silvio Wangler */
 public class FilterOrder {
 
-	public static final int HATEOAS_MODEL_CREATION = 100;
-	public static final int EXPANDED_GETS = HATEOAS_MODEL_CREATION - 1;
+  public static final int HATEOAS_MODEL_CREATION = 100;
+  public static final int EXPANDED_GETS = HATEOAS_MODEL_CREATION - 1;
 }

@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
@@ -26,52 +26,50 @@ package ch.silviowangler.rest.contract.model.v1;
 import java.io.Serializable;
 import java.util.Objects;
 
-/**
- * @author Silvio Wangler
- */
+/** @author Silvio Wangler */
 public class ResponseState implements Serializable {
 
-    private short code;
-    private String message;
-    private String comment;
+  private short code;
+  private String message;
+  private String comment;
 
-    public short getCode() {
-        return code;
-    }
+  public short getCode() {
+    return code;
+  }
 
-    public void setCode(short code) {
-        this.code = code;
-    }
+  public void setCode(short code) {
+    this.code = code;
+  }
 
-    public String getMessage() {
-        return message;
-    }
+  public String getMessage() {
+    return message;
+  }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
+  public void setMessage(String message) {
+    this.message = message;
+  }
 
-    public String getComment() {
-        return comment;
-    }
+  public String getComment() {
+    return comment;
+  }
 
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
+  public void setComment(String comment) {
+    this.comment = comment;
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ResponseState that = (ResponseState) o;
-        return code == that.code &&
-                Objects.equals(message, that.message) &&
-                Objects.equals(comment, that.comment);
-    }
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    ResponseState that = (ResponseState) o;
+    return code == that.code
+        && Objects.equals(message, that.message)
+        && Objects.equals(comment, that.comment);
+  }
 
-    @Override
-    public int hashCode() {
+  @Override
+  public int hashCode() {
 
-        return Objects.hash(code, message, comment);
-    }
+    return Objects.hash(code, message, comment);
+  }
 }

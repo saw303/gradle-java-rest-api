@@ -41,80 +41,80 @@ import org.gradle.api.tasks.TaskAction
  */
 class PlantUmlTask extends AbstractTask implements Specification {
 
-    private SimpleTemplateEngine templateEngine = new SimpleTemplateEngine()
+	private SimpleTemplateEngine templateEngine = new SimpleTemplateEngine()
 
-    @InputDirectory
-    File getOptionsSource() {
-        if (project.restApi.optionsSource) {
-            return project.restApi.optionsSource
-        }
-        return new File(GeneratorUtil.generatorInput(project), "spec")
-    }
+	@InputDirectory
+	File getOptionsSource() {
+		if (project.restApi.optionsSource) {
+			return project.restApi.optionsSource
+		}
+		return new File(GeneratorUtil.generatorInput(project), "spec")
+	}
 
-    @OutputDirectory
-    File getRootOutputDir() {
-        project.restApi.diagramOutput
-    }
+	@OutputDirectory
+	File getRootOutputDir() {
+		project.restApi.diagramOutput
+	}
 
-    @TaskAction
-    void generateDiagrams() {
+	@TaskAction
+	void generateDiagrams() {
 
-        List<File> specs = findSpecifications(getOptionsSource())
-        List<ResourceContractContainer> contracts = []
-        specs.each { File specFile -> contracts << SpecGenerator.parseResourceContract(specFile) }
+		List<File> specs = findSpecifications(getOptionsSource())
+		List<ResourceContractContainer> contracts = []
+		specs.each { File specFile -> contracts << SpecGenerator.parseResourceContract(specFile) }
 
-        ResourceContractContainer root = contracts.find { ResourceContractContainer c -> c.resourceContract.general.name == 'root' }
+		ResourceContractContainer root = contracts.find { ResourceContractContainer c -> c.resourceContract.general.name == 'root' }
 
-        Knot<ResourceContractContainer> hierarchy = buildHierarchy(root, contracts)
+		Knot<ResourceContractContainer> hierarchy = buildHierarchy(root, contracts)
 
-        URL url = getClass().getResource('/puml/resources-overview.puml.template')
-        def template = templateEngine.createTemplate(url).make([title: 'Resources Overview', containers: contracts, dependencies: buildDependencyList(hierarchy)])
+		URL url = getClass().getResource('/puml/resources-overview.puml.template')
+		def template = templateEngine.createTemplate(url).make([title: 'Resources Overview', containers: contracts, dependencies: buildDependencyList(hierarchy)])
 
-        File targetFile = new File(getRootOutputDir(), 'resources-overview.puml')
+		File targetFile = new File(getRootOutputDir(), 'resources-overview.puml')
 
-        if (targetFile.exists()) {
-            targetFile.delete()
-        }
-        targetFile.createNewFile()
+		if (targetFile.exists()) {
+			targetFile.delete()
+		}
+		targetFile.createNewFile()
 
-        targetFile.write(template.toString(), 'UTF-8')
-    }
+		targetFile.write(template.toString(), 'UTF-8')
+	}
 
-    private Knot<ResourceContractContainer> buildHierarchy(ResourceContractContainer container, List<ResourceContractContainer> containers) {
-        return buildHierarchy(container, null, containers)
-    }
+	private Knot<ResourceContractContainer> buildHierarchy(ResourceContractContainer container, List<ResourceContractContainer> containers) {
+		return buildHierarchy(container, null, containers)
+	}
 
-    private Knot<ResourceContractContainer> buildHierarchy(ResourceContractContainer container, ResourceContractContainer parent, List<ResourceContractContainer> containers) {
+	private Knot<ResourceContractContainer> buildHierarchy(ResourceContractContainer container, ResourceContractContainer parent, List<ResourceContractContainer> containers) {
 
-        Knot<ResourceContractContainer> node = new Knot(container, parent)
+		Knot<ResourceContractContainer> node = new Knot(container, parent)
 
-        for (SubResource subResource in container.resourceContract.subresources) {
+		for (SubResource subResource in container.resourceContract.subresources) {
 
-            ResourceContractContainer subNode = containers.find { ResourceContractContainer c -> c.resourceContract.general.name == subResource.name }
+			ResourceContractContainer subNode = containers.find { ResourceContractContainer c -> c.resourceContract.general.name == subResource.name }
 
-            if (subNode) {
-                node.children << buildHierarchy(subNode, containers)
-            } else {
-                println "Cannot find contract for sub resource ${subResource.name}"
-            }
-        }
+			if (subNode) {
+				node.children << buildHierarchy(subNode, containers)
+			} else {
+				println "Cannot find contract for sub resource ${subResource.name}"
+			}
+		}
 
-        return node
-    }
+		return node
+	}
 
-    Set<Dependency> buildDependencyList(Knot<ResourceContractContainer> tree) {
-        return buildDependencyList(tree, [] as Set)
-    }
+	Set<Dependency> buildDependencyList(Knot<ResourceContractContainer> tree) {
+		return buildDependencyList(tree, [] as Set)
+	}
 
-    Set<Dependency> buildDependencyList(Knot<ResourceContractContainer> tree, Set<Dependency> dependencies) {
+	Set<Dependency> buildDependencyList(Knot<ResourceContractContainer> tree, Set<Dependency> dependencies) {
 
-        if (!tree.children.isEmpty()) {
+		if (!tree.children.isEmpty()) {
 
-            for (child in tree.children) {
-                dependencies << new Dependency(parent: tree.data.resourceContract.general.name, child: child.data.resourceContract.general.name)
-                dependencies.addAll(buildDependencyList(child, dependencies))
-            }
-        }
-        return dependencies
-    }
+			for (child in tree.children) {
+				dependencies << new Dependency(parent: tree.data.resourceContract.general.name, child: child.data.resourceContract.general.name)
+				dependencies.addAll(buildDependencyList(child, dependencies))
+			}
+		}
+		return dependencies
+	}
 }

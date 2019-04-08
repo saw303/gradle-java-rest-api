@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
@@ -23,14 +23,13 @@
  */
 package ch.silviowangler.rest.micronaut.binding;
 
-import io.micronaut.core.convert.format.Format;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+import io.micronaut.core.convert.format.Format;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-
-import static java.lang.annotation.ElementType.PARAMETER;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Indicates that a query parameter should be parsed to a {@link java.time.LocalDate} using the
@@ -42,5 +41,4 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 @Target(PARAMETER)
 @Documented
-public @interface DateFormat {
-}
+public @interface DateFormat {}

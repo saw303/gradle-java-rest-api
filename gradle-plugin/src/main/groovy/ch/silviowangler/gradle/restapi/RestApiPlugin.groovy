@@ -42,54 +42,54 @@ import static ch.silviowangler.gradle.restapi.TargetFramework.SPRING_BOOT
  */
 class RestApiPlugin implements Plugin<Project> {
 
-    public static final String PLUGIN_ID = 'ch.silviowangler.restapi'
+	public static final String PLUGIN_ID = 'ch.silviowangler.restapi'
 
 
-    void apply(Project project) {
+	void apply(Project project) {
 
-        project.apply(plugin: 'java')
+		project.apply(plugin: 'java')
 
-        RestApiExtension extension = new RestApiExtension(project)
-        project.extensions.add('restApi', extension)
+		RestApiExtension extension = new RestApiExtension(project)
+		project.extensions.add('restApi', extension)
 
 
-        Task clean = project.task('cleanRestArtifacts', type: CleanRestApiTask, group: TASK_GROUP_REST_API)
-        Task extract = project.task('extractSpecs', type: ExtractRestApiSpecsTask, group: TASK_GROUP_REST_API)
-        Task generate = project.task('generateRestArtifacts', type: GenerateRestApiTask, group: TASK_GROUP_REST_API)
-        Task docs = project.task('generateDiagrams', type: PlantUmlTask, group: TASK_GROUP_REST_API)
+		Task clean = project.task('cleanRestArtifacts', type: CleanRestApiTask, group: TASK_GROUP_REST_API)
+		Task extract = project.task('extractSpecs', type: ExtractRestApiSpecsTask, group: TASK_GROUP_REST_API)
+		Task generate = project.task('generateRestArtifacts', type: GenerateRestApiTask, group: TASK_GROUP_REST_API)
+		Task docs = project.task('generateDiagrams', type: PlantUmlTask, group: TASK_GROUP_REST_API)
 
-        project.clean.dependsOn clean
-        extract.dependsOn extract
-        project.compileJava.dependsOn generate
+		project.clean.dependsOn clean
+		extract.dependsOn extract
+		project.compileJava.dependsOn generate
 
-        project.compileJava.options.encoding = 'UTF-8'
-        project.compileTestJava.options.encoding = 'UTF-8'
+		project.compileJava.options.encoding = 'UTF-8'
+		project.compileTestJava.options.encoding = 'UTF-8'
 
-        project.sourceSets.main.java.srcDir { project.restApi.generatorOutput }
+		project.sourceSets.main.java.srcDir { project.restApi.generatorOutput }
 
-        Configuration restApiSpecification = project.configurations.findByName(CONFIGURATION_REST_API)
+		Configuration restApiSpecification = project.configurations.findByName(CONFIGURATION_REST_API)
 
-        if (!restApiSpecification) {
-            project.configurations.create(CONFIGURATION_REST_API)
-        }
+		if (!restApiSpecification) {
+			project.configurations.create(CONFIGURATION_REST_API)
+		}
 
-        final String springVersion = '5.1.3.RELEASE'
-        final String pluginVersion = "2.0.1"
+		final String springVersion = '5.1.3.RELEASE'
+		final String pluginVersion = "2.0.1"
 
-        project.afterEvaluate {
-            project.dependencies {
-                implementation("javax.money:money-api:1.0.3")
-                compileOnly("javax.validation:validation-api:2.0.1.Final")
+		project.afterEvaluate {
+			project.dependencies {
+				implementation("javax.money:money-api:1.0.3")
+				compileOnly("javax.validation:validation-api:2.0.1.Final")
 
-                if (extension.targetFramework == SPRING_BOOT) {
-                    implementation "ch.silviowangler.rest:rest-api-spring:${pluginVersion}"
-                    compileOnly "org.springframework:spring-web:${springVersion}"
-                    compileOnly "org.springframework:spring-webmvc:${springVersion}"
-                }
-                else if (extension.targetFramework == MICRONAUT) {
-                    implementation "ch.silviowangler.rest:rest-api-micronaut:${pluginVersion}"
-                }
-            }
-        }
-    }
+				if (extension.targetFramework == SPRING_BOOT) {
+					implementation "ch.silviowangler.rest:rest-api-spring:${pluginVersion}"
+					compileOnly "org.springframework:spring-web:${springVersion}"
+					compileOnly "org.springframework:spring-webmvc:${springVersion}"
+				}
+				else if (extension.targetFramework == MICRONAUT) {
+					implementation "ch.silviowangler.rest:rest-api-micronaut:${pluginVersion}"
+				}
+			}
+		}
+	}
 }

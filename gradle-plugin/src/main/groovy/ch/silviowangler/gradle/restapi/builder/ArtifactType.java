@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
@@ -23,9 +23,11 @@
  */
 package ch.silviowangler.gradle.restapi.builder;
 
-/**
- * @author Silvio Wangler
- */
+/** @author Silvio Wangler */
 public enum ArtifactType {
-    RESOURCE, ABSTRACT_RESOURCE, DELEGATOR_RESOURCE, RESOURCE_IMPL, MODEL
+  RESOURCE,
+  ABSTRACT_RESOURCE,
+  DELEGATOR_RESOURCE,
+  RESOURCE_IMPL,
+  MODEL
 }

@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
@@ -39,15 +39,14 @@ import io.micronaut.http.filter.HttpServerFilter;
 import io.micronaut.http.filter.ServerFilterChain;
 import io.micronaut.web.router.UriRouteMatch;
 import io.reactivex.Flowable;
-import org.reactivestreams.Publisher;
-
 import java.util.Collection;
 import java.util.Optional;
+import org.reactivestreams.Publisher;
 
 /**
  * Transforms a {@link ResourceModel} into a {@link EntityModel} or a {@link CollectionModel}.
  *
- * The JSON structure of an {@link EntityModel} will look like this:
+ * <p>The JSON structure of an {@link EntityModel} will look like this:
  *
  * <pre>
  * {
@@ -73,62 +72,72 @@ import java.util.Optional;
 @Requires(property = "restapi.hateoas.filter.enabled")
 public class HateoasResponseFilter implements HttpServerFilter {
 
-	@Override
-	public int getOrder() {
-		return FilterOrder.HATEOAS_MODEL_CREATION;
-	}
+  @Override
+  public int getOrder() {
+    return FilterOrder.HATEOAS_MODEL_CREATION;
+  }
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public Publisher<MutableHttpResponse<?>> doFilter(HttpRequest<?> request, ServerFilterChain chain) {
+  @Override
+  @SuppressWarnings("unchecked")
+  public Publisher<MutableHttpResponse<?>> doFilter(
+      HttpRequest<?> request, ServerFilterChain chain) {
 
-		return Flowable.fromPublisher(chain.proceed(request)).doOnNext(res -> {
+    return Flowable.fromPublisher(chain.proceed(request))
+        .doOnNext(
+            res -> {
+              Optional<UriRouteMatch> potUriRouteMatch =
+                  res.getAttributes()
+                      .get(HttpAttributes.ROUTE_MATCH.toString(), UriRouteMatch.class);
 
-			Optional<UriRouteMatch> potUriRouteMatch = res.getAttributes().get(HttpAttributes.ROUTE_MATCH.toString(), UriRouteMatch.class);
+              if (potUriRouteMatch.isPresent()) {
+                UriRouteMatch uriRouteMatch = potUriRouteMatch.get();
 
-			if (potUriRouteMatch.isPresent()) {
-				UriRouteMatch uriRouteMatch = potUriRouteMatch.get();
+                if (uriRouteMatch.getProduces().contains(MediaType.APPLICATION_JSON_TYPE)) {
 
-				if (uriRouteMatch.getProduces().contains(MediaType.APPLICATION_JSON_TYPE)) {
+                  if (res.body() instanceof ResourceModel) {
 
-					if (res.body() instanceof ResourceModel) {
+                    ResourceModel resourceModel = (ResourceModel) res.body();
+                    EntityModel entityModel = new EntityModel(resourceModel);
 
-						ResourceModel resourceModel = (ResourceModel) res.body();
-						EntityModel entityModel = new EntityModel(resourceModel);
+                    if (resourceModel instanceof SelfLinkProvider) {
+                      ((SelfLinkProvider) resourceModel)
+                          .selfLink()
+                          .ifPresent(selfLink -> entityModel.getLinks().add(selfLink));
+                    } else {
+                      entityModel.getLinks().add(ResourceLink.selfLink(uriRouteMatch.getUri()));
+                    }
 
-						if (resourceModel instanceof SelfLinkProvider) {
-							((SelfLinkProvider) resourceModel).selfLink().ifPresent(selfLink -> entityModel.getLinks().add(selfLink));
-						} else {
-							entityModel.getLinks().add(ResourceLink.selfLink(uriRouteMatch.getUri()));
-						}
+                    ((MutableHttpResponse) res).body(entityModel);
 
-						((MutableHttpResponse) res).body(entityModel);
+                  } else if (res.body() instanceof Collection) {
 
-					} else if (res.body() instanceof Collection) {
+                    Collection models = (Collection) res.body();
 
-						Collection models = (Collection) res.body();
+                    CollectionModel collectionModel = new CollectionModel();
+                    collectionModel.getLinks().add(ResourceLink.selfLink(uriRouteMatch.getUri()));
 
-						CollectionModel collectionModel = new CollectionModel();
-						collectionModel.getLinks().add(ResourceLink.selfLink(uriRouteMatch.getUri()));
+                    for (Object model : models) {
+                      if (model instanceof ResourceModel) {
+                        ResourceModel resourceModel = (ResourceModel) model;
+                        EntityModel entityModel = new EntityModel(resourceModel);
 
-						for (Object model : models) {
-							if (model instanceof ResourceModel) {
-								ResourceModel resourceModel = (ResourceModel) model;
-								EntityModel entityModel = new EntityModel(resourceModel);
+                        if (model instanceof Identifiable) {
+                          entityModel
+                              .getLinks()
+                              .add(
+                                  ResourceLink.selfLink(
+                                      uriRouteMatch.getUri()
+                                          + "/"
+                                          + ((Identifiable) resourceModel).getId()));
+                        }
 
-								if (model instanceof Identifiable) {
-									entityModel.getLinks().add(ResourceLink.selfLink(uriRouteMatch.getUri() + "/" + ((Identifiable) resourceModel).getId()));
-								}
-
-								collectionModel.getData().add(entityModel);
-							}
-						}
-						((MutableHttpResponse) res).body(collectionModel);
-					}
-				}
-			}
-		});
-	}
-
-
+                        collectionModel.getData().add(entityModel);
+                      }
+                    }
+                    ((MutableHttpResponse) res).body(collectionModel);
+                  }
+                }
+              }
+            });
+  }
 }

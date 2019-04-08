@@ -30,22 +30,21 @@ import groovy.io.FileType
  */
 trait Specification {
 
-    List<File> findSpecifications(File folder) {
+	List<File> findSpecifications(File folder) {
 
-        if (!folder.exists()) {
-            throw new IllegalArgumentException("$folder.absolutePath does not exist")
-        }
+		if (!folder.exists()) {
+			throw new IllegalArgumentException("$folder.absolutePath does not exist")
+		}
 
-        if (!folder.isDirectory()) {
-            throw new IllegalArgumentException("$folder.absolutePath is not a directory")
-        }
+		if (!folder.isDirectory()) {
+			throw new IllegalArgumentException("$folder.absolutePath is not a directory")
+		}
 
-        List<File> specs = []
-        folder.eachFile(FileType.FILES, { f -> if (f.name.endsWith('.json')) specs << f })
+		List<File> specs = []
+		folder.eachFile(FileType.FILES, { f -> if (f.name.endsWith('.json')) specs << f })
 
-        Collections.sort(specs, new ResourceFileComparator())
+		Collections.sort(specs, new ResourceFileComparator())
 
-        return specs
-    }
-
+		return specs
+	}
 }

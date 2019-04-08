@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
@@ -23,6 +23,17 @@
  */
 package ch.silviowangler.gradle.restapi.builder.spring;
 
+import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_HTTP_STATUS;
+import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_PATH_VARIABLE;
+import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_REQUEST_BODY;
+import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_REQUEST_MAPPING;
+import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_REQUEST_METHOD;
+import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_REQUEST_PARAM;
+import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_RESPONSE_BODY;
+import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_RESPONSE_ENTITY;
+import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_RESPONSE_STATUS;
+import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_REST_CONTROLLER;
+
 import ch.silviowangler.gradle.restapi.GeneratorUtil;
 import ch.silviowangler.gradle.restapi.PluginTypes;
 import ch.silviowangler.gradle.restapi.builder.AbstractResourceBuilder;
@@ -30,165 +41,181 @@ import ch.silviowangler.gradle.restapi.builder.ArtifactType;
 import ch.silviowangler.rest.contract.model.v1.Representation;
 import ch.silviowangler.rest.contract.model.v1.Verb;
 import ch.silviowangler.rest.contract.model.v1.VerbParameter;
-import com.squareup.javapoet.*;
-
-import java.util.*;
-
-import static ch.silviowangler.gradle.restapi.PluginTypes.*;
+import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class SpringRootResourceFactory extends AbstractResourceBuilder {
 
-	private static final ClassName STRING_CLASS = ClassName.get(String.class);
+  private static final ClassName STRING_CLASS = ClassName.get(String.class);
 
-	private final boolean explicitExtensions;
+  public SpringRootResourceFactory(boolean explicitExtensions) {
+    super.setExplicitExtensions(explicitExtensions);
+  }
 
-	public SpringRootResourceFactory(boolean explicitExtensions) {
-		this.explicitExtensions = explicitExtensions;
-	}
+  @Override
+  public boolean supportsInterfaces() {
+    return false;
+  }
 
-	@Override
-	public boolean supportsInterfaces() {
-		return false;
-	}
+  @Override
+  public TypeSpec buildResource() {
+    reset();
+    setArtifactType(ArtifactType.ABSTRACT_RESOURCE);
+    TypeSpec.Builder resourceBuilder = resourceBaseTypeBuilder();
 
-	@Override
-	public TypeSpec buildResource() {
-		reset();
-		setArtifactType(ArtifactType.ABSTRACT_RESOURCE);
-		TypeSpec.Builder resourceBuilder = resourceBaseTypeBuilder();
+    Map<String, Object> args = new HashMap<>();
+    args.put("value", getPath());
 
-		Map<String, Object> args = new HashMap<>();
-		args.put("value", getPath());
+    resourceBuilder.addAnnotation(createAnnotation(SPRING_REQUEST_MAPPING, args));
 
-		resourceBuilder.addAnnotation(createAnnotation(SPRING_REQUEST_MAPPING, args));
+    generateResourceMethods();
+    return resourceBuilder.build();
+  }
 
-		generateResourceMethods();
-		return resourceBuilder.build();
-	}
+  @Override
+  public TypeSpec buildResourceImpl() {
+    reset();
+    setArtifactType(ArtifactType.RESOURCE_IMPL);
+    TypeSpec.Builder builder = classBaseInstance();
 
-	@Override
-	public TypeSpec buildResourceImpl() {
-		reset();
-		setArtifactType(ArtifactType.RESOURCE_IMPL);
-		TypeSpec.Builder builder = classBaseInstance();
+    builder.addAnnotation(createAnnotation(SPRING_REST_CONTROLLER));
+    builder.superclass(ClassName.get(getCurrentPackageName(), resourceName()));
 
-		builder.addAnnotation(createAnnotation(SPRING_REST_CONTROLLER));
-		builder.superclass(ClassName.get(getCurrentPackageName(), resourceName()));
+    generateResourceMethods();
+    return builder.build();
+  }
 
-		generateResourceMethods();
-		return builder.build();
-	}
+  @Override
+  protected void createOptionsMethod() {
 
-	@Override
-	protected void createOptionsMethod() {
+    Verb verb = new Verb();
+    verb.setVerb("OPTIONS");
 
-		Verb verb = new Verb();
-		verb.setVerb("OPTIONS");
+    setCurrentVerb(verb);
+    MethodSpec.Builder optionsMethod = createMethod("getOptions", STRING_CLASS);
 
-		setCurrentVerb(verb);
-		MethodSpec.Builder optionsMethod = createMethod("getOptions", STRING_CLASS);
+    optionsMethod.addStatement("return OPTIONS_CONTENT");
 
-		optionsMethod.addStatement("return OPTIONS_CONTENT");
+    resourceBaseTypeBuilder().addMethod(optionsMethod.build());
+    setCurrentVerb(null);
+  }
 
-		resourceBaseTypeBuilder().addMethod(optionsMethod.build());
-		setCurrentVerb(null);
-	}
+  @Override
+  public boolean providesRequestBodyAnnotation() {
+    return true;
+  }
 
-	@Override
-	public boolean providesRequestBodyAnnotation() {
-		return true;
-	}
+  @Override
+  public AnnotationSpec buildRequestBodyAnnotation() {
+    return createAnnotation(SPRING_REQUEST_BODY);
+  }
 
-	@Override
-	public AnnotationSpec buildRequestBodyAnnotation() {
-		return createAnnotation(SPRING_REQUEST_BODY);
-	}
+  @Override
+  public List<AnnotationSpec> getQueryParamAnnotations(VerbParameter param) {
+    AnnotationSpec.Builder builder =
+        AnnotationSpec.builder(SPRING_REQUEST_PARAM.getClassName())
+            .addMember("value", "$S", param.getName());
 
-	@Override
-	public List<AnnotationSpec> getQueryParamAnnotations(VerbParameter param) {
-		AnnotationSpec.Builder builder = AnnotationSpec.builder(SPRING_REQUEST_PARAM.getClassName())
-				.addMember("value", "$S", param.getName());
+    if (!param.getMandatory()) {
+      builder.addMember("required", "$L", false);
+    }
+    // TODO handle other VerbParameter options like defaultValue
 
-		if (!param.getMandatory()) {
-			builder.addMember("required", "$L", false);
-		}
-		// TODO handle other VerbParameter options like defaultValue
+    return Collections.singletonList(builder.build());
+  }
 
-		return Collections.singletonList(builder.build());
-	}
+  @Override
+  public Iterable<AnnotationSpec> getResourceMethodAnnotations(
+      boolean applyId, Representation representation, String methodName) {
+    List<AnnotationSpec> annotations = new ArrayList<>();
 
-	@Override
-	public Iterable<AnnotationSpec> getResourceMethodAnnotations(boolean applyId, Representation representation, String methodName) {
-		List<AnnotationSpec> annotations = new ArrayList<>();
+    String httpMethod = getHttpMethod();
 
-		String httpMethod = getHttpMethod();
+    AnnotationSpec.Builder builder = AnnotationSpec.builder(SPRING_REQUEST_MAPPING.getClassName());
 
-		AnnotationSpec.Builder builder = AnnotationSpec.builder(SPRING_REQUEST_MAPPING.getClassName());
+    builder.addMember(
+        "method", "$T." + httpMethod.toUpperCase(), SPRING_REQUEST_METHOD.getClassName());
 
-		builder.addMember("method", "$T." + httpMethod.toUpperCase(), SPRING_REQUEST_METHOD.getClassName());
+    if (applyId) {
+      if (representation.isJson() && !isExplicitExtensions()) {
+        builder.addMember("path", "\"/{$L}\"", "id");
+      } else {
+        builder.addMember("path", "\"/{$L}.$L\"", "id", representation.getName());
+      }
+    } else if (isExplicitExtensions()) {
+      builder.addMember("path", "\"/.$L\"", representation.getName());
+    }
 
-		if (applyId) {
-			if (representation.isJson() && !explicitExtensions) {
-				builder.addMember("path", "\"/{$L}\"", "id");
-			} else {
-				builder.addMember("path", "\"/{$L}.$L\"", "id", representation.getName());
-			}
-		} else if (explicitExtensions) {
-			builder.addMember("path", "\"/.$L\"", representation.getName());
-		}
+    builder.addMember("produces", "$S", representation.getMimetype().toString());
 
-		builder.addMember("produces", "$S", representation.getMimetype().toString());
+    annotations.add(builder.build());
 
-		annotations.add(builder.build());
+    if (representation.isJson()) {
+      annotations.add(createAnnotation(SPRING_RESPONSE_BODY));
+    }
 
-		if (representation.isJson()) {
-			annotations.add(createAnnotation(SPRING_RESPONSE_BODY));
-		}
+    List<String> responseStatusRequired =
+        Arrays.asList("createEntity", "deleteEntity", "deleteCollection");
 
-		List<String> responseStatusRequired = Arrays.asList("createEntity", "deleteEntity", "deleteCollection");
+    if (responseStatusRequired.contains(methodName)) {
 
-		if (responseStatusRequired.contains(methodName)) {
+      String v;
+      if (methodName.startsWith("create")) {
+        v = "$T.CREATED";
+      } else if (methodName.startsWith("delete")) {
+        v = "$T.NO_CONTENT";
+      } else {
+        throw new IllegalArgumentException("Unknown method name " + methodName);
+      }
 
-			String v;
-			if (methodName.startsWith("create")) {
-				v = "$T.CREATED";
-			} else if (methodName.startsWith("delete")) {
-				v = "$T.NO_CONTENT";
-			} else {
-				throw new IllegalArgumentException("Unknown method name " + methodName);
-			}
+      AnnotationSpec.Builder b = AnnotationSpec.builder(SPRING_RESPONSE_STATUS.getClassName());
+      b.addMember("code", v, SPRING_HTTP_STATUS.getClassName());
+      annotations.add(b.build());
+    }
 
-			AnnotationSpec.Builder b = AnnotationSpec.builder(SPRING_RESPONSE_STATUS.getClassName());
-			b.addMember("code", v, SPRING_HTTP_STATUS.getClassName());
-			annotations.add(b.build());
-		}
+    return annotations;
+  }
 
-		return annotations;
-	}
+  @Override
+  public PluginTypes getPathVariableAnnotationType() {
+    return SPRING_PATH_VARIABLE;
+  }
 
-	@Override
-	public PluginTypes getPathVariableAnnotationType() {
-		return SPRING_PATH_VARIABLE;
-	}
+  @Override
+  public boolean shouldGenerateHeadMethod() {
+    return false;
+  }
 
-	@Override
-	public boolean shouldGenerateHeadMethod() {
-		return false;
-	}
+  @Override
+  public void generateMethodNotAllowedStatement(MethodSpec.Builder builder) {
+    builder.addStatement(
+        "return new $T<>($T.METHOD_NOT_ALLOWED)",
+        getMethodNowAllowedReturnType(),
+        SPRING_HTTP_STATUS.getClassName());
+  }
 
-	@Override
-	public void generateMethodNotAllowedStatement(MethodSpec.Builder builder) {
-		builder.addStatement("return new $T<>($T.METHOD_NOT_ALLOWED)", getMethodNowAllowedReturnType(), SPRING_HTTP_STATUS.getClassName());
-	}
+  @Override
+  public ClassName getMethodNowAllowedReturnType() {
+    return SPRING_RESPONSE_ENTITY.getClassName();
+  }
 
-	@Override
-	public ClassName getMethodNowAllowedReturnType() {
-		return SPRING_RESPONSE_ENTITY.getClassName();
-	}
-
-	@Override
-	public TypeName resourceMethodReturnType(Verb verb, Representation representation) {
-		String v = toHttpMethod(verb);
-		return GeneratorUtil.getSpringBootReturnType(getResourceContractContainer().getSourceFileName(), v, verb.getVerb().endsWith("_COLLECTION"), getCurrentPackageName(), representation);
-	}
+  @Override
+  public TypeName resourceMethodReturnType(Verb verb, Representation representation) {
+    String v = toHttpMethod(verb);
+    return GeneratorUtil.getSpringBootReturnType(
+        getResourceContractContainer().getSourceFileName(),
+        v,
+        verb.getVerb().endsWith("_COLLECTION"),
+        getCurrentPackageName(),
+        representation);
+  }
 }

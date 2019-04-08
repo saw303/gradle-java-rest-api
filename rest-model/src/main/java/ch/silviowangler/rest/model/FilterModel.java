@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
@@ -27,16 +27,16 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.*;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Primitives Filtermodell, welches die den Queryparameter "filter" auflöst.
  *
- * Derzeit sind OR-Filter nicht erlaubt, da diese auch nicht in einer sinnvollen Art und Weise durch SYRIUS behandelt werden können.
+ * <p>Derzeit sind OR-Filter nicht erlaubt, da diese auch nicht in einer sinnvollen Art und Weise
+ * durch SYRIUS behandelt werden können.
  *
  * @author Marco Hofstetter
  * @author Silvio Wangler
@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 public class FilterModel {
 
   private final Map<String, FilterCondition> filters;
-  private final static Logger LOGGER = LoggerFactory.getLogger(FilterModel.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(FilterModel.class);
 
   public FilterModel() {
     filters = new HashMap<>();

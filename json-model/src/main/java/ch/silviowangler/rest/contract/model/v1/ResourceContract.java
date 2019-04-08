@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
@@ -28,72 +28,70 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * @author Silvio Wangler
- */
+/** @author Silvio Wangler */
 public class ResourceContract implements Serializable {
 
-    private GeneralDetails general;
-    private List<Verb> verbs = Collections.emptyList();
-    private List<ResourceField> fields = Collections.emptyList();
-    private List<SubResource> subresources = Collections.emptyList();
-    private List<ResourceTypes> types = Collections.emptyList();
+  private GeneralDetails general;
+  private List<Verb> verbs = Collections.emptyList();
+  private List<ResourceField> fields = Collections.emptyList();
+  private List<SubResource> subresources = Collections.emptyList();
+  private List<ResourceTypes> types = Collections.emptyList();
 
-    public GeneralDetails getGeneral() {
-        return general;
-    }
+  public GeneralDetails getGeneral() {
+    return general;
+  }
 
-    public void setGeneral(GeneralDetails general) {
-        this.general = general;
-    }
+  public void setGeneral(GeneralDetails general) {
+    this.general = general;
+  }
 
-    public List<Verb> getVerbs() {
-        return verbs;
-    }
+  public List<Verb> getVerbs() {
+    return verbs;
+  }
 
-    public void setVerbs(List<Verb> verbs) {
-        this.verbs = verbs;
-    }
+  public void setVerbs(List<Verb> verbs) {
+    this.verbs = verbs;
+  }
 
-    public List<ResourceField> getFields() {
-        return fields;
-    }
+  public List<ResourceField> getFields() {
+    return fields;
+  }
 
-    public void setFields(List<ResourceField> fields) {
-        this.fields = fields;
-    }
+  public void setFields(List<ResourceField> fields) {
+    this.fields = fields;
+  }
 
-    public List<SubResource> getSubresources() {
-        return subresources;
-    }
+  public List<SubResource> getSubresources() {
+    return subresources;
+  }
 
-    public void setSubresources(List<SubResource> subresources) {
-        this.subresources = subresources;
-    }
+  public void setSubresources(List<SubResource> subresources) {
+    this.subresources = subresources;
+  }
 
-    public List<ResourceTypes> getTypes() {
-        return types;
-    }
+  public List<ResourceTypes> getTypes() {
+    return types;
+  }
 
-    public void setTypes(List<ResourceTypes> types) {
-        this.types = types;
-    }
+  public void setTypes(List<ResourceTypes> types) {
+    this.types = types;
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ResourceContract that = (ResourceContract) o;
-        return Objects.equals(general, that.general) &&
-                Objects.equals(verbs, that.verbs) &&
-                Objects.equals(fields, that.fields) &&
-                Objects.equals(subresources, that.subresources) &&
-                Objects.equals(types, that.types);
-    }
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    ResourceContract that = (ResourceContract) o;
+    return Objects.equals(general, that.general)
+        && Objects.equals(verbs, that.verbs)
+        && Objects.equals(fields, that.fields)
+        && Objects.equals(subresources, that.subresources)
+        && Objects.equals(types, that.types);
+  }
 
-    @Override
-    public int hashCode() {
+  @Override
+  public int hashCode() {
 
-        return Objects.hash(general, verbs, fields, subresources, types);
-    }
+    return Objects.hash(general, verbs, fields, subresources, types);
+  }
 }

@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
@@ -27,28 +27,26 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author Silvio Wangler
- */
+/** @author Silvio Wangler */
 public class CollectionModel implements Serializable {
 
-    private List<EntityModel> data = new ArrayList<>();
+  private List<EntityModel> data = new ArrayList<>();
 
-    private List<ResourceLink> links = new ArrayList<>();
+  private List<ResourceLink> links = new ArrayList<>();
 
-    public List<EntityModel> getData() {
-        return data;
-    }
+  public List<EntityModel> getData() {
+    return data;
+  }
 
-    public void setData(List<EntityModel> data) {
-        this.data = data;
-    }
+  public void setData(List<EntityModel> data) {
+    this.data = data;
+  }
 
-    public List<ResourceLink> getLinks() {
-        return links;
-    }
+  public List<ResourceLink> getLinks() {
+    return links;
+  }
 
-    public void setLinks(List<ResourceLink> links) {
-        this.links = links;
-    }
+  public void setLinks(List<ResourceLink> links) {
+    this.links = links;
+  }
 }

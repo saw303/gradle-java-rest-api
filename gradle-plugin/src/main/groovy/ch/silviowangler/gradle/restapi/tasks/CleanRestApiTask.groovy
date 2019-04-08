@@ -34,15 +34,15 @@ import static groovy.io.FileType.DIRECTORIES
  */
 class CleanRestApiTask extends AbstractTask {
 
-    @TaskAction
-    void cleanUp() {
-        def rootDir = project.restApi.generatorOutput
+	@TaskAction
+	void cleanUp() {
+		def rootDir = project.restApi.generatorOutput
 
-        if (rootDir.exists()) {
-            rootDir.eachFile DIRECTORIES, { dir ->
-                dir.deleteDir()
-            }
-            rootDir.eachFile { file -> file.delete() }
-        }
-    }
+		if (rootDir.exists()) {
+			rootDir.eachFile DIRECTORIES, { dir ->
+				dir.deleteDir()
+			}
+			rootDir.eachFile { file -> file.delete() }
+		}
+	}
 }

@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
@@ -25,10 +25,8 @@ package ch.silviowangler.rest.model;
 
 import java.util.Optional;
 
-/**
- * @author Silvio Wangler
- */
+/** @author Silvio Wangler */
 public interface SelfLinkProvider {
 
-	Optional<ResourceLink> selfLink();
+  Optional<ResourceLink> selfLink();
 }

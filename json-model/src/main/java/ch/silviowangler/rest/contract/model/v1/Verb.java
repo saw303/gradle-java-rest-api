@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
@@ -28,79 +28,76 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * @author Silvio Wangler
- */
+/** @author Silvio Wangler */
 public class Verb implements Serializable {
 
-    private String verb;
-    private String rel;
-    private List<ResponseState> responseStates = new ArrayList<>();
-    private List<Representation> representations = new ArrayList<>();
-    private List<VerbParameter> parameters = new ArrayList<>();
+  private String verb;
+  private String rel;
+  private List<ResponseState> responseStates = new ArrayList<>();
+  private List<Representation> representations = new ArrayList<>();
+  private List<VerbParameter> parameters = new ArrayList<>();
 
-    public Verb() {
-    }
+  public Verb() {}
 
-    public Verb(String verb) {
-        this.verb = verb;
-    }
+  public Verb(String verb) {
+    this.verb = verb;
+  }
 
-    public String getVerb() {
-        return verb;
-    }
+  public String getVerb() {
+    return verb;
+  }
 
-    public void setVerb(String verb) {
-        this.verb = verb;
-    }
+  public void setVerb(String verb) {
+    this.verb = verb;
+  }
 
-    public String getRel() {
-        return rel;
-    }
+  public String getRel() {
+    return rel;
+  }
 
-    public void setRel(String rel) {
-        this.rel = rel;
-    }
+  public void setRel(String rel) {
+    this.rel = rel;
+  }
 
-    public List<ResponseState> getResponseStates() {
-        return responseStates;
-    }
+  public List<ResponseState> getResponseStates() {
+    return responseStates;
+  }
 
-    public void setResponseStates(List<ResponseState> responseStates) {
-        this.responseStates = responseStates;
-    }
+  public void setResponseStates(List<ResponseState> responseStates) {
+    this.responseStates = responseStates;
+  }
 
-    public List<Representation> getRepresentations() {
-        return representations;
-    }
+  public List<Representation> getRepresentations() {
+    return representations;
+  }
 
-    public void setRepresentations(List<Representation> representations) {
-        this.representations = representations;
-    }
+  public void setRepresentations(List<Representation> representations) {
+    this.representations = representations;
+  }
 
-    public List<VerbParameter> getParameters() {
-        return parameters;
-    }
+  public List<VerbParameter> getParameters() {
+    return parameters;
+  }
 
-    public void setParameters(List<VerbParameter> parameters) {
-        this.parameters = parameters;
-    }
+  public void setParameters(List<VerbParameter> parameters) {
+    this.parameters = parameters;
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Verb verb1 = (Verb) o;
-        return Objects.equals(verb, verb1.verb) &&
-                Objects.equals(rel, verb1.rel) &&
-                Objects.equals(responseStates, verb1.responseStates) &&
-                Objects.equals(representations, verb1.representations) &&
-                Objects.equals(parameters, verb1.parameters);
-    }
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Verb verb1 = (Verb) o;
+    return Objects.equals(verb, verb1.verb)
+        && Objects.equals(rel, verb1.rel)
+        && Objects.equals(responseStates, verb1.responseStates)
+        && Objects.equals(representations, verb1.representations)
+        && Objects.equals(parameters, verb1.parameters);
+  }
 
-    @Override
-    public int hashCode() {
+  @Override
+  public int hashCode() {
 
-        return Objects.hash(verb, rel, responseStates, representations, parameters);
-    }
+    return Objects.hash(verb, rel, responseStates, representations, parameters);
+  }
 }

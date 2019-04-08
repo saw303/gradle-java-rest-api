@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
@@ -27,7 +27,7 @@ import java.io.IOException;
 
 public class UnsupportedDataTypeException extends IOException {
 
-	public UnsupportedDataTypeException(String s) {
-		super(s);
-	}
+  public UnsupportedDataTypeException(String s) {
+    super(s);
+  }
 }

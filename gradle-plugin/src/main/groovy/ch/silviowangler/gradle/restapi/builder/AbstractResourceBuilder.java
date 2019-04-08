@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
@@ -23,19 +23,6 @@
  */
 package ch.silviowangler.gradle.restapi.builder;
 
-import ch.silviowangler.gradle.restapi.GeneratorUtil;
-import ch.silviowangler.gradle.restapi.LinkParser;
-import ch.silviowangler.rest.contract.model.v1.*;
-import com.squareup.javapoet.*;
-import io.github.getify.minify.Minify;
-
-import java.io.Serializable;
-import java.nio.charset.Charset;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import static ch.silviowangler.gradle.restapi.PluginTypes.*;
 import static ch.silviowangler.gradle.restapi.builder.ArtifactType.RESOURCE;
 import static ch.silviowangler.gradle.restapi.util.SupportedDataTypes.*;
@@ -44,684 +31,760 @@ import static com.google.common.base.CaseFormat.UPPER_CAMEL;
 import static com.squareup.javapoet.TypeName.INT;
 import static javax.lang.model.element.Modifier.*;
 
-/**
- * @author Silvio Wangler
- */
+import ch.silviowangler.gradle.restapi.GeneratorUtil;
+import ch.silviowangler.gradle.restapi.LinkParser;
+import ch.silviowangler.rest.contract.model.v1.*;
+import com.squareup.javapoet.*;
+import io.github.getify.minify.Minify;
+import java.io.Serializable;
+import java.nio.charset.Charset;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+/** @author Silvio Wangler */
 public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
-	private TypeSpec.Builder typeBuilder;
-	private ResourceContractContainer resourceContractContainer;
-	private Verb currentVerb;
-	private String currentPackageName;
-	private boolean printTimestamp = true;
-	private ArtifactType artifactType;
-	private Charset responseEncoding;
-	private boolean explicitExtensions = false;
-
-	void setExplicitExtensions(boolean explicitExtensions) {
-		this.explicitExtensions = explicitExtensions;
-	}
-
-	private Verb getCurrentVerb() {
-		return currentVerb;
-	}
-
-	protected void setCurrentVerb(Verb currentVerb) {
-		this.currentVerb = currentVerb;
-	}
-
-	@Override
-	public String getCurrentPackageName() {
-		return currentPackageName;
-	}
-
-	@Override
-	public ArtifactType getArtifactType() {
-		return artifactType;
-	}
-
-	public void setArtifactType(ArtifactType artifactType) {
-		this.artifactType = artifactType;
-	}
-
-	protected Charset getResponseEncoding() {
-		return responseEncoding;
-	}
-
-	@Override
-	public ResourceBuilder withResourceContractContainer(ResourceContractContainer resourceContract) {
-		this.resourceContractContainer = resourceContract;
-		return this;
-	}
-
-	@Override
-	public ResourceBuilder withTimestampInGeneratedAnnotation(boolean val) {
-		printTimestamp = val;
-		return this;
-	}
-
-	@Override
-	public ResourceBuilder withCurrentPackageName(String packageName) {
-		this.currentPackageName = packageName;
-		return this;
-	}
-
-	@Override
-	public ResourceBuilder withResponseEncoding(Charset responseEncoding) {
-		this.responseEncoding = responseEncoding;
-		return this;
-	}
-
-	@Override
-	public MethodSpec.Builder createMethodNotAllowedHandler(String methodName) {
-		Representation representation = Representation.json(this.responseEncoding);
-
-		MethodContext context = new MethodContext(methodName, getMethodNowAllowedReturnType(), representation);
-		MethodSpec.Builder builder = createMethod(context);
-		generateMethodNotAllowedStatement(builder);
-
-		return builder;
-	}
-
-	@Override
-	public MethodSpec.Builder createMethod(String methodName, TypeName returnType) {
-		Representation representation = Representation.json(this.responseEncoding);
+  private TypeSpec.Builder typeBuilder;
+  private ResourceContractContainer resourceContractContainer;
+  private Verb currentVerb;
+  private String currentPackageName;
+  private boolean printTimestamp = true;
+  private ArtifactType artifactType;
+  private Charset responseEncoding;
+  private boolean explicitExtensions = false;
+
+  protected void setExplicitExtensions(boolean explicitExtensions) {
+    this.explicitExtensions = explicitExtensions;
+  }
+
+  public boolean isExplicitExtensions() {
+    return explicitExtensions;
+  }
+
+  private Verb getCurrentVerb() {
+    return currentVerb;
+  }
+
+  protected void setCurrentVerb(Verb currentVerb) {
+    this.currentVerb = currentVerb;
+  }
+
+  @Override
+  public String getCurrentPackageName() {
+    return currentPackageName;
+  }
+
+  @Override
+  public ArtifactType getArtifactType() {
+    return artifactType;
+  }
+
+  public void setArtifactType(ArtifactType artifactType) {
+    this.artifactType = artifactType;
+  }
+
+  protected Charset getResponseEncoding() {
+    return responseEncoding;
+  }
+
+  @Override
+  public ResourceBuilder withResourceContractContainer(ResourceContractContainer resourceContract) {
+    this.resourceContractContainer = resourceContract;
+    return this;
+  }
+
+  @Override
+  public ResourceBuilder withTimestampInGeneratedAnnotation(boolean val) {
+    printTimestamp = val;
+    return this;
+  }
+
+  @Override
+  public ResourceBuilder withCurrentPackageName(String packageName) {
+    this.currentPackageName = packageName;
+    return this;
+  }
+
+  @Override
+  public ResourceBuilder withResponseEncoding(Charset responseEncoding) {
+    this.responseEncoding = responseEncoding;
+    return this;
+  }
+
+  @Override
+  public MethodSpec.Builder createMethodNotAllowedHandler(String methodName) {
+    Representation representation = Representation.json(this.responseEncoding);
+
+    MethodContext context =
+        new MethodContext(methodName, getMethodNowAllowedReturnType(), representation);
+    MethodSpec.Builder builder = createMethod(context);
+    generateMethodNotAllowedStatement(builder);
+
+    return builder;
+  }
+
+  @Override
+  public MethodSpec.Builder createMethod(String methodName, TypeName returnType) {
+    Representation representation = Representation.json(this.responseEncoding);
+
+    MethodContext context = new MethodContext(methodName, returnType, representation);
+    return createMethod(context);
+  }
+
+  @Override
+  public ResourceContractContainer getResourceContractContainer() {
+    return this.resourceContractContainer;
+  }
+
+  protected TypeSpec.Builder resourceBaseTypeBuilder() {
+    return resourceBaseTypeBuilder(resourceName());
+  }
+
+  protected TypeSpec.Builder resourceBaseTypeBuilder(String resourceName) {
+
+    if (this.typeBuilder == null) {
+
+      if (supportsInterfaces()) {
+        this.typeBuilder =
+            TypeSpec.interfaceBuilder(resourceName)
+                .addModifiers(PUBLIC)
+                .addAnnotation(createGeneratedAnnotation(printTimestamp));
+      } else {
+        this.typeBuilder =
+            TypeSpec.classBuilder(resourceName)
+                .addModifiers(PUBLIC)
+                .addAnnotation(createGeneratedAnnotation(printTimestamp));
+
+        if (!supportsDelegation()) {
+          this.typeBuilder.addModifiers(ABSTRACT);
+        }
+      }
+      addJavadocToClass();
+    }
 
-		MethodContext context = new MethodContext(methodName, returnType, representation);
-		return createMethod(context);
-	}
+    return this.typeBuilder;
+  }
 
-	@Override
-	public ResourceContractContainer getResourceContractContainer() {
-		return this.resourceContractContainer;
-	}
+  private void addJavadocToClass() {
+    ResourceContract resourceContract = this.resourceContractContainer.getResourceContract();
+    GeneralDetails general = resourceContract.getGeneral();
+    if (general != null && general.getDescription() != null) {
+      this.typeBuilder.addJavadoc(String.format("%s\n", general.getDescription()));
+    }
+  }
 
-	protected TypeSpec.Builder resourceBaseTypeBuilder() {
-		return resourceBaseTypeBuilder(resourceName());
-	}
+  protected void reset() {
+    this.artifactType = null;
+    this.typeBuilder = null;
+  }
 
-	protected TypeSpec.Builder resourceBaseTypeBuilder(String resourceName) {
+  protected TypeSpec.Builder classBaseInstance() {
+    return classBaseInstance(resourceImplName());
+  }
 
-		if (this.typeBuilder == null) {
+  protected TypeSpec.Builder classBaseInstance(String resourceName) {
 
-			if (supportsInterfaces()) {
-				this.typeBuilder = TypeSpec.interfaceBuilder(resourceName)
-						.addModifiers(PUBLIC)
-						.addAnnotation(createGeneratedAnnotation(printTimestamp));
-			} else {
-				this.typeBuilder = TypeSpec.classBuilder(resourceName)
-						.addModifiers(PUBLIC)
-						.addAnnotation(createGeneratedAnnotation(printTimestamp));
+    if (this.typeBuilder == null) {
+      this.typeBuilder = TypeSpec.classBuilder(resourceName).addModifiers(PUBLIC);
+    }
+    return this.typeBuilder;
+  }
 
-				if (!supportsDelegation()) {
-					this.typeBuilder.addModifiers(ABSTRACT);
-				}
-			}
-			addJavadocToClass();
-		}
+  protected abstract void createOptionsMethod();
 
-		return this.typeBuilder;
-	}
+  @Override
+  public void generateResourceMethods() {
 
-	private void addJavadocToClass() {
-		ResourceContract resourceContract = this.resourceContractContainer.getResourceContract();
-		GeneralDetails general = resourceContract.getGeneral();
-		if (general != null && general.getDescription() != null) {
-			this.typeBuilder.addJavadoc(String.format("%s\n", general.getDescription()));
-		}
-	}
+    if (isAbstractOrInterfaceResource()) {
 
-	protected void reset() {
-		this.artifactType = null;
-		this.typeBuilder = null;
-	}
+      String content = getResourceContractContainer().getResourceContractPlainText();
+      content = Minify.minify(content).replaceAll("\"", "\\\\\"");
 
-	protected TypeSpec.Builder classBaseInstance() {
-		return classBaseInstance(resourceImplName());
-	}
+      FieldSpec.Builder fieldBuilder =
+          FieldSpec.builder(ClassName.get(String.class), "OPTIONS_CONTENT")
+              .addModifiers(PUBLIC, STATIC, FINAL)
+              .initializer("$N", "\"" + content + "\"");
 
-	protected TypeSpec.Builder classBaseInstance(String resourceName) {
+      this.typeBuilder.addField(fieldBuilder.build());
 
-		if (this.typeBuilder == null) {
-			this.typeBuilder = TypeSpec.classBuilder(resourceName).addModifiers(PUBLIC);
-		}
-		return this.typeBuilder;
-	}
+      createOptionsMethod();
+    }
 
-	protected abstract void createOptionsMethod();
+    List<Verb> verbs = getResourceContractContainer().getResourceContract().getVerbs();
+    verbs.sort(Comparator.comparing(Verb::getVerb));
 
-	@Override
-	public void generateResourceMethods() {
+    LinkParser parser =
+        new LinkParser(
+            getResourceContractContainer().getResourceContract().getGeneral().getxRoute(),
+            getResourceContractContainer()
+                .getResourceContract()
+                .getGeneral()
+                .getVersion()
+                .split("\\.")[0]);
 
-		if (isAbstractOrInterfaceResource()) {
+    for (Verb verb : verbs) {
 
-			String content = getResourceContractContainer().getResourceContractPlainText();
-			content = Minify.minify(content).replaceAll("\"", "\\\\\"");
+      MethodSpec.Builder methodBuilder;
 
-			FieldSpec.Builder fieldBuilder = FieldSpec.builder(ClassName.get(String.class), "OPTIONS_CONTENT").addModifiers(PUBLIC, STATIC, FINAL)
-					.initializer("$N", "\"" + content + "\"");
+      this.currentVerb = verb;
 
-			this.typeBuilder.addField(fieldBuilder.build());
+      if (HEAD_METHODS.contains(verb.getVerb()) && !shouldGenerateHeadMethod()) {
+        continue;
+      }
 
-			createOptionsMethod();
-		}
+      Map<String, TypeName> paramClasses = new HashMap<>();
 
-		List<Verb> verbs = getResourceContractContainer().getResourceContract().getVerbs();
-		verbs.sort(Comparator.comparing(Verb::getVerb));
+      for (Representation representation : verb.getRepresentations()) {
 
+        boolean directEntity = parser.isDirectEntity();
 
-		LinkParser parser = new LinkParser(getResourceContractContainer().getResourceContract().getGeneral().getxRoute(), getResourceContractContainer().getResourceContract().getGeneral().getVersion().split("\\.")[0]);
+        List<ParameterSpec> pathParams =
+            getPathParams(parser, isAbstractOrInterfaceResource() && !isDelegatorResource());
 
-		for (Verb verb : verbs) {
+        MethodContext context =
+            new MethodContext(
+                resourceMethodReturnType(verb, representation),
+                verb.getParameters(),
+                paramClasses,
+                representation,
+                pathParams,
+                directEntity);
 
-			MethodSpec.Builder methodBuilder;
+        if (GET_COLLECTION.equals(verb.getVerb())) {
 
-			this.currentVerb = verb;
+          if (directEntity) {
+            continue;
+          }
 
-			if (HEAD_METHODS.contains(verb.getVerb()) && !shouldGenerateHeadMethod()) {
-				continue;
-			}
+          context.setMethodName("getCollection");
+          methodBuilder = createMethod(context);
 
-			Map<String, TypeName> paramClasses = new HashMap<>();
+        } else if (GET_ENTITY.equals(verb.getVerb())) {
 
-			for (Representation representation : verb.getRepresentations()) {
+          context.setMethodName("getEntity");
+          methodBuilder = createMethod(context);
 
-				boolean directEntity = parser.isDirectEntity();
+        } else if (HEAD_COLLECTION.equals(verb.getVerb())) {
 
-				List<ParameterSpec> pathParams = getPathParams(parser, isAbstractOrInterfaceResource() && !isDelegatorResource());
+          if (directEntity) {
+            continue;
+          }
 
-				MethodContext context = new MethodContext(resourceMethodReturnType(verb, representation), verb.getParameters(), paramClasses, representation, pathParams, directEntity);
+          context.setMethodName("headCollection");
+          methodBuilder = createMethod(context);
 
-				if (GET_COLLECTION.equals(verb.getVerb())) {
+        } else if (HEAD_ENTITY.equals(verb.getVerb())) {
 
-					if (directEntity) {
-						continue;
-					}
+          context.setMethodName("headEntity");
+          methodBuilder = createMethod(context);
 
-					context.setMethodName("getCollection");
-					methodBuilder = createMethod(context);
+        } else {
+          ClassName model = resourceModelName(verb);
 
-				} else if (GET_ENTITY.equals(verb.getVerb())) {
+          if (POST.equals(verb.getVerb())) {
 
-					context.setMethodName("getEntity");
-					methodBuilder = createMethod(context);
+            paramClasses.put("model", model);
+            context.setMethodName("createEntity");
+            methodBuilder = createMethod(context);
 
-				} else if (HEAD_COLLECTION.equals(verb.getVerb())) {
+          } else if (PUT.equals(verb.getVerb()) || PUT_ENTITY.equals(verb.getVerb())) {
 
-					if (directEntity) {
-						continue;
-					}
+            paramClasses.put("model", model);
+            context.setMethodName("updateEntity");
+            methodBuilder = createMethod(context);
 
-					context.setMethodName("headCollection");
-					methodBuilder = createMethod(context);
+          } else if (PUT_COLLECTION.equals(verb.getVerb())) {
 
-				} else if (HEAD_ENTITY.equals(verb.getVerb())) {
+            paramClasses.put(
+                "model", ParameterizedTypeName.get(ClassName.get(Collection.class), model));
+            context.setMethodName("updateEntities");
+            methodBuilder = createMethod(context);
 
-					context.setMethodName("headEntity");
-					methodBuilder = createMethod(context);
+          } else if (DELETE_COLLECTION.equals(verb.getVerb())) {
 
-				} else {
-					ClassName model = resourceModelName(verb);
+            context.setMethodName("deleteCollection");
+            methodBuilder = createMethod(context);
 
-					if (POST.equals(verb.getVerb())) {
+          } else if (DELETE_ENTITY.equals(verb.getVerb())) {
 
-						paramClasses.put("model", model);
-						context.setMethodName("createEntity");
-						methodBuilder = createMethod(context);
+            context.setMethodName("deleteEntity");
+            methodBuilder = createMethod(context);
 
-					} else if (PUT.equals(verb.getVerb()) || PUT_ENTITY.equals(verb.getVerb())) {
+          } else {
+            throw new IllegalArgumentException(String.format("Verb %s is unknown", verb.getVerb()));
+          }
+        }
 
-						paramClasses.put("model", model);
-						context.setMethodName("updateEntity");
-						methodBuilder = createMethod(context);
+        MethodSpec resourceMethod = methodBuilder.build();
 
-					} else if (PUT_COLLECTION.equals(verb.getVerb())) {
+        if (!supportsInterfaces()
+            && !isDelegatorResource()
+            && resourceMethod.modifiers.size() == 1
+            && resourceMethod.modifiers.contains(PUBLIC)) {
 
-						paramClasses.put("model", ParameterizedTypeName.get(ClassName.get(Collection.class), model));
-						context.setMethodName("updateEntities");
-						methodBuilder = createMethod(context);
+          if (inheritsFromResource()) {
+            context.setMethodName(
+                String.format("handle%s", LOWER_CAMEL.to(UPPER_CAMEL, context.getMethodName())));
+          }
+          context.setPathParams(getPathParams(parser, false));
+          MethodSpec.Builder handlerBuilder = createMethod(context);
+          this.typeBuilder.addMethod(handlerBuilder.build());
+        }
 
-					} else if (DELETE_COLLECTION.equals(verb.getVerb())) {
+        if (supportsInterfaces() || !isResourceImpl()) {
+          this.typeBuilder.addMethod(resourceMethod);
+        }
+      }
+      this.currentVerb = null;
+    }
 
-						context.setMethodName("deleteCollection");
-						methodBuilder = createMethod(context);
+    if (isAbstractOrInterfaceResource() && supportsMethodNotAllowedGeneration()) {
+      generatedDefaultMethodNotAllowedHandlersForMissingVerbs(parser.isDirectEntity());
+    }
+  }
 
-					} else if (DELETE_ENTITY.equals(verb.getVerb())) {
+  protected String getPath() {
+    GeneralDetails general = getResourceContractContainer().getResourceContract().getGeneral();
+    return new LinkParser(general.getxRoute(), general.getVersion().split("\\.")[0]).toBasePath();
+  }
 
-						context.setMethodName("deleteEntity");
-						methodBuilder = createMethod(context);
+  protected String getHttpMethod() {
+    return toHttpMethod(getCurrentVerb()).toUpperCase();
+  }
 
-					} else {
-						throw new IllegalArgumentException(String.format("Verb %s is unknown", verb.getVerb()));
-					}
-				}
+  @Override
+  public Set<TypeSpec> buildResourceTypes(Set<ClassName> types, String packageName) {
 
-				MethodSpec resourceMethod = methodBuilder.build();
+    ResourceContract resourceContract = getResourceContractContainer().getResourceContract();
+    List<ResourceTypes> contractTypes = resourceContract.getTypes();
+    Set<TypeSpec> specTypes = new HashSet<>(types.size());
 
-				if (!supportsInterfaces() && !isDelegatorResource() && resourceMethod.modifiers.size() == 1 && resourceMethod.modifiers.contains(PUBLIC)) {
+    for (ResourceTypes type : contractTypes) {
+      TypeSpec.Builder builder = resourceTypeBaseInstance(type.getName());
 
-					if (inheritsFromResource()) {
-						context.setMethodName(String.format("handle%s", LOWER_CAMEL.to(UPPER_CAMEL, context.getMethodName())));
-					}
-					context.setPathParams(getPathParams(parser, false));
-					MethodSpec.Builder handlerBuilder = createMethod(context);
-					this.typeBuilder.addMethod(handlerBuilder.build());
-				}
+      for (ResourceTypeField field : type.getFields()) {
 
-				if (supportsInterfaces() || !isResourceImpl()) {
-					this.typeBuilder.addMethod(resourceMethod);
-				}
-			}
-			this.currentVerb = null;
-		}
+        TypeName fieldType = getFieldType(types, field.getType());
 
+        if ("true".equals(field.getMultiple())) {
+          ClassName list = ClassName.get(List.class);
+          fieldType = ParameterizedTypeName.get(list, fieldType);
+        }
 
-		if (isAbstractOrInterfaceResource() && supportsMethodNotAllowedGeneration()) {
-			generatedDefaultMethodNotAllowedHandlersForMissingVerbs(parser.isDirectEntity());
-		}
-	}
+        builder.addField(FieldSpec.builder(fieldType, field.getName(), PRIVATE).build());
 
+        // write Getter/Setters
+        writeGetterSetter(builder, fieldType, field.getName());
+      }
+      TypeSpec typeSpec = builder.build();
+      types.add(ClassName.get(packageName, typeSpec.name));
+      specTypes.add(typeSpec);
+    }
+    return specTypes;
+  }
 
-	protected String getPath() {
-		GeneralDetails general = getResourceContractContainer().getResourceContract().getGeneral();
-		return new LinkParser(general.getxRoute(), general.getVersion().split("\\.")[0]).toBasePath();
-	}
+  @Override
+  public Set<TypeSpec> buildResourceModels(Set<ClassName> types) {
+    ResourceContract resourceContract = getResourceContractContainer().getResourceContract();
 
-	protected String getHttpMethod() {
-		return toHttpMethod(getCurrentVerb()).toUpperCase();
-	}
+    List<Verb> verbs;
+    List<Verb> declaredVerbs = resourceContract.getVerbs();
+    ensureHeadVerbHasGetVerbCounterpart(declaredVerbs);
 
-	@Override
-	public Set<TypeSpec> buildResourceTypes(Set<ClassName> types, String packageName) {
+    if (declaredVerbs.size() == 1 && declaredVerbs.get(0).getVerb().equals(GET_COLLECTION)) {
+      verbs = declaredVerbs;
+    } else {
 
-		ResourceContract resourceContract = getResourceContractContainer().getResourceContract();
-		List<ResourceTypes> contractTypes = resourceContract.getTypes();
-		Set<TypeSpec> specTypes = new HashSet<>(types.size());
+      List<String> excludeVerbs = new ArrayList<>();
+      excludeVerbs.add(DELETE_ENTITY);
 
-		for (ResourceTypes type : contractTypes) {
-			TypeSpec.Builder builder = resourceTypeBaseInstance(type.getName());
+      Optional<Verb> getEntity =
+          declaredVerbs.stream().filter(verb -> verb.getVerb().equals(GET_ENTITY)).findAny();
 
-			for (ResourceTypeField field : type.getFields()) {
+      if (getEntity.isPresent()) {
+        excludeVerbs.add(GET_COLLECTION);
+      }
 
-				TypeName fieldType = getFieldType(types, field.getType());
+      verbs =
+          declaredVerbs.stream()
+              .filter(v -> !excludeVerbs.contains(v.getVerb()))
+              .collect(Collectors.toList());
+    }
 
-				if ("true".equals(field.getMultiple())) {
-					ClassName list = ClassName.get(List.class);
-					fieldType = ParameterizedTypeName.get(list, fieldType);
-				}
+    Set<TypeSpec> specTypes = new HashSet<>(verbs.size());
 
-				builder.addField(FieldSpec.builder(fieldType, field.getName(), PRIVATE).build());
+    Verb verbGet =
+        verbs.stream()
+            .filter(v -> v.getVerb().equals(GET_ENTITY))
+            .findAny()
+            .orElse(verbs.isEmpty() ? null : verbs.get(0));
 
-				// write Getter/Setters
-				writeGetterSetter(builder, fieldType, field.getName());
-			}
-			TypeSpec typeSpec = builder.build();
-			types.add(ClassName.get(packageName, typeSpec.name));
-			specTypes.add(typeSpec);
-		}
-		return specTypes;
-	}
+    List<ResourceField> fields = resourceContract.getFields();
 
+    for (Verb verb : verbs) {
 
-	@Override
-	public Set<TypeSpec> buildResourceModels(Set<ClassName> types) {
-		ResourceContract resourceContract = getResourceContractContainer().getResourceContract();
+      if (HEAD_METHODS.contains(verb.getVerb())) {
+        continue;
+      }
 
-		List<Verb> verbs;
-		List<Verb> declaredVerbs = resourceContract.getVerbs();
-		ensureHeadVerbHasGetVerbCounterpart(declaredVerbs);
+      List<String> fieldNamesApplied = new ArrayList<>();
 
-		if (declaredVerbs.size() == 1 && declaredVerbs.get(0).getVerb().equals(GET_COLLECTION)) {
-			verbs = declaredVerbs;
-		} else {
+      TypeSpec.Builder builder = resourceModelBaseInstance(verb);
+      Optional<Representation> jsonRepresentation =
+          verbGet.getRepresentations().stream().filter(r -> "json".equals(r.getName())).findAny();
 
-			List<String> excludeVerbs = new ArrayList<>();
-			excludeVerbs.add(DELETE_ENTITY);
+      if (jsonRepresentation.isPresent()) {
 
-			Optional<Verb> getEntity = declaredVerbs.stream().filter(verb -> verb.getVerb().equals(GET_ENTITY)).findAny();
+        Optional<ResourceField> idField =
+            fields.stream().filter(f -> "id".equals(f.getName())).findAny();
 
-			if (getEntity.isPresent()) {
-				excludeVerbs.add(GET_COLLECTION);
-			}
+        if (idField.isPresent()) {
+          builder.addSuperinterface(RESTAPI_IDENTIFIABLE.getTypeName());
+        }
 
-			verbs = declaredVerbs.stream().filter(v -> !excludeVerbs.contains(v.getVerb())).collect(Collectors.toList());
-		}
+        for (ResourceField field : fields) {
 
-		Set<TypeSpec> specTypes = new HashSet<>(verbs.size());
+          if (!field.isVisible() && verb.equals(verbGet)) continue;
+          if (field.isReadonly() && !verb.equals(verbGet)) continue;
 
-		Verb verbGet = verbs.stream().filter(v -> v.getVerb().equals(GET_ENTITY)).findAny().orElse(verbs.isEmpty() ? null : verbs.get(0));
+          fieldNamesApplied.add(field.getName());
 
-		List<ResourceField> fields = resourceContract.getFields();
+          TypeName fieldType = getFieldType(types, field.getType());
 
-		for (Verb verb : verbs) {
+          if (field.isMultiple()) {
+            ClassName list = ClassName.get(List.class);
+            fieldType = ParameterizedTypeName.get(list, fieldType);
+          }
 
-			if (HEAD_METHODS.contains(verb.getVerb())) {
-				continue;
-			}
+          FieldSpec.Builder fieldBuilder = FieldSpec.builder(fieldType, field.getName(), PRIVATE);
+
+          if (field.getxComment() != null) {
+            fieldBuilder.addJavadoc(String.format("%s\n", field.getxComment()));
+          }
+
+          if (field.getMandatory().stream().anyMatch(v -> v.equalsIgnoreCase(verb.getVerb()))) {
+            fieldBuilder.addAnnotation(createAnnotation(JAVAX_VALIDATION_NOT_NULL));
+          }
+
+          if (!verb.equals(verbGet) && "email".equalsIgnoreCase(field.getType())) {
+            fieldBuilder.addAnnotation(
+                AnnotationSpec.builder(JAVAX_VALIDATION_EMAIL.getClassName()).build());
+          }
+
+          if (!verb.equals(verbGet)
+              && (field.getMin() instanceof Number || field.getMax() instanceof Number)) {
+
+            Number min = field.getMin();
+            Number max = field.getMax();
 
-			List<String> fieldNamesApplied = new ArrayList<>();
+            if ("integer".equalsIgnoreCase(field.getType())
+                || "string".equalsIgnoreCase(field.getType())) {
 
-			TypeSpec.Builder builder = resourceModelBaseInstance(verb);
-			Optional<Representation> jsonRepresentation = verbGet.getRepresentations().stream().filter(r -> "json".equals(r.getName())).findAny();
+              AnnotationSpec.Builder annoBuilder =
+                  AnnotationSpec.builder(JAVAX_VALIDATION_SIZE.getClassName());
 
-			if (jsonRepresentation.isPresent()) {
+              if (field.getMin() != null) {
+                annoBuilder.addMember("min", "$L", min.intValue());
+              }
 
-				Optional<ResourceField> idField = fields.stream().filter(f -> "id".equals(f.getName())).findAny();
+              if (field.getMax() != null) {
+                annoBuilder.addMember("max", "$L", max.intValue());
+              }
 
-				if (idField.isPresent()) {
-					builder.addSuperinterface(RESTAPI_IDENTIFIABLE.getTypeName());
-				}
-
-				for (ResourceField field : fields) {
-
-					if (!field.isVisible() && verb.equals(verbGet)) continue;
-					if (field.isReadonly() && !verb.equals(verbGet)) continue;
-
-					fieldNamesApplied.add(field.getName());
-
-					TypeName fieldType = getFieldType(types, field.getType());
-
-					if (field.isMultiple()) {
-						ClassName list = ClassName.get(List.class);
-						fieldType = ParameterizedTypeName.get(list, fieldType);
-					}
-
-					FieldSpec.Builder fieldBuilder = FieldSpec.builder(fieldType, field.getName(), PRIVATE);
-
-					if (field.getxComment() != null) {
-						fieldBuilder.addJavadoc(String.format("%s\n", field.getxComment()));
-					}
-
-					if (field.getMandatory().stream().anyMatch(v -> v.equalsIgnoreCase(verb.getVerb()))) {
-						fieldBuilder.addAnnotation(createAnnotation(JAVAX_VALIDATION_NOT_NULL));
-					}
-
-					if (!verb.equals(verbGet) && "email".equalsIgnoreCase(field.getType())) {
-						fieldBuilder.addAnnotation(AnnotationSpec.builder(JAVAX_VALIDATION_EMAIL.getClassName()).build());
-					}
-
-					if (!verb.equals(verbGet) && (field.getMin() instanceof Number || field.getMax() instanceof Number)) {
-
-						Number min = field.getMin();
-						Number max = field.getMax();
-
-						if ("integer".equalsIgnoreCase(field.getType()) || "string".equalsIgnoreCase(field.getType())) {
-
-							AnnotationSpec.Builder annoBuilder = AnnotationSpec.builder(JAVAX_VALIDATION_SIZE.getClassName());
-
-							if (field.getMin() != null) {
-								annoBuilder.addMember("min", "$L", min.intValue());
-							}
-
-							if (field.getMax() != null) {
-								annoBuilder.addMember("max", "$L", max.intValue());
-							}
-
-							fieldBuilder.addAnnotation(annoBuilder.build());
-						} else if ("decimal".equalsIgnoreCase(field.getType())) {
-							fieldBuilder.addAnnotation(
-									AnnotationSpec.builder(JAVAX_VALIDATION_DECIMAL_MIN.getClassName())
-											.addMember("value", "$S", min.doubleValue()).build()
-							);
-							fieldBuilder.addAnnotation(
-									AnnotationSpec.builder(JAVAX_VALIDATION_DECIMAL_MAX.getClassName())
-											.addMember("value", "$S", max.doubleValue()).build()
-							);
-						}
-
-					}
-
-
-					if (field.isMultiple()) {
-						fieldBuilder.initializer("new java.util.ArrayList<>()");
-					} else if (field.getDefaultValue() != null) {
-
-						if (fieldType == STRING.getClassName()) {
-							fieldBuilder.initializer("$S", field.getDefaultValue());
-						} else if (fieldType == DATE.getClassName()) {
-							fieldBuilder.initializer("$T.now()", ClassName.get(LocalDate.class));
-						} else if (fieldType == DATETIME.getClassName()) {
-							fieldBuilder.initializer("$T.now()", ClassName.get(LocalDateTime.class));
-						} else if (fieldType == BOOL.getClassName()) {
-							fieldBuilder.initializer("$T.$L", ClassName.get(Boolean.class), Boolean.TRUE.equals(field.getDefaultValue()) ? "TRUE" : "FALSE");
-						} else {
-							fieldBuilder.initializer("$S", field.getDefaultValue());
-						}
-					}
-					builder.addField(fieldBuilder.build());
-
-					// write Getter/Setters
-					writeGetterSetter(builder, fieldType, field.getName());
-				}
-			}
-
-			if (!fieldNamesApplied.isEmpty()) {
-				ClassName resourceModelName = resourceModelName(verb);
-
-				// --> overwrite equals method
-				String equalsParamName = "other";
-				String equalsCastVarName = "that";
-
-				MethodSpec.Builder equalsBuilder = MethodSpec.methodBuilder("equals")
-						.addAnnotation(Override.class)
-						.addModifiers(PUBLIC).addParameter(Object.class, equalsParamName).returns(TypeName.BOOLEAN);
-
-				equalsBuilder.addStatement("if (this == $L) return true", equalsParamName)
-						.addStatement("if (! ($L instanceof $T)) return false", equalsParamName, resourceModelName)
-						.addStatement("$T $L = ($T) $L", resourceModelName, equalsCastVarName, resourceModelName, equalsParamName);
-
-
-				String code = fieldNamesApplied.stream()
-						.map(f -> "get" + LOWER_CAMEL.to(UPPER_CAMEL, f))
-						.map(f -> "$T.equals(" + f + "(), " + equalsCastVarName + "." + f + "())")
-						.collect(Collectors.joining(" && "));
-
-				equalsBuilder.addStatement("return " + code, Collections.nCopies(fieldNamesApplied.size(), Objects.class).toArray());
-
-				builder.addMethod(equalsBuilder.build());
-
-				// --> overwrite hashCode method
-				MethodSpec.Builder hashCodeBuilder = MethodSpec.methodBuilder("hashCode")
-						.addAnnotation(Override.class)
-						.addModifiers(PUBLIC).returns(INT);
-
-				code = "$T.hash(" + String.join(", ", fieldNamesApplied) + ")";
-
-				hashCodeBuilder.addStatement("return " + code, Objects.class);
-
-				builder.addMethod(hashCodeBuilder.build());
-
-				specTypes.add(builder.build());
-			}
-		}
-
-		return specTypes;
-	}
-
-	private void ensureHeadVerbHasGetVerbCounterpart(List<Verb> verbs) {
-		Set<String> headRepresentations = new TreeSet<>();
-		Set<String> getRepresentations = new TreeSet<>();
-
-		for (Verb verb : verbs) {
-			String verbName = verb.getVerb();
-			for (Representation representation : verb.getRepresentations()) {
-				String verbRepresentation = String.format("Verb: [%s] Representation: [%s]", verbName, representation.getName());
-
-				if (HEAD_METHODS.contains(verbName)) {
-					headRepresentations.add(verbRepresentation);
-				} else if (GET_METHODS.contains(verbName)) {
-					getRepresentations.add(verbRepresentation);
-				}
-			}
-		}
-
-		for (String headRepresentation : headRepresentations) {
-			if (!getRepresentations.contains(headRepresentation.replace("HEAD", "GET"))) {
-				throw new IllegalStateException(String.format("%s has no GET counterpart", headRepresentation));
-			}
-		}
-	}
-
-	private TypeName getFieldType(Set<ClassName> types, String fieldType) {
-		TypeName type;
-		try {
-			type = GeneratorUtil.translateToJava(fieldType);
-		} catch (Exception e) {
-			Optional<ClassName> any = types.stream().filter(t -> t.simpleName().equalsIgnoreCase(fieldType + "Type")).findAny();
-
-			if (!any.isPresent()) {
-				throw e;
-			}
-			type = any.get();
-		}
-		return type;
-	}
-
-	private void writeGetterSetter(TypeSpec.Builder builder, TypeName fieldType, String name) {
-		String methodName = LOWER_CAMEL.to(UPPER_CAMEL, name);
-		MethodSpec.Builder getterBuilder = MethodSpec.methodBuilder("get" + methodName)
-				.returns(fieldType).addModifiers(PUBLIC).addStatement("return this.$L", name);
-
-		builder.addMethod(getterBuilder.build());
-		MethodSpec.Builder setterBuilder = MethodSpec.methodBuilder("set" + methodName)
-				.returns(TypeName.VOID)
-				.addModifiers(PUBLIC)
-				.addParameter(ParameterSpec.builder(fieldType, name).build())
-				.addStatement("this.$L = $L", name, name);
-		builder.addMethod(setterBuilder.build());
-	}
-
-	private boolean isResourceInterface() {
-		return RESOURCE.equals(getArtifactType());
-	}
-
-	private boolean isAbstractResourceInterface() {
-		return ArtifactType.ABSTRACT_RESOURCE.equals(getArtifactType());
-	}
-
-	private boolean isDelegatorResource() {
-		return ArtifactType.DELEGATOR_RESOURCE.equals(getArtifactType());
-	}
-
-	private boolean isAbstractOrInterfaceResource() {
-		return isAbstractResourceInterface() || isResourceInterface() || isDelegatorResource();
-	}
-
-	private boolean isResourceImpl() {
-		return ArtifactType.RESOURCE_IMPL.equals(getArtifactType());
-	}
-
-	private void generatedDefaultMethodNotAllowedHandlersForMissingVerbs(boolean directEntity) {
-
-		if (!hasPostVerb()) {
-			this.currentVerb = new Verb(POST);
-			this.typeBuilder.addMethod(createMethodNotAllowedHandler("createEntityAutoAnswer").build());
-		}
-
-		if (!hasDeleteCollectionVerb()) {
-			this.currentVerb = new Verb(DELETE_COLLECTION);
-			this.typeBuilder.addMethod(createMethodNotAllowedHandler("deleteCollectionAutoAnswer").build());
-		}
-
-		if (!hasDeleteEntityVerb()) {
-			this.currentVerb = new Verb(DELETE_ENTITY);
-			this.typeBuilder.addMethod(createMethodNotAllowedHandler("deleteEntityAutoAnswer").build());
-		}
-
-		if (!hasGetCollectionVerb() && !directEntity) {
-			this.currentVerb = new Verb(GET_COLLECTION);
-			this.typeBuilder.addMethod(createMethodNotAllowedHandler("getCollectionAutoAnswer").build());
-		} else if (!hasGetEntityVerb()) {
-			this.currentVerb = new Verb(GET_ENTITY);
-			this.typeBuilder.addMethod(createMethodNotAllowedHandler("getEntityAutoAnswer").build());
-		}
-
-		if (shouldGenerateHeadMethod()) {
-			if (!hasHeadCollectionVerb() && !directEntity) {
-				this.currentVerb = new Verb(HEAD_COLLECTION);
-				this.typeBuilder.addMethod(createMethodNotAllowedHandler("headCollectionAutoAnswer").build());
-			} else if (!hasHeadEntityVerb()) {
-				this.currentVerb = new Verb(HEAD_ENTITY);
-				this.typeBuilder.addMethod(createMethodNotAllowedHandler("headEntityAutoAnswer").build());
-			}
-		}
-
-		if (!hasPutVerb()) {
-			this.currentVerb = new Verb(PUT);
-			this.typeBuilder.addMethod(createMethodNotAllowedHandler("updateEntityAutoAnswer").build());
-		}
-		this.currentVerb = null;
-	}
-
-	private boolean hasGetEntityVerb() {
-		return hasVerb(GET_ENTITY);
-	}
-
-	private boolean hasGetCollectionVerb() {
-		return hasVerb(GET_COLLECTION);
-	}
-
-	private boolean hasHeadEntityVerb() {
-		return hasVerb(HEAD_ENTITY);
-	}
-
-	private boolean hasHeadCollectionVerb() {
-		return hasVerb(HEAD_COLLECTION);
-	}
-
-	private boolean hasPostVerb() {
-		return hasVerb(POST);
-	}
-
-	private boolean hasPutVerb() {
-		return hasVerb(PUT);
-	}
-
-	private boolean hasDeleteCollectionVerb() {
-		return hasVerb(DELETE_COLLECTION);
-	}
-
-	private boolean hasDeleteEntityVerb() {
-		return hasVerb(DELETE_ENTITY);
-	}
-
-	private boolean hasVerb(String verb) {
-		return getResourceContractContainer().getResourceContract().getVerbs().stream().filter(v -> verb.equals(v.getVerb())).findAny().isPresent();
-	}
-
-	private TypeSpec.Builder resourceTypeBaseInstance(String name) {
-		TypeSpec.Builder builder = TypeSpec
-				.classBuilder(LOWER_CAMEL.to(UPPER_CAMEL, name) + "Type")
-				.addModifiers(PUBLIC)
-				.addSuperinterface(ClassName.get(Serializable.class));
-		return this.typeBuilder = builder;
-	}
-
-	private TypeSpec.Builder resourceModelBaseInstance(Verb verb) {
-		TypeSpec.Builder builder = TypeSpec.classBuilder(resourceModelName(verb))
-				.addModifiers(PUBLIC)
-				.addAnnotation(createGeneratedAnnotation(printTimestamp))
-				.addSuperinterface(Serializable.class)
-				.addSuperinterface(RESTAPI_RESOURCE_MODEL.getTypeName());
-
-		return builder;
-	}
-
-	private List<ParameterSpec> getPathParams(LinkParser parser, boolean addAnnotations) {
-		List<ParameterSpec> pathParams = new ArrayList<>(parser.getPathVariables().size());
-
-		for (String pathVar : parser.getPathVariables()) {
-			ParameterSpec.Builder paramBuilder = ParameterSpec.builder(String.class, pathVar);
-
-			if (addAnnotations) {
-				paramBuilder.addAnnotation(
-						AnnotationSpec.builder(getPathVariableAnnotationType().getClassName())
-								.addMember("value", "$S", pathVar)
-								.build()
-				);
-			}
-			pathParams.add(paramBuilder.build());
-		}
-		return pathParams;
-	}
+              fieldBuilder.addAnnotation(annoBuilder.build());
+            } else if ("decimal".equalsIgnoreCase(field.getType())) {
+              fieldBuilder.addAnnotation(
+                  AnnotationSpec.builder(JAVAX_VALIDATION_DECIMAL_MIN.getClassName())
+                      .addMember("value", "$S", min.doubleValue())
+                      .build());
+              fieldBuilder.addAnnotation(
+                  AnnotationSpec.builder(JAVAX_VALIDATION_DECIMAL_MAX.getClassName())
+                      .addMember("value", "$S", max.doubleValue())
+                      .build());
+            }
+          }
+
+          if (field.isMultiple()) {
+            fieldBuilder.initializer("new java.util.ArrayList<>()");
+          } else if (field.getDefaultValue() != null) {
+
+            if (fieldType == STRING.getClassName()) {
+              fieldBuilder.initializer("$S", field.getDefaultValue());
+            } else if (fieldType == DATE.getClassName()) {
+              fieldBuilder.initializer("$T.now()", ClassName.get(LocalDate.class));
+            } else if (fieldType == DATETIME.getClassName()) {
+              fieldBuilder.initializer("$T.now()", ClassName.get(LocalDateTime.class));
+            } else if (fieldType == BOOL.getClassName()) {
+              fieldBuilder.initializer(
+                  "$T.$L",
+                  ClassName.get(Boolean.class),
+                  Boolean.TRUE.equals(field.getDefaultValue()) ? "TRUE" : "FALSE");
+            } else {
+              fieldBuilder.initializer("$S", field.getDefaultValue());
+            }
+          }
+          builder.addField(fieldBuilder.build());
+
+          // write Getter/Setters
+          writeGetterSetter(builder, fieldType, field.getName());
+        }
+      }
+
+      if (!fieldNamesApplied.isEmpty()) {
+        ClassName resourceModelName = resourceModelName(verb);
+
+        // --> overwrite equals method
+        String equalsParamName = "other";
+        String equalsCastVarName = "that";
+
+        MethodSpec.Builder equalsBuilder =
+            MethodSpec.methodBuilder("equals")
+                .addAnnotation(Override.class)
+                .addModifiers(PUBLIC)
+                .addParameter(Object.class, equalsParamName)
+                .returns(TypeName.BOOLEAN);
+
+        equalsBuilder
+            .addStatement("if (this == $L) return true", equalsParamName)
+            .addStatement(
+                "if (! ($L instanceof $T)) return false", equalsParamName, resourceModelName)
+            .addStatement(
+                "$T $L = ($T) $L",
+                resourceModelName,
+                equalsCastVarName,
+                resourceModelName,
+                equalsParamName);
+
+        String code =
+            fieldNamesApplied.stream()
+                .map(f -> "get" + LOWER_CAMEL.to(UPPER_CAMEL, f))
+                .map(f -> "$T.equals(" + f + "(), " + equalsCastVarName + "." + f + "())")
+                .collect(Collectors.joining(" && "));
+
+        equalsBuilder.addStatement(
+            "return " + code,
+            Collections.nCopies(fieldNamesApplied.size(), Objects.class).toArray());
+
+        builder.addMethod(equalsBuilder.build());
+
+        // --> overwrite hashCode method
+        MethodSpec.Builder hashCodeBuilder =
+            MethodSpec.methodBuilder("hashCode")
+                .addAnnotation(Override.class)
+                .addModifiers(PUBLIC)
+                .returns(INT);
+
+        code = "$T.hash(" + String.join(", ", fieldNamesApplied) + ")";
+
+        hashCodeBuilder.addStatement("return " + code, Objects.class);
+
+        builder.addMethod(hashCodeBuilder.build());
+
+        specTypes.add(builder.build());
+      }
+    }
+
+    return specTypes;
+  }
+
+  private void ensureHeadVerbHasGetVerbCounterpart(List<Verb> verbs) {
+    Set<String> headRepresentations = new TreeSet<>();
+    Set<String> getRepresentations = new TreeSet<>();
+
+    for (Verb verb : verbs) {
+      String verbName = verb.getVerb();
+      for (Representation representation : verb.getRepresentations()) {
+        String verbRepresentation =
+            String.format("Verb: [%s] Representation: [%s]", verbName, representation.getName());
+
+        if (HEAD_METHODS.contains(verbName)) {
+          headRepresentations.add(verbRepresentation);
+        } else if (GET_METHODS.contains(verbName)) {
+          getRepresentations.add(verbRepresentation);
+        }
+      }
+    }
+
+    for (String headRepresentation : headRepresentations) {
+      if (!getRepresentations.contains(headRepresentation.replace("HEAD", "GET"))) {
+        throw new IllegalStateException(
+            String.format("%s has no GET counterpart", headRepresentation));
+      }
+    }
+  }
+
+  private TypeName getFieldType(Set<ClassName> types, String fieldType) {
+    TypeName type;
+    try {
+      type = GeneratorUtil.translateToJava(fieldType);
+    } catch (Exception e) {
+      Optional<ClassName> any =
+          types.stream().filter(t -> t.simpleName().equalsIgnoreCase(fieldType + "Type")).findAny();
+
+      if (!any.isPresent()) {
+        throw e;
+      }
+      type = any.get();
+    }
+    return type;
+  }
+
+  private void writeGetterSetter(TypeSpec.Builder builder, TypeName fieldType, String name) {
+    String methodName = LOWER_CAMEL.to(UPPER_CAMEL, name);
+    MethodSpec.Builder getterBuilder =
+        MethodSpec.methodBuilder("get" + methodName)
+            .returns(fieldType)
+            .addModifiers(PUBLIC)
+            .addStatement("return this.$L", name);
+
+    builder.addMethod(getterBuilder.build());
+    MethodSpec.Builder setterBuilder =
+        MethodSpec.methodBuilder("set" + methodName)
+            .returns(TypeName.VOID)
+            .addModifiers(PUBLIC)
+            .addParameter(ParameterSpec.builder(fieldType, name).build())
+            .addStatement("this.$L = $L", name, name);
+    builder.addMethod(setterBuilder.build());
+  }
+
+  private boolean isResourceInterface() {
+    return RESOURCE.equals(getArtifactType());
+  }
+
+  private boolean isAbstractResourceInterface() {
+    return ArtifactType.ABSTRACT_RESOURCE.equals(getArtifactType());
+  }
+
+  private boolean isDelegatorResource() {
+    return ArtifactType.DELEGATOR_RESOURCE.equals(getArtifactType());
+  }
+
+  private boolean isAbstractOrInterfaceResource() {
+    return isAbstractResourceInterface() || isResourceInterface() || isDelegatorResource();
+  }
+
+  private boolean isResourceImpl() {
+    return ArtifactType.RESOURCE_IMPL.equals(getArtifactType());
+  }
+
+  private void generatedDefaultMethodNotAllowedHandlersForMissingVerbs(boolean directEntity) {
+
+    if (!hasPostVerb()) {
+      this.currentVerb = new Verb(POST);
+      this.typeBuilder.addMethod(createMethodNotAllowedHandler("createEntityAutoAnswer").build());
+    }
+
+    if (!hasDeleteCollectionVerb()) {
+      this.currentVerb = new Verb(DELETE_COLLECTION);
+      this.typeBuilder.addMethod(
+          createMethodNotAllowedHandler("deleteCollectionAutoAnswer").build());
+    }
+
+    if (!hasDeleteEntityVerb()) {
+      this.currentVerb = new Verb(DELETE_ENTITY);
+      this.typeBuilder.addMethod(createMethodNotAllowedHandler("deleteEntityAutoAnswer").build());
+    }
+
+    if (!hasGetCollectionVerb() && !directEntity) {
+      this.currentVerb = new Verb(GET_COLLECTION);
+      this.typeBuilder.addMethod(createMethodNotAllowedHandler("getCollectionAutoAnswer").build());
+    } else if (!hasGetEntityVerb()) {
+      this.currentVerb = new Verb(GET_ENTITY);
+      this.typeBuilder.addMethod(createMethodNotAllowedHandler("getEntityAutoAnswer").build());
+    }
+
+    if (shouldGenerateHeadMethod()) {
+      if (!hasHeadCollectionVerb() && !directEntity) {
+        this.currentVerb = new Verb(HEAD_COLLECTION);
+        this.typeBuilder.addMethod(
+            createMethodNotAllowedHandler("headCollectionAutoAnswer").build());
+      } else if (!hasHeadEntityVerb()) {
+        this.currentVerb = new Verb(HEAD_ENTITY);
+        this.typeBuilder.addMethod(createMethodNotAllowedHandler("headEntityAutoAnswer").build());
+      }
+    }
+
+    if (!hasPutVerb()) {
+      this.currentVerb = new Verb(PUT);
+      this.typeBuilder.addMethod(createMethodNotAllowedHandler("updateEntityAutoAnswer").build());
+    }
+    this.currentVerb = null;
+  }
+
+  private boolean hasGetEntityVerb() {
+    return hasVerb(GET_ENTITY);
+  }
+
+  private boolean hasGetCollectionVerb() {
+    return hasVerb(GET_COLLECTION);
+  }
+
+  private boolean hasHeadEntityVerb() {
+    return hasVerb(HEAD_ENTITY);
+  }
+
+  private boolean hasHeadCollectionVerb() {
+    return hasVerb(HEAD_COLLECTION);
+  }
+
+  private boolean hasPostVerb() {
+    return hasVerb(POST);
+  }
+
+  private boolean hasPutVerb() {
+    return hasVerb(PUT);
+  }
+
+  private boolean hasDeleteCollectionVerb() {
+    return hasVerb(DELETE_COLLECTION);
+  }
+
+  private boolean hasDeleteEntityVerb() {
+    return hasVerb(DELETE_ENTITY);
+  }
+
+  private boolean hasVerb(String verb) {
+    return getResourceContractContainer().getResourceContract().getVerbs().stream()
+        .filter(v -> verb.equals(v.getVerb()))
+        .findAny()
+        .isPresent();
+  }
+
+  private TypeSpec.Builder resourceTypeBaseInstance(String name) {
+    TypeSpec.Builder builder =
+        TypeSpec.classBuilder(LOWER_CAMEL.to(UPPER_CAMEL, name) + "Type")
+            .addModifiers(PUBLIC)
+            .addSuperinterface(ClassName.get(Serializable.class));
+    return this.typeBuilder = builder;
+  }
+
+  private TypeSpec.Builder resourceModelBaseInstance(Verb verb) {
+    TypeSpec.Builder builder =
+        TypeSpec.classBuilder(resourceModelName(verb))
+            .addModifiers(PUBLIC)
+            .addAnnotation(createGeneratedAnnotation(printTimestamp))
+            .addSuperinterface(Serializable.class)
+            .addSuperinterface(RESTAPI_RESOURCE_MODEL.getTypeName());
+
+    return builder;
+  }
+
+  private List<ParameterSpec> getPathParams(LinkParser parser, boolean addAnnotations) {
+    List<ParameterSpec> pathParams = new ArrayList<>(parser.getPathVariables().size());
+
+    for (String pathVar : parser.getPathVariables()) {
+      ParameterSpec.Builder paramBuilder = ParameterSpec.builder(String.class, pathVar);
+
+      if (addAnnotations) {
+        paramBuilder.addAnnotation(
+            AnnotationSpec.builder(getPathVariableAnnotationType().getClassName())
+                .addMember("value", "$S", pathVar)
+                .build());
+      }
+      pathParams.add(paramBuilder.build());
+    }
+    return pathParams;
+  }
 }

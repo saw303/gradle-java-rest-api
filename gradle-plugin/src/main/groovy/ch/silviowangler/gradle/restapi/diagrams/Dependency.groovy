@@ -28,25 +28,25 @@ package ch.silviowangler.gradle.restapi.diagrams
  */
 class Dependency {
 
-    String parent
-    String child
+	String parent
+	String child
 
-    boolean equals(o) {
-        if (this.is(o)) return true
-        if (getClass() != o.class) return false
+	boolean equals(o) {
+		if (this.is(o)) return true
+		if (getClass() != o.class) return false
 
-        Dependency that = (Dependency) o
+		Dependency that = (Dependency) o
 
-        if (child != that.child) return false
-        if (parent != that.parent) return false
+		if (child != that.child) return false
+		if (parent != that.parent) return false
 
-        return true
-    }
+		return true
+	}
 
-    int hashCode() {
-        int result
-        result = (parent != null ? parent.hashCode() : 0)
-        result = 31 * result + (child != null ? child.hashCode() : 0)
-        return result
-    }
+	int hashCode() {
+		int result
+		result = (parent != null ? parent.hashCode() : 0)
+		result = 31 * result + (child != null ? child.hashCode() : 0)
+		return result
+	}
 }
