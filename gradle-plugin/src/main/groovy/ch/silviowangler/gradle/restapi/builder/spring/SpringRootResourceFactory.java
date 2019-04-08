@@ -23,7 +23,16 @@
  */
 package ch.silviowangler.gradle.restapi.builder.spring;
 
-import static ch.silviowangler.gradle.restapi.PluginTypes.*;
+import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_HTTP_STATUS;
+import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_PATH_VARIABLE;
+import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_REQUEST_BODY;
+import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_REQUEST_MAPPING;
+import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_REQUEST_METHOD;
+import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_REQUEST_PARAM;
+import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_RESPONSE_BODY;
+import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_RESPONSE_ENTITY;
+import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_RESPONSE_STATUS;
+import static ch.silviowangler.gradle.restapi.PluginTypes.SPRING_REST_CONTROLLER;
 
 import ch.silviowangler.gradle.restapi.GeneratorUtil;
 import ch.silviowangler.gradle.restapi.PluginTypes;
@@ -32,17 +41,24 @@ import ch.silviowangler.gradle.restapi.builder.ArtifactType;
 import ch.silviowangler.rest.contract.model.v1.Representation;
 import ch.silviowangler.rest.contract.model.v1.Verb;
 import ch.silviowangler.rest.contract.model.v1.VerbParameter;
-import com.squareup.javapoet.*;
-import java.util.*;
+import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class SpringRootResourceFactory extends AbstractResourceBuilder {
 
   private static final ClassName STRING_CLASS = ClassName.get(String.class);
 
-  private final boolean explicitExtensions;
-
   public SpringRootResourceFactory(boolean explicitExtensions) {
-    this.explicitExtensions = explicitExtensions;
+    super.setExplicitExtensions(explicitExtensions);
   }
 
   @Override
@@ -130,12 +146,12 @@ public class SpringRootResourceFactory extends AbstractResourceBuilder {
         "method", "$T." + httpMethod.toUpperCase(), SPRING_REQUEST_METHOD.getClassName());
 
     if (applyId) {
-      if (representation.isJson() && !explicitExtensions) {
+      if (representation.isJson() && !isExplicitExtensions()) {
         builder.addMember("path", "\"/{$L}\"", "id");
       } else {
         builder.addMember("path", "\"/{$L}.$L\"", "id", representation.getName());
       }
-    } else if (explicitExtensions) {
+    } else if (isExplicitExtensions()) {
       builder.addMember("path", "\"/.$L\"", representation.getName());
     }
 

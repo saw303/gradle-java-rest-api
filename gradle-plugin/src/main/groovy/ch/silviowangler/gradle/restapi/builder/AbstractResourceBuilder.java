@@ -55,8 +55,12 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
   private Charset responseEncoding;
   private boolean explicitExtensions = false;
 
-  void setExplicitExtensions(boolean explicitExtensions) {
+  protected void setExplicitExtensions(boolean explicitExtensions) {
     this.explicitExtensions = explicitExtensions;
+  }
+
+  public boolean isExplicitExtensions() {
+    return explicitExtensions;
   }
 
   private Verb getCurrentVerb() {
