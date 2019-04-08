@@ -12,6 +12,10 @@ spotless {
   }
   groovy {
     licenseHeaderFile rootProject.file('LICENSE-SHORT'), "package "
+    excludeJava()
+    targetExclude '**/*Spec.groovy'
+    greclipse()
+    endWithNewline()
   }
   groovyGradle {
     // same as groovy, but for .gradle (defaults to '*.gradle')

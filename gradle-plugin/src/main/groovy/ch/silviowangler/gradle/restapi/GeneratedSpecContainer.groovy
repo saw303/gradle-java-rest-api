@@ -36,7 +36,6 @@ class GeneratedSpecContainer {
 	Collection<TypeSpec> models
 	Collection<TypeSpec> types
 
-
 	Iterable<TypeSpec> collectGeneratedTypes() {
 
 		List<TypeSpec> all = []
