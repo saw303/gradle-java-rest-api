@@ -36,6 +36,7 @@ import java.util.List;
 
 /** @author Silvio Wangler */
 public class ResourceFieldDeserializer implements JsonDeserializer<ResourceField> {
+
   @Override
   public ResourceField deserialize(
       JsonElement json, Type typeOfT, JsonDeserializationContext context)
@@ -69,7 +70,7 @@ public class ResourceFieldDeserializer implements JsonDeserializer<ResourceField
     return field;
   }
 
-  String toString(JsonElement jsonElement) {
+  private String toString(JsonElement jsonElement) {
 
     if (jsonElement == null) return null;
 
@@ -80,7 +81,7 @@ public class ResourceFieldDeserializer implements JsonDeserializer<ResourceField
     }
   }
 
-  Number toNumber(JsonElement jsonElement) {
+  private Number toNumber(JsonElement jsonElement) {
 
     if (jsonElement == null) return null;
 
@@ -91,7 +92,7 @@ public class ResourceFieldDeserializer implements JsonDeserializer<ResourceField
     }
   }
 
-  boolean toBoolean(JsonElement jsonElement) {
+  private boolean toBoolean(JsonElement jsonElement) {
     if (jsonElement == null) return false;
 
     if (!jsonElement.isJsonNull()) {
