@@ -136,7 +136,7 @@ public class SpecGenerator {
       String plainText = new String(Files.readAllBytes(file.toPath()), UTF_8);
       return new ResourceContractContainer(resourceContract, plainText, file.getName());
     } catch (IOException e) {
-      throw new RuntimeException(
+      throw new IllegalArgumentException(
           "Unable to transform JSON file " + file.getAbsolutePath() + " to Java model", e);
     }
   }
