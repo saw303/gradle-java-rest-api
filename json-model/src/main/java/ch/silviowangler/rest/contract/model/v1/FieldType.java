@@ -21,11 +21,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package ch.silviowangler.gradle.restapi;
+package ch.silviowangler.rest.contract.model.v1;
 
-public class UnsupportedDataTypeException extends RuntimeException {
+/** @author Silvio Wangler */
+public interface FieldType {
 
-  public UnsupportedDataTypeException(String s) {
-    super(s);
+  /**
+   * returns the fields name.
+   *
+   * @return field name.
+   */
+  String getName();
+
+  /**
+   * Returns the type of the field such as 'string', 'bool', 'date', 'enum'...
+   *
+   * @return field type.
+   */
+  String getType();
+
+  /**
+   * Return the field options.
+   *
+   * @return field options
+   */
+  Object getOptions();
+
+  /**
+   * Indicates whether this is an enum or not.
+   *
+   * @return yes/no.
+   */
+  default boolean isEnumType() {
+    return "enum".equals(getType());
   }
 }

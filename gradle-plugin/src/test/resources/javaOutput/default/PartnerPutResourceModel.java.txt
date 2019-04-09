@@ -81,6 +81,12 @@ public class PartnerPutResourceModel implements Serializable, ResourceModel, Ide
   @NotNull
   private Locale sprache;
 
+  /**
+   * Geschlecht des Partners
+   */
+  @NotNull
+  private GenderType gender;
+
   public String getId() {
     return this.id;
   }
@@ -161,16 +167,24 @@ public class PartnerPutResourceModel implements Serializable, ResourceModel, Ide
     this.sprache = sprache;
   }
 
+  public GenderType getGender() {
+    return this.gender;
+  }
+
+  public void setGender(GenderType gender) {
+    this.gender = gender;
+  }
+
   @Override
   public boolean equals(Object other) {
     if (this == other) return true;
     if (! (other instanceof PartnerPutResourceModel)) return false;
     PartnerPutResourceModel that = (PartnerPutResourceModel) other;
-    return Objects.equals(getId(), that.getId()) && Objects.equals(getName(), that.getName()) && Objects.equals(getVorname(), that.getVorname()) && Objects.equals(getTitel(), that.getTitel()) && Objects.equals(getEmail(), that.getEmail()) && Objects.equals(getGeburtsdatum(), that.getGeburtsdatum()) && Objects.equals(getGewicht(), that.getGewicht()) && Objects.equals(getLohn(), that.getLohn()) && Objects.equals(getUhrzeit(), that.getUhrzeit()) && Objects.equals(getSprache(), that.getSprache());
+    return Objects.equals(getId(), that.getId()) && Objects.equals(getName(), that.getName()) && Objects.equals(getVorname(), that.getVorname()) && Objects.equals(getTitel(), that.getTitel()) && Objects.equals(getEmail(), that.getEmail()) && Objects.equals(getGeburtsdatum(), that.getGeburtsdatum()) && Objects.equals(getGewicht(), that.getGewicht()) && Objects.equals(getLohn(), that.getLohn()) && Objects.equals(getUhrzeit(), that.getUhrzeit()) && Objects.equals(getSprache(), that.getSprache()) && Objects.equals(getGender(), that.getGender());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, vorname, titel, email, geburtsdatum, gewicht, lohn, uhrzeit, sprache);
+    return Objects.hash(id, name, vorname, titel, email, geburtsdatum, gewicht, lohn, uhrzeit, sprache, gender);
   }
 }

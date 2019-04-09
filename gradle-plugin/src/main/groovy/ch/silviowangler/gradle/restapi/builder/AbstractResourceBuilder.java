@@ -23,25 +23,64 @@
  */
 package ch.silviowangler.gradle.restapi.builder;
 
-import static ch.silviowangler.gradle.restapi.PluginTypes.*;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_DECIMAL_MAX;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_DECIMAL_MIN;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_EMAIL;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_NOT_NULL;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_SIZE;
+import static ch.silviowangler.gradle.restapi.PluginTypes.RESTAPI_IDENTIFIABLE;
+import static ch.silviowangler.gradle.restapi.PluginTypes.RESTAPI_RESOURCE_MODEL;
 import static ch.silviowangler.gradle.restapi.builder.ArtifactType.RESOURCE;
-import static ch.silviowangler.gradle.restapi.util.SupportedDataTypes.*;
+import static ch.silviowangler.gradle.restapi.util.SupportedDataTypes.BOOL;
+import static ch.silviowangler.gradle.restapi.util.SupportedDataTypes.DATE;
+import static ch.silviowangler.gradle.restapi.util.SupportedDataTypes.DATETIME;
+import static ch.silviowangler.gradle.restapi.util.SupportedDataTypes.STRING;
 import static com.google.common.base.CaseFormat.LOWER_CAMEL;
 import static com.google.common.base.CaseFormat.UPPER_CAMEL;
 import static com.squareup.javapoet.TypeName.INT;
-import static javax.lang.model.element.Modifier.*;
+import static javax.lang.model.element.Modifier.ABSTRACT;
+import static javax.lang.model.element.Modifier.FINAL;
+import static javax.lang.model.element.Modifier.PRIVATE;
+import static javax.lang.model.element.Modifier.PUBLIC;
+import static javax.lang.model.element.Modifier.STATIC;
 
-import ch.silviowangler.gradle.restapi.GeneratorUtil;
 import ch.silviowangler.gradle.restapi.LinkParser;
-import ch.silviowangler.rest.contract.model.v1.*;
-import com.squareup.javapoet.*;
+import ch.silviowangler.gradle.restapi.UnsupportedDataTypeException;
+import ch.silviowangler.rest.contract.model.v1.FieldType;
+import ch.silviowangler.rest.contract.model.v1.GeneralDetails;
+import ch.silviowangler.rest.contract.model.v1.Representation;
+import ch.silviowangler.rest.contract.model.v1.ResourceContract;
+import ch.silviowangler.rest.contract.model.v1.ResourceField;
+import ch.silviowangler.rest.contract.model.v1.ResourceTypeField;
+import ch.silviowangler.rest.contract.model.v1.ResourceTypes;
+import ch.silviowangler.rest.contract.model.v1.Verb;
+import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.FieldSpec;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
+import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;
 import io.github.getify.minify.Minify;
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /** @author Silvio Wangler */
 public abstract class AbstractResourceBuilder implements ResourceBuilder {
@@ -355,6 +394,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public Set<TypeSpec> buildResourceTypes(Set<ClassName> types, String packageName) {
 
     ResourceContract resourceContract = getResourceContractContainer().getResourceContract();
@@ -366,7 +406,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
       for (ResourceTypeField field : type.getFields()) {
 
-        TypeName fieldType = getFieldType(types, field.getType());
+        TypeName fieldType = getFieldType(types, field);
 
         if ("true".equals(field.getMultiple())) {
           ClassName list = ClassName.get(List.class);
@@ -381,6 +421,34 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
       TypeSpec typeSpec = builder.build();
       types.add(ClassName.get(packageName, typeSpec.name));
       specTypes.add(typeSpec);
+    }
+
+    // Generate Java enums for fields...
+    List<ResourceField> enumFields =
+        resourceContract.getFields().stream()
+            .filter(field -> "enum".equals(field.getType()))
+            .collect(Collectors.toList());
+
+    for (ResourceField enumField : enumFields) {
+      TypeSpec.Builder enumBuilder =
+          TypeSpec.enumBuilder(
+                  LOWER_CAMEL.to(UPPER_CAMEL, String.format("%sType", enumField.getName())))
+              .addModifiers(PUBLIC);
+
+      if (enumField.getOptions() instanceof Iterable) {
+        Iterable<String> values = (Iterable<String>) enumField.getOptions();
+        for (String value : values) {
+          enumBuilder.addEnumConstant(value);
+        }
+      } else {
+        throw new IllegalStateException(
+            String.format(
+                "enum field %s must contain a list in options field", enumField.getName()));
+      }
+      TypeSpec customEnum = enumBuilder.build();
+
+      types.add(ClassName.get(packageName, customEnum.name));
+      specTypes.add(customEnum);
     }
     return specTypes;
   }
@@ -451,7 +519,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
           fieldNamesApplied.add(field.getName());
 
-          TypeName fieldType = getFieldType(types, field.getType());
+          TypeName fieldType = getFieldType(types, field);
 
           if (field.isMultiple()) {
             ClassName list = ClassName.get(List.class);
@@ -615,18 +683,30 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
     }
   }
 
-  private TypeName getFieldType(Set<ClassName> types, String fieldType) {
+  private TypeName getFieldType(Set<ClassName> types, FieldType resourceField) {
     TypeName type;
     try {
-      type = GeneratorUtil.translateToJava(fieldType);
-    } catch (Exception e) {
-      Optional<ClassName> any =
-          types.stream().filter(t -> t.simpleName().equalsIgnoreCase(fieldType + "Type")).findAny();
+      type = JavaTypeRegistry.translateToJava(resourceField);
+    } catch (UnsupportedDataTypeException ex) {
 
-      if (!any.isPresent()) {
-        throw e;
+      Stream<ClassName> typeStream;
+      if (resourceField.isEnumType()) {
+        typeStream =
+            types.stream()
+                .filter(
+                    t ->
+                        t.packageName().equals(this.currentPackageName)
+                            && t.simpleName()
+                                .equals(
+                                    String.format(
+                                        "%sType",
+                                        LOWER_CAMEL.to(UPPER_CAMEL, resourceField.getName()))));
+      } else {
+        typeStream =
+            types.stream()
+                .filter(t -> t.simpleName().equalsIgnoreCase(resourceField.getType() + "Type"));
       }
-      type = any.get();
+      return typeStream.findAny().orElseThrow(() -> ex);
     }
     return type;
   }

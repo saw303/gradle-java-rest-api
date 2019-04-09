@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Objects;
 
 /** @author Silvio Wangler */
-public class VerbParameter implements Serializable {
+public class VerbParameter implements Serializable, FieldType {
 
   private String name;
   private String type;
@@ -47,6 +47,7 @@ public class VerbParameter implements Serializable {
   private List<String> alias;
   private String xComment;
 
+  @Override
   public String getName() {
     return name;
   }
@@ -55,6 +56,7 @@ public class VerbParameter implements Serializable {
     this.name = name;
   }
 
+  @Override
   public String getType() {
     return type;
   }
@@ -63,6 +65,7 @@ public class VerbParameter implements Serializable {
     this.type = type;
   }
 
+  @Override
   public String getOptions() {
     return options;
   }

@@ -24,11 +24,15 @@
 package ch.silviowangler.gradle.restapi.builder;
 
 import static ch.silviowangler.gradle.restapi.PluginTypes.*;
+import static ch.silviowangler.gradle.restapi.builder.ResourceBuilder.JavaTypeRegistry.translateToJava;
 import static javax.lang.model.element.Modifier.*;
 
 import ch.silviowangler.gradle.restapi.GeneratorUtil;
 import ch.silviowangler.gradle.restapi.PluginTypes;
 import ch.silviowangler.gradle.restapi.RestApiPlugin;
+import ch.silviowangler.gradle.restapi.UnsupportedDataTypeException;
+import ch.silviowangler.gradle.restapi.util.SupportedDataTypes;
+import ch.silviowangler.rest.contract.model.v1.FieldType;
 import ch.silviowangler.rest.contract.model.v1.Representation;
 import ch.silviowangler.rest.contract.model.v1.Verb;
 import ch.silviowangler.rest.contract.model.v1.VerbParameter;
@@ -231,7 +235,7 @@ public interface ResourceBuilder {
         .forEach(
             p -> {
               ParameterSpec.Builder builder =
-                  ParameterSpec.builder(GeneratorUtil.translateToJava(p.getType()), p.getName());
+                  ParameterSpec.builder(translateToJava(p), p.getName());
 
               final boolean isHandleMethod = methodNameCopy.startsWith("handle");
               final boolean isResource =
@@ -411,5 +415,44 @@ public interface ResourceBuilder {
 
   default boolean supportsMethodNotAllowedGeneration() {
     return true;
+  }
+
+  class JavaTypeRegistry {
+
+    private static Map<String, ClassName> supportedDataTypes = new HashMap<>();
+
+    static {
+      supportedDataTypes.put("date", SupportedDataTypes.DATE.getClassName());
+      supportedDataTypes.put("datetime", SupportedDataTypes.DATETIME.getClassName());
+      supportedDataTypes.put("decimal", SupportedDataTypes.DECIMAL.getClassName());
+      supportedDataTypes.put("int", SupportedDataTypes.INT.getClassName());
+      supportedDataTypes.put("long", SupportedDataTypes.LONG.getClassName());
+      supportedDataTypes.put("double", SupportedDataTypes.DOUBLE.getClassName());
+      supportedDataTypes.put("float", SupportedDataTypes.DOUBLE.getClassName());
+      supportedDataTypes.put("bool", SupportedDataTypes.BOOL.getClassName());
+      supportedDataTypes.put("flag", SupportedDataTypes.FLAG.getClassName());
+      supportedDataTypes.put("string", SupportedDataTypes.STRING.getClassName());
+      supportedDataTypes.put("email", SupportedDataTypes.STRING.getClassName());
+      supportedDataTypes.put("uuid", SupportedDataTypes.UUID.getClassName());
+      supportedDataTypes.put("object", SupportedDataTypes.OBJECT.getClassName());
+      supportedDataTypes.put("money", SupportedDataTypes.MONEY.getClassName());
+      supportedDataTypes.put("locale", SupportedDataTypes.LOCALE.getClassName());
+    }
+
+    public static ClassName translateToJava(final FieldType fieldType) {
+      String type = fieldType.getType();
+      if (isSupportedDataType(type)) {
+        return readClassName(type);
+      }
+      throw new UnsupportedDataTypeException(type);
+    }
+
+    private static ClassName readClassName(final String type) {
+      return supportedDataTypes.get(type);
+    }
+
+    private static boolean isSupportedDataType(final String type) {
+      return supportedDataTypes.containsKey(type);
+    }
   }
 }

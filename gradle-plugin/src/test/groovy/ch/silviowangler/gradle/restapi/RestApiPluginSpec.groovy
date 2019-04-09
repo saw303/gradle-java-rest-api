@@ -317,7 +317,7 @@ class RestApiPluginSpec extends Specification {
 		new File(temporaryFolder.getRoot(), 'org/acme/rest').exists()
 
 		and:
-		assertGeneratedFiles javaFiles, 13
+		assertGeneratedFiles javaFiles, 14
 
 		and:
 		javaFiles.collect {
@@ -330,6 +330,7 @@ class RestApiPluginSpec extends Specification {
 		assertJavaFile('org.acme.rest.v1.partner', 'PartnerGetResourceModel')
 		assertJavaFile('org.acme.rest.v1.partner', 'PartnerPostResourceModel')
 		assertJavaFile('org.acme.rest.v1.partner', 'PartnerPutResourceModel')
+		assertJavaFile('org.acme.rest.v1.partner', 'GenderType')
 
 		when:
 		CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask
