@@ -403,6 +403,8 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
     for (ResourceTypes type : contractTypes) {
       TypeSpec.Builder builder = resourceTypeBaseInstance(type.getName());
 
+      builder.addAnnotation(createGeneratedAnnotation(this.printTimestamp));
+
       for (ResourceTypeField field : type.getFields()) {
 
         TypeName fieldType;
@@ -465,6 +467,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
       throw new IllegalStateException(
           String.format("enum field %s must contain a list in options field", enumField.getName()));
     }
+    enumBuilder.addAnnotation(createGeneratedAnnotation(this.printTimestamp));
     return enumBuilder.build();
   }
 

@@ -23,9 +23,15 @@
  */
 package ch.silviowangler.gradle.restapi;
 
-public class Consts {
+public abstract class Consts {
 
   public static final String CONFIGURATION_REST_API = "restApiSpecification";
 
   public static final String TASK_GROUP_REST_API = "REST API";
+
+  public static final String RESOURCE_MODEL = "RM";
+  public static final String RESOURCE_FORM_DATA = "RFM";
+  public static final String RESOURCE = "R";
+  public static final String RESOURCE_IMPLEMENTATION = "RI";
+  public static final String RESOURCE_DELEGATION = "RD";
 }

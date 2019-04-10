@@ -36,12 +36,6 @@ import org.gradle.api.Project
  */
 class GeneratorUtil {
 
-	private final static String RESOURCE_MODEL = "RM"
-	private final static String RESOURCE_FORM_DATA = "RFM"
-	private final static String RESOURCE = "R"
-	private final static String RESOURCE_IMPLEMENTATION = "RI"
-	private final static String RESOURCE_DELEGATION = "RD"
-
 	private static String createTypeName(String fileName, String type) {
 		return createTypeName(fileName, type, '')
 	}
@@ -50,11 +44,11 @@ class GeneratorUtil {
 
 		String postfix
 
-		if (type == RESOURCE_MODEL) postfix = 'ResourceModel'
-		else if (type == RESOURCE_FORM_DATA) postfix = 'FormData'
-		else if (type == RESOURCE) postfix = 'Resource'
-		else if (type == RESOURCE_IMPLEMENTATION) postfix = 'ResourceImpl'
-		else if (type == RESOURCE_DELEGATION) postfix = 'ResourceDelegate'
+		if (type == Consts.RESOURCE_MODEL) postfix = 'ResourceModel'
+		else if (type == Consts.RESOURCE_FORM_DATA) postfix = 'FormData'
+		else if (type == Consts.RESOURCE) postfix = 'Resource'
+		else if (type == Consts.RESOURCE_IMPLEMENTATION) postfix = 'ResourceImpl'
+		else if (type == Consts.RESOURCE_DELEGATION) postfix = 'ResourceDelegate'
 		else throw new IllegalArgumentException("Unknown param value ${type}")
 
 
@@ -69,23 +63,23 @@ class GeneratorUtil {
 	}
 
 	static String createResourceModelName(String fileName, final String verb = "Get") {
-		createTypeName(fileName, RESOURCE_MODEL, verb)
+		createTypeName(fileName, Consts.RESOURCE_MODEL, verb)
 	}
 
 	static String createResourceName(String fileName) {
-		createTypeName(fileName, RESOURCE)
+		createTypeName(fileName, Consts.RESOURCE)
 	}
 
 	static String createResourceFormDataName(String fileName) {
-		createTypeName(fileName, RESOURCE_FORM_DATA)
+		createTypeName(fileName, Consts.RESOURCE_FORM_DATA)
 	}
 
 	static String createResourceImplementationName(String fileName) {
-		createTypeName(fileName, RESOURCE_IMPLEMENTATION)
+		createTypeName(fileName, Consts.RESOURCE_IMPLEMENTATION)
 	}
 
 	static String createResourceDelegateName(String fileName) {
-		createTypeName(fileName, RESOURCE_DELEGATION)
+		createTypeName(fileName, Consts.RESOURCE_DELEGATION)
 	}
 
 	static String verb(final String verb) {

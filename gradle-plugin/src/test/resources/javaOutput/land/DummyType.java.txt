@@ -1,7 +1,12 @@
 package org.acme.rest.v1;
 
 import java.io.Serializable;
+import javax.annotation.Generated;
 
+@Generated(
+    comments = "Specification filename: root.v1.json",
+    value = "ch.silviowangler.restapi"
+)
 public class DummyType implements Serializable {
   private ColorType color;
 
