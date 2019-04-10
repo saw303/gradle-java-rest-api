@@ -24,6 +24,7 @@
 package ch.silviowangler.gradle.restapi.gson;
 
 import ch.silviowangler.rest.contract.model.v1.ResourceField;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -33,6 +34,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 /** @author Silvio Wangler */
 public class ResourceFieldDeserializer implements JsonDeserializer<ResourceField> {
@@ -45,32 +47,50 @@ public class ResourceFieldDeserializer implements JsonDeserializer<ResourceField
 
     JsonObject jsonObject = json.getAsJsonObject();
 
-    field.setName(toString(jsonObject.get("name")));
-    field.setType(toString(jsonObject.get("type")));
-    field.setOptions(toString(jsonObject.get("options")));
+    field.setName(asString(jsonObject.get("name")));
+
+    String type = asString(jsonObject.get("type"));
+    field.setType(type);
+
+    if (Objects.equals("enum", type)) {
+      field.setOptions(asList(jsonObject.getAsJsonArray("options")));
+    } else {
+      field.setOptions(asString(jsonObject.get("options")));
+    }
 
     Iterator<JsonElement> iterator = jsonObject.get("mandatory").getAsJsonArray().iterator();
     List<String> mandatoryValues = new ArrayList<>();
     while (iterator.hasNext()) {
-      mandatoryValues.add(toString(iterator.next()));
+      mandatoryValues.add(asString(iterator.next()));
     }
     field.setMandatory(mandatoryValues);
 
-    field.setMin(toNumber(jsonObject.get("min")));
-    field.setMax(toNumber(jsonObject.get("max")));
-    field.setMultiple(toBoolean(jsonObject.get("multiple")));
-    field.setDefaultValue(toString(jsonObject.get("defaultValue")));
+    field.setMin(asNumber(jsonObject.get("min")));
+    field.setMax(asNumber(jsonObject.get("max")));
+    field.setMultiple(asBoolean(jsonObject.get("multiple")));
+    field.setDefaultValue(asString(jsonObject.get("defaultValue")));
     field.setShield(null);
-    field.setVisible(toBoolean(jsonObject.get("visible")));
-    field.setSortable(toBoolean(jsonObject.get("sortable")));
-    field.setReadonly(toBoolean(jsonObject.get("readonly")));
-    field.setFilterable(toBoolean(jsonObject.get("filterable")));
-    field.setxComment(toString(jsonObject.get("x-comment")));
+    field.setVisible(asBoolean(jsonObject.get("visible")));
+    field.setSortable(asBoolean(jsonObject.get("sortable")));
+    field.setReadonly(asBoolean(jsonObject.get("readonly")));
+    field.setFilterable(asBoolean(jsonObject.get("filterable")));
+    field.setxComment(asString(jsonObject.get("x-comment")));
 
     return field;
   }
 
-  private String toString(JsonElement jsonElement) {
+  private List<String> asList(JsonArray jsonArray) {
+
+    List<String> list = new ArrayList<>(jsonArray.size());
+
+    for (JsonElement jsonElement : jsonArray) {
+      list.add(asString(jsonElement));
+    }
+
+    return list;
+  }
+
+  private String asString(JsonElement jsonElement) {
 
     if (jsonElement == null) return null;
 
@@ -81,7 +101,7 @@ public class ResourceFieldDeserializer implements JsonDeserializer<ResourceField
     }
   }
 
-  private Number toNumber(JsonElement jsonElement) {
+  private Number asNumber(JsonElement jsonElement) {
 
     if (jsonElement == null) return null;
 
@@ -92,7 +112,7 @@ public class ResourceFieldDeserializer implements JsonDeserializer<ResourceField
     }
   }
 
-  private boolean toBoolean(JsonElement jsonElement) {
+  private boolean asBoolean(JsonElement jsonElement) {
     if (jsonElement == null) return false;
 
     if (!jsonElement.isJsonNull()) {

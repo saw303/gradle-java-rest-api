@@ -1,0 +1,7 @@
+package org.acme.rest.v1.partner;
+
+public enum GenderType {
+  MALE,
+
+  FEMALE
+}

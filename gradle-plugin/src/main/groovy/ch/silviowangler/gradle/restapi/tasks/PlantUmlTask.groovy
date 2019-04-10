@@ -61,7 +61,8 @@ class PlantUmlTask extends AbstractTask implements Specification {
 
 		List<File> specs = findSpecifications(getOptionsSource())
 		List<ResourceContractContainer> contracts = []
-		specs.each { File specFile -> contracts << SpecGenerator.parseResourceContract(specFile) }
+		SpecGenerator specGenerator = new SpecGenerator()
+		specs.each { File specFile -> contracts << specGenerator.parseResourceContract(specFile) }
 
 		ResourceContractContainer root = contracts.find { ResourceContractContainer c -> c.resourceContract.general.name == 'root' }
 

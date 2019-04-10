@@ -24,10 +24,12 @@
 package ch.silviowangler.gradle.restapi
 
 import com.squareup.javapoet.TypeSpec
+import groovy.transform.Canonical
 
 /**
  * @author Silvio Wangler
  */
+@Canonical
 class GeneratedSpecContainer {
 
 	String packageName

@@ -24,7 +24,6 @@
 package ch.silviowangler.gradle.restapi
 
 
-import ch.silviowangler.gradle.restapi.util.SupportedDataTypes
 import ch.silviowangler.rest.contract.model.v1.Representation
 import com.google.common.base.CaseFormat
 import com.squareup.javapoet.ClassName
@@ -87,34 +86,6 @@ class GeneratorUtil {
 
 	static String createResourceDelegateName(String fileName) {
 		createTypeName(fileName, RESOURCE_DELEGATION)
-	}
-
-	private static Map<String, ClassName> supportedDataTypes = [
-		'date'    : SupportedDataTypes.DATE.className,
-		'datetime': SupportedDataTypes.DATETIME.className,
-		'decimal' : SupportedDataTypes.DECIMAL.className,
-		'int'     : SupportedDataTypes.INT.className,
-		'long'    : SupportedDataTypes.LONG.className,
-		'double'  : SupportedDataTypes.DOUBLE.className,
-		'float'   : SupportedDataTypes.DOUBLE.className,
-		'bool'    : SupportedDataTypes.BOOL.className,
-		'flag'    : SupportedDataTypes.FLAG.className,
-		'string'  : SupportedDataTypes.STRING.className,
-		'email'   : SupportedDataTypes.STRING.className,
-		'uuid'    : SupportedDataTypes.UUID.className,
-		'object'  : SupportedDataTypes.OBJECT.className,
-		'money'   : SupportedDataTypes.MONEY.className,
-		'locale'  : SupportedDataTypes.LOCALE.className
-	]
-
-	static ClassName translateToJava(final String jsonType) {
-		if (isSupportedDataType(jsonType)) return supportedDataTypes[jsonType]
-
-		throw new UnsupportedDataTypeException(jsonType)
-	}
-
-	static boolean isSupportedDataType(final String jsonType) {
-		supportedDataTypes.containsKey(jsonType)
 	}
 
 	static String verb(final String verb) {

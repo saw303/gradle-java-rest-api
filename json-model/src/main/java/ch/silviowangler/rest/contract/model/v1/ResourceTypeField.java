@@ -27,16 +27,17 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /** @author Silvio Wangler */
-public class ResourceTypeField implements Serializable {
+public class ResourceTypeField implements Serializable, FieldType {
 
   private String name;
   private String type;
-  private String options;
+  private Object options;
   private String min;
   private String max;
   private String multiple;
   private String defaultValue;
 
+  @Override
   public String getName() {
     return name;
   }
@@ -45,6 +46,7 @@ public class ResourceTypeField implements Serializable {
     this.name = name;
   }
 
+  @Override
   public String getType() {
     return type;
   }
@@ -53,11 +55,12 @@ public class ResourceTypeField implements Serializable {
     this.type = type;
   }
 
-  public String getOptions() {
+  @Override
+  public Object getOptions() {
     return options;
   }
 
-  public void setOptions(String options) {
+  public void setOptions(Object options) {
     this.options = options;
   }
 

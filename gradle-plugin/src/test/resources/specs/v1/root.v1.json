@@ -104,6 +104,24 @@
           "defaultValue": null
         }
       ]
+    },
+    {
+      "name": "dummy",
+      "fields": [
+        {
+          "name": "color",
+          "type": "enum",
+          "options": [
+            "BLACK",
+            "GREY",
+            "WHITE"
+          ],
+          "min": null,
+          "max": null,
+          "multiple": false,
+          "defaultValue": null
+        }
+      ]
     }
   ],
   "validators": []

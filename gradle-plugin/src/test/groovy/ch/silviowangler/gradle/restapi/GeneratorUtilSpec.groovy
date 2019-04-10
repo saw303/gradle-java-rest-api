@@ -23,6 +23,9 @@
  */
 package ch.silviowangler.gradle.restapi
 
+import ch.silviowangler.gradle.restapi.builder.ResourceBuilder
+import ch.silviowangler.rest.contract.model.v1.FieldType
+import ch.silviowangler.rest.contract.model.v1.ResourceField
 import com.squareup.javapoet.ClassName
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -35,74 +38,80 @@ import java.time.LocalDate
  */
 class GeneratorUtilSpec extends Specification {
 
-    void "Generate Classfile names"() {
+  void "Generate Classfile names"() {
 
-        expect:
-        GeneratorUtil.createResourceFormDataName(file.name) == resourceFormData
-        GeneratorUtil.createResourceImplementationName(file.name) == resourceImpl
-        GeneratorUtil.createResourceModelName(file.name) == resourceModel
-        GeneratorUtil.createResourceName(file.name) == resourceClass
-        GeneratorUtil.createResourceDelegateName(file.name) == resourceDelegate
+    expect:
+    GeneratorUtil.createResourceFormDataName(file.name) == resourceFormData
+    GeneratorUtil.createResourceImplementationName(file.name) == resourceImpl
+    GeneratorUtil.createResourceModelName(file.name) == resourceModel
+    GeneratorUtil.createResourceName(file.name) == resourceClass
+    GeneratorUtil.createResourceDelegateName(file.name) == resourceDelegate
 
-        where:
+    where:
 
-        file                                  || resourceClass       || resourceImpl            || resourceModel               || resourceFormData  ||  resourceDelegate
-        new File('natperson.json')            || 'NatpersonResource' || 'NatpersonResourceImpl' || 'NatpersonGetResourceModel' || 'NatpersonFormData' || 'NatpersonResourceDelegate'
-        new File('natperson.v1.json')         || 'NatpersonResource' || 'NatpersonResourceImpl' || 'NatpersonGetResourceModel' || 'NatpersonFormData' || 'NatpersonResourceDelegate'
-        new File('natperson.adresse.v1.json') || 'AdresseResource'   || 'AdresseResourceImpl'   || 'AdresseGetResourceModel'   || 'AdresseFormData'  || 'AdresseResourceDelegate'
-    }
+    file                                  || resourceClass       || resourceImpl            || resourceModel               || resourceFormData    || resourceDelegate
+    new File('natperson.json')            || 'NatpersonResource' || 'NatpersonResourceImpl' || 'NatpersonGetResourceModel' || 'NatpersonFormData' || 'NatpersonResourceDelegate'
+    new File('natperson.v1.json')         || 'NatpersonResource' || 'NatpersonResourceImpl' || 'NatpersonGetResourceModel' || 'NatpersonFormData' || 'NatpersonResourceDelegate'
+    new File('natperson.adresse.v1.json') || 'AdresseResource'   || 'AdresseResourceImpl'   || 'AdresseGetResourceModel'   || 'AdresseFormData'   || 'AdresseResourceDelegate'
+  }
 
-    void "Generate Classfile names from string"() {
+  void "Generate Classfile names from string"() {
 
-        expect:
-        GeneratorUtil.createClassName(classname) == expectedClassname
+    expect:
+    GeneratorUtil.createClassName(classname) == expectedClassname
 
-        where:
-        classname        || expectedClassname
-        'coordinateType' || 'CoordinateType'
-        'silvioWangler'  || 'SilvioWangler'
-        'motorway'       || 'Motorway'
-    }
+    where:
+    classname        || expectedClassname
+    'coordinateType' || 'CoordinateType'
+    'silvioWangler'  || 'SilvioWangler'
+    'motorway'       || 'Motorway'
+  }
 
-    @Unroll
-    void "Translate options type '#jsonType' in to Java type"() {
+  @Unroll
+  void "Translate options type '#jsonType' in to Java type"() {
 
-        expect:
-        javaType == GeneratorUtil.translateToJava(jsonType)
+    given:
+    FieldType fieldType = new ResourceField(type: jsonType)
 
-        where:
-        jsonType   || javaType
-        'string'   || ClassName.get(String)
-        'email'    || ClassName.get(String)
-        'date'     || ClassName.get(LocalDate)
-        'datetime' || ClassName.get(Instant)
-        'decimal'  || ClassName.get(BigDecimal)
-        'int'      || ClassName.get(Integer)
-        'double'   || ClassName.get(Double)
-        'float'    || ClassName.get(Double)
-        'bool'     || ClassName.get(Boolean)
-        'flag'     || ClassName.get(Boolean)
-        'object'   || ClassName.get(Object)
-        'money'    || ClassName.get('javax.money', 'MonetaryAmount')
-    }
+    when:
+    ClassName className = ResourceBuilder.JavaTypeRegistry.translateToJava(fieldType)
 
-    @Unroll
-    void "Aus #verb wird #expectedValue"() {
-        expect:
-        expectedValue == GeneratorUtil.verb(verb)
+    then:
+    className == javaType
 
-        where:
-        verb                || expectedValue
-        'GET_COLLECTION'    || 'Get'
-        'GET_ENTITY'        || 'Get'
-        'GET'               || 'Get'
-        'HEAD_COLLECTION'   || 'Head'
-        'HEAD_ENTITY'       || 'Head'
-        'HEAD'              || 'Head'
-        'POST'              || 'Post'
-        'PUT'               || 'Put'
-        'PATCH'             || 'Patch'
-        'DELETE_ENTITY'     || 'Delete'
-        'DELETE_COLLECTION' || 'Delete'
-    }
+    where:
+    jsonType   || javaType
+    'string'   || ClassName.get(String)
+    'email'    || ClassName.get(String)
+    'date'     || ClassName.get(LocalDate)
+    'datetime' || ClassName.get(Instant)
+    'decimal'  || ClassName.get(BigDecimal)
+    'int'      || ClassName.get(Integer)
+    'double'   || ClassName.get(Double)
+    'float'    || ClassName.get(Double)
+    'bool'     || ClassName.get(Boolean)
+    'flag'     || ClassName.get(Boolean)
+    'object'   || ClassName.get(Object)
+    'money'    || ClassName.get('javax.money', 'MonetaryAmount')
+  }
+
+  @Unroll
+  void "Aus #verb wird #expectedValue"() {
+    expect:
+    expectedValue == GeneratorUtil.verb(verb)
+
+    where:
+    verb                || expectedValue
+    'GET_COLLECTION'    || 'Get'
+    'GET_ENTITY'        || 'Get'
+    'GET'               || 'Get'
+    'HEAD_COLLECTION'   || 'Head'
+    'HEAD_ENTITY'       || 'Head'
+    'HEAD'              || 'Head'
+    'POST'              || 'Post'
+    'PUT'               || 'Put'
+    'PATCH'             || 'Patch'
+    'DELETE_ENTITY'     || 'Delete'
+    'DELETE_COLLECTION' || 'Delete'
+  }
 }

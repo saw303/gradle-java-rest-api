@@ -44,6 +44,670 @@ This repository contains to very slim demo applications for **Spring Boot** and 
 
 The Spring Boot repo is located at `./demo-app-springboot`. The Micronaut app is located at `./demo-app-micronaut`.
 
+## Set up your Gradle build
+
+To setup your Gradle build you need to apply the REST Generator plugin.
+
+```groovy
+
+// register the plugin
+buildscript {
+    repositories {
+        jcenter()
+        maven { url "https://dl.bintray.com/saw303/gradle-plugins" }
+    }
+    ext {
+        restApiPluginVersion = '2.0.1'
+    }
+    dependencies {
+        classpath "ch.silviowangler.rest:gradle-java-rest-api:2.0.1"
+    }
+}
+
+// apply it to your build
+apply plugin: 'ch.silviowangler.restapi'
+
+// configure it
+
+restApi {
+    // Generate the resource classes to the following package
+    packageName = 'my.package.name'
+    
+    // I would like to use Micronaut
+    targetFramework = TargetFramework.MICRONAUT
+    
+    // the specification file are located at 
+    optionsSource = file('src/main/specs')
+}
+```
+
+## Example project
+
+The following example will create contain the following three resources:
+
+- root `/v1`
+- countries `/v1/countries`
+- cities `/v1/countries/{countryId}/cities`
+
+## Defining resources
+
+In the example above we told the REST Generator that our resource specification files are located
+at `src/main/specs`. Make sure you have created that folder.
+
+Now lets create a first resource called `root` resource. Therefore we create a file `src/main/specs/root.v1.json`.
+
+```json
+{
+  "general": {
+    "name": "root",
+    "description": "This is the root resource in version 1.0.0",
+    "version": "1.0.0",
+    "x-route": "/v1"
+  },
+  "verbs": [],
+  "fields": [],
+  "subresources": [
+    {
+      "name": "countries",
+      "type": "application/json",
+      "rel": "Länder Dokumentation",
+      "href": "/v1/countries",
+      "method": "OPTIONS",
+      "expandable": false
+    }
+  ],
+  "pipes": [],
+  "types": [
+    {
+      "name": "coordinates",
+      "fields": [
+        {
+          "name": "longitude",
+          "type": "decimal",
+          "options": null,
+          "min": 0.0,
+          "max": null,
+          "multiple": false,
+          "defaultValue": null
+        },
+        {
+          "name": "latitude",
+          "type": "int",
+          "options": null,
+          "min": 0.0,
+          "max": null,
+          "multiple": false,
+          "defaultValue": null
+        }
+      ]
+    }
+  ],
+  "validators": []
+}
+```
+
+The `countries` resource.
+
+```json
+{
+  "general": {
+    "name": "countries",
+    "description": "countries",
+    "version": "1.0.0",
+    "lifecycle": {
+      "deprecated": false,
+      "info": "Version is valid"
+    },
+    "searchable": true,
+    "countable": false,
+    "x-route": "/v1/countries/:entity"
+  },
+  "verbs": [
+    {
+      "verb": "GET_ENTITY",
+      "rel": "Read a country",
+      "responseStates": [
+        {
+          "code": 200,
+          "message": "200 Ok",
+          "comment": "content in response body"
+        },
+        {
+          "code": 503,
+          "message": "503 Service Unavailable",
+          "comment": "Backend server eventually not reachable or to slow"
+        }
+      ],
+      "representations": [
+        {
+          "name": "json",
+          "comment": "",
+          "responseExample": "{...}",
+          "isDefault": true,
+          "mimetype": "application/json"
+        }
+      ],
+      "parameters": [],
+      "permissions": [],
+      "caching": {
+        "no-cache": true,
+        "private": false,
+        "max-age": -2,
+        "Expires": -1,
+        "ETag": true
+      }
+    },
+    {
+      "verb": "GET_COLLECTION",
+      "rel": "Read all countries",
+      "collectionLimit": 19,
+      "maxCollectionLimit": 101,
+      "responseStates": [
+        {
+          "code": 200,
+          "message": "200 Ok",
+          "comment": "content in response body"
+        },
+        {
+          "code": 503,
+          "message": "503 Service Unavailable",
+          "comment": "Backend server eventually not reachable or to slow"
+        }
+      ],
+      "representations": [
+        {
+          "name": "json",
+          "comment": "",
+          "responseExample": "{...}",
+          "isDefault": true,
+          "mimetype": "application/json"
+        }
+      ],
+      "permissions": []
+    },
+    {
+      "verb": "HEAD_ENTITY",
+      "rel": "Verify if a country exists",
+      "responseStates": [
+        {
+          "code": 200,
+          "message": "200 Ok",
+          "comment": "content in response body"
+        },
+        {
+          "code": 503,
+          "message": "503 Service Unavailable",
+          "comment": "Backend server eventually not reachable or to slow"
+        }
+      ],
+      "representations": [
+        {
+          "name": "json",
+          "comment": "",
+          "responseExample": "{...}",
+          "isDefault": true,
+          "mimetype": "application/json"
+        }
+      ],
+      "parameters": [],
+      "permissions": []
+    },
+    {
+      "verb": "HEAD_COLLECTION",
+      "rel": "Verify if countries exist",
+      "collectionLimit": 19,
+      "maxCollectionLimit": 101,
+      "responseStates": [
+        {
+          "code": 200,
+          "message": "200 Ok",
+          "comment": "content in response body"
+        },
+        {
+          "code": 503,
+          "message": "503 Service Unavailable",
+          "comment": "Backend server eventually not reachable or to slow"
+        }
+      ],
+      "representations": [
+        {
+          "name": "json",
+          "comment": "",
+          "responseExample": "{...}",
+          "isDefault": true,
+          "mimetype": "application/json"
+        }
+      ],
+      "permissions": []
+    },
+    {
+      "verb": "PUT",
+      "rel": "Modiy a country",
+      "responseStates": [
+        {
+          "code": 200,
+          "message": "200 Ok",
+          "comment": "content in response body"
+        },
+        {
+          "code": 503,
+          "message": "503 Service Unavailable",
+          "comment": "Backend server eventually not reachable or to slow"
+        }
+      ],
+      "representations": [
+        {
+          "name": "json",
+          "comment": "",
+          "responseExample": "{...}",
+          "isDefault": true,
+          "mimetype": "application/json"
+        }
+      ],
+      "parameters": [],
+      "permissions": []
+    },
+    {
+      "verb": "POST",
+      "rel": "Add a country",
+      "responseStates": [
+        {
+          "code": 200,
+          "message": "200 Ok",
+          "comment": "content in response body"
+        },
+        {
+          "code": 503,
+          "message": "503 Service Unavailable",
+          "comment": "Backend server eventually not reachable or to slow"
+        }
+      ],
+      "representations": [
+        {
+          "name": "json",
+          "comment": "",
+          "responseExample": "{...}",
+          "isDefault": true,
+          "mimetype": "application/json"
+        }
+      ],
+      "parameters": [],
+      "permissions": []
+    }
+  ],
+  "fields": [
+    {
+      "name": "id",
+      "type": "uuid",
+      "options": null,
+      "mandatory": [
+        "PUT"
+      ],
+      "min": null,
+      "max": null,
+      "multiple": false,
+      "defaultValue": null,
+      "protected": [],
+      "visible": true,
+      "sortable": false,
+      "readonly": false,
+      "filterable": false,
+      "alias": [],
+      "x-comment": "Unique id of a country"
+    },
+    {
+      "name": "name",
+      "type": "string",
+      "options": null,
+      "mandatory": [
+        "PUT", "POST"
+      ],
+      "min": 0,
+      "max": 100,
+      "multiple": false,
+      "defaultValue": null,
+      "protected": [],
+      "visible": true,
+      "sortable": false,
+      "readonly": false,
+      "filterable": false,
+      "alias": [],
+      "x-comment": "Name of the country"
+    },
+    {
+      "name": "foundationDate",
+      "type": "date",
+      "options": null,
+      "mandatory": [
+        "PUT", "POST"
+      ],
+      "min": null,
+      "max": null,
+      "multiple": false,
+      "defaultValue": null,
+      "protected": [],
+      "visible": true,
+      "sortable": false,
+      "readonly": false,
+      "filterable": false,
+      "alias": [],
+      "x-comment": "Foundation date of a country"
+    },
+    {
+      "name": "surface",
+      "type": "int",
+      "options": null,
+      "mandatory": [
+        "PUT", "POST"
+      ],
+      "min": null,
+      "max": null,
+      "multiple": false,
+      "defaultValue": null,
+      "protected": [],
+      "visible": true,
+      "sortable": false,
+      "readonly": false,
+      "filterable": false,
+      "alias": [],
+      "x-comment": "Surface in square kilometers"
+    },
+    {
+      "name": "coordinates",
+      "type": "coordinates",
+      "options": null,
+      "mandatory": [
+        "PUT", "POST"
+      ],
+      "min": null,
+      "max": null,
+      "multiple": false,
+      "defaultValue": null,
+      "protected": [],
+      "visible": true,
+      "sortable": false,
+      "readonly": false,
+      "filterable": false,
+      "alias": [],
+      "x-comment": "Coordinates"
+    }
+  ],
+  "subresources": [
+    {
+      "name": "cities",
+      "type": "application/json",
+      "rel": "orte",
+      "href": "/v1/countries/{:entity}/cities",
+      "method": "OPTIONS",
+      "expandable": true
+    }
+  ]
+}
+```
+
+The `cities` resource
+
+```json
+{
+  "general": {
+    "name": "cities",
+    "description": "City resource",
+    "version": "1.0.0",
+    "lifecycle": {
+      "deprecated": false,
+      "info": "This version is valid"
+    },
+    "searchable": true,
+    "countable": false,
+    "x-route": "/v1/countries/:country/cities/:entity"
+  },
+  "verbs": [
+    {
+      "verb": "GET_ENTITY",
+      "rel": "Read city",
+      "responseStates": [
+        {
+          "code": 200,
+          "message": "200 Ok",
+          "comment": "content in response body"
+        },
+        {
+          "code": 503,
+          "message": "503 Service Unavailable",
+          "comment": "Backend server eventually not reachable or to slow"
+        }
+      ],
+      "representations": [
+        {
+          "name": "json",
+          "comment": "",
+          "responseExample": "{...}",
+          "isDefault": true,
+          "mimetype": "application/json"
+        }
+      ],
+      "options": [],
+      "permissions": []
+    },
+    {
+      "verb": "GET_COLLECTION",
+      "rel": "Read all cities",
+      "collectionLimit": 19,
+      "maxCollectionLimit": 101,
+      "responseStates": [
+        {
+          "code": 200,
+          "message": "200 Ok",
+          "comment": "content in response body"
+        },
+        {
+          "code": 503,
+          "message": "503 Service Unavailable",
+          "comment": "Backend server eventually not reachable or to slow"
+        }
+      ],
+      "representations": [
+        {
+          "name": "json",
+          "comment": "",
+          "responseExample": "{...}",
+          "isDefault": true,
+          "mimetype": "application/json"
+        }
+      ],
+      "options": [],
+      "permissions": []
+    },
+    {
+      "verb": "PUT",
+      "rel": "Modify a city",
+      "responseStates": [
+        {
+          "code": 200,
+          "message": "200 Ok",
+          "comment": "content in response body"
+        },
+        {
+          "code": 503,
+          "message": "503 Service Unavailable",
+          "comment": "Backend server eventually not reachable or to slow"
+        }
+      ],
+      "representations": [
+        {
+          "name": "json",
+          "comment": "",
+          "responseExample": "{...}",
+          "isDefault": true,
+          "mimetype": "application/json"
+        }
+      ],
+      "options": [],
+      "permissions": []
+    },
+    {
+      "verb": "POST",
+      "rel": "Create a city",
+      "responseStates": [
+        {
+          "code": 200,
+          "message": "200 Ok",
+          "comment": "content in response body"
+        },
+        {
+          "code": 503,
+          "message": "503 Service Unavailable",
+          "comment": "Backend server eventually not reachable or to slow"
+        }
+      ],
+      "representations": [
+        {
+          "name": "json",
+          "comment": "",
+          "responseExample": "{...}",
+          "isDefault": true,
+          "mimetype": "application/json"
+        }
+      ],
+      "options": [],
+      "permissions": []
+    },
+    {
+      "verb": "DELETE_ENTITY",
+      "rel": "Delete a city",
+      "responseStates": [
+        {
+          "code": 200,
+          "message": "200 Ok",
+          "comment": "content in response body"
+        },
+        {
+          "code": 503,
+          "message": "503 Service Unavailable",
+          "comment": "Backend server eventually not reachable or to slow"
+        }
+      ],
+      "representations": [
+        {
+          "name": "json",
+          "comment": "",
+          "responseExample": "{...}",
+          "isDefault": true,
+          "mimetype": "application/json"
+        }
+      ],
+      "options": [],
+      "permissions": []
+    }
+  ],
+  "fields": [
+    {
+      "name": "id",
+      "type": "uuid",
+      "options": null,
+      "mandatory": [
+        "PUT"
+      ],
+      "min": null,
+      "max": null,
+      "multiple": false,
+      "defaultValue": null,
+      "protected": [],
+      "visible": true,
+      "sortable": false,
+      "readonly": false,
+      "filterable": false,
+      "alias": [],
+      "x-comment": "City id"
+    },
+    {
+      "name": "name",
+      "type": "string",
+      "options": null,
+      "mandatory": [
+        "PUT", "POST"
+      ],
+      "min": null,
+      "max": 20,
+      "multiple": false,
+      "defaultValue": null,
+      "protected": [],
+      "visible": true,
+      "sortable": false,
+      "readonly": false,
+      "filterable": false,
+      "alias": [],
+      "x-comment": "City name"
+    },
+    {
+      "name": "coordinates",
+      "type": "coordinates",
+      "options": null,
+      "mandatory": [
+        "PUT", "POST"
+      ],
+      "min": null,
+      "max": null,
+      "multiple": false,
+      "defaultValue": null,
+      "protected": [],
+      "visible": true,
+      "sortable": false,
+      "readonly": false,
+      "filterable": false,
+      "alias": [],
+      "x-comment": "Coordinates of the city"
+    }
+  ],
+  "parameters": [],
+  "subresources": []
+}
+```
+
+## Declaring fields
+
+Currently the following field types are supported:
+
+- `date` => `java.time.LocalDate`
+- `datetime` => `java.time.Instant`
+- `decimal` => `java.math.BigDecimal`
+- `int` => `java.lang.Integer`
+- `long` => `java.lang.Long`
+- `double` => `java.lang.Double`
+- `float` => `java.lang.Double`
+- `bool` => `java.lang.Boolean`
+- `flag` => `java.lang.Boolean`
+- `string` => `java.lang.String`
+- `email` => `java.lang.String`
+- `uuid` => `java.lang.String`
+- `object` => `java.lang.Object`
+- `money` => `java.lang.Double`
+- `locale` => `javax.money.MonetaryAmount` [JSR-354](https://javamoney.github.io/apidocs/javax/money/MonetaryAmount.html)
+- `enum` => will create a enum type
+
+### creating an enum type
+
+```json
+{
+  "name": "gender",
+  "type": "enum",
+  "options": ["MALE", "FEMALE"],
+  "multiple": false,
+  "defaultValue": null,
+  "x-comment": "Gender of a person"
+}
+```
+
+will create the following Java output
+
+```java
+public enum GenderType {
+  MALE,
+
+  FEMALE
+}
+```
+
 ## Hateoas Functionality
 
 ### Micronaut

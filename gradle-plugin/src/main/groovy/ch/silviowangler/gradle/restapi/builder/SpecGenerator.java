@@ -53,11 +53,12 @@ import java.util.stream.Collectors;
 /** @author Silvio Wangler */
 public class SpecGenerator {
 
-  private static final Set<ClassName> resourceTypeCache = new HashSet<>();
-  private static final Gson gson;
+  private final Set<ClassName> resourceTypeCache;
+  private final Gson gson;
 
-  static {
-    gson =
+  public SpecGenerator() {
+    this.resourceTypeCache = new HashSet<>();
+    this.gson =
         new GsonBuilder()
             .registerTypeAdapter(GeneralDetails.class, new GeneralDetailsDeserializer())
             .registerTypeAdapter(ResourceField.class, new ResourceFieldDeserializer())
@@ -65,7 +66,7 @@ public class SpecGenerator {
             .create();
   }
 
-  public static GeneratedSpecContainer generateType(File specFile, RestApiExtension extension) {
+  public GeneratedSpecContainer generateType(File specFile, RestApiExtension extension) {
 
     ResourceContractContainer resourceContractContainer =
         parseResourceContract(specFile, extension.getResponseEncoding());
@@ -108,11 +109,11 @@ public class SpecGenerator {
     return result;
   }
 
-  public static ResourceContractContainer parseResourceContract(File file) {
+  public ResourceContractContainer parseResourceContract(File file) {
     return parseResourceContract(file, null);
   }
 
-  public static ResourceContractContainer parseResourceContract(File file, Charset encoding) {
+  public ResourceContractContainer parseResourceContract(File file, Charset encoding) {
     Objects.requireNonNull(file, "file must not be null");
 
     if (!file.exists()) {
@@ -141,7 +142,7 @@ public class SpecGenerator {
     }
   }
 
-  private static String generatePackageName(ResourceContract resourceContract) {
+  private String generatePackageName(ResourceContract resourceContract) {
 
     GeneralDetails general = resourceContract.getGeneral();
     String version = readVersion(general.getVersion());
@@ -159,7 +160,7 @@ public class SpecGenerator {
     }
   }
 
-  private static String readVersion(String versionString) {
+  private String readVersion(String versionString) {
     return String.format("v%s", versionString.split("\\.")[0]);
   }
 }
