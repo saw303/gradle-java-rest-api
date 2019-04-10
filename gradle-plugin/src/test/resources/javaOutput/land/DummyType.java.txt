@@ -1,0 +1,15 @@
+package org.acme.rest.v1;
+
+import java.io.Serializable;
+
+public class DummyType implements Serializable {
+  private ColorType color;
+
+  public ColorType getColor() {
+    return this.color;
+  }
+
+  public void setColor(ColorType color) {
+    this.color = color;
+  }
+}

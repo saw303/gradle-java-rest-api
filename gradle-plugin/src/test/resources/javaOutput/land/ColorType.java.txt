@@ -1,0 +1,9 @@
+package org.acme.rest.v1;
+
+public enum ColorType {
+  BLACK,
+
+  GREY,
+
+  WHITE
+}

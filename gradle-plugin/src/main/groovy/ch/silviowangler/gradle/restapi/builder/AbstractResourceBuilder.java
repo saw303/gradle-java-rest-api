@@ -394,7 +394,6 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public Set<TypeSpec> buildResourceTypes(Set<ClassName> types, String packageName) {
 
     ResourceContract resourceContract = getResourceContractContainer().getResourceContract();
@@ -406,7 +405,20 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
       for (ResourceTypeField field : type.getFields()) {
 
-        TypeName fieldType = getFieldType(types, field);
+        TypeName fieldType;
+        try {
+          fieldType = getFieldType(types, field);
+        } catch (UnsupportedDataTypeException ex) {
+          // handle case where a type contains an enum field
+          if (field.isEnumType()) {
+            TypeSpec customEnum = buildEnumType(field);
+            types.add(ClassName.get(packageName, customEnum.name));
+            specTypes.add(customEnum);
+            fieldType = getFieldType(types, field);
+          } else {
+            throw ex;
+          }
+        }
 
         if ("true".equals(field.getMultiple())) {
           ClassName list = ClassName.get(List.class);
@@ -429,28 +441,31 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
             .filter(field -> "enum".equals(field.getType()))
             .collect(Collectors.toList());
 
-    for (ResourceField enumField : enumFields) {
-      TypeSpec.Builder enumBuilder =
-          TypeSpec.enumBuilder(
-                  LOWER_CAMEL.to(UPPER_CAMEL, String.format("%sType", enumField.getName())))
-              .addModifiers(PUBLIC);
-
-      if (enumField.getOptions() instanceof Iterable) {
-        Iterable<String> values = (Iterable<String>) enumField.getOptions();
-        for (String value : values) {
-          enumBuilder.addEnumConstant(value);
-        }
-      } else {
-        throw new IllegalStateException(
-            String.format(
-                "enum field %s must contain a list in options field", enumField.getName()));
-      }
-      TypeSpec customEnum = enumBuilder.build();
-
+    for (FieldType enumField : enumFields) {
+      TypeSpec customEnum = buildEnumType(enumField);
       types.add(ClassName.get(packageName, customEnum.name));
       specTypes.add(customEnum);
     }
     return specTypes;
+  }
+
+  @SuppressWarnings("unchecked")
+  private TypeSpec buildEnumType(FieldType enumField) {
+    TypeSpec.Builder enumBuilder =
+        TypeSpec.enumBuilder(
+                LOWER_CAMEL.to(UPPER_CAMEL, String.format("%sType", enumField.getName())))
+            .addModifiers(PUBLIC);
+
+    if (enumField.getOptions() instanceof Iterable) {
+      Iterable<String> values = (Iterable<String>) enumField.getOptions();
+      for (String value : values) {
+        enumBuilder.addEnumConstant(value);
+      }
+    } else {
+      throw new IllegalStateException(
+          String.format("enum field %s must contain a list in options field", enumField.getName()));
+    }
+    return enumBuilder.build();
   }
 
   @Override
@@ -690,6 +705,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
     } catch (UnsupportedDataTypeException ex) {
 
       Stream<ClassName> typeStream;
+
       if (resourceField.isEnumType()) {
         typeStream =
             types.stream()

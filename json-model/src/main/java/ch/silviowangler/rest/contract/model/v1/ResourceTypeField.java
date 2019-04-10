@@ -31,7 +31,7 @@ public class ResourceTypeField implements Serializable, FieldType {
 
   private String name;
   private String type;
-  private String options;
+  private Object options;
   private String min;
   private String max;
   private String multiple;
@@ -56,11 +56,11 @@ public class ResourceTypeField implements Serializable, FieldType {
   }
 
   @Override
-  public String getOptions() {
+  public Object getOptions() {
     return options;
   }
 
-  public void setOptions(String options) {
+  public void setOptions(Object options) {
     this.options = options;
   }
 

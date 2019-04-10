@@ -32,7 +32,7 @@ public class VerbParameter implements Serializable, FieldType {
 
   private String name;
   private String type;
-  private String options;
+  private Object options;
   private boolean mandatory;
   private Number min;
   private Number max;
@@ -66,11 +66,11 @@ public class VerbParameter implements Serializable, FieldType {
   }
 
   @Override
-  public String getOptions() {
+  public Object getOptions() {
     return options;
   }
 
-  public void setOptions(String options) {
+  public void setOptions(Object options) {
     this.options = options;
   }
 

@@ -82,10 +82,12 @@ class GenerateRestApiTask extends AbstractTask implements Specification {
 
 		logger.lifecycle("Found ${specs.size()} specification files (${specs.collect { it.name}})")
 
+		SpecGenerator specGenerator = new SpecGenerator()
+
 		for (File specFile in specs) {
 
 			println "Processing spec ${specFile.name}"
-			GeneratedSpecContainer specContainer = SpecGenerator.generateType(specFile, project.restApi as RestApiExtension)
+			GeneratedSpecContainer specContainer = specGenerator.generateType(specFile, project.restApi as RestApiExtension)
 
 			for (TypeSpec model in specContainer.collectGeneratedTypes()) {
 				amountOfGeneratedJavaSourceFiles++
