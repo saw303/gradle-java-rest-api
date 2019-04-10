@@ -1,5 +1,11 @@
 package org.acme.rest.v1;
 
+import javax.annotation.Generated;
+
+@Generated(
+    comments = "Specification filename: root.v1.json",
+    value = "ch.silviowangler.restapi"
+)
 public enum ColorType {
   BLACK,
 

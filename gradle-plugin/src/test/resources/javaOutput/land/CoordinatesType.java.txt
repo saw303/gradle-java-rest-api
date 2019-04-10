@@ -2,7 +2,12 @@ package org.acme.rest.v1;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import javax.annotation.Generated;
 
+@Generated(
+    comments = "Specification filename: root.v1.json",
+    value = "ch.silviowangler.restapi"
+)
 public class CoordinatesType implements Serializable {
   private BigDecimal longitude;
 

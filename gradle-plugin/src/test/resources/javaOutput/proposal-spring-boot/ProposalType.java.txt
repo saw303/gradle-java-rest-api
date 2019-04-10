@@ -1,8 +1,13 @@
 package org.acme.rest.v1.session.insurableperson.insuranceneeds.productproposal;
 
 import java.io.Serializable;
+import javax.annotation.Generated;
 import javax.money.MonetaryAmount;
 
+@Generated(
+    comments = "Specification filename: productproposal.v1.json",
+    value = "ch.silviowangler.restapi"
+)
 public class ProposalType implements Serializable {
   private String label;
 
