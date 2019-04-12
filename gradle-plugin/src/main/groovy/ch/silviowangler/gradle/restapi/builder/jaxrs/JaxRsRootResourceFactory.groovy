@@ -36,10 +36,6 @@ import static ch.silviowangler.gradle.restapi.PluginTypes.*
 
 class JaxRsRootResourceFactory extends AbstractResourceBuilder {
 
-	JaxRsRootResourceFactory(boolean explicitExtensions) {
-		super.setExplicitExtensions(explicitExtensions)
-	}
-
 	@Override
 	boolean supportsInterfaces() {
 		return true
@@ -130,16 +126,10 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder {
 		specs << createProducesAnnotation(representation)
 
 		if (applyId) {
-			specs << createAnnotation(JAX_RS_PATH, ['value': "{id}${jsonExtension(representation)}"])
-		} else if(explicitExtensions) {
-			specs << createAnnotation(JAX_RS_PATH, ['value': ".${representation.name}"])
+			String postfix = representation.isJson() ? '' : ".${representation.name}"
+			specs << createAnnotation(JAX_RS_PATH, ['value': "{id}${postfix}"])
 		}
-
 		return specs
-	}
-
-	private String jsonExtension(Representation representation) {
-		return representation.isJson() && !explicitExtensions ? '' : ".${representation.name}"
 	}
 
 	@Override

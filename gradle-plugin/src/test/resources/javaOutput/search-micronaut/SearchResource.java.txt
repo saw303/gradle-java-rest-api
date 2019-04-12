@@ -34,17 +34,13 @@ public class SearchResource {
     this.delegate = delegate;
   }
 
-  @Options(
-      uri = "/.json"
-  )
+  @Options
   @Produces("application/json")
   public String getOptions() {
     return OPTIONS_CONTENT;
   }
 
-  @Get(
-      uri = "/.json"
-  )
+  @Get
   @Produces("application/json")
   public SearchGetResourceModel getEntity(@Valid @QueryValue String q,
       @Valid @QueryValue @DateFormat @Nullable LocalDate startDate,

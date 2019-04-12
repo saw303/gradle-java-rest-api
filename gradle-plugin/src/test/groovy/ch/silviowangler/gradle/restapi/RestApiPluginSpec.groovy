@@ -546,7 +546,6 @@ class RestApiPluginSpec extends Specification {
     project.restApi.packageName = 'org.acme.rest'
     project.restApi.generateDateAttribute = false
     project.restApi.targetFramework = MICRONAUT
-    project.restApi.explicitExtensions = true
     project.restApi.objectResourceModelMapping = customFieldModelMapping
 
     and:
@@ -562,65 +561,6 @@ class RestApiPluginSpec extends Specification {
     ex.message == "Verb: [HEAD_ENTITY] Representation: [json] has no GET counterpart"
   }
 
-  void "Das Plugin generiert auch read only Ressourcen mit JSON und CSV GET und explicit extensions (Micronaut)"() {
-
-    given:
-    project.restApi.generatorOutput = temporaryFolder.getRoot()
-    project.restApi.generatorImplOutput = temporaryFolder.getRoot()
-    project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/jsonAndCsv")
-    project.restApi.packageName = 'org.acme.rest'
-    project.restApi.generateDateAttribute = false
-    project.restApi.targetFramework = MICRONAUT
-    project.restApi.explicitExtensions = true
-    project.restApi.objectResourceModelMapping = customFieldModelMapping
-
-    and:
-    GenerateRestApiTask task = project.tasks.generateRestArtifacts as GenerateRestApiTask
-
-    when:
-    task.exec()
-
-    and:
-    def javaFiles = []
-    temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
-      if (it.name.endsWith('.java')) javaFiles << it
-    })
-
-    then:
-    new File(temporaryFolder.getRoot(), 'org/acme/rest').exists()
-
-    and:
-    assertGeneratedFiles javaFiles, 6
-
-    and:
-    javaFiles.collect {
-      it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
-    }.size() == javaFiles.size()
-
-    and: 'Ressourcen validieren'
-    assertJavaFile('org.acme.rest.v1.input', 'InputResource', 'jsonAndCsv')
-    assertJavaFile('org.acme.rest.v1.input', 'InputResourceDelegate', 'jsonAndCsv')
-    assertJavaFile('org.acme.rest.v1.input', 'InputGetResourceModel', 'jsonAndCsv')
-    assertJavaFile('org.acme.rest.v1.input.mail', 'MailResource', 'jsonAndCsv')
-    assertJavaFile('org.acme.rest.v1.input.mail', 'MailResourceDelegate', 'jsonAndCsv')
-    assertJavaFile('org.acme.rest.v1.input.mail', 'MailGetResourceModel', 'jsonAndCsv')
-
-    when:
-    CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask
-
-    and:
-    cleanTask.cleanUp()
-
-    and:
-    javaFiles.clear()
-    temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
-      if (it.name.endsWith('.java')) javaFiles << it
-    })
-
-    then:
-    javaFiles.isEmpty()
-  }
-
   void "Das Plugin generiert auch read only Ressourcen mit query parameters und explicit extensions (Micronaut)"() {
 
     given:
@@ -630,7 +570,6 @@ class RestApiPluginSpec extends Specification {
     project.restApi.packageName = 'org.acme.rest'
     project.restApi.generateDateAttribute = false
     project.restApi.targetFramework = MICRONAUT
-    project.restApi.explicitExtensions = true
     project.restApi.objectResourceModelMapping = customFieldModelMapping
 
     and:

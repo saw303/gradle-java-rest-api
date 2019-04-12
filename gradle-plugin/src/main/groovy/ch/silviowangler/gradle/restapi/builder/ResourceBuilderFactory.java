@@ -39,11 +39,11 @@ class ResourceBuilderFactory {
     if (SPRING_BOOT
         == Objects.requireNonNull(restApiExtension, "restApiExtension must not be null")
             .getTargetFramework()) {
-      return new SpringRootResourceFactory(restApiExtension.getExplicitExtensions());
+      return new SpringRootResourceFactory();
     } else if (MICRONAUT == restApiExtension.getTargetFramework()) {
-      return new MicronautResourceFactory(restApiExtension.getExplicitExtensions());
+      return new MicronautResourceFactory();
     } else {
-      return new JaxRsRootResourceFactory(restApiExtension.getExplicitExtensions());
+      return new JaxRsRootResourceFactory();
     }
   }
 }

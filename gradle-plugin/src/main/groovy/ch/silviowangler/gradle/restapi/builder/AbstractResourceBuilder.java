@@ -92,15 +92,6 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
   private boolean printTimestamp = true;
   private ArtifactType artifactType;
   private Charset responseEncoding;
-  private boolean explicitExtensions = false;
-
-  protected void setExplicitExtensions(boolean explicitExtensions) {
-    this.explicitExtensions = explicitExtensions;
-  }
-
-  public boolean isExplicitExtensions() {
-    return explicitExtensions;
-  }
 
   private Verb getCurrentVerb() {
     return currentVerb;
