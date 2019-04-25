@@ -844,8 +844,8 @@ class RestApiPluginSpec extends Specification {
     files.size() == 1
 
     and:
-    assertPlantUmlFile('resources-overview.puml', resourceName,'land')
-where:
+    assertPlantUmlFile('resources-overview.puml', resourceName, 'land')
+    where:
     showFields || resourceName
     false      || 'resources-overview.puml'
     true       || 'resources-overview-fields.puml'
