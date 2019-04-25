@@ -44,6 +44,7 @@ class RestApiExtension {
 	TargetFramework targetFramework = TargetFramework.JAX_RS
 	Charset responseEncoding
 	File diagramOutput = new File(project.buildDir, 'diagrams')
+	boolean diagramShowFields = false
 
 	RestApiExtension(Project project) {
 		this.project = project

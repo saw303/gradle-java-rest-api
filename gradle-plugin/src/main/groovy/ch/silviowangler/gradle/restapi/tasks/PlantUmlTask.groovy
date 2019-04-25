@@ -68,7 +68,7 @@ class PlantUmlTask extends AbstractTask implements Specification {
 
 		Knot<ResourceContractContainer> hierarchy = buildHierarchy(root, contracts)
 
-		URL url = getClass().getResource('/puml/resources-overview.puml.template')
+		URL url = getTemplate()
 		def template = templateEngine.createTemplate(url).make([title: 'Resources Overview', containers: contracts, dependencies: buildDependencyList(hierarchy)])
 
 		File targetFile = new File(getRootOutputDir(), 'resources-overview.puml')
@@ -81,6 +81,18 @@ class PlantUmlTask extends AbstractTask implements Specification {
 		targetFile.write(template.toString(), 'UTF-8')
 	}
 
+	private URL getTemplate() {
+
+		String resource
+		if (project.restApi.diagramShowFields) {
+			resource = '/puml/resources-overview-fields.puml.template'
+		} else {
+			resource = '/puml/resources-overview.puml.template'
+		}
+
+		return getClass().getResource(resource)
+	}
+
 	private Knot<ResourceContractContainer> buildHierarchy(ResourceContractContainer container, List<ResourceContractContainer> containers) {
 		return buildHierarchy(container, null, containers)
 	}
@@ -91,7 +103,7 @@ class PlantUmlTask extends AbstractTask implements Specification {
 
 		for (SubResource subResource in container.resourceContract.subresources) {
 
-			ResourceContractContainer subNode = containers.find { ResourceContractContainer c -> c.resourceContract.general.name == subResource.name }
+			ResourceContractContainer subNode = findSubResourceContract(containers, subResource)
 
 			if (subNode) {
 				node.children << buildHierarchy(subNode, containers)
@@ -103,6 +115,34 @@ class PlantUmlTask extends AbstractTask implements Specification {
 		return node
 	}
 
+	private ResourceContractContainer findSubResourceContract(List<ResourceContractContainer> containers, SubResource subResource) {
+
+		List<ResourceContractContainer> results = containers.findAll { ResourceContractContainer c -> c.resourceContract.general.name == subResource.name }
+		if (results.size() > 1) {
+			String pattern = ':[^/]+'
+			String subresourceRoute = subResource.href.replace("{", "").replace("}", "")
+			subresourceRoute = subresourceRoute.replaceAll(pattern, "")
+			// distinguish by xRoute matching the longest prefix we can find
+			ResourceContractContainer match
+			int matchLen = -1
+			for (ResourceContractContainer c : results) {
+				String resourceRoute = c.resourceContract.general.xRoute.replaceAll(pattern, "")
+				String commonPrefix = commonPrefix(resourceRoute, subresourceRoute)
+				if (commonPrefix.length() > matchLen) {
+					match = c
+					matchLen = commonPrefix.length()
+				}
+			}
+			return match
+
+		} else if (results.size() == 1) {
+			return results[0]
+		} else {
+			return null
+		}
+
+	}
+
 	Set<Dependency> buildDependencyList(Knot<ResourceContractContainer> tree) {
 		return buildDependencyList(tree, [] as Set)
 	}
@@ -112,10 +152,27 @@ class PlantUmlTask extends AbstractTask implements Specification {
 		if (!tree.children.isEmpty()) {
 
 			for (child in tree.children) {
-				dependencies << new Dependency(parent: tree.data.resourceContract.general.name, child: child.data.resourceContract.general.name)
+				dependencies << new Dependency(parent: tree.data.resourceContract.general.hashCode().abs(), child: child.data.resourceContract.general.hashCode().abs())
 				dependencies.addAll(buildDependencyList(child, dependencies))
 			}
 		}
 		return dependencies
+	}
+
+	static String commonPrefix(String a, String b) {
+		if (a == null || a.isEmpty()) {
+			return ""
+		}
+		if (b == null || b.isEmpty()) {
+			return ""
+		}
+		int len = Math.min(a.size(), b.size())
+		int counter = 0
+		for (; counter < len; counter++) {
+			if (a.charAt(counter) != b.charAt(counter)) {
+				break
+			}
+		}
+		return a.substring(0, counter)
 	}
 }

@@ -7,7 +7,7 @@ skinparam class {
 	BorderColor #CDCDCD
 }
 
-class "root" as root << (R,#DADADA) >> {
+class "root" as 810791903 << (R,#DADADA) >> {
 }
 
 

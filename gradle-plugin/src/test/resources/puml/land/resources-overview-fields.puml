@@ -8,10 +8,23 @@ skinparam class {
 }
 
 class "root" as 99093601 << (R,#DADADA) >> {
+uuid id
+string name
+
 }
 class "land" as 125866091 << (R,#DADADA) >> {
+uuid id
+string name
+date gruendungsDatum
+int flaeche
+coordinates koordinaten
+
 }
 class "land.ort" as 745870215 << (R,#DADADA) >> {
+uuid id
+string name
+coordinates koordinaten
+
 }
 
 99093601  o--  125866091
