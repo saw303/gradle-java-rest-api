@@ -1,9 +1,16 @@
 package ch.silviowangler.gradle.restapi.tasks
 
+import ch.silviowangler.gradle.restapi.builder.ResourceContractContainer
+import ch.silviowangler.rest.contract.model.v1.GeneralDetails
+import ch.silviowangler.rest.contract.model.v1.ResourceContract
+import ch.silviowangler.rest.contract.model.v1.SubResource
 import spock.lang.Specification
 import spock.lang.Unroll
 
 class PlantUmlTaskSpec extends Specification {
+
+  static String resourceName = "resource"
+
   @Unroll
   void "CommonPrefix"() {
 
@@ -20,16 +27,33 @@ class PlantUmlTaskSpec extends Specification {
 
   }
 
+  @Unroll
+  void "find subresource with same name"() {
 
-  void "rest regex"() {
     given:
-    String pattern = ":[^/]+"
+    SubResource subResource = new SubResource(name: resourceName, href: subresource)
+
+
     when:
-    String replacement = "/v1/applications/:pin/insurablePersons/:person/diagnosis/:entity".replaceAll(pattern, "TOKEN")
+    ResourceContractContainer foundResource = PlantUmlTask.findSubResourceContract(resources, subResource)
 
     then:
-    replacement == "/v1/applications/TOKEN/insurablePersons/TOKEN/diagnosis/TOKEN"
+    foundResource.resourceContract.general.description == expectedResource.toString()
 
+    where:
+    resources                                                              | subresource                    || expectedResource
+    [c(1, "/v1/some/name/here"), c(2, "/v1/some/other/name")]              | "/v1/some/name"                || 1
+    [c(1, "/v1/:pin/name/:name/text"), c(2, "/v1/:pin/name/:name/number")] | "/v1/{:pin}/name/{:NAME}/text" || 1
 
+  }
+
+  static ResourceContractContainer c(int id, String route) {
+    new ResourceContractContainer(
+        new ResourceContract(general: new GeneralDetails(
+            name: resourceName,
+            xRoute: route,
+            description: id)),
+        null,
+        null)
   }
 }

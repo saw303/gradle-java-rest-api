@@ -907,10 +907,10 @@ class RestApiPluginSpec extends Specification {
     javaFiles.isEmpty()
   }
 
-  private void assertPlantUmlFile(String filename, String resourceName, String testSetName) {
+  private void assertPlantUmlFile(String expectedFileName, String actualFileName, String testSetName) {
     final String ENCODING = 'UTF-8'
-    File expectedFile = new File(temporaryFolder.getRoot(), filename)
-    URL resource = getClass().getResource("/puml/${testSetName}/${resourceName}")
+    File expectedFile = new File(temporaryFolder.getRoot(), expectedFileName)
+    URL resource = getClass().getResource("/puml/${testSetName}/${actualFileName}")
     File actualFile = new File(resource.file)
 
     final String expectedSourceCode = expectedFile.exists() ? expectedFile.getText(ENCODING) : "File ${expectedFile.absolutePath} not found"

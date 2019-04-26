@@ -8,10 +8,13 @@ skinparam class {
 }
 
 class "root" as 99093601 << (R,#DADADA) >> {
+
 }
 class "land" as 125866091 << (R,#DADADA) >> {
+
 }
 class "land.ort" as 745870215 << (R,#DADADA) >> {
+
 }
 
 99093601  o--  125866091

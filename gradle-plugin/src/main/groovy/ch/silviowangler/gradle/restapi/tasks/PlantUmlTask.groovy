@@ -68,8 +68,9 @@ class PlantUmlTask extends AbstractTask implements Specification {
 
 		Knot<ResourceContractContainer> hierarchy = buildHierarchy(root, contracts)
 
-		URL url = getTemplate()
-		def template = templateEngine.createTemplate(url).make([title: 'Resources Overview', containers: contracts, dependencies: buildDependencyList(hierarchy)])
+		String resource = '/puml/resources-overview.puml.template'
+		URL url = getClass().getResource(resource)
+		def template = templateEngine.createTemplate(url).make([title: 'Resources Overview', containers: contracts, dependencies: buildDependencyList(hierarchy), showFields: project.restApi.diagramShowFields])
 
 		File targetFile = new File(getRootOutputDir(), 'resources-overview.puml')
 
@@ -81,17 +82,6 @@ class PlantUmlTask extends AbstractTask implements Specification {
 		targetFile.write(template.toString(), 'UTF-8')
 	}
 
-	private URL getTemplate() {
-
-		String resource
-		if (project.restApi.diagramShowFields) {
-			resource = '/puml/resources-overview-fields.puml.template'
-		} else {
-			resource = '/puml/resources-overview.puml.template'
-		}
-
-		return getClass().getResource(resource)
-	}
 
 	private Knot<ResourceContractContainer> buildHierarchy(ResourceContractContainer container, List<ResourceContractContainer> containers) {
 		return buildHierarchy(container, null, containers)
@@ -115,14 +105,26 @@ class PlantUmlTask extends AbstractTask implements Specification {
 		return node
 	}
 
-	private ResourceContractContainer findSubResourceContract(List<ResourceContractContainer> containers, SubResource subResource) {
+	/**
+	 * This method first searches for subresources by name and disambiguites conflicts using an xRoute longest common prefix match.
+	 * If two resources have the same name, the resource with an xRoute with the most in common with the subresource.href will be choosen.
+	 * @param containers a list of all ResourceContractContainers
+	 * @param subResource a Subresource spec
+	 * @return the ResourceContractContainer for the resource pointed to by `subResource`
+	 */
+	static ResourceContractContainer findSubResourceContract(List<ResourceContractContainer> containers, SubResource subResource) {
 
 		List<ResourceContractContainer> results = containers.findAll { ResourceContractContainer c -> c.resourceContract.general.name == subResource.name }
 		if (results.size() > 1) {
-			String pattern = ':[^/]+'
+			// remove `{` and `}` from the href
 			String subresourceRoute = subResource.href.replace("{", "").replace("}", "")
+
+			// pattern for `:pin` variable names, since they don't have to be the same between xRoute and href
+			// we remove them from the string
+			String pattern = ':[^/]+'
 			subresourceRoute = subresourceRoute.replaceAll(pattern, "")
-			// distinguish by xRoute matching the longest prefix we can find
+
+			// distinguish by xRoute matching the longest common prefix we can find
 			ResourceContractContainer match
 			int matchLen = -1
 			for (ResourceContractContainer c : results) {
@@ -159,6 +161,11 @@ class PlantUmlTask extends AbstractTask implements Specification {
 		return dependencies
 	}
 
+	/**
+	 * @param a a String
+	 * @param b another String
+	 * @return the longest common substring prefix of a and b. If a or b are null, return the empty string
+	 */
 	static String commonPrefix(String a, String b) {
 		if (a == null || a.isEmpty()) {
 			return ""
