@@ -680,10 +680,10 @@ Currently the following field types are supported:
 - `string` => `java.lang.String`
 - `email` => `java.lang.String`
 - `uuid` => `java.lang.String`
-- `object` => `java.lang.Object`
-- `money` => `java.lang.Double`
-- `locale` => `javax.money.MonetaryAmount` [JSR-354](https://javamoney.github.io/apidocs/javax/money/MonetaryAmount.html)
+- `money` => `javax.money.MonetaryAmount` [JSR-354](https://javamoney.github.io/apidocs/javax/money/MonetaryAmount.html)
+- `locale` => `java.util.Locale` (use this one to specify a language or even )
 - `enum` => will create a enum type
+- `object` => `java.lang.Object` (I recommend not using this type)
 
 ### creating an enum type
 
@@ -701,11 +701,7 @@ Currently the following field types are supported:
 will create the following Java output
 
 ```java
-public enum GenderType {
-  MALE,
-
-  FEMALE
-}
+public enum GenderType { MALE, FEMALE }
 ```
 
 ## Hateoas Functionality
