@@ -36,6 +36,7 @@ import org.junit.Rule
 import org.junit.rules.TemporaryFolder
 import spock.lang.Shared
 import spock.lang.Specification
+import spock.lang.Unroll
 
 import java.nio.charset.Charset
 
@@ -810,10 +811,11 @@ class RestApiPluginSpec extends Specification {
     files.size() == 1
 
     and:
-    assertPlantUmlFile('resources-overview.puml', 'rootSpringBoot')
+    assertPlantUmlFile('resources-overview.puml', 'resources-overview.puml', 'rootSpringBoot')
   }
 
-  void "The plugin can generate resource diagrams for land/ort"() {
+  @Unroll
+  void "The plugin can generate resource diagrams for land/ort showfields: #showFields"() {
 
     given:
     project.restApi.generatorOutput = temporaryFolder.getRoot()
@@ -824,6 +826,7 @@ class RestApiPluginSpec extends Specification {
     project.restApi.objectResourceModelMapping = customFieldModelMapping
     project.restApi.targetFramework = SPRING_BOOT
     project.restApi.diagramOutput = temporaryFolder.getRoot()
+    project.restApi.diagramShowFields = showFields
 
     and:
     PlantUmlTask task = project.tasks.generateDiagrams as PlantUmlTask
@@ -841,7 +844,11 @@ class RestApiPluginSpec extends Specification {
     files.size() == 1
 
     and:
-    assertPlantUmlFile('resources-overview.puml', 'land')
+    assertPlantUmlFile('resources-overview.puml', resourceName, 'land')
+    where:
+    showFields || resourceName
+    false      || 'resources-overview.puml'
+    true       || 'resources-overview-fields.puml'
   }
 
   void "No id field is present in a resource"() {
@@ -900,10 +907,10 @@ class RestApiPluginSpec extends Specification {
     javaFiles.isEmpty()
   }
 
-  private void assertPlantUmlFile(String filename, String testSetName) {
+  private void assertPlantUmlFile(String expectedFileName, String actualFileName, String testSetName) {
     final String ENCODING = 'UTF-8'
-    File expectedFile = new File(temporaryFolder.getRoot(), filename)
-    URL resource = getClass().getResource("/puml/${testSetName}/${filename}")
+    File expectedFile = new File(temporaryFolder.getRoot(), expectedFileName)
+    URL resource = getClass().getResource("/puml/${testSetName}/${actualFileName}")
     File actualFile = new File(resource.file)
 
     final String expectedSourceCode = expectedFile.exists() ? expectedFile.getText(ENCODING) : "File ${expectedFile.absolutePath} not found"

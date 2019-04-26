@@ -7,7 +7,9 @@ skinparam class {
 	BorderColor #CDCDCD
 }
 
-<%for(container in containers) { String name = container.resourceContract.general.name  %>class "${name}" as ${name} << (R,#DADADA) >> {
+<%for(container in containers) { String name = container.resourceContract.general.name  %>class "${name}" as ${container.resourceContract.general.hashCode().abs()} << (R,#DADADA) >> {
+<%if (showFields) { for(field in container.resourceContract.fields) { %>${field.type} ${field.name}
+<%}}%>
 }
 <%}%>
 <%for(dep in dependencies){%>${dep.parent}  o--  ${dep.child}
