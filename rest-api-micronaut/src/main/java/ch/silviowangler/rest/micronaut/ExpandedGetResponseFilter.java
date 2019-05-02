@@ -151,7 +151,7 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
       UriRouteMatch routeMatchCurrentResource,
       ResourceContract contract,
       EntityModel initialBody,
-      boolean isCollection) {
+      boolean mustAddEntityId) {
     for (String expand : expands.trim().split(",")) {
 
       Optional<SubResource> potSubResource =
@@ -190,9 +190,8 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
         List<Object> values =
             new ArrayList<>(routeMatchCurrentResource.getVariableValues().values());
 
-        if (isCollection) {
-          Object currentIterationDataObjectId = ((Identifiable) initialBody.getData()).getId();
-          values.add(currentIterationDataObjectId);
+        if (mustAddEntityId) {
+          values.add(((Identifiable) initialBody.getData()).getId());
         }
 
         Object result = executableMethod.invoke(bean, values.toArray());
