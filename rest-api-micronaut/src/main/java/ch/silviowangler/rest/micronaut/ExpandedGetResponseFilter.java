@@ -27,9 +27,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import ch.silviowangler.rest.contract.model.v1.ResourceContract;
 import ch.silviowangler.rest.contract.model.v1.SubResource;
-import ch.silviowangler.rest.model.EntityModel;
-import ch.silviowangler.rest.model.Expand;
-import ch.silviowangler.rest.model.ResourceModel;
+import ch.silviowangler.rest.model.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.ApplicationContext;
 import io.micronaut.context.annotation.Requires;
@@ -46,10 +44,7 @@ import io.micronaut.web.router.UriRouteMatch;
 import io.reactivex.Flowable;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 
@@ -127,61 +122,19 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
                   Object initialBody = res.body();
 
                   if (initialBody instanceof EntityModel) {
-
-                    for (String expand : expands.trim().split(",")) {
-
-                      Optional<SubResource> potSubResource =
-                          contract.getSubresources().stream()
-                              .filter(subResource -> expand.equals(subResource.getName()))
-                              .findAny();
-
-                      if (!potSubResource.isPresent()) {
-                        log.debug(
-                            "Expand '{}' is not a sub resource of '{}'",
-                            expand,
-                            contract.getGeneral().getName());
-                        continue;
-                      }
-
-                      SubResource subResourceContract = potSubResource.get();
-
-                      if (!subResourceContract.isExpandable()) {
-                        log.debug(
-                            "Sub resource '{}' is not expandable", subResourceContract.getName());
-                        continue;
-                      }
-
-                      String targetUri =
-                          UriPlaceholderReplacer.replacePlaceholders(
-                              subResourceContract.getHref(), routeMatchCurrentResource);
-
-                      Optional<UriRouteMatch<Object, Object>> routeMatch = router.GET(targetUri);
-
-                      if (routeMatch.isPresent()) {
-
-                        EntityModel entityModel = (EntityModel) initialBody;
-
-                        UriRouteMatch<Object, Object> routeMatchSubResource = routeMatch.get();
-                        ExecutableMethod<Object, Object> executableMethod =
-                            (ExecutableMethod<Object, Object>)
-                                routeMatchSubResource.getExecutableMethod();
-
-                        Class declaringType = executableMethod.getDeclaringType();
-
-                        Object bean = applicationContext.getBean(declaringType);
-
-                        Collection<Object> values =
-                            routeMatchCurrentResource.getVariableValues().values();
-
-                        Object result = executableMethod.invoke(bean, values.toArray());
-
-                        entityModel
-                            .getExpands()
-                            .add(new Expand(expand, (Collection<ResourceModel>) result));
-
-                        ((MutableHttpResponse) res).body(entityModel);
-                      }
+                    attachExpandedGetsBody(
+                        expands,
+                        routeMatchCurrentResource,
+                        contract,
+                        (EntityModel) initialBody,
+                        false);
+                    ((MutableHttpResponse) res).body(initialBody);
+                  } else if (initialBody instanceof CollectionModel) {
+                    for (EntityModel model : ((CollectionModel) initialBody).getData()) {
+                      attachExpandedGetsBody(
+                          expands, routeMatchCurrentResource, contract, model, true);
                     }
+                    ((MutableHttpResponse) res).body(initialBody);
                   } else {
                     log.debug(
                         "Return type '{}' and not as expected '{}'",
@@ -191,6 +144,62 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
                 }
               }
             });
+  }
+
+  private void attachExpandedGetsBody(
+      String expands,
+      UriRouteMatch routeMatchCurrentResource,
+      ResourceContract contract,
+      EntityModel initialBody,
+      boolean isCollection) {
+    for (String expand : expands.trim().split(",")) {
+
+      Optional<SubResource> potSubResource =
+          contract.getSubresources().stream()
+              .filter(subResource -> expand.equals(subResource.getName()))
+              .findAny();
+
+      if (!potSubResource.isPresent()) {
+        log.debug(
+            "Expand '{}' is not a sub resource of '{}'", expand, contract.getGeneral().getName());
+        continue;
+      }
+
+      SubResource subResourceContract = potSubResource.get();
+
+      if (!subResourceContract.isExpandable()) {
+        log.debug("Sub resource '{}' is not expandable", subResourceContract.getName());
+        continue;
+      }
+
+      String targetUri =
+          UriPlaceholderReplacer.replacePlaceholders(
+              subResourceContract.getHref(), routeMatchCurrentResource);
+
+      Optional<UriRouteMatch<Object, Object>> routeMatch = router.GET(targetUri);
+
+      if (routeMatch.isPresent()) {
+        UriRouteMatch<Object, Object> routeMatchSubResource = routeMatch.get();
+        ExecutableMethod<Object, Object> executableMethod =
+            (ExecutableMethod<Object, Object>) routeMatchSubResource.getExecutableMethod();
+
+        Class declaringType = executableMethod.getDeclaringType();
+
+        Object bean = applicationContext.getBean(declaringType);
+
+        List<Object> values =
+            new ArrayList<>(routeMatchCurrentResource.getVariableValues().values());
+
+        if (isCollection) {
+          Object currentIterationDataObjectId = ((Identifiable) initialBody.getData()).getId();
+          values.add(currentIterationDataObjectId);
+        }
+
+        Object result = executableMethod.invoke(bean, values.toArray());
+
+        initialBody.getExpands().add(new Expand(expand, (Collection<ResourceModel>) result));
+      }
+    }
   }
 
   private Optional<ResourceContract> fetchContract(Object resourceBean) {
