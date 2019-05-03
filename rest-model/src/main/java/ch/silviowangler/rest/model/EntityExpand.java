@@ -24,23 +24,24 @@
 package ch.silviowangler.rest.model;
 
 /**
- * Abstract model for expanded GETs. Stores a name.
+ * Implementation model for expanded GETs. Stores a named {@link ResourceModel}.
  *
- * @author Silvio Wangler
+ * @author Emanuele Mazzotta
  */
-public abstract class Expand {
+public class EntityExpand extends Expand {
 
-  private String name;
+  private ResourceModel data;
 
-  public Expand(String name) {
-    this.name = name;
+  public EntityExpand(String name, ResourceModel data) {
+    super(name);
+    this.data = data;
   }
 
-  public String getName() {
-    return name;
+  public ResourceModel getData() {
+    return data;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setData(ResourceModel data) {
+    this.data = data;
   }
 }
