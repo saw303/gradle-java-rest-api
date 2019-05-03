@@ -146,6 +146,7 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
             });
   }
 
+  @SuppressWarnings("unchecked")
   private void attachExpandedGetsBody(
       String expands,
       UriRouteMatch routeMatchCurrentResource,
