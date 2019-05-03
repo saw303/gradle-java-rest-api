@@ -197,9 +197,10 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
 
         Object result = executableMethod.invoke(bean, values.toArray());
 
-        Expand expandedData = result instanceof Collection ?
-          new CollectionExpand(expand, (Collection<ResourceModel>) result) :
-          new EntityExpand(expand, (ResourceModel) result);
+        Expand expandedData =
+            result instanceof Collection
+                ? new CollectionExpand(expand, (Collection<ResourceModel>) result)
+                : new EntityExpand(expand, (ResourceModel) result);
 
         initialBody.getExpands().add(expandedData);
       }
