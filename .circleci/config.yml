@@ -23,10 +23,13 @@ jobs:
           keys:
           - v1-dependencies-{{ checksum "build.gradle" }}-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
           -
-      - run: gradle dependencies
+      - run: ./gradlew dependencies
 
       # run tests!
-      - run: gradle test
+      - run: ./gradlew check
+
+      # run micronaut
+      - run: demo-app-micronaut/gradlew check
 
       - store_test_results:
           path: gradle-plugin/build/reports/tests/test
