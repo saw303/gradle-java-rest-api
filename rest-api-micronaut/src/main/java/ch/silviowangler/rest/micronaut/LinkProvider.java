@@ -27,7 +27,16 @@ import ch.silviowangler.rest.model.ResourceLink;
 import io.micronaut.web.router.UriRouteMatch;
 import java.util.List;
 
+/** Used to add additional ResourceLink to an HATEOAS response. */
 public interface LinkProvider {
 
+  /**
+   * All link providers are called with getLinks on every routeMatch from the HATEOAS filter {@link
+   * HateoasResponseFilter}, and the resulting links are added to the response in the links of the
+   * {@link ch.silviowangler.rest.model.EntityModel}
+   *
+   * @param routeMatch the current routeMatch in the filter
+   * @return links to be added to the response. Return empty if no links are to be added.
+   */
   List<ResourceLink> getLinks(UriRouteMatch routeMatch);
 }

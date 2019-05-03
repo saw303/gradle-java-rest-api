@@ -26,10 +26,9 @@ package ch.silviowangler.rest.micronaut;
 import ch.silviowangler.rest.contract.model.v1.ResourceContract;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.micronaut.cache.annotation.Cacheable;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import javax.inject.Singleton;
 import org.slf4j.Logger;
@@ -40,20 +39,16 @@ public class ContractReader {
 
   private static final Logger log = LoggerFactory.getLogger(ContractReader.class);
 
-  private Map<Class, ResourceContract> contractStore = new HashMap<>();
   private final ObjectMapper objectMapper;
 
   public ContractReader(ObjectMapper objectMapper) {
     this.objectMapper = objectMapper;
   }
 
+  @Cacheable("contractReader.byBean")
   public Optional<ResourceContract> fetchContract(Object resourceBean) {
 
     Class<?> key = resourceBean.getClass();
-
-    if (contractStore.containsKey(key)) {
-      return Optional.of(contractStore.get(key));
-    }
 
     try {
       return readContract(key);
@@ -64,11 +59,8 @@ public class ContractReader {
     }
   }
 
+  @Cacheable("contractReader.byClass")
   public Optional<ResourceContract> fetchContract(Class<?> clazz) {
-
-    if (contractStore.containsKey(clazz)) {
-      return Optional.of(contractStore.get(clazz));
-    }
 
     try {
       return readContract(clazz);
@@ -90,8 +82,6 @@ public class ContractReader {
     JsonNode rootNode = objectMapper.readTree(json);
     JsonNode xRoute = rootNode.get("general").get("x-route");
     contract.getGeneral().setxRoute(xRoute.asText());
-
-    contractStore.put(clazz, contract);
 
     return Optional.of(contract);
   }
