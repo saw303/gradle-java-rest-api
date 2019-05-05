@@ -1,0 +1,7 @@
+includeBuild("..") {
+    dependencySubstitution {
+        substitute module('ch.silviowangler.rest:gradle-java-rest-api') with project(':gradle-java-rest-api')
+        substitute module('ch.silviowangler.rest:rest-api-micronaut') with project(':rest-api-micronaut')
+        substitute module('ch.silviowangler.rest:json-model') with project(':json-model')
+    }
+}

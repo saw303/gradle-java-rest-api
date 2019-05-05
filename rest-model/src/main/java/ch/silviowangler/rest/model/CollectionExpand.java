@@ -23,24 +23,27 @@
  */
 package ch.silviowangler.rest.model;
 
+import java.util.Collection;
+
 /**
- * Abstract model for expanded GETs. Stores a name.
+ * Implementation model for expanded GETs. Stores a named collection of {@link ResourceModel}.
  *
- * @author Silvio Wangler
+ * @author Emanuele Mazzotta
  */
-public abstract class Expand {
+public class CollectionExpand extends Expand {
 
-  private String name;
+  private Collection<ResourceModel> data;
 
-  public Expand(String name) {
-    this.name = name;
+  public CollectionExpand(String name, Collection<ResourceModel> data) {
+    super(name);
+    this.data = data;
   }
 
-  public String getName() {
-    return name;
+  public Collection<ResourceModel> getData() {
+    return data;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setData(Collection<ResourceModel> data) {
+    this.data = data;
   }
 }
