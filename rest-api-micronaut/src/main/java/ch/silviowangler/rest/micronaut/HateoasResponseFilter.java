@@ -40,6 +40,7 @@ import io.micronaut.http.filter.ServerFilterChain;
 import io.micronaut.web.router.UriRouteMatch;
 import io.reactivex.Flowable;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import org.reactivestreams.Publisher;
 
@@ -71,6 +72,11 @@ import org.reactivestreams.Publisher;
 @Filter("${restapi.hateoas.filter.uri}")
 @Requires(property = "restapi.hateoas.filter.enabled")
 public class HateoasResponseFilter implements HttpServerFilter {
+  private final List<LinkProvider> linkProviderList;
+
+  public HateoasResponseFilter(List<LinkProvider> linkProviderList) {
+    this.linkProviderList = linkProviderList;
+  }
 
   @Override
   public int getOrder() {
@@ -107,6 +113,10 @@ public class HateoasResponseFilter implements HttpServerFilter {
                       entityModel.getLinks().add(ResourceLink.selfLink(uriRouteMatch.getUri()));
                     }
 
+                    linkProviderList.forEach(
+                        provider ->
+                            entityModel.getLinks().addAll(provider.getLinks(uriRouteMatch)));
+
                     ((MutableHttpResponse) res).body(entityModel);
 
                   } else if (res.body() instanceof Collection) {
@@ -120,6 +130,10 @@ public class HateoasResponseFilter implements HttpServerFilter {
                       if (model instanceof ResourceModel) {
                         ResourceModel resourceModel = (ResourceModel) model;
                         EntityModel entityModel = new EntityModel(resourceModel);
+
+                        linkProviderList.forEach(
+                            provider ->
+                                entityModel.getLinks().addAll(provider.getLinks(uriRouteMatch)));
 
                         if (model instanceof Identifiable) {
                           entityModel
