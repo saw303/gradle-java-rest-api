@@ -58,7 +58,6 @@ class GenerateRestApiTask extends AbstractTask implements Specification {
 		return new File(GeneratorUtil.generatorInput(project), "spec")
 	}
 
-
 	@OutputDirectory
 	File getRootOutputDir() {
 		project.restApi.generatorOutput
@@ -87,23 +86,25 @@ class GenerateRestApiTask extends AbstractTask implements Specification {
 		for (File specFile in specs) {
 
 			println "Processing spec ${specFile.name}"
-			GeneratedSpecContainer specContainer = specGenerator.generateType(specFile, project.restApi as RestApiExtension)
+			GeneratedSpecContainer specContainer = specGenerator.generateJavaTypesForSpecification(specFile, project.restApi as RestApiExtension)
 
 			for (TypeSpec model in specContainer.collectGeneratedTypes()) {
 				amountOfGeneratedJavaSourceFiles++
 				writeToFileSystem(specContainer.packageName, model, getRootOutputDir())
 			}
-			File file = new File(restApiExtension.generatorImplOutput, "${specContainer.packageName.replaceAll('\\.', fileSeparator)}${fileSeparator}${specContainer.restImplementation.name}.java")
 
-			if (!file.exists()) {
-				logger.lifecycle('Writing implementation {} to {}', file.name, restApiExtension.generatorImplOutput)
-				amountOfGeneratedJavaSourceFiles++
-				writeToFileSystem(specContainer.packageName, specContainer.restImplementation, restApiExtension.generatorImplOutput)
-			} else {
-				logger.lifecycle('Resource implementation {} exists. Skipping this one', file.name)
+			if (specContainer.restImplementation) {
+				File file = new File(restApiExtension.generatorImplOutput, "${specContainer.packageName.replaceAll('\\.', fileSeparator)}${fileSeparator}${specContainer.restImplementation.name}.java")
+
+				if (!file.exists()) {
+					logger.lifecycle('Writing implementation {} to {}', file.name, restApiExtension.generatorImplOutput)
+					amountOfGeneratedJavaSourceFiles++
+					writeToFileSystem(specContainer.packageName, specContainer.restImplementation, restApiExtension.generatorImplOutput)
+				} else {
+					logger.lifecycle('Resource implementation {} exists. Skipping this one', file.name)
+				}
 			}
 		}
-
 		logger.lifecycle "Done generating REST artifacts in {} milliseconds. (Processed JSON {} files and generated {} Java source code files)", System.currentTimeMillis() - start, specs.size(), amountOfGeneratedJavaSourceFiles
 	}
 
@@ -112,6 +113,8 @@ class GenerateRestApiTask extends AbstractTask implements Specification {
 		Objects.requireNonNull(packageName, "Package name must be present")
 		Objects.requireNonNull(typeSpec, "Type spec must be present")
 		Objects.requireNonNull(outputDir, "output dir must be present")
+
+		println "XXXX ${outputDir.absolutePath}"
 
 		if (!outputDir.canWrite()) {
 			throw new IllegalStateException("I must have permission to write to ${outputDir.absolutePath}")

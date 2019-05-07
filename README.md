@@ -78,6 +78,9 @@ restApi {
     
     // the specification file are located at 
     optionsSource = file('src/main/specs')
+    
+    // Generation mode ALL (default), API or IMPLEMENTATION
+    generationMode = GenerationMode.ALL 
 }
 ```
 
