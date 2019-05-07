@@ -26,10 +26,11 @@ package ch.silviowangler.rest.micronaut;
 import ch.silviowangler.rest.contract.model.v1.ResourceContract;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.micronaut.cache.annotation.Cacheable;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import javax.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,12 +41,13 @@ public class ContractReader {
   private static final Logger log = LoggerFactory.getLogger(ContractReader.class);
 
   private final ObjectMapper objectMapper;
+  private final ConcurrentMap<Class, ResourceContract> cache;
 
   public ContractReader(ObjectMapper objectMapper) {
     this.objectMapper = objectMapper;
+    this.cache = new ConcurrentHashMap<>();
   }
 
-  @Cacheable("contractReader.byBean")
   public Optional<ResourceContract> fetchContract(Object resourceBean) {
 
     Class<?> key = resourceBean.getClass();
@@ -59,7 +61,6 @@ public class ContractReader {
     }
   }
 
-  @Cacheable("contractReader.byClass")
   public Optional<ResourceContract> fetchContract(Class<?> clazz) {
 
     try {
@@ -73,6 +74,16 @@ public class ContractReader {
 
   private Optional<ResourceContract> readContract(Class<?> clazz)
       throws NoSuchFieldException, IllegalAccessException, IOException {
+    ResourceContract resourceContract = cache.get(clazz);
+    if (resourceContract == null) {
+      resourceContract = doRead(clazz);
+      cache.put(clazz, resourceContract);
+    }
+    return Optional.of(resourceContract);
+  }
+
+  private ResourceContract doRead(Class<?> clazz)
+      throws NoSuchFieldException, IllegalAccessException, IOException {
     Field contractField = clazz.getField("OPTIONS_CONTENT");
     String json = (String) contractField.get(null);
 
@@ -83,6 +94,6 @@ public class ContractReader {
     JsonNode xRoute = rootNode.get("general").get("x-route");
     contract.getGeneral().setxRoute(xRoute.asText());
 
-    return Optional.of(contract);
+    return contract;
   }
 }
