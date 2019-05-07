@@ -114,8 +114,6 @@ class GenerateRestApiTask extends AbstractTask implements Specification {
 		Objects.requireNonNull(typeSpec, "Type spec must be present")
 		Objects.requireNonNull(outputDir, "output dir must be present")
 
-		println "XXXX ${outputDir.absolutePath}"
-
 		if (!outputDir.canWrite()) {
 			throw new IllegalStateException("I must have permission to write to ${outputDir.absolutePath}")
 		}
