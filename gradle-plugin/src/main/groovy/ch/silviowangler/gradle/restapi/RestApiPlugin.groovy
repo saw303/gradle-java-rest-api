@@ -81,10 +81,10 @@ class RestApiPlugin implements Plugin<Project> {
 			project.dependencies {
 				api "javax.annotation:javax.annotation-api:1.3.2"
 				api "ch.silviowangler.rest:rest-model:${pluginVersion}"
-        api "javax.money:money-api:1.0.3"
-        api "javax.validation:validation-api:2.0.1.Final"
+				api "javax.money:money-api:1.0.3"
+				api "javax.validation:validation-api:2.0.1.Final"
 
-        if (extension.generationMode != GenerationMode.API) {
+				if (extension.generationMode != GenerationMode.API) {
 
 					if (extension.targetFramework == SPRING_BOOT) {
 						implementation "ch.silviowangler.rest:rest-api-spring:${pluginVersion}"
