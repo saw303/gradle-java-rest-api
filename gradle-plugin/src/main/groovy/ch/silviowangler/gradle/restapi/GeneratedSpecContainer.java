@@ -85,7 +85,10 @@ public class GeneratedSpecContainer {
   public Iterable<TypeSpec> collectGeneratedTypes() {
 
     List<TypeSpec> all = new ArrayList<>();
-    all.add(this.restInterface);
+
+    if (this.restInterface != null) {
+      all.add(this.restInterface);
+    }
     all.addAll(this.models);
     all.addAll(this.types);
     return all;

@@ -26,6 +26,7 @@ package ch.silviowangler.gradle.restapi.builder;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import ch.silviowangler.gradle.restapi.GeneratedSpecContainer;
+import ch.silviowangler.gradle.restapi.GenerationMode;
 import ch.silviowangler.gradle.restapi.RestApiExtension;
 import ch.silviowangler.gradle.restapi.gson.GeneralDetailsDeserializer;
 import ch.silviowangler.gradle.restapi.gson.RepresentationDeserializer;
@@ -66,7 +67,16 @@ public class SpecGenerator {
             .create();
   }
 
-  public GeneratedSpecContainer generateType(File specFile, RestApiExtension extension) {
+  /**
+   * Generates a Java classes for a specific resource specification and provides them in a {@link
+   * GeneratedSpecContainer}.
+   *
+   * @param specFile the specification of the resource.
+   * @param extension additional context information.
+   * @return all generated Java types for the resource specification.
+   */
+  public GeneratedSpecContainer generateJavaTypesForSpecification(
+      File specFile, RestApiExtension extension) {
 
     ResourceContractContainer resourceContractContainer =
         parseResourceContract(specFile, extension.getResponseEncoding());
@@ -77,6 +87,9 @@ public class SpecGenerator {
                 extension.getPackageName(),
                 generatePackageName(resourceContractContainer.getResourceContract()))
             .toLowerCase();
+
+    GeneratedSpecContainer result = new GeneratedSpecContainer();
+    result.setPackageName(packageName);
 
     ResourceBuilder resourceBuilder =
         ResourceBuilderFactory.getRootResourceBuilder(extension)
@@ -94,17 +107,15 @@ public class SpecGenerator {
       resourceTypeCache.add(ClassName.get(packageName, type.name));
     }
 
-    Set<TypeSpec> models = resourceBuilder.buildResourceModels(resourceTypeCache);
+    if (!Objects.equals(GenerationMode.IMPLEMENTATION, extension.getGenerationMode())) {
+      result.setModels(resourceBuilder.buildResourceModels(resourceTypeCache));
+      result.setTypes(types);
+    }
 
-    TypeSpec restInterface = resourceBuilder.buildResource();
-    TypeSpec restImplementation = resourceBuilder.buildResourceImpl();
-
-    GeneratedSpecContainer result = new GeneratedSpecContainer();
-    result.setPackageName(packageName);
-    result.setRestInterface(restInterface);
-    result.setRestImplementation(restImplementation);
-    result.setModels(models);
-    result.setTypes(types);
+    if (!Objects.equals(GenerationMode.API, extension.getGenerationMode())) {
+      result.setRestInterface(resourceBuilder.buildResource());
+      result.setRestImplementation(resourceBuilder.buildResourceImpl());
+    }
 
     return result;
   }

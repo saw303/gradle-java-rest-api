@@ -36,7 +36,7 @@ class RestApiExtension {
 	Project project
 	String packageName
 	File optionsSource
-	File generatorOutput = project.file("${project.projectDir}/src/generated/java")
+	File generatorOutput = project.file("${project.buildDir}/src/generated/java")
 	File generatorImplOutput = project.file("${project.projectDir}/src/main/java")
 	Closure objectResourceModelMapping = { resource, field -> throw new RuntimeException("No object resource model mapping for field ${field.name} and resource ${description}") }
 	boolean generateDateAttribute = true
@@ -45,9 +45,17 @@ class RestApiExtension {
 	Charset responseEncoding
 	File diagramOutput = new File(project.buildDir, 'diagrams')
 	boolean diagramShowFields = false
+	GenerationMode generationMode = GenerationMode.ALL
 
 	RestApiExtension(Project project) {
 		this.project = project
+	}
+
+	void setGenerationMode(GenerationMode generationMode) {
+		if (generationMode == null) {
+			throw new IllegalArgumentException("generationMode must not be null")
+		}
+		this.generationMode = generationMode
 	}
 
 	void setSubresourceConversion(Map<String, String> subresourceConversion) {
