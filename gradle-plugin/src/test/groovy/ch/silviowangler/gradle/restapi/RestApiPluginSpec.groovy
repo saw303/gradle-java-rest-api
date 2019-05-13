@@ -23,10 +23,7 @@
  */
 package ch.silviowangler.gradle.restapi
 
-import ch.silviowangler.gradle.restapi.tasks.CleanRestApiTask
-import ch.silviowangler.gradle.restapi.tasks.ExtractRestApiSpecsTask
-import ch.silviowangler.gradle.restapi.tasks.GenerateRestApiTask
-import ch.silviowangler.gradle.restapi.tasks.PlantUmlTask
+import ch.silviowangler.gradle.restapi.tasks.*
 import com.squareup.javapoet.ClassName
 import groovy.io.FileType
 import org.gradle.api.Project
@@ -73,9 +70,15 @@ class RestApiPluginSpec extends Specification {
   void "The plugin provides the following tasks"() {
 
     expect:
-    project.tasks.findAll { Task task -> task.group == TASK_GROUP_REST_API }.size() == 4
+    project.tasks.findAll { Task task -> task.group == TASK_GROUP_REST_API }.size() == 5
 
+    and:
+    project.tasks.validateRestSpecs instanceof ValidationTask
+    project.tasks.validateRestSpecs.group == TASK_GROUP_REST_API
+
+    and:
     project.tasks.generateRestArtifacts instanceof GenerateRestApiTask
+    project.tasks.generateRestArtifacts.dependsOn == [project.tasks.validateRestSpecs] as Set
     project.tasks.generateRestArtifacts.group == TASK_GROUP_REST_API
 
     and:
