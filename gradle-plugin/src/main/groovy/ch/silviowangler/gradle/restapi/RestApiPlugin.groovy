@@ -47,7 +47,7 @@ class RestApiPlugin implements Plugin<Project> {
 
 	void apply(Project project) {
 
-		project.apply(plugin: 'java')
+		project.apply(plugin: 'java-library')
 
 		RestApiExtension extension = new RestApiExtension(project)
 		project.extensions.add('restApi', extension)
@@ -56,7 +56,7 @@ class RestApiPlugin implements Plugin<Project> {
 		Task clean = project.task('cleanRestArtifacts', type: CleanRestApiTask, group: TASK_GROUP_REST_API)
 		Task extract = project.task('extractSpecs', type: ExtractRestApiSpecsTask, group: TASK_GROUP_REST_API)
 		Task generate = project.task('generateRestArtifacts', type: GenerateRestApiTask, group: TASK_GROUP_REST_API)
-		Task docs = project.task('generateDiagrams', type: PlantUmlTask, group: TASK_GROUP_REST_API)
+		project.task('generateDiagrams', type: PlantUmlTask, group: TASK_GROUP_REST_API)
 
 		project.clean.dependsOn clean
 		extract.dependsOn extract
@@ -79,10 +79,12 @@ class RestApiPlugin implements Plugin<Project> {
 		project.afterEvaluate {
 
 			project.dependencies {
+
 				api "javax.annotation:javax.annotation-api:1.3.2"
 				api "ch.silviowangler.rest:rest-model:${pluginVersion}"
 				api "javax.money:money-api:1.0.3"
 				api "javax.validation:validation-api:2.0.1.Final"
+				api "com.googlecode.libphonenumber:libphonenumber:8.10.11"
 
 				if (extension.generationMode != GenerationMode.API) {
 
