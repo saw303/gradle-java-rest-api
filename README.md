@@ -687,6 +687,7 @@ Currently the following field types are supported:
 - `locale` => `java.util.Locale` (use this one to specify a language or even )
 - `enum` => will create a enum type
 - `object` => `java.lang.Object` (I recommend not using this type)
+- `phoneNumber` => `java.lang.String` with validation on POST & PUT requests.
 
 ### creating an enum type
 

@@ -437,6 +437,7 @@ public interface ResourceBuilder {
       supportedDataTypes.put("object", SupportedDataTypes.OBJECT.getClassName());
       supportedDataTypes.put("money", SupportedDataTypes.MONEY.getClassName());
       supportedDataTypes.put("locale", SupportedDataTypes.LOCALE.getClassName());
+      supportedDataTypes.put("phoneNumber", SupportedDataTypes.PHONE_NUMBER.getClassName());
     }
 
     public static ClassName translateToJava(final FieldType fieldType) {

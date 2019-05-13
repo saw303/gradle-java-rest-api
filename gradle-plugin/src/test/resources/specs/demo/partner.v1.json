@@ -411,6 +411,25 @@
       "sortable": true,
       "scopeable": true,
       "x-comment": "Geschlecht des Partners"
+    },
+    {
+      "name": "telefon",
+      "type": "phoneNumber",
+      "options": null,
+      "mandatory": [
+        "PUT"
+      ],
+      "min": null,
+      "max": null,
+      "multiple": false,
+      "defaultValue": null,
+      "protected": [
+        false
+      ],
+      "visible": true,
+      "sortable": true,
+      "scopeable": true,
+      "x-comment": "Telefonnummer des Partners"
     }
   ],
   "options": {

@@ -30,6 +30,7 @@ import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_NOT_N
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_SIZE;
 import static ch.silviowangler.gradle.restapi.PluginTypes.RESTAPI_IDENTIFIABLE;
 import static ch.silviowangler.gradle.restapi.PluginTypes.RESTAPI_RESOURCE_MODEL;
+import static ch.silviowangler.gradle.restapi.PluginTypes.VALIDATION_PHONE_NUMBER;
 import static ch.silviowangler.gradle.restapi.builder.ArtifactType.RESOURCE;
 import static ch.silviowangler.gradle.restapi.util.SupportedDataTypes.BOOL;
 import static ch.silviowangler.gradle.restapi.util.SupportedDataTypes.DATE;
@@ -548,6 +549,11 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
           if (!verb.equals(verbGet) && "email".equalsIgnoreCase(field.getType())) {
             fieldBuilder.addAnnotation(
                 AnnotationSpec.builder(JAVAX_VALIDATION_EMAIL.getClassName()).build());
+          }
+
+          if (!verb.equals(verbGet) && "phoneNumber".equalsIgnoreCase(field.getType())) {
+            fieldBuilder.addAnnotation(
+                AnnotationSpec.builder(VALIDATION_PHONE_NUMBER.getClassName()).build());
           }
 
           if (!verb.equals(verbGet)

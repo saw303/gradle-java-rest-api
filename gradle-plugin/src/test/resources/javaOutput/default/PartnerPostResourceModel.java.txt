@@ -2,6 +2,7 @@ package org.acme.rest.v1.partner;
 
 import ch.silviowangler.rest.model.Identifiable;
 import ch.silviowangler.rest.model.ResourceModel;
+import ch.silviowangler.rest.validation.PhoneNumber;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -78,6 +79,12 @@ public class PartnerPostResourceModel implements Serializable, ResourceModel, Id
    * Geschlecht des Partners
    */
   private GenderType gender;
+
+  /**
+   * Telefonnummer des Partners
+   */
+  @PhoneNumber
+  private String telefon;
 
   public String getId() {
     return this.id;
@@ -167,16 +174,24 @@ public class PartnerPostResourceModel implements Serializable, ResourceModel, Id
     this.gender = gender;
   }
 
+  public String getTelefon() {
+    return this.telefon;
+  }
+
+  public void setTelefon(String telefon) {
+    this.telefon = telefon;
+  }
+
   @Override
   public boolean equals(Object other) {
     if (this == other) return true;
     if (! (other instanceof PartnerPostResourceModel)) return false;
     PartnerPostResourceModel that = (PartnerPostResourceModel) other;
-    return Objects.equals(getId(), that.getId()) && Objects.equals(getName(), that.getName()) && Objects.equals(getVorname(), that.getVorname()) && Objects.equals(getTitel(), that.getTitel()) && Objects.equals(getEmail(), that.getEmail()) && Objects.equals(getGeburtsdatum(), that.getGeburtsdatum()) && Objects.equals(getGewicht(), that.getGewicht()) && Objects.equals(getLohn(), that.getLohn()) && Objects.equals(getUhrzeit(), that.getUhrzeit()) && Objects.equals(getSprache(), that.getSprache()) && Objects.equals(getGender(), that.getGender());
+    return Objects.equals(getId(), that.getId()) && Objects.equals(getName(), that.getName()) && Objects.equals(getVorname(), that.getVorname()) && Objects.equals(getTitel(), that.getTitel()) && Objects.equals(getEmail(), that.getEmail()) && Objects.equals(getGeburtsdatum(), that.getGeburtsdatum()) && Objects.equals(getGewicht(), that.getGewicht()) && Objects.equals(getLohn(), that.getLohn()) && Objects.equals(getUhrzeit(), that.getUhrzeit()) && Objects.equals(getSprache(), that.getSprache()) && Objects.equals(getGender(), that.getGender()) && Objects.equals(getTelefon(), that.getTelefon());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, vorname, titel, email, geburtsdatum, gewicht, lohn, uhrzeit, sprache, gender);
+    return Objects.hash(id, name, vorname, titel, email, geburtsdatum, gewicht, lohn, uhrzeit, sprache, gender, telefon);
   }
 }

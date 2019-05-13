@@ -23,6 +23,7 @@
  */
 package ch.silviowangler.gradle.restapi;
 
+import ch.silviowangler.rest.validation.PhoneNumber;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
@@ -98,7 +99,8 @@ public enum PluginTypes {
   MICRONAUT_FORMAT(ClassName.get("io.micronaut.core.convert.format", "Format")),
   MICRONAUT_DATE_FORMAT(ClassName.get("ch.silviowangler.rest.micronaut.binding", "DateFormat")),
   MICRONAUT_DATE_TIME_FORMAT(
-      ClassName.get("ch.silviowangler.rest.micronaut.binding", "DateTimeFormat"));
+      ClassName.get("ch.silviowangler.rest.micronaut.binding", "DateTimeFormat")),
+  VALIDATION_PHONE_NUMBER(ClassName.get(PhoneNumber.class));
 
   private final TypeName typeName;
 

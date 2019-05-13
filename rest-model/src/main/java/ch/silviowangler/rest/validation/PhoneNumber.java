@@ -21,39 +21,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package ch.silviowangler.gradle.restapi.util;
+package ch.silviowangler.rest.validation;
 
-import com.squareup.javapoet.ClassName;
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.util.Locale;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-/** @author Silvio Wangler */
-public enum SupportedDataTypes {
-  DATE(ClassName.get(LocalDate.class)),
-  DATETIME(ClassName.get(Instant.class)),
-  DECIMAL(ClassName.get(BigDecimal.class)),
-  INT(ClassName.get(Integer.class)),
-  LONG(ClassName.get(Long.class)),
-  DOUBLE(ClassName.get(Double.class)),
-  FLOAT(ClassName.get(Double.class)),
-  BOOL(ClassName.get(Boolean.class)),
-  FLAG(ClassName.get(Boolean.class)),
-  STRING(ClassName.get(String.class)),
-  UUID(ClassName.get(String.class)),
-  OBJECT(ClassName.get(Object.class)),
-  LOCALE(ClassName.get(Locale.class)),
-  PHONE_NUMBER(ClassName.get(String.class)),
-  MONEY(ClassName.get("javax.money", "MonetaryAmount"));
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+import javax.validation.Constraint;
+import javax.validation.Payload;
 
-  private final ClassName className;
+/**
+ * Constraint for an international phone number on {@link String} fields or parameters.
+ *
+ * @author Silvio Wangler
+ * @since 2.0.11
+ */
+@Target({FIELD, PARAMETER})
+@Retention(RUNTIME)
+@Documented
+@Constraint(validatedBy = {PhoneNumberValidator.class})
+public @interface PhoneNumber {
 
-  SupportedDataTypes(ClassName className) {
-    this.className = className;
-  }
+  String message() default "ch.silviowangler.rest.validation.PhoneNumber";
 
-  public ClassName getClassName() {
-    return className;
-  }
+  Class<?>[] groups() default {};
+
+  Class<? extends Payload>[] payload() default {};
+
+  String country() default "CH";
 }

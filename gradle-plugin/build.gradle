@@ -3,6 +3,7 @@ ext { pomDescription = 'Gradle plugin to generate REST APIs for JAX-RS or Spring
 dependencies {
 
 	implementation project(':json-model')
+	implementation project(':rest-model')
 
 	compileOnly gradleApi()
 	testImplementation gradleTestKit()

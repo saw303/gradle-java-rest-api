@@ -243,6 +243,25 @@
       "filterable": false,
       "alias": [],
       "x-comment": "Coordinates"
+    },
+    {
+      "name": "phoneNumber",
+      "type": "phoneNumber",
+      "options": null,
+      "mandatory": [
+        "PUT", "POST"
+      ],
+      "min": null,
+      "max": null,
+      "multiple": false,
+      "defaultValue": null,
+      "protected": [],
+      "visible": true,
+      "sortable": false,
+      "readonly": false,
+      "filterable": false,
+      "alias": [],
+      "x-comment": "Call that country"
     }
   ],
   "subresources": [
