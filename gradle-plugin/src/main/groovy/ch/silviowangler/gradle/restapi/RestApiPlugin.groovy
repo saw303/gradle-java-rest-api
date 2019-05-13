@@ -23,10 +23,7 @@
  */
 package ch.silviowangler.gradle.restapi
 
-import ch.silviowangler.gradle.restapi.tasks.CleanRestApiTask
-import ch.silviowangler.gradle.restapi.tasks.ExtractRestApiSpecsTask
-import ch.silviowangler.gradle.restapi.tasks.GenerateRestApiTask
-import ch.silviowangler.gradle.restapi.tasks.PlantUmlTask
+import ch.silviowangler.gradle.restapi.tasks.*
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -56,7 +53,10 @@ class RestApiPlugin implements Plugin<Project> {
 		Task clean = project.task('cleanRestArtifacts', type: CleanRestApiTask, group: TASK_GROUP_REST_API)
 		Task extract = project.task('extractSpecs', type: ExtractRestApiSpecsTask, group: TASK_GROUP_REST_API)
 		Task generate = project.task('generateRestArtifacts', type: GenerateRestApiTask, group: TASK_GROUP_REST_API)
+		Task validate = project.task('validateRestSpecs', type: ValidationTask, group: TASK_GROUP_REST_API)
 		project.task('generateDiagrams', type: PlantUmlTask, group: TASK_GROUP_REST_API)
+
+		generate.dependsOn(validate)
 
 		project.clean.dependsOn clean
 		extract.dependsOn extract

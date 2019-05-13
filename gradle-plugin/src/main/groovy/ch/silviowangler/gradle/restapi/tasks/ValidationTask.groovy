@@ -21,30 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package ch.silviowangler.gradle.restapi
+package ch.silviowangler.gradle.restapi.tasks
 
-import groovy.io.FileType
+import ch.silviowangler.gradle.restapi.RestApiExtension
+import ch.silviowangler.rest.contract.model.v1.ResourceContract
+import org.gradle.api.tasks.TaskAction
 
 /**
  * @author Silvio Wangler
  */
-trait Specification {
+class ValidationTask extends SpecificationBaseTask {
 
-	List<File> findSpecifications(File folder) {
+	@TaskAction
+	void validate() {
+		List<File> specs = findSpecifications(getOptionsSource())
 
-		if (!folder.exists()) {
-			throw new IllegalArgumentException("$folder.absolutePath does not exist")
+		for (File specFile in specs) {
+			ResourceContract contract = specGenerator.parseResourceContract(specGenerator, project.restApi as RestApiExtension).resourceContract
 		}
-
-		if (!folder.isDirectory()) {
-			throw new IllegalArgumentException("$folder.absolutePath is not a directory")
-		}
-
-		List<File> specs = []
-		folder.eachFile(FileType.FILES, { f -> if (f.name.endsWith('.json')) specs << f })
-
-		Collections.sort(specs, new ResourceFileComparator())
-
-		return specs
 	}
 }

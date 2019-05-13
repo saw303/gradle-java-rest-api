@@ -23,33 +23,20 @@
  */
 package ch.silviowangler.gradle.restapi.tasks
 
-import ch.silviowangler.gradle.restapi.GeneratorUtil
-import ch.silviowangler.gradle.restapi.Specification
 import ch.silviowangler.gradle.restapi.builder.ResourceContractContainer
-import ch.silviowangler.gradle.restapi.builder.SpecGenerator
 import ch.silviowangler.gradle.restapi.diagrams.Dependency
 import ch.silviowangler.gradle.restapi.diagrams.Knot
 import ch.silviowangler.rest.contract.model.v1.SubResource
 import groovy.text.SimpleTemplateEngine
-import org.gradle.api.internal.AbstractTask
-import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 
 /**
  * @author Silvio Wangler
  */
-class PlantUmlTask extends AbstractTask implements Specification {
+class PlantUmlTask extends SpecificationBaseTask {
 
 	private SimpleTemplateEngine templateEngine = new SimpleTemplateEngine()
-
-	@InputDirectory
-	File getOptionsSource() {
-		if (project.restApi.optionsSource) {
-			return project.restApi.optionsSource
-		}
-		return new File(GeneratorUtil.generatorInput(project), "spec")
-	}
 
 	@OutputDirectory
 	File getRootOutputDir() {
@@ -61,7 +48,6 @@ class PlantUmlTask extends AbstractTask implements Specification {
 
 		List<File> specs = findSpecifications(getOptionsSource())
 		List<ResourceContractContainer> contracts = []
-		SpecGenerator specGenerator = new SpecGenerator()
 		specs.each { File specFile -> contracts << specGenerator.parseResourceContract(specFile) }
 
 		ResourceContractContainer root = contracts.find { ResourceContractContainer c -> c.resourceContract.general.name == 'root' }
