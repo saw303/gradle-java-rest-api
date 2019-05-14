@@ -24,7 +24,6 @@
 package ch.silviowangler.gradle.restapi.validation;
 
 import ch.silviowangler.rest.contract.model.v1.ResourceContract;
-
 import java.util.Set;
 
 /**
