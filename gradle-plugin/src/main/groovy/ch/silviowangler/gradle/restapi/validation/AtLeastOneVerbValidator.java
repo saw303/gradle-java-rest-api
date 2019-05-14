@@ -21,44 +21,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package ch.silviowangler.gradle.restapi.tasks
+package ch.silviowangler.gradle.restapi.validation;
 
-import ch.silviowangler.gradle.restapi.RestApiExtension
-import ch.silviowangler.gradle.restapi.validation.AtLeastOneVerbValidator
-import ch.silviowangler.gradle.restapi.validation.ValidationViolation
-import ch.silviowangler.gradle.restapi.validation.Validator
-import ch.silviowangler.rest.contract.model.v1.ResourceContract
-import org.gradle.api.tasks.TaskAction
+import ch.silviowangler.rest.contract.model.v1.ResourceContract;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
+ * Verifies that a resource contract contains at least one verb.
+ *
  * @author Silvio Wangler
+ * @since 2.1.0
  */
-class ValidationTask extends SpecificationBaseTask {
+public class AtLeastOneVerbValidator implements Validator {
+  @Override
+  public Set<ValidationViolation> validate(ResourceContract resourceContract) {
 
-	List<Validator> validators = [
-		new AtLeastOneVerbValidator()
-	]
+    Set<ValidationViolation> violations = new HashSet<>();
 
-	@TaskAction
-	void validate() {
-		List<File> specs = findSpecifications(getOptionsSource())
-
-		Map<ResourceContract, Set<ValidationViolation>> violationMap = [:]
-
-		for (File specFile in specs) {
-			ResourceContract contract = specGenerator.parseResourceContract(specGenerator, project.restApi as RestApiExtension).resourceContract
-
-			violationMap[contract] = new HashSet<>()
-
-			for (Validator validator in validators) {
-				violationMap[contract].addAll(validator.validate(contract))
-			}
-		}
-
-		boolean hasViolations = violationMap.values().findAll { c -> c.size() > 0 }.size() > 0
-
-		if (hasViolations) {
-			throw new RuntimeException("Your specifications violate with contract")
-		}
-	}
+    if (resourceContract.getVerbs().isEmpty()) {
+      violations.add(new ValidationViolation("The resource must contain at least one verb"));
+    }
+    return violations;
+  }
 }

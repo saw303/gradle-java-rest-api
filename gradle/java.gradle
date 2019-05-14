@@ -18,7 +18,6 @@ spotless {
     endWithNewline()
   }
   groovyGradle {
-    // same as groovy, but for .gradle (defaults to '*.gradle')
     target '*.gradle', 'gradle/*.gradle'
     greclipse()
     endWithNewline()
