@@ -23,10 +23,6 @@
  */
 package ch.silviowangler.gradle.restapi.builder;
 
-import static ch.silviowangler.gradle.restapi.PluginTypes.*;
-import static ch.silviowangler.gradle.restapi.builder.ResourceBuilder.JavaTypeRegistry.translateToJava;
-import static javax.lang.model.element.Modifier.*;
-
 import ch.silviowangler.gradle.restapi.GeneratorUtil;
 import ch.silviowangler.gradle.restapi.PluginTypes;
 import ch.silviowangler.gradle.restapi.RestApiPlugin;
@@ -37,11 +33,32 @@ import ch.silviowangler.rest.contract.model.v1.Representation;
 import ch.silviowangler.rest.contract.model.v1.Verb;
 import ch.silviowangler.rest.contract.model.v1.VerbParameter;
 import com.google.common.base.CaseFormat;
-import com.squareup.javapoet.*;
+import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterSpec;
+import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;
+
 import java.nio.charset.Charset;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_GENERATED;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_VALID;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAVA_OVERRIDE;
+import static ch.silviowangler.gradle.restapi.PluginTypes.PLUGIN_NOT_YET_IMPLEMENTED_EXCEPTION;
+import static ch.silviowangler.gradle.restapi.builder.ResourceBuilder.JavaTypeRegistry.translateToJava;
+import static javax.lang.model.element.Modifier.ABSTRACT;
+import static javax.lang.model.element.Modifier.DEFAULT;
+import static javax.lang.model.element.Modifier.PUBLIC;
 
 public interface ResourceBuilder {
 
@@ -440,6 +457,10 @@ public interface ResourceBuilder {
       supportedDataTypes.put("phoneNumber", SupportedDataTypes.PHONE_NUMBER.getClassName());
     }
 
+    public static Set<String> getSupportedTypeNames() {
+      return Collections.unmodifiableSet(supportedDataTypes.keySet());
+    }
+
     public static ClassName translateToJava(final FieldType fieldType) {
       String type = fieldType.getType();
       if (isSupportedDataType(type)) {
@@ -448,12 +469,12 @@ public interface ResourceBuilder {
       throw new UnsupportedDataTypeException(type);
     }
 
-    private static ClassName readClassName(final String type) {
-      return supportedDataTypes.get(type);
+    public static boolean isSupportedDataType(final String type) {
+      return supportedDataTypes.containsKey(type);
     }
 
-    private static boolean isSupportedDataType(final String type) {
-      return supportedDataTypes.containsKey(type);
+    private static ClassName readClassName(final String type) {
+      return supportedDataTypes.get(type);
     }
   }
 }

@@ -16,7 +16,7 @@ class AtLeastOneVerbValidatorSpec extends Specification {
   void "The contract must contain at least one verb"() {
 
     when:
-    Set<ValidationViolation> violations = validator.validate(new ResourceContract())
+    Set<ConstraintViolation> violations = validator.validate(new ResourceContract())
 
     then:
     violations.size() == 1
