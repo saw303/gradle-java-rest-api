@@ -24,13 +24,24 @@
 package ch.silviowangler.gradle.restapi.validation;
 
 import ch.silviowangler.rest.contract.model.v1.ResourceContract;
+
 import java.util.Set;
 
 /**
+ * Validator interface to for resource contract validators.
+ *
  * @author Silvio Wangler
  * @since 2.1.0
  */
 public interface Validator {
 
+  /**
+   * Validates the given resource contract and reports potential constraint validation errors in
+   * return. An empty result means that the validation was successful and is good.
+   *
+   * @param resourceContract the resource contract to validate.
+   * @return constraint validations, if empty the validation did not found any constraint
+   *     violations.
+   */
   Set<ConstraintViolation> validate(ResourceContract resourceContract);
 }
