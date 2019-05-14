@@ -25,7 +25,8 @@ package ch.silviowangler.gradle.restapi.tasks
 
 import ch.silviowangler.gradle.restapi.RestApiExtension
 import ch.silviowangler.gradle.restapi.validation.AtLeastOneVerbValidator
-import ch.silviowangler.gradle.restapi.validation.ValidationViolation
+import ch.silviowangler.gradle.restapi.validation.ConstraintViolation
+import ch.silviowangler.gradle.restapi.validation.FieldTypeIsSupportedValidator
 import ch.silviowangler.gradle.restapi.validation.Validator
 import ch.silviowangler.rest.contract.model.v1.ResourceContract
 import org.gradle.api.tasks.TaskAction
@@ -36,14 +37,15 @@ import org.gradle.api.tasks.TaskAction
 class ValidationTask extends SpecificationBaseTask {
 
 	List<Validator> validators = [
-		new AtLeastOneVerbValidator()
+		new AtLeastOneVerbValidator(),
+		new FieldTypeIsSupportedValidator()
 	]
 
 	@TaskAction
 	void validate() {
 		List<File> specs = findSpecifications(getOptionsSource())
 
-		Map<ResourceContract, Set<ValidationViolation>> violationMap = [:]
+		Map<ResourceContract, Set<ConstraintViolation>> violationMap = [:]
 
 		for (File specFile in specs) {
 			ResourceContract contract = specGenerator.parseResourceContract(specGenerator, project.restApi as RestApiExtension).resourceContract

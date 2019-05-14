@@ -497,6 +497,10 @@ public interface ResourceBuilder {
       supportedDataTypes.put("phoneNumber", SupportedDataTypes.PHONE_NUMBER.getClassName());
     }
 
+    public static Set<String> getSupportedTypeNames() {
+      return Collections.unmodifiableSet(supportedDataTypes.keySet());
+    }
+
     public static ClassName translateToJava(final Typed fieldType) {
       String type = fieldType.getType();
       if (isSupportedDataType(type)) {
@@ -505,12 +509,12 @@ public interface ResourceBuilder {
       throw new UnsupportedDataTypeException(type);
     }
 
-    private static ClassName readClassName(final String type) {
-      return supportedDataTypes.get(type);
+    public static boolean isSupportedDataType(final String type) {
+      return supportedDataTypes.containsKey(type);
     }
 
-    private static boolean isSupportedDataType(final String type) {
-      return supportedDataTypes.containsKey(type);
+    private static ClassName readClassName(final String type) {
+      return supportedDataTypes.get(type);
     }
   }
 }

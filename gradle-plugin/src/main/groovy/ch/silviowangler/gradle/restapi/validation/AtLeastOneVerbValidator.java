@@ -36,12 +36,12 @@ import java.util.Set;
  */
 public class AtLeastOneVerbValidator implements Validator {
   @Override
-  public Set<ValidationViolation> validate(ResourceContract resourceContract) {
+  public Set<ConstraintViolation> validate(ResourceContract resourceContract) {
 
-    Set<ValidationViolation> violations = new HashSet<>();
+    Set<ConstraintViolation> violations = new HashSet<>();
 
     if (resourceContract.getVerbs().isEmpty()) {
-      violations.add(new ValidationViolation("The resource must contain at least one verb"));
+      violations.add(new ConstraintViolation("The resource must contain at least one verb"));
     }
     return violations;
   }

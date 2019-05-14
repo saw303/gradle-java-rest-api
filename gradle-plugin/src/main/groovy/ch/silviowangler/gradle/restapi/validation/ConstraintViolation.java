@@ -23,15 +23,19 @@
  */
 package ch.silviowangler.gradle.restapi.validation;
 
-import ch.silviowangler.rest.contract.model.v1.ResourceContract;
-
-import java.util.Set;
-
 /**
  * @author Silvio Wangler
  * @since 2.1.0
  */
-public interface Validator {
+public class ConstraintViolation {
 
-  Set<ConstraintViolation> validate(ResourceContract resourceContract);
+  private final String message;
+
+  public ConstraintViolation(String message) {
+    this.message = message;
+  }
+
+  public String getMessage() {
+    return message;
+  }
 }

@@ -23,19 +23,36 @@
  */
 package ch.silviowangler.gradle.restapi.validation;
 
+import ch.silviowangler.rest.contract.model.v1.ResourceContract;
+
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static ch.silviowangler.gradle.restapi.builder.ResourceBuilder.JavaTypeRegistry.isSupportedDataType;
+
 /**
+ * Verifies if the field type is supported. Checks it with {@link
+ * ch.silviowangler.gradle.restapi.builder.ResourceBuilder.JavaTypeRegistry}.
+ *
  * @author Silvio Wangler
  * @since 2.1.0
  */
-public class ValidationViolation {
+public class FieldTypeIsSupportedValidator implements Validator {
 
-  private final String message;
+  @Override
+  public Set<ConstraintViolation> validate(ResourceContract resourceContract) {
 
-  public ValidationViolation(String message) {
-    this.message = message;
-  }
+    Set<ConstraintViolation> violations =
+        resourceContract.getFields().stream()
+            .filter(field -> !isSupportedDataType(field.getType()))
+            .map(
+                field ->
+                    new ConstraintViolation(
+                        String.format(
+                            "Field '%s' declares an unsupported data type '%s'",
+                            field.getName(), field.getType())))
+            .collect(Collectors.toSet());
 
-  public String getMessage() {
-    return message;
+    return violations;
   }
 }
