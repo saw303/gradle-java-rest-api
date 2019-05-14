@@ -23,12 +23,11 @@
  */
 package ch.silviowangler.gradle.restapi.validation;
 
-import ch.silviowangler.rest.contract.model.v1.ResourceContract;
+import static ch.silviowangler.gradle.restapi.builder.ResourceBuilder.JavaTypeRegistry.isSupportedDataType;
 
+import ch.silviowangler.rest.contract.model.v1.ResourceContract;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static ch.silviowangler.gradle.restapi.builder.ResourceBuilder.JavaTypeRegistry.isSupportedDataType;
 
 /**
  * Verifies if the field type is supported. Checks it with {@link

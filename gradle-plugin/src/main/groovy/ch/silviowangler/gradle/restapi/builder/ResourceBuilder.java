@@ -23,6 +23,15 @@
  */
 package ch.silviowangler.gradle.restapi.builder;
 
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_GENERATED;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_VALID;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAVA_OVERRIDE;
+import static ch.silviowangler.gradle.restapi.PluginTypes.PLUGIN_NOT_YET_IMPLEMENTED_EXCEPTION;
+import static ch.silviowangler.gradle.restapi.builder.ResourceBuilder.JavaTypeRegistry.translateToJava;
+import static javax.lang.model.element.Modifier.ABSTRACT;
+import static javax.lang.model.element.Modifier.DEFAULT;
+import static javax.lang.model.element.Modifier.PUBLIC;
+
 import ch.silviowangler.gradle.restapi.GeneratorUtil;
 import ch.silviowangler.gradle.restapi.PluginTypes;
 import ch.silviowangler.gradle.restapi.RestApiPlugin;
@@ -39,7 +48,6 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
-
 import java.nio.charset.Charset;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -50,15 +58,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_GENERATED;
-import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_VALID;
-import static ch.silviowangler.gradle.restapi.PluginTypes.JAVA_OVERRIDE;
-import static ch.silviowangler.gradle.restapi.PluginTypes.PLUGIN_NOT_YET_IMPLEMENTED_EXCEPTION;
-import static ch.silviowangler.gradle.restapi.builder.ResourceBuilder.JavaTypeRegistry.translateToJava;
-import static javax.lang.model.element.Modifier.ABSTRACT;
-import static javax.lang.model.element.Modifier.DEFAULT;
-import static javax.lang.model.element.Modifier.PUBLIC;
 
 public interface ResourceBuilder {
 
