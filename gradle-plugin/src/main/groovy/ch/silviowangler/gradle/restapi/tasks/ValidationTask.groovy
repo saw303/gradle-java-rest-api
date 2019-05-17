@@ -24,10 +24,7 @@
 package ch.silviowangler.gradle.restapi.tasks
 
 import ch.silviowangler.gradle.restapi.RestApiExtension
-import ch.silviowangler.gradle.restapi.validation.AtLeastOneVerbValidator
-import ch.silviowangler.gradle.restapi.validation.ConstraintViolation
-import ch.silviowangler.gradle.restapi.validation.FieldTypeIsSupportedValidator
-import ch.silviowangler.gradle.restapi.validation.Validator
+import ch.silviowangler.gradle.restapi.validation.*
 import ch.silviowangler.rest.contract.model.v1.ResourceContract
 import org.gradle.api.tasks.TaskAction
 
@@ -38,7 +35,8 @@ class ValidationTask extends SpecificationBaseTask {
 
 	List<Validator> validators = [
 		new AtLeastOneVerbValidator(),
-		new FieldTypeIsSupportedValidator()
+		new FieldTypeIsSupportedValidator(),
+		new MinMaxValuesMatchTypeValidator()
 	]
 
 	@TaskAction

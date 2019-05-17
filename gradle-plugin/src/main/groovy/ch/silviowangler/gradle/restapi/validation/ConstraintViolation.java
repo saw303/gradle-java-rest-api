@@ -38,4 +38,9 @@ public class ConstraintViolation {
   public String getMessage() {
     return message;
   }
+
+  @Override
+  public String toString() {
+    return this.message;
+  }
 }
