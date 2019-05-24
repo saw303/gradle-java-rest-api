@@ -84,7 +84,7 @@ class RestApiPlugin implements Plugin<Project> {
 				api "ch.silviowangler.rest:rest-model:${pluginVersion}"
 				api "javax.money:money-api:1.0.3"
 				api "javax.validation:validation-api:2.0.1.Final"
-				api "com.googlecode.libphonenumber:libphonenumber:8.10.11"
+				api "com.googlecode.libphonenumber:libphonenumber:${libPhoneNumberVersion}"
 
 				if (extension.generationMode != GenerationMode.API) {
 
