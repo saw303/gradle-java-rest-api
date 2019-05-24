@@ -23,11 +23,11 @@
  */
 package ch.silviowangler.rest.contract.model.v1;
 
-import java.io.Serializable;
-import java.util.Objects;
-
 import static com.google.common.base.CaseFormat.LOWER_CAMEL;
 import static com.google.common.base.CaseFormat.UPPER_UNDERSCORE;
+
+import java.io.Serializable;
+import java.util.Objects;
 
 /** @author Silvio Wangler */
 public class Header implements Serializable, Typed, Named {

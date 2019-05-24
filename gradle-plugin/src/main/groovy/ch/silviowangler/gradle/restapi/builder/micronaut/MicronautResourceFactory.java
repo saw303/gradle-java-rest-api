@@ -23,29 +23,6 @@
  */
 package ch.silviowangler.gradle.restapi.builder.micronaut;
 
-import ch.silviowangler.gradle.restapi.GeneratorUtil;
-import ch.silviowangler.gradle.restapi.PluginTypes;
-import ch.silviowangler.gradle.restapi.builder.AbstractResourceBuilder;
-import ch.silviowangler.gradle.restapi.builder.ArtifactType;
-import ch.silviowangler.gradle.restapi.builder.MethodContext;
-import ch.silviowangler.rest.contract.model.v1.Header;
-import ch.silviowangler.rest.contract.model.v1.Representation;
-import ch.silviowangler.rest.contract.model.v1.Verb;
-import ch.silviowangler.rest.contract.model.v1.VerbParameter;
-import com.squareup.javapoet.AnnotationSpec;
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.FieldSpec;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
-
-import javax.lang.model.element.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_INJECT;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_NULLABLE;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_SINGLETON;
@@ -69,6 +46,28 @@ import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_STATUS;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_VALIDATED;
 import static ch.silviowangler.gradle.restapi.PluginTypes.RESTAPI_RESPONSE_CREATOR;
 import static ch.silviowangler.gradle.restapi.builder.ArtifactType.DELEGATOR_RESOURCE;
+
+import ch.silviowangler.gradle.restapi.GeneratorUtil;
+import ch.silviowangler.gradle.restapi.PluginTypes;
+import ch.silviowangler.gradle.restapi.builder.AbstractResourceBuilder;
+import ch.silviowangler.gradle.restapi.builder.ArtifactType;
+import ch.silviowangler.gradle.restapi.builder.MethodContext;
+import ch.silviowangler.rest.contract.model.v1.Header;
+import ch.silviowangler.rest.contract.model.v1.Representation;
+import ch.silviowangler.rest.contract.model.v1.Verb;
+import ch.silviowangler.rest.contract.model.v1.VerbParameter;
+import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.FieldSpec;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.lang.model.element.Modifier;
 
 /** @author Silvio Wangler */
 public class MicronautResourceFactory extends AbstractResourceBuilder {
