@@ -3,6 +3,6 @@ ext { pomDescription = 'Java model for the REST interfaces' }
 dependencies {
 	implementation "org.slf4j:slf4j-api:${slf4jVersion}"
 	implementation "com.google.code.gson:gson:${gsonVersion}"
-	implementation 'com.googlecode.libphonenumber:libphonenumber:8.10.11'
+	implementation 'com.googlecode.libphonenumber:libphonenumber:8.10.12'
 	api "javax.validation:validation-api:2.0.1.Final"
 }
