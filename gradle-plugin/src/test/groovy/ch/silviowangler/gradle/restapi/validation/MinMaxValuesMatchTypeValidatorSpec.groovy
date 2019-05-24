@@ -93,8 +93,8 @@ class MinMaxValuesMatchTypeValidatorSpec extends Specification {
 
     and:
     if (!violations.isEmpty()) {
-      assert violations.first().message == "Min ${message}"
-      assert violations.last().message == "Max ${message}"
+      assert violations.find {it.message == "Min ${message}" }
+      assert violations.find {it.message == "Max ${message}" }
     }
 
     where:
