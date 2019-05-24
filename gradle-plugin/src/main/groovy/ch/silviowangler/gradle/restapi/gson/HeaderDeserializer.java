@@ -21,24 +21,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package ch.silviowangler.rest.contract.model.v1;
+package ch.silviowangler.gradle.restapi.gson;
+
+import ch.silviowangler.rest.contract.model.v1.Header;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import java.lang.reflect.Type;
 
 /** @author Silvio Wangler */
-public interface FieldType extends Typed, Named {
+public class HeaderDeserializer implements JsonDeserializer<Header> {
+  @Override
+  public Header deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+      throws JsonParseException {
 
-  /**
-   * Return the field options.
-   *
-   * @return field options
-   */
-  Object getOptions();
+    JsonObject jsonObject = json.getAsJsonObject();
 
-  /**
-   * Indicates whether this is an enum or not.
-   *
-   * @return yes/no.
-   */
-  default boolean isEnumType() {
-    return "enum".equals(getType());
+    Header header = new Header();
+
+    header.setName(jsonObject.get("name").getAsString());
+    header.setType(jsonObject.get("type").getAsString());
+    header.setMandatory(jsonObject.get("mandatory").getAsBoolean());
+    header.setxComment(jsonObject.get("x-comment").getAsString());
+
+    return header;
   }
 }

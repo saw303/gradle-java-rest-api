@@ -29,9 +29,11 @@ import ch.silviowangler.gradle.restapi.GeneratedSpecContainer;
 import ch.silviowangler.gradle.restapi.GenerationMode;
 import ch.silviowangler.gradle.restapi.RestApiExtension;
 import ch.silviowangler.gradle.restapi.gson.GeneralDetailsDeserializer;
+import ch.silviowangler.gradle.restapi.gson.HeaderDeserializer;
 import ch.silviowangler.gradle.restapi.gson.RepresentationDeserializer;
 import ch.silviowangler.gradle.restapi.gson.ResourceFieldDeserializer;
 import ch.silviowangler.rest.contract.model.v1.GeneralDetails;
+import ch.silviowangler.rest.contract.model.v1.Header;
 import ch.silviowangler.rest.contract.model.v1.Representation;
 import ch.silviowangler.rest.contract.model.v1.ResourceContract;
 import ch.silviowangler.rest.contract.model.v1.ResourceField;
@@ -64,6 +66,7 @@ public class SpecGenerator {
             .registerTypeAdapter(GeneralDetails.class, new GeneralDetailsDeserializer())
             .registerTypeAdapter(ResourceField.class, new ResourceFieldDeserializer())
             .registerTypeAdapter(Representation.class, new RepresentationDeserializer())
+            .registerTypeAdapter(Header.class, new HeaderDeserializer())
             .create();
   }
 

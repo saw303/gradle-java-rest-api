@@ -24,21 +24,22 @@
 package ch.silviowangler.rest.contract.model.v1;
 
 /** @author Silvio Wangler */
-public interface FieldType extends Typed, Named {
+public interface Named {
 
   /**
-   * Return the field options.
+   * returns the fields name.
    *
-   * @return field options
+   * @return field name.
    */
-  Object getOptions();
+  String getName();
 
   /**
-   * Indicates whether this is an enum or not.
+   * Translates the {@link Named#getName()} to lower camel case value that can be used as a Java
+   * parameter name.
    *
-   * @return yes/no.
+   * @return lower camel case value.
    */
-  default boolean isEnumType() {
-    return "enum".equals(getType());
+  default String toJavaParamName() {
+    return getName();
   }
 }

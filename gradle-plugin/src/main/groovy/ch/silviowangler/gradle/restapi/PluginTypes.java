@@ -53,6 +53,7 @@ public enum PluginTypes {
   JAX_RS_FORM_PARAM(ClassName.get("javax.ws.rs", "FormParam")),
   JAX_RS_PATH_PARAM(ClassName.get("javax.ws.rs", "PathParam")),
   JAX_RS_QUERY_PARAM(ClassName.get("javax.ws.rs", "QueryParam")),
+  JAX_RS_HEADER_PARAM(ClassName.get("javax.ws.rs", "HeaderParam")),
   JAX_RS_CONTEXT(ClassName.get("javax.ws.rs.core", "Context")),
   JAVAX_VALIDATION_SIZE(ClassName.get("javax.validation.constraints", "Size")),
   JAVAX_VALIDATION_DECIMAL_MIN(ClassName.get("javax.validation.constraints", "DecimalMin")),
@@ -68,6 +69,7 @@ public enum PluginTypes {
   SPRING_REQUEST_MAPPING(
       ClassName.get("org.springframework.web.bind.annotation", "RequestMapping")),
   SPRING_REQUEST_PARAM(ClassName.get("org.springframework.web.bind.annotation", "RequestParam")),
+  SPRING_REQUEST_HEADER(ClassName.get("org.springframework.web.bind.annotation", "RequestHeader")),
   SPRING_REQUEST_BODY(ClassName.get("org.springframework.web.bind.annotation", "RequestBody")),
   SPRING_PATH_VARIABLE(ClassName.get("org.springframework.web.bind.annotation", "PathVariable")),
   SPRING_REQUEST_METHOD(ClassName.get("org.springframework.web.bind.annotation", "RequestMethod")),
@@ -96,6 +98,7 @@ public enum PluginTypes {
   MICRONAUT_HTTP_STATUS(ClassName.get("io.micronaut.http", "HttpStatus")),
   MICRONAUT_HTTP_MEDIA_TYPE(ClassName.get("io.micronaut.http", "MediaType")),
   MICRONAUT_QUERY_VALUE(ClassName.get("io.micronaut.http.annotation", "QueryValue")),
+  MICRONAUT_HEADER(ClassName.get("io.micronaut.http.annotation", "Header")),
   MICRONAUT_FORMAT(ClassName.get("io.micronaut.core.convert.format", "Format")),
   MICRONAUT_DATE_FORMAT(ClassName.get("ch.silviowangler.rest.micronaut.binding", "DateFormat")),
   MICRONAUT_DATE_TIME_FORMAT(

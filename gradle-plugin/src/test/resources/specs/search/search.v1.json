@@ -72,7 +72,21 @@
           "x-comment": "end time date time"
         }
       ],
-      "permissions": []
+      "permissions": [],
+      "headers": [
+        {
+          "name": "Accepted-Language",
+          "type": "locale",
+          "mandatory": true,
+          "x-comment": "Needs to send Accept-Language header in GET requests"
+        },
+        {
+          "name": "Origin",
+          "type": "string",
+          "mandatory": false,
+          "x-comment": "May send Origin header in GET requests"
+        }
+      ]
     }
   ],
   "fields": [

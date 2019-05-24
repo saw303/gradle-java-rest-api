@@ -23,25 +23,44 @@
  */
 package ch.silviowangler.gradle.restapi.builder;
 
-import static ch.silviowangler.gradle.restapi.PluginTypes.*;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_GENERATED;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_VALID;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAVA_OVERRIDE;
+import static ch.silviowangler.gradle.restapi.PluginTypes.PLUGIN_NOT_YET_IMPLEMENTED_EXCEPTION;
 import static ch.silviowangler.gradle.restapi.builder.ResourceBuilder.JavaTypeRegistry.translateToJava;
-import static javax.lang.model.element.Modifier.*;
+import static com.google.common.base.CaseFormat.LOWER_CAMEL;
+import static javax.lang.model.element.Modifier.ABSTRACT;
+import static javax.lang.model.element.Modifier.DEFAULT;
+import static javax.lang.model.element.Modifier.PUBLIC;
 
 import ch.silviowangler.gradle.restapi.GeneratorUtil;
 import ch.silviowangler.gradle.restapi.PluginTypes;
 import ch.silviowangler.gradle.restapi.RestApiPlugin;
 import ch.silviowangler.gradle.restapi.UnsupportedDataTypeException;
 import ch.silviowangler.gradle.restapi.util.SupportedDataTypes;
-import ch.silviowangler.rest.contract.model.v1.FieldType;
+import ch.silviowangler.rest.contract.model.v1.Header;
 import ch.silviowangler.rest.contract.model.v1.Representation;
+import ch.silviowangler.rest.contract.model.v1.Typed;
 import ch.silviowangler.rest.contract.model.v1.Verb;
 import ch.silviowangler.rest.contract.model.v1.VerbParameter;
 import com.google.common.base.CaseFormat;
-import com.squareup.javapoet.*;
+import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
+import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;
 import java.nio.charset.Charset;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 public interface ResourceBuilder {
 
@@ -173,7 +192,7 @@ public interface ResourceBuilder {
     Representation representation = context.getRepresentation();
 
     if (!representation.isJson()) {
-      methodName += CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, representation.getName());
+      methodName += LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, representation.getName());
     }
     final String methodNameCopy = String.valueOf(methodName);
 
@@ -254,6 +273,38 @@ public interface ResourceBuilder {
             });
 
     context
+        .getHeaders()
+        .forEach(
+            header -> {
+              ParameterSpec.Builder builder;
+
+              String paramName = header.toJavaParamName();
+
+              if (!header.isMandatory()) {
+                ParameterizedTypeName parameterizedTypeName =
+                    ParameterizedTypeName.get(
+                        ClassName.get(Optional.class), translateToJava(header));
+                builder = ParameterSpec.builder(parameterizedTypeName, paramName);
+              } else {
+                builder = ParameterSpec.builder(translateToJava(header), paramName);
+              }
+
+              final boolean isHandleMethod = methodNameCopy.startsWith("handle");
+              final boolean isResource =
+                  isResourceInterface || isAbstractResourceClass || isDelegateResourceClass;
+
+              if (isResource && !isHandleMethod) {
+                for (AnnotationSpec headerAnnotation : getHeaderAnnotations(header)) {
+                  builder.addAnnotation(headerAnnotation);
+                }
+              }
+              ParameterSpec parameter = builder.build();
+
+              methodBuilder.addParameter(parameter);
+              names.add(paramName);
+            });
+
+    context
         .getParamClasses()
         .forEach(
             (name, className) -> {
@@ -302,9 +353,7 @@ public interface ResourceBuilder {
         && !methodName.endsWith("AutoAnswer")
         && !"getOptions".equals(methodName)) {
       methodBuilder.addStatement(
-          "return handle$L($L)",
-          CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, methodName),
-          paramNames);
+          "return handle$L($L)", LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, methodName), paramNames);
     } else if (isDelegateResourceClass && !methodName.equals("getOptions")) {
       if (TypeName.VOID.equals(context.getReturnType())) {
         methodBuilder.addStatement("delegate.$L($L)", methodName, paramNames);
@@ -345,6 +394,14 @@ public interface ResourceBuilder {
   }
 
   List<AnnotationSpec> getQueryParamAnnotations(VerbParameter paramName);
+
+  /**
+   * Returns a list of http header annotations.
+   *
+   * @param header given header to create framework specific annotations.
+   * @return list of http header annotations.
+   */
+  List<AnnotationSpec> getHeaderAnnotations(Header header);
 
   Iterable<AnnotationSpec> getResourceMethodAnnotations(
       boolean applyId, Representation representation, String methodName);
@@ -440,7 +497,7 @@ public interface ResourceBuilder {
       supportedDataTypes.put("phoneNumber", SupportedDataTypes.PHONE_NUMBER.getClassName());
     }
 
-    public static ClassName translateToJava(final FieldType fieldType) {
+    public static ClassName translateToJava(final Typed fieldType) {
       String type = fieldType.getType();
       if (isSupportedDataType(type)) {
         return readClassName(type);

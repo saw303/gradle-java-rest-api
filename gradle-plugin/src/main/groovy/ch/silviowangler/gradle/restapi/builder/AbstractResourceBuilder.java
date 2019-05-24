@@ -278,6 +278,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
             new MethodContext(
                 resourceMethodReturnType(verb, representation),
                 verb.getParameters(),
+                verb.getHeaders(),
                 paramClasses,
                 representation,
                 pathParams,

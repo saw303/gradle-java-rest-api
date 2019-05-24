@@ -23,7 +23,28 @@
  */
 package ch.silviowangler.gradle.restapi.builder.micronaut;
 
-import static ch.silviowangler.gradle.restapi.PluginTypes.*;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_INJECT;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_NULLABLE;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_SINGLETON;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_VALID;
+import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_CONTROLLER;
+import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_DATE_FORMAT;
+import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_DATE_TIME_FORMAT;
+import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_DELETE;
+import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_GET;
+import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_HEAD;
+import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_HEADER;
+import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_HTTP_MEDIA_TYPE;
+import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_HTTP_RESPONSE;
+import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_HTTP_STATUS;
+import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_OPTIONS;
+import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_POST;
+import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_PRODUCES;
+import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_PUT;
+import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_QUERY_VALUE;
+import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_STATUS;
+import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_VALIDATED;
+import static ch.silviowangler.gradle.restapi.PluginTypes.RESTAPI_RESPONSE_CREATOR;
 import static ch.silviowangler.gradle.restapi.builder.ArtifactType.DELEGATOR_RESOURCE;
 
 import ch.silviowangler.gradle.restapi.GeneratorUtil;
@@ -31,11 +52,21 @@ import ch.silviowangler.gradle.restapi.PluginTypes;
 import ch.silviowangler.gradle.restapi.builder.AbstractResourceBuilder;
 import ch.silviowangler.gradle.restapi.builder.ArtifactType;
 import ch.silviowangler.gradle.restapi.builder.MethodContext;
+import ch.silviowangler.rest.contract.model.v1.Header;
 import ch.silviowangler.rest.contract.model.v1.Representation;
 import ch.silviowangler.rest.contract.model.v1.Verb;
 import ch.silviowangler.rest.contract.model.v1.VerbParameter;
-import com.squareup.javapoet.*;
-import java.util.*;
+import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.FieldSpec;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.lang.model.element.Modifier;
 
 /** @author Silvio Wangler */
@@ -149,6 +180,14 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
       annotationSpecs.add(AnnotationSpec.builder(JAVAX_NULLABLE.getClassName()).build());
     }
 
+    return annotationSpecs;
+  }
+
+  @Override
+  public List<AnnotationSpec> getHeaderAnnotations(Header header) {
+
+    List<AnnotationSpec> annotationSpecs = new ArrayList<>();
+    annotationSpecs.add(AnnotationSpec.builder(MICRONAUT_HEADER.getClassName()).build());
     return annotationSpecs;
   }
 

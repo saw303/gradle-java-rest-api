@@ -27,6 +27,7 @@ import ch.silviowangler.gradle.restapi.GeneratorUtil
 import ch.silviowangler.gradle.restapi.PluginTypes
 import ch.silviowangler.gradle.restapi.builder.AbstractResourceBuilder
 import ch.silviowangler.gradle.restapi.builder.ArtifactType
+import ch.silviowangler.rest.contract.model.v1.Header
 import ch.silviowangler.rest.contract.model.v1.Representation
 import ch.silviowangler.rest.contract.model.v1.Verb
 import ch.silviowangler.rest.contract.model.v1.VerbParameter
@@ -102,6 +103,11 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder {
 	List<AnnotationSpec> getQueryParamAnnotations(VerbParameter paramName) {
 		// TODO handle VerbParameter options like required
 		return Collections.singletonList(createAnnotation(JAX_RS_QUERY_PARAM, ['value': paramName.getName()]))
+	}
+
+	@Override
+	List<AnnotationSpec> getHeaderAnnotations(Header header) {
+		return Collections.singletonList(createAnnotation(JAX_RS_HEADER_PARAM, ['value': header.getName()]))
 	}
 
 	@Override
