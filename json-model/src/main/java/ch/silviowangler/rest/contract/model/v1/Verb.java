@@ -36,6 +36,7 @@ public class Verb implements Serializable {
   private List<ResponseState> responseStates = new ArrayList<>();
   private List<Representation> representations = new ArrayList<>();
   private List<VerbParameter> parameters = new ArrayList<>();
+  private List<Header> headers = new ArrayList<>();
 
   public Verb() {}
 
@@ -83,6 +84,14 @@ public class Verb implements Serializable {
     this.parameters = parameters;
   }
 
+  public List<Header> getHeaders() {
+    return headers;
+  }
+
+  public void setHeaders(List<Header> headers) {
+    this.headers = headers;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -92,12 +101,17 @@ public class Verb implements Serializable {
         && Objects.equals(rel, verb1.rel)
         && Objects.equals(responseStates, verb1.responseStates)
         && Objects.equals(representations, verb1.representations)
-        && Objects.equals(parameters, verb1.parameters);
+        && Objects.equals(parameters, verb1.parameters)
+        && Objects.equals(headers, verb1.headers);
   }
 
   @Override
   public int hashCode() {
+    return Objects.hash(verb, rel, responseStates, representations, parameters, headers);
+  }
 
-    return Objects.hash(verb, rel, responseStates, representations, parameters);
+  @Override
+  public String toString() {
+    return this.getVerb();
   }
 }

@@ -24,21 +24,12 @@
 package ch.silviowangler.rest.contract.model.v1;
 
 /** @author Silvio Wangler */
-public interface FieldType extends Typed, Named {
+public interface Typed {
 
   /**
-   * Return the field options.
+   * Returns the type of the field such as 'string', 'bool', 'date', 'enum'...
    *
-   * @return field options
+   * @return field type.
    */
-  Object getOptions();
-
-  /**
-   * Indicates whether this is an enum or not.
-   *
-   * @return yes/no.
-   */
-  default boolean isEnumType() {
-    return "enum".equals(getType());
-  }
+  String getType();
 }

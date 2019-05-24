@@ -23,15 +23,15 @@
  */
 package ch.silviowangler.gradle.restapi.builder;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 import ch.silviowangler.gradle.restapi.GeneratedSpecContainer;
 import ch.silviowangler.gradle.restapi.GenerationMode;
 import ch.silviowangler.gradle.restapi.RestApiExtension;
 import ch.silviowangler.gradle.restapi.gson.GeneralDetailsDeserializer;
+import ch.silviowangler.gradle.restapi.gson.HeaderDeserializer;
 import ch.silviowangler.gradle.restapi.gson.RepresentationDeserializer;
 import ch.silviowangler.gradle.restapi.gson.ResourceFieldDeserializer;
 import ch.silviowangler.rest.contract.model.v1.GeneralDetails;
+import ch.silviowangler.rest.contract.model.v1.Header;
 import ch.silviowangler.rest.contract.model.v1.Representation;
 import ch.silviowangler.rest.contract.model.v1.ResourceContract;
 import ch.silviowangler.rest.contract.model.v1.ResourceField;
@@ -39,6 +39,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeSpec;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -50,6 +51,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /** @author Silvio Wangler */
 public class SpecGenerator {
@@ -64,6 +67,7 @@ public class SpecGenerator {
             .registerTypeAdapter(GeneralDetails.class, new GeneralDetailsDeserializer())
             .registerTypeAdapter(ResourceField.class, new ResourceFieldDeserializer())
             .registerTypeAdapter(Representation.class, new RepresentationDeserializer())
+            .registerTypeAdapter(Header.class, new HeaderDeserializer())
             .create();
   }
 
