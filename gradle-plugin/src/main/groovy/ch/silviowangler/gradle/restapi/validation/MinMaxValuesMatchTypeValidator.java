@@ -27,7 +27,6 @@ import ch.silviowangler.gradle.restapi.builder.ResourceBuilder;
 import ch.silviowangler.rest.contract.model.v1.ResourceContract;
 import ch.silviowangler.rest.contract.model.v1.ResourceField;
 import com.squareup.javapoet.ClassName;
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -72,8 +71,20 @@ public class MinMaxValuesMatchTypeValidator implements Validator {
       String minClassName = field.getMin().getClass().getCanonicalName();
       String maxClassName = field.getMax().getClass().getCanonicalName();
 
-      if (!Objects.equals(minClassName, fieldClassName) || !Objects.equals(maxClassName, fieldClassName)) {
-        violations.add(new ConstraintViolation(String.format("Min/Max constraints of field '%s' must be of type '%s'", field.getName(), fieldClassName)));
+      if (!Objects.equals(minClassName, fieldClassName)) {
+        violations.add(
+            new ConstraintViolation(
+                String.format(
+                    "Min constraints of field '%s' must be of type '%s' but is '%s'",
+                    field.getName(), fieldClassName, minClassName)));
+      }
+
+      if (!Objects.equals(maxClassName, fieldClassName)) {
+        violations.add(
+            new ConstraintViolation(
+                String.format(
+                    "Max constraints of field '%s' must be of type '%s' but is '%s'",
+                    field.getName(), fieldClassName, maxClassName)));
       }
     }
     return violations;

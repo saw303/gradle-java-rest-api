@@ -93,17 +93,18 @@ class MinMaxValuesMatchTypeValidatorSpec extends Specification {
 
     and:
     if (!violations.isEmpty()) {
-      violations.first().message == message
+      assert violations.first().message == "Min ${message}"
+      assert violations.last().message == "Max ${message}"
     }
 
     where:
-    type     | min  | max  || violationCount | message
-    'int'    | 1    | 2    || 0              | ''
-    'long'   | 1L   | 2L   || 0              | ''
-    'long'   | 1.0  | 2.0  || 1              | ''
-    'double' | 1.0  | 2.0  || 0              | ''
-    'double' | 1    | 2    || 1              | ''
-    'float'  | 1.0F | 2.0F || 0              | ''
-    'float'  | 1    | 2    || 1              | ''
+    type     | min           | max           || violationCount | message
+    'int'    | 1             | 2             || 0              | ''
+    'long'   | 1L            | 2L            || 0              | ''
+    'long'   | 1.0           | 2.0           || 2              | "constraints of field 'a' must be of type 'java.lang.Long' but is 'java.math.BigDecimal'" as String
+    'double' | 1.0 as Double | 2.0 as Double || 0              | ''
+    'double' | 1             | 2             || 2              | "constraints of field 'a' must be of type 'java.lang.Double' but is 'java.lang.Integer'"
+    'float'  | 1.0 as Double | 2.0 as Double || 0              | ''
+    'float'  | 1             | 2             || 2              | "constraints of field 'a' must be of type 'java.lang.Double' but is 'java.lang.Integer'"
   }
 }
