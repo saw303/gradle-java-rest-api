@@ -42,7 +42,7 @@
           "mandatory": true,
           "min": null,
           "max": null,
-          "multiple": false,
+          "multiple": true,
           "defaultValue": null,
           "alias": [],
           "x-comment": "search"
