@@ -18,6 +18,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * This resource generates the search endpoint
@@ -29,7 +30,7 @@ import javax.validation.constraints.NotNull;
 @Controller("v1/search")
 @Validated
 public class SearchResource {
-  public static final String OPTIONS_CONTENT = "{\"general\":{\"name\":\"search.v1\",\"description\":\"This resource generates the search endpoint\",\"version\":\"1.0.0\",\"x-route\":\"v1/search\",\"lifecycle\":{\"deprecated\":false,\"info\":\"This version is still valid\"}},\"verbs\":[{\"verb\":\"GET_ENTITY\",\"rel\":\"entity\",\"responseStates\":[{\"code\":200,\"message\":\"200 Ok\",\"comment\":\"content in response body\"},{\"code\":503,\"message\":\"503 Service Unavailable\",\"comment\":\"Backend server not reachable or too slow\"}],\"representations\":[{\"name\":\"json\",\"comment\":\"\",\"responseExample\":\"{...}\",\"isDefault\":true,\"mimetype\":\"application/json\"}],\"parameters\":[{\"name\":\"q\",\"type\":\"string\",\"options\":null,\"mandatory\":true,\"min\":null,\"max\":null,\"multiple\":true,\"defaultValue\":null,\"alias\":[],\"x-comment\":\"search\"},{\"name\":\"startDate\",\"type\":\"date\",\"options\":null,\"mandatory\":false,\"min\":null,\"max\":null,\"multiple\":false,\"defaultValue\":null,\"alias\":[],\"x-comment\":\"start date\"},{\"name\":\"endTime\",\"type\":\"datetime\",\"options\":null,\"mandatory\":false,\"min\":null,\"max\":null,\"multiple\":false,\"defaultValue\":null,\"alias\":[],\"x-comment\":\"end time date time\"}],\"permissions\":[],\"headers\":[{\"name\":\"Accepted-Language\",\"type\":\"locale\",\"mandatory\":true,\"x-comment\":\"Needs to send Accept-Language header in GET requests\"},{\"name\":\"Origin\",\"type\":\"string\",\"mandatory\":false,\"x-comment\":\"May send Origin header in GET requests\"}]}],\"fields\":[{\"name\":\"id\",\"type\":\"uuid\",\"options\":null,\"mandatory\":[],\"min\":null,\"max\":null,\"multiple\":false,\"defaultValue\":null,\"protected\":[],\"visible\":true,\"sortable\":false,\"readonly\":false,\"filterable\":false,\"alias\":[],\"x-comment\":\"id\"}],\"pipes\":[],\"types\":[],\"validators\":[]}";
+  public static final String OPTIONS_CONTENT = "{\"general\":{\"name\":\"search.v1\",\"description\":\"This resource generates the search endpoint\",\"version\":\"1.0.0\",\"x-route\":\"v1/search\",\"lifecycle\":{\"deprecated\":false,\"info\":\"This version is still valid\"}},\"verbs\":[{\"verb\":\"GET_ENTITY\",\"rel\":\"entity\",\"responseStates\":[{\"code\":200,\"message\":\"200 Ok\",\"comment\":\"content in response body\"},{\"code\":503,\"message\":\"503 Service Unavailable\",\"comment\":\"Backend server not reachable or too slow\"}],\"representations\":[{\"name\":\"json\",\"comment\":\"\",\"responseExample\":\"{...}\",\"isDefault\":true,\"mimetype\":\"application/json\"}],\"parameters\":[{\"name\":\"q\",\"type\":\"string\",\"options\":null,\"mandatory\":true,\"min\":1,\"max\":null,\"multiple\":true,\"defaultValue\":null,\"alias\":[],\"x-comment\":\"search\"},{\"name\":\"startDate\",\"type\":\"date\",\"options\":null,\"mandatory\":false,\"min\":null,\"max\":null,\"multiple\":false,\"defaultValue\":null,\"alias\":[],\"x-comment\":\"start date\"},{\"name\":\"endTime\",\"type\":\"datetime\",\"options\":null,\"mandatory\":false,\"min\":null,\"max\":null,\"multiple\":false,\"defaultValue\":null,\"alias\":[],\"x-comment\":\"end time date time\"}],\"permissions\":[],\"headers\":[{\"name\":\"Accepted-Language\",\"type\":\"locale\",\"mandatory\":true,\"x-comment\":\"Needs to send Accept-Language header in GET requests\"},{\"name\":\"Origin\",\"type\":\"string\",\"mandatory\":false,\"x-comment\":\"May send Origin header in GET requests\"}]}],\"fields\":[{\"name\":\"id\",\"type\":\"uuid\",\"options\":null,\"mandatory\":[],\"min\":null,\"max\":null,\"multiple\":false,\"defaultValue\":null,\"protected\":[],\"visible\":true,\"sortable\":false,\"readonly\":false,\"filterable\":false,\"alias\":[],\"x-comment\":\"id\"}],\"pipes\":[],\"types\":[],\"validators\":[]}";
 
   private final SearchResourceDelegate delegate;
 
@@ -46,7 +47,7 @@ public class SearchResource {
 
   @Get
   @Produces("application/json")
-  public SearchGetResourceModel getEntity(@Valid @NotNull @QueryValue String q,
+  public SearchGetResourceModel getEntity(@Valid @NotNull @Size(min = 1) @QueryValue String q,
       @Valid @Nullable @QueryValue @DateFormat LocalDate startDate,
       @Valid @Nullable @QueryValue @DateTimeFormat Instant endTime, @Header Locale acceptedLanguage,
       @Header Optional<String> origin) {
