@@ -24,6 +24,7 @@
 package ch.silviowangler.rest.micronaut;
 
 import ch.silviowangler.rest.model.ResourceLink;
+import ch.silviowangler.rest.model.ResourceModel;
 import io.micronaut.web.router.UriRouteMatch;
 import java.util.List;
 
@@ -36,7 +37,8 @@ public interface LinkProvider {
    * {@link ch.silviowangler.rest.model.EntityModel}
    *
    * @param routeMatch the current routeMatch in the filter
+   * @param model the resource model with the data of the response
    * @return links to be added to the response. Return empty if no links are to be added.
    */
-  List<ResourceLink> getLinks(UriRouteMatch routeMatch);
+  List<ResourceLink> getLinks(UriRouteMatch routeMatch, ResourceModel model);
 }
