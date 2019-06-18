@@ -1,3 +1,5 @@
+ext { pomDescription = 'Add ons for the Micronaut framework' }
+
 dependencies {
 
 	api project(':rest-model')
@@ -15,5 +17,3 @@ dependencies {
 	testImplementation "io.micronaut:micronaut-core:${micronautVersion}"
 	testImplementation "io.micronaut:micronaut-router:${micronautVersion}"
 }
-
-ext { pomDescription = 'Add ons for the Micronaut framework' }
