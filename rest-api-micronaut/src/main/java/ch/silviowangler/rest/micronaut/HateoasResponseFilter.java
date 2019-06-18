@@ -41,6 +41,7 @@ import io.micronaut.web.router.UriRouteMatch;
 import io.reactivex.Flowable;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import org.reactivestreams.Publisher;
 
@@ -105,17 +106,21 @@ public class HateoasResponseFilter implements HttpServerFilter {
                     ResourceModel resourceModel = (ResourceModel) res.body();
                     EntityModel entityModel = new EntityModel(resourceModel);
 
-                    if (resourceModel instanceof SelfLinkProvider) {
-                      ((SelfLinkProvider) resourceModel)
-                          .selfLink()
-                          .ifPresent(selfLink -> entityModel.getLinks().add(selfLink));
-                    } else {
-                      entityModel.getLinks().add(ResourceLink.selfLink(uriRouteMatch.getUri()));
-                    }
-
                     linkProviderList.forEach(
                         provider ->
-                            entityModel.getLinks().addAll(provider.getLinks(uriRouteMatch)));
+                            entityModel
+                                .getLinks()
+                                .addAll(provider.getLinks(uriRouteMatch, resourceModel)));
+
+                    if (!hasLink(entityModel, "self")) {
+                      if (resourceModel instanceof SelfLinkProvider) {
+                        ((SelfLinkProvider) resourceModel)
+                            .selfLink()
+                            .ifPresent(selfLink -> entityModel.getLinks().add(selfLink));
+                      } else {
+                        entityModel.getLinks().add(ResourceLink.selfLink(uriRouteMatch.getUri()));
+                      }
+                    }
 
                     ((MutableHttpResponse) res).body(entityModel);
 
@@ -133,9 +138,13 @@ public class HateoasResponseFilter implements HttpServerFilter {
 
                         linkProviderList.forEach(
                             provider ->
-                                entityModel.getLinks().addAll(provider.getLinks(uriRouteMatch)));
+                                entityModel
+                                    .getLinks()
+                                    .addAll(provider.getLinks(uriRouteMatch, resourceModel)));
 
-                        if (model instanceof Identifiable) {
+                        // this self link is only added if the linkProviders are not already
+                        // defining one
+                        if (model instanceof Identifiable && !hasLink(entityModel, "self")) {
                           entityModel
                               .getLinks()
                               .add(
@@ -153,5 +162,14 @@ public class HateoasResponseFilter implements HttpServerFilter {
                 }
               }
             });
+  }
+
+  private boolean hasLink(EntityModel entityModel, String relName) {
+    if (entityModel.getLinks() == null) {
+      return false;
+    }
+    return entityModel.getLinks().stream()
+        .map(ResourceLink::getRel)
+        .anyMatch(it -> Objects.equals(relName, it));
   }
 }
