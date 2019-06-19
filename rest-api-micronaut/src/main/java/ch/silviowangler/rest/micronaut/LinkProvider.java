@@ -34,7 +34,8 @@ public interface LinkProvider {
   /**
    * All link providers are called with getLinks on every routeMatch from the HATEOAS filter {@link
    * HateoasResponseFilter}, and the resulting links are added to the response in the links of the
-   * {@link ch.silviowangler.rest.model.EntityModel}
+   * {@link ch.silviowangler.rest.model.EntityModel}. If a baseUrl is configured under
+   * `restapi.hateaos.filter.base` then it is prepended to all resourceLinks.
    *
    * @param routeMatch the current routeMatch in the filter
    * @param model the resource model with the data of the response
