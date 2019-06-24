@@ -817,6 +817,10 @@ For our REST clients I would like to provide a feature I call "Expanded Gets" si
 }
 ```
 
+If there are several expandable sub resources a client can either name them all or use an Asterix `*` to fetch them all at once. 
+
+`GET /countries/CHE?expands=*` 
+
 ### Spring Boot
 
 Not yet supported
