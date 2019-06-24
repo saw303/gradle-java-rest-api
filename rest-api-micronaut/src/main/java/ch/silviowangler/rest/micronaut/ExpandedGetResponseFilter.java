@@ -139,7 +139,7 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
                         contract.getSubresources().stream()
                             .filter(subResource -> subResource.isExpandable())
                             .map(subResource -> subResource.getName())
-                            .collect(Collectors.joining());
+                            .collect(Collectors.joining(","));
                   }
 
                   Object initialBody = res.body();
