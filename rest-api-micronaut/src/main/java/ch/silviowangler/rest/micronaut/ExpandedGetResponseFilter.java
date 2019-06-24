@@ -23,6 +23,8 @@
  */
 package ch.silviowangler.rest.micronaut;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import ch.silviowangler.rest.contract.model.v1.ResourceContract;
 import ch.silviowangler.rest.contract.model.v1.SubResource;
 import ch.silviowangler.rest.model.CollectionExpand;
@@ -46,9 +48,6 @@ import io.micronaut.inject.ExecutableMethod;
 import io.micronaut.web.router.Router;
 import io.micronaut.web.router.UriRouteMatch;
 import io.reactivex.Flowable;
-import org.reactivestreams.Publisher;
-import org.slf4j.Logger;
-
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -59,8 +58,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static org.slf4j.LoggerFactory.getLogger;
+import org.reactivestreams.Publisher;
+import org.slf4j.Logger;
 
 /**
  * Enables "Expanded GET" requests.
