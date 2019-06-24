@@ -193,6 +193,9 @@ public class HateoasResponseFilter implements HttpServerFilter {
     if (baseUrl.isEmpty()) {
       return link;
     }
+    if (link.getHref().isAbsolute()) {
+      return link;
+    }
     return new ResourceLink(link.getRel(), link.getMethod(), URI.create(baseUrl + link.getHref()));
   }
 
