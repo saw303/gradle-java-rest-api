@@ -23,11 +23,15 @@
  */
 package ch.silviowangler.rest.micronaut;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import ch.silviowangler.rest.contract.model.v1.ResourceContract;
 import ch.silviowangler.rest.contract.model.v1.SubResource;
-import ch.silviowangler.rest.model.*;
+import ch.silviowangler.rest.model.CollectionExpand;
+import ch.silviowangler.rest.model.CollectionModel;
+import ch.silviowangler.rest.model.EntityExpand;
+import ch.silviowangler.rest.model.EntityModel;
+import ch.silviowangler.rest.model.Expand;
+import ch.silviowangler.rest.model.Identifiable;
+import ch.silviowangler.rest.model.ResourceModel;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.ApplicationContext;
 import io.micronaut.context.annotation.Requires;
@@ -42,11 +46,21 @@ import io.micronaut.inject.ExecutableMethod;
 import io.micronaut.web.router.Router;
 import io.micronaut.web.router.UriRouteMatch;
 import io.reactivex.Flowable;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.*;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
+
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Enables "Expanded GET" requests.
@@ -118,6 +132,15 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
                           routeMatchCurrentResource.getExecutableMethod().getDeclaringType());
 
                   ResourceContract contract = fetchContract(currentResource).get();
+
+                  // fetch all expandable resources
+                  if (Objects.equals("*", expands)) {
+                    expands =
+                        contract.getSubresources().stream()
+                            .filter(subResource -> subResource.isExpandable())
+                            .map(subResource -> subResource.getName())
+                            .collect(Collectors.joining(","));
+                  }
 
                   Object initialBody = res.body();
 
