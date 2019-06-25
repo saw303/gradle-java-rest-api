@@ -58,6 +58,10 @@ public class LinkParameter implements Serializable {
     return Objects.hash(name, type, mandatory);
   }
 
+  public Boolean getMandatory() {
+    return mandatory;
+  }
+
   public void setMandatory(Boolean mandatory) {
     this.mandatory = mandatory;
   }
