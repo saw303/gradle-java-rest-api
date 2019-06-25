@@ -24,23 +24,20 @@
 package ch.silviowangler.rest.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 /** Represents a URL query parameter in a {@link ResourceLink} */
 public class LinkParameter implements Serializable {
   private String name;
   private String type;
-  private List<String> mandatory;
+  private Boolean mandatory = Boolean.FALSE;
 
   public LinkParameter(String name, String type) {
     this.name = name;
     this.type = type;
-    this.mandatory = new ArrayList<>();
   }
 
-  public LinkParameter(String name, String type, List<String> mandatory) {
+  public LinkParameter(String name, String type, Boolean mandatory) {
     this.name = name;
     this.type = type;
     this.mandatory = mandatory;
@@ -61,14 +58,8 @@ public class LinkParameter implements Serializable {
     return Objects.hash(name, type, mandatory);
   }
 
-  @Override
-  public String toString() {
-    final StringBuilder sb = new StringBuilder("LinkParameter{");
-    sb.append("name='").append(name).append('\'');
-    sb.append(", type='").append(type).append('\'');
-    sb.append(", mandatory=").append(mandatory);
-    sb.append('}');
-    return sb.toString();
+  public void setMandatory(Boolean mandatory) {
+    this.mandatory = mandatory;
   }
 
   public String getType() {
@@ -79,19 +70,21 @@ public class LinkParameter implements Serializable {
     this.type = type;
   }
 
-  public List<String> getMandatory() {
-    return mandatory;
-  }
-
-  public void setMandatory(List<String> mandatory) {
-    this.mandatory = mandatory;
-  }
-
   public String getName() {
     return name;
   }
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder("LinkParameter{");
+    sb.append("name='").append(name).append('\'');
+    sb.append(", type='").append(type).append('\'');
+    sb.append(", mandatory=").append(mandatory);
+    sb.append('}');
+    return sb.toString();
   }
 }
