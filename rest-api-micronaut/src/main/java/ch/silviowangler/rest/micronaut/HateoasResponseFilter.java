@@ -190,10 +190,7 @@ public class HateoasResponseFilter implements HttpServerFilter {
   }
 
   private ResourceLink addBaseUrl(ResourceLink link) {
-    if (baseUrl.isEmpty()) {
-      return link;
-    }
-    if (link.getHref().isAbsolute()) {
+    if (baseUrl.isEmpty() || link.getHref().isAbsolute()) {
       return link;
     }
     return new ResourceLink(link.getRel(), link.getMethod(), URI.create(baseUrl + link.getHref()));
