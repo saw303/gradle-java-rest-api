@@ -26,6 +26,8 @@ package ch.silviowangler.gradle.restapi.builder;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_DECIMAL_MAX;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_DECIMAL_MIN;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_EMAIL;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_MAX;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_MIN;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_NOT_NULL;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_SIZE;
 import static ch.silviowangler.gradle.restapi.PluginTypes.RESTAPI_IDENTIFIABLE;
@@ -563,8 +565,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
             Number min = field.getMin();
             Number max = field.getMax();
 
-            if ("integer".equalsIgnoreCase(field.getType())
-                || "string".equalsIgnoreCase(field.getType())) {
+            if ("string".equalsIgnoreCase(field.getType())) {
 
               AnnotationSpec.Builder annoBuilder =
                   AnnotationSpec.builder(JAVAX_VALIDATION_SIZE.getClassName());
@@ -586,6 +587,15 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
               fieldBuilder.addAnnotation(
                   AnnotationSpec.builder(JAVAX_VALIDATION_DECIMAL_MAX.getClassName())
                       .addMember("value", "$S", max.doubleValue())
+                      .build());
+            } else if ("int".equalsIgnoreCase(field.getType())) {
+              fieldBuilder.addAnnotation(
+                  AnnotationSpec.builder(JAVAX_VALIDATION_MIN.getClassName())
+                      .addMember("value", "$L", min.intValue())
+                      .build());
+              fieldBuilder.addAnnotation(
+                  AnnotationSpec.builder(JAVAX_VALIDATION_MAX.getClassName())
+                      .addMember("value", "$L", max.intValue())
                       .build());
             }
           }
