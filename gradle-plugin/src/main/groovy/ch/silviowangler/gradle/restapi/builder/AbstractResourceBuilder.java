@@ -549,17 +549,19 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
             fieldBuilder.addAnnotation(createAnnotation(JAVAX_VALIDATION_NOT_NULL));
           }
 
-          if (!verb.equals(verbGet) && "email".equalsIgnoreCase(field.getType())) {
+          boolean isEntityGet = hasGetEntityVerb() && verb.equals(verbGet);
+
+          if (!isEntityGet && "email".equalsIgnoreCase(field.getType())) {
             fieldBuilder.addAnnotation(
                 AnnotationSpec.builder(JAVAX_VALIDATION_EMAIL.getClassName()).build());
           }
 
-          if (!verb.equals(verbGet) && "phoneNumber".equalsIgnoreCase(field.getType())) {
+          if (!isEntityGet && "phoneNumber".equalsIgnoreCase(field.getType())) {
             fieldBuilder.addAnnotation(
                 AnnotationSpec.builder(VALIDATION_PHONE_NUMBER.getClassName()).build());
           }
 
-          if (!verb.equals(verbGet)
+          if (!isEntityGet
               && (field.getMin() instanceof Number || field.getMax() instanceof Number)) {
 
             Number min = field.getMin();
@@ -577,8 +579,8 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
               if (field.getMax() != null) {
                 annoBuilder.addMember("max", "$L", max.intValue());
               }
-
               fieldBuilder.addAnnotation(annoBuilder.build());
+
             } else if ("decimal".equalsIgnoreCase(field.getType())) {
               fieldBuilder.addAnnotation(
                   AnnotationSpec.builder(JAVAX_VALIDATION_DECIMAL_MIN.getClassName())
