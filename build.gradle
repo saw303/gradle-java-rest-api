@@ -13,7 +13,7 @@ buildscript {
     gsonVersion='2.8.5'
 
     springVersion='5.1.8.RELEASE'
-    micronautVersion='1.1.3'
+    micronautVersion='1.1.4'
     slf4jVersion='1.7.26'
   }
 
