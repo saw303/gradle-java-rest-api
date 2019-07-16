@@ -72,7 +72,6 @@
           "mimetype": "application/ch.silviowangler.ort.collection"
         }
       ],
-
       "options": [],
       "permissions": []
     },
@@ -183,7 +182,8 @@
       "type": "string",
       "options": null,
       "mandatory": [
-        "PUT", "POST"
+        "PUT",
+        "POST"
       ],
       "min": null,
       "max": 20,
@@ -202,7 +202,8 @@
       "type": "coordinates",
       "options": null,
       "mandatory": [
-        "PUT", "POST"
+        "PUT",
+        "POST"
       ],
       "min": null,
       "max": null,
@@ -224,6 +225,14 @@
       "type": "application/vnd.ch.silviowangler.districts.collection",
       "rel": "subresource",
       "href": "/v1/countries/{:country}/cities/{:entity}/districts/",
+      "method": "GET",
+      "expandable": true
+    },
+    {
+      "name": "lakes",
+      "type": "application/vnd.ch.silviowangler.lakes.collection",
+      "rel": "subresource",
+      "href": "/v1/countries/{:country}/cities/{:entity}/lakes/",
       "method": "GET",
       "expandable": true
     }

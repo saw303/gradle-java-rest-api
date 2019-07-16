@@ -40,9 +40,9 @@
           "type": "string",
           "options": null,
           "mandatory": true,
-          "min": null,
+          "min": 1,
           "max": null,
-          "multiple": false,
+          "multiple": true,
           "defaultValue": null,
           "alias": [],
           "x-comment": "search"

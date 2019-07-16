@@ -26,6 +26,8 @@ package ch.silviowangler.gradle.restapi.builder.micronaut;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_INJECT;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_NULLABLE;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_SINGLETON;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_NOT_NULL;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_SIZE;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_VALID;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_CONTROLLER;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_DATE_FORMAT;
@@ -164,6 +166,26 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
     List<AnnotationSpec> annotationSpecs = new ArrayList<>();
 
     annotationSpecs.add(AnnotationSpec.builder(JAVAX_VALIDATION_VALID.getClassName()).build());
+    if (param.getMandatory()) {
+      annotationSpecs.add(AnnotationSpec.builder(JAVAX_VALIDATION_NOT_NULL.getClassName()).build());
+    } else {
+      annotationSpecs.add(AnnotationSpec.builder(JAVAX_NULLABLE.getClassName()).build());
+    }
+
+    if (param.hasMinMaxConstraints()) {
+      AnnotationSpec.Builder sizeAnnotationBuilder =
+          AnnotationSpec.builder(JAVAX_VALIDATION_SIZE.getClassName());
+
+      if (param.getMin() != null) {
+        sizeAnnotationBuilder.addMember("min", "$L", param.getMin().intValue());
+      }
+
+      if (param.getMax() != null) {
+        sizeAnnotationBuilder.addMember("max", "$L", param.getMax().intValue());
+      }
+      annotationSpecs.add(sizeAnnotationBuilder.build());
+    }
+
     annotationSpecs.add(AnnotationSpec.builder(MICRONAUT_QUERY_VALUE.getClassName()).build());
 
     if ("date".equals(param.getType())) {
@@ -174,10 +196,6 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
       AnnotationSpec.Builder formatBuilder =
           AnnotationSpec.builder(MICRONAUT_DATE_TIME_FORMAT.getClassName());
       annotationSpecs.add(formatBuilder.build());
-    }
-
-    if (!param.getMandatory()) {
-      annotationSpecs.add(AnnotationSpec.builder(JAVAX_NULLABLE.getClassName()).build());
     }
 
     return annotationSpecs;

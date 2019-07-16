@@ -30,6 +30,7 @@ import ch.silviowangler.rest.model.ResourceLink;
 import ch.silviowangler.rest.model.ResourceModel;
 import ch.silviowangler.rest.model.SelfLinkProvider;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.context.annotation.Value;
 import io.micronaut.http.HttpAttributes;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.MediaType;
@@ -39,9 +40,13 @@ import io.micronaut.http.filter.HttpServerFilter;
 import io.micronaut.http.filter.ServerFilterChain;
 import io.micronaut.web.router.UriRouteMatch;
 import io.reactivex.Flowable;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.reactivestreams.Publisher;
 
 /**
@@ -73,9 +78,25 @@ import org.reactivestreams.Publisher;
 @Requires(property = "restapi.hateoas.filter.enabled")
 public class HateoasResponseFilter implements HttpServerFilter {
   private final List<LinkProvider> linkProviderList;
+  private final String baseUrl;
 
-  public HateoasResponseFilter(List<LinkProvider> linkProviderList) {
+  public HateoasResponseFilter(
+      List<LinkProvider> linkProviderList,
+      @Value("${restapi.hateoas.filter.base:}") String baseUrl) {
     this.linkProviderList = linkProviderList;
+    this.baseUrl = baseUrl;
+    validateBaseUrl(baseUrl);
+  }
+
+  private void validateBaseUrl(String baseUrl) {
+    if (!baseUrl.isEmpty()) {
+      try {
+        new URI(baseUrl);
+      } catch (URISyntaxException e) {
+        throw new RuntimeException(
+            String.format("Invalid URI for restapi.hateaos.filter.base: [%s]", baseUrl));
+      }
+    }
   }
 
   @Override
@@ -105,17 +126,20 @@ public class HateoasResponseFilter implements HttpServerFilter {
                     ResourceModel resourceModel = (ResourceModel) res.body();
                     EntityModel entityModel = new EntityModel(resourceModel);
 
-                    if (resourceModel instanceof SelfLinkProvider) {
-                      ((SelfLinkProvider) resourceModel)
-                          .selfLink()
-                          .ifPresent(selfLink -> entityModel.getLinks().add(selfLink));
-                    } else {
-                      entityModel.getLinks().add(ResourceLink.selfLink(uriRouteMatch.getUri()));
-                    }
+                    addProviderLinks(uriRouteMatch, resourceModel, entityModel);
 
-                    linkProviderList.forEach(
-                        provider ->
-                            entityModel.getLinks().addAll(provider.getLinks(uriRouteMatch)));
+                    if (!hasLink(entityModel, "self")) {
+                      if (resourceModel instanceof SelfLinkProvider) {
+                        ((SelfLinkProvider) resourceModel)
+                            .selfLink()
+                            .ifPresent(
+                                selfLink -> entityModel.getLinks().add(addBaseUrl(selfLink)));
+                      } else {
+                        entityModel
+                            .getLinks()
+                            .add(addBaseUrl(ResourceLink.selfLink(uriRouteMatch.getUri())));
+                      }
+                    }
 
                     ((MutableHttpResponse) res).body(entityModel);
 
@@ -124,25 +148,25 @@ public class HateoasResponseFilter implements HttpServerFilter {
                     Collection models = (Collection) res.body();
 
                     CollectionModel collectionModel = new CollectionModel();
-                    collectionModel.getLinks().add(ResourceLink.selfLink(uriRouteMatch.getUri()));
+                    ResourceLink collectionSelfLink = ResourceLink.selfLink(uriRouteMatch.getUri());
+                    collectionModel.getLinks().add(addBaseUrl(collectionSelfLink));
 
                     for (Object model : models) {
                       if (model instanceof ResourceModel) {
                         ResourceModel resourceModel = (ResourceModel) model;
                         EntityModel entityModel = new EntityModel(resourceModel);
 
-                        linkProviderList.forEach(
-                            provider ->
-                                entityModel.getLinks().addAll(provider.getLinks(uriRouteMatch)));
+                        addProviderLinks(uriRouteMatch, resourceModel, entityModel);
 
-                        if (model instanceof Identifiable) {
-                          entityModel
-                              .getLinks()
-                              .add(
-                                  ResourceLink.selfLink(
-                                      uriRouteMatch.getUri()
-                                          + "/"
-                                          + ((Identifiable) resourceModel).getId()));
+                        // this self link is only added if the linkProviders are not already
+                        // defining one
+                        if (model instanceof Identifiable && !hasLink(entityModel, "self")) {
+                          ResourceLink selfLink =
+                              ResourceLink.selfLink(
+                                  uriRouteMatch.getUri()
+                                      + "/"
+                                      + ((Identifiable) resourceModel).getId());
+                          entityModel.getLinks().add(addBaseUrl(selfLink));
                         }
 
                         collectionModel.getData().add(entityModel);
@@ -153,5 +177,36 @@ public class HateoasResponseFilter implements HttpServerFilter {
                 }
               }
             });
+  }
+
+  private void addProviderLinks(
+      UriRouteMatch uriRouteMatch, ResourceModel resourceModel, EntityModel entityModel) {
+    linkProviderList.forEach(
+        provider -> {
+          List<ResourceLink> links = provider.getLinks(uriRouteMatch, resourceModel);
+          links = addBaseUrl(links);
+          entityModel.getLinks().addAll(links);
+        });
+  }
+
+  private ResourceLink addBaseUrl(ResourceLink link) {
+    if (baseUrl.isEmpty() || link.getHref().isAbsolute()) {
+      return link;
+    }
+    return new ResourceLink(
+        link.getRel(), link.getMethod(), URI.create(baseUrl + link.getHref()), link.getParams());
+  }
+
+  private List<ResourceLink> addBaseUrl(List<ResourceLink> links) {
+    return links.stream().map(this::addBaseUrl).collect(Collectors.toList());
+  }
+
+  private boolean hasLink(EntityModel entityModel, String relName) {
+    if (entityModel.getLinks() == null) {
+      return false;
+    }
+    return entityModel.getLinks().stream()
+        .map(ResourceLink::getRel)
+        .anyMatch(it -> Objects.equals(relName, it));
   }
 }

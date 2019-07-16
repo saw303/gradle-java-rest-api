@@ -26,6 +26,8 @@ package ch.silviowangler.gradle.restapi.builder;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_DECIMAL_MAX;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_DECIMAL_MIN;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_EMAIL;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_MAX;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_MIN;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_NOT_NULL;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_SIZE;
 import static ch.silviowangler.gradle.restapi.PluginTypes.RESTAPI_IDENTIFIABLE;
@@ -547,24 +549,25 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
             fieldBuilder.addAnnotation(createAnnotation(JAVAX_VALIDATION_NOT_NULL));
           }
 
-          if (!verb.equals(verbGet) && "email".equalsIgnoreCase(field.getType())) {
+          boolean isEntityGet = hasGetEntityVerb() && verb.equals(verbGet);
+
+          if (!isEntityGet && "email".equalsIgnoreCase(field.getType())) {
             fieldBuilder.addAnnotation(
                 AnnotationSpec.builder(JAVAX_VALIDATION_EMAIL.getClassName()).build());
           }
 
-          if (!verb.equals(verbGet) && "phoneNumber".equalsIgnoreCase(field.getType())) {
+          if (!isEntityGet && "phoneNumber".equalsIgnoreCase(field.getType())) {
             fieldBuilder.addAnnotation(
                 AnnotationSpec.builder(VALIDATION_PHONE_NUMBER.getClassName()).build());
           }
 
-          if (!verb.equals(verbGet)
+          if (!isEntityGet
               && (field.getMin() instanceof Number || field.getMax() instanceof Number)) {
 
             Number min = field.getMin();
             Number max = field.getMax();
 
-            if ("integer".equalsIgnoreCase(field.getType())
-                || "string".equalsIgnoreCase(field.getType())) {
+            if ("string".equalsIgnoreCase(field.getType())) {
 
               AnnotationSpec.Builder annoBuilder =
                   AnnotationSpec.builder(JAVAX_VALIDATION_SIZE.getClassName());
@@ -576,8 +579,8 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
               if (field.getMax() != null) {
                 annoBuilder.addMember("max", "$L", max.intValue());
               }
-
               fieldBuilder.addAnnotation(annoBuilder.build());
+
             } else if ("decimal".equalsIgnoreCase(field.getType())) {
               fieldBuilder.addAnnotation(
                   AnnotationSpec.builder(JAVAX_VALIDATION_DECIMAL_MIN.getClassName())
@@ -586,6 +589,15 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
               fieldBuilder.addAnnotation(
                   AnnotationSpec.builder(JAVAX_VALIDATION_DECIMAL_MAX.getClassName())
                       .addMember("value", "$S", max.doubleValue())
+                      .build());
+            } else if ("int".equalsIgnoreCase(field.getType())) {
+              fieldBuilder.addAnnotation(
+                  AnnotationSpec.builder(JAVAX_VALIDATION_MIN.getClassName())
+                      .addMember("value", "$L", min.intValue())
+                      .build());
+              fieldBuilder.addAnnotation(
+                  AnnotationSpec.builder(JAVAX_VALIDATION_MAX.getClassName())
+                      .addMember("value", "$L", max.intValue())
                       .build());
             }
           }

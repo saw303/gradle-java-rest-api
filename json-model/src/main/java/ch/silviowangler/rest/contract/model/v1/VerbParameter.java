@@ -170,6 +170,10 @@ public class VerbParameter implements Serializable, FieldType {
     this.xComment = xComment;
   }
 
+  public boolean hasMinMaxConstraints() {
+    return getMin() != null || getMax() != null;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
