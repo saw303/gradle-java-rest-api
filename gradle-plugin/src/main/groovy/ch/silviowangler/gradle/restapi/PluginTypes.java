@@ -103,6 +103,7 @@ public enum PluginTypes {
   MICRONAUT_HEADER(ClassName.get("io.micronaut.http.annotation", "Header")),
   MICRONAUT_FORMAT(ClassName.get("io.micronaut.core.convert.format", "Format")),
   MICRONAUT_DATE_FORMAT(ClassName.get("ch.silviowangler.rest.micronaut.binding", "DateFormat")),
+  MICRONAUT_INTROSPECTED(ClassName.get("io.micronaut.core.annotation", "Introspected")),
   MICRONAUT_DATE_TIME_FORMAT(
       ClassName.get("ch.silviowangler.rest.micronaut.binding", "DateTimeFormat")),
   VALIDATION_PHONE_NUMBER(ClassName.get(PhoneNumber.class));
