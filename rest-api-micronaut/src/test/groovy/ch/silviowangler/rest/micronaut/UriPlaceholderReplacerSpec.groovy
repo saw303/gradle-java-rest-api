@@ -23,7 +23,6 @@
  */
 package ch.silviowangler.rest.micronaut
 
-import io.micronaut.web.router.UriRouteMatch
 import spock.lang.Specification
 
 import static ch.silviowangler.rest.micronaut.ExpandedGetResponseFilter.UriPlaceholderReplacer.replacePlaceholders
@@ -35,36 +34,21 @@ class UriPlaceholderReplacerSpec extends Specification {
 
     void "replace one placeholder placeholder"() {
 
-        given:
-        UriRouteMatch uriRouteMatch = Mock()
-
         when:
-        String result = replacePlaceholders('/v1/countries/{:entity}/cities/', uriRouteMatch)
+        String result = replacePlaceholders('/v1/countries/{:entity}/cities/', ['id': 'CHE'])
 
         then:
         result == '/v1/countries/CHE/cities/'
-
-        and:
-        1 * uriRouteMatch.getVariableValues() >> ['id': 'CHE']
-        1 * uriRouteMatch.getArgumentNames() >> ['id']
-        0 * _
     }
 
     void "replace several placeholders placeholder"() {
 
-        given:
-        UriRouteMatch uriRouteMatch = Mock()
-
         when:
-        String result = replacePlaceholders('/v1/countries/{:country}/cities/{:entity}/municipalities', uriRouteMatch)
+        String result = replacePlaceholders('/v1/countries/{:country}/cities/{:entity}/municipalities', ['id': 'ZH', 'country': 'CHE'])
 
         then:
         result == '/v1/countries/CHE/cities/ZH/municipalities'
 
-        and:
-        1 * uriRouteMatch.getVariableValues() >> ['id': 'ZH', 'country': 'CHE']
-        1 * uriRouteMatch.getArgumentNames() >> ['country', 'id']
-        0 * _
     }
 
 }
