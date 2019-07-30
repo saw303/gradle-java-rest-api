@@ -1,0 +1,75 @@
+package org.acme.rest.v1.laender.orte;
+
+import ch.silviowangler.rest.model.Identifiable;
+import ch.silviowangler.rest.model.ResourceModel;
+import io.micronaut.core.annotation.Introspected;
+import java.io.Serializable;
+import java.util.Objects;
+import javax.annotation.Generated;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import org.acme.rest.v1.CoordinatesType;
+
+@Generated(
+    comments = "Specification filename: land.ort.v1.json",
+    value = "ch.silviowangler.restapi"
+)
+@Introspected
+public class OrtPostResourceModel implements Serializable, ResourceModel, Identifiable<String> {
+  /**
+   * VOKey
+   */
+  private String id;
+
+  /**
+   * Ort
+   */
+  @NotNull
+  @Size(
+      max = 20
+  )
+  private String name;
+
+  /**
+   * Koordinaten
+   */
+  @NotNull
+  private CoordinatesType koordinaten;
+
+  public String getId() {
+    return this.id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public String getName() {
+    return this.name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public CoordinatesType getKoordinaten() {
+    return this.koordinaten;
+  }
+
+  public void setKoordinaten(CoordinatesType koordinaten) {
+    this.koordinaten = koordinaten;
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    if (! (other instanceof OrtPostResourceModel)) return false;
+    OrtPostResourceModel that = (OrtPostResourceModel) other;
+    return Objects.equals(getId(), that.getId()) && Objects.equals(getName(), that.getName()) && Objects.equals(getKoordinaten(), that.getKoordinaten());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, name, koordinaten);
+  }
+}

@@ -39,6 +39,7 @@ import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_HEADER;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_HTTP_MEDIA_TYPE;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_HTTP_RESPONSE;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_HTTP_STATUS;
+import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_INTROSPECTED;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_OPTIONS;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_POST;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_PRODUCES;
@@ -334,5 +335,13 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
         params,
         MICRONAUT_HTTP_MEDIA_TYPE.getClassName(),
         context.getRepresentation().getMimetype().toString());
+  }
+
+  @Override
+  protected void enhanceResourceModelBaseInstance(Verb verb, TypeSpec.Builder builder) {
+
+    if (verb.getVerb().equals("PUT") || verb.getVerb().equals("POST")) {
+      builder.addAnnotation(createAnnotation(MICRONAUT_INTROSPECTED));
+    }
   }
 }
