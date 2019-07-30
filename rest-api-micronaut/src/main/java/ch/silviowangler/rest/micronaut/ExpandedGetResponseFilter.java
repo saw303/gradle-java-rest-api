@@ -161,7 +161,7 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
                     }
                     ((MutableHttpResponse) res).body(initialBody);
                   } else {
-                    log.debug(
+                    log.warn(
                         "Return type '{}' and not as expected '{}'",
                         initialBody.getClass().getCanonicalName(),
                         EntityModel.class.getCanonicalName());
@@ -186,7 +186,7 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
               .findAny();
 
       if (!potSubResource.isPresent()) {
-        log.debug(
+        log.warn(
             "Expand '{}' is not a sub resource of '{}'", expand, contract.getGeneral().getName());
         continue;
       }
@@ -194,7 +194,7 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
       SubResource subResourceContract = potSubResource.get();
 
       if (!subResourceContract.isExpandable()) {
-        log.debug("Sub resource '{}' is not expandable", subResourceContract.getName());
+        log.warn("Sub resource '{}' is not expandable", subResourceContract.getName());
         continue;
       }
 
@@ -238,7 +238,7 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
 
           initialBody.getExpands().add(expandedData);
         } catch (Exception e) {
-          log.debug("Exception caught while expanding subresource " + expand, e);
+          log.error("Exception caught while expanding sub resource " + expand, e);
         }
       }
     }
