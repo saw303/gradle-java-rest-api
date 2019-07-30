@@ -50,14 +50,13 @@ import io.micronaut.web.router.UriRouteMatch;
 import io.reactivex.Flowable;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 
@@ -114,6 +113,10 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
     return Flowable.fromPublisher(chain.proceed(request))
         .doOnNext(
             res -> {
+              // we don't want to add expands to failed requests
+              if (res.status().getCode() > 299) {
+                return;
+              }
               if (request.getMethod().equals(HttpMethod.GET)
                   && request.getParameters().contains(EXPAND_PARAM_NAME)) {
                 String expands = request.getParameters().get(EXPAND_PARAM_NAME);
@@ -158,7 +161,7 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
                     }
                     ((MutableHttpResponse) res).body(initialBody);
                   } else {
-                    log.debug(
+                    log.warn(
                         "Return type '{}' and not as expected '{}'",
                         initialBody.getClass().getCanonicalName(),
                         EntityModel.class.getCanonicalName());
@@ -183,7 +186,7 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
               .findAny();
 
       if (!potSubResource.isPresent()) {
-        log.debug(
+        log.warn(
             "Expand '{}' is not a sub resource of '{}'", expand, contract.getGeneral().getName());
         continue;
       }
@@ -191,13 +194,18 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
       SubResource subResourceContract = potSubResource.get();
 
       if (!subResourceContract.isExpandable()) {
-        log.debug("Sub resource '{}' is not expandable", subResourceContract.getName());
+        log.warn("Sub resource '{}' is not expandable", subResourceContract.getName());
         continue;
       }
 
+      Map<String, Object> variables = new HashMap<>(routeMatchCurrentResource.getVariableValues());
+
+      if (mustAddEntityId) {
+        variables.put("id", ((Identifiable) initialBody.getData()).getId());
+      }
+
       String targetUri =
-          UriPlaceholderReplacer.replacePlaceholders(
-              subResourceContract.getHref(), routeMatchCurrentResource);
+          UriPlaceholderReplacer.replacePlaceholders(subResourceContract.getHref(), variables);
 
       Optional<UriRouteMatch<Object, Object>> routeMatch = router.GET(targetUri);
 
@@ -210,21 +218,28 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
 
         Object bean = applicationContext.getBean(declaringType);
 
-        List<Object> values =
-            new ArrayList<>(routeMatchCurrentResource.getVariableValues().values());
+        // argument names in the right order
+        String[] argumentNames = executableMethod.getArgumentNames();
+        // arguments in the right order
+        Object[] argumentList =
+            Stream.of(argumentNames)
+                // terrible hack around limitations in REST contracts xRoute naming
+                .map(name -> variables.getOrDefault(name, variables.get("id")))
+                .toArray();
 
-        if (mustAddEntityId) {
-          values.add(((Identifiable) initialBody.getData()).getId());
+        try {
+
+          Object result = executableMethod.invoke(bean, argumentList);
+
+          Expand expandedData =
+              result instanceof Collection
+                  ? new CollectionExpand(expand, (Collection<ResourceModel>) result)
+                  : new EntityExpand(expand, (ResourceModel) result);
+
+          initialBody.getExpands().add(expandedData);
+        } catch (Exception e) {
+          log.error("Exception caught while expanding sub resource " + expand, e);
         }
-
-        Object result = executableMethod.invoke(bean, values.toArray());
-
-        Expand expandedData =
-            result instanceof Collection
-                ? new CollectionExpand(expand, (Collection<ResourceModel>) result)
-                : new EntityExpand(expand, (ResourceModel) result);
-
-        initialBody.getExpands().add(expandedData);
       }
     }
   }
@@ -270,20 +285,27 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
      *
      * @param uriWithPlaceholders URI template containing placeholders in path such as {@code
      *     {:country}}.
-     * @param uriRouteMatch URI that matches the template.
+     * @param variables a map from variable name to the contents to substitute
      * @return a string with all placeholders resolved.
      */
     public static String replacePlaceholders(
-        String uriWithPlaceholders, UriRouteMatch uriRouteMatch) {
+        String uriWithPlaceholders, Map<String, Object> variables) {
 
-      Map<String, Object> variableValues = uriRouteMatch.getVariableValues();
       StringBuilder sb = new StringBuilder(uriWithPlaceholders);
 
-      for (String argumentName : uriRouteMatch.getArgumentNames()) {
-        String regex = String.format("{:%s}", "id".equals(argumentName) ? "entity" : argumentName);
+      for (String argumentName : variables.keySet()) {
+        // the `id` argument maps to the `{:entity}` placeholder
+        String placeHolder =
+            String.format("{:%s}", "id".equals(argumentName) ? "entity" : argumentName);
 
-        int index = sb.indexOf(regex);
-        sb.replace(index, index + regex.length(), String.valueOf(variableValues.get(argumentName)));
+        int index = sb.indexOf(placeHolder);
+        if (index == -1) {
+          throw new RuntimeException(
+              String.format(
+                  "Could not find placeholder %s in %s", placeHolder, uriWithPlaceholders));
+        }
+        sb.replace(
+            index, index + placeHolder.length(), String.valueOf(variables.get(argumentName)));
       }
 
       return sb.toString();
