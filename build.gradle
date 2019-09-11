@@ -5,7 +5,7 @@ buildscript {
   }
   
   ext {
-    libPhoneNumberVersion = '8.10.17'
+    libPhoneNumberVersion = '8.10.18'
     javaPoetVersion='1.11.1'
     guavaVersion='28.0-jre'
 
@@ -13,14 +13,14 @@ buildscript {
     gsonVersion='2.8.5'
 
     springVersion='5.1.9.RELEASE'
-    micronautVersion='1.2.0'
+    micronautVersion='1.2.1'
     slf4jVersion='1.7.28'
   }
 
   dependencies {
     classpath "gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.14.0"
     classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
-    classpath 'com.github.ben-manes:gradle-versions-plugin:0.22.0'
+    classpath 'com.github.ben-manes:gradle-versions-plugin:0.25.0'
     classpath 'com.diffplug.spotless:spotless-plugin-gradle:3.24.2'
   }
 }
