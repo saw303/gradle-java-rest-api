@@ -28,7 +28,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Verifies that a resource contract contains at least one verb.
+ * Verifies that a resource contract contains at least one verb or sub resources.
  *
  * @author Silvio Wangler
  * @since 2.1.0
@@ -39,7 +39,7 @@ public class AtLeastOneVerbValidator implements Validator {
 
     Set<ConstraintViolation> violations = new HashSet<>();
 
-    if (resourceContract.getVerbs().isEmpty()) {
+    if (resourceContract.getVerbs().isEmpty() && resourceContract.getSubresources().isEmpty()) {
       violations.add(
           new ConstraintViolation(
               "The resource must contain at least one verb", this, resourceContract));
