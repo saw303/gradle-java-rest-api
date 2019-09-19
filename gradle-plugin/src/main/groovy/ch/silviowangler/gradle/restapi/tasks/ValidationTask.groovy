@@ -68,7 +68,7 @@ class ValidationTask extends SpecificationBaseTask {
 		boolean hasViolations = violations.size() > 0
 
 		if (hasViolations) {
-			violations.each { set -> println set.collect { v -> v.toString() }.join(",")}
+			violations.each { set -> println set.collect { v -> v.toString() }.join("\n")}
 			throw new RuntimeException("Your specifications violate with contract")
 		}
 	}
