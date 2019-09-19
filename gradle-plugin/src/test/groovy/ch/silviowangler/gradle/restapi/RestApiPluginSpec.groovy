@@ -156,6 +156,15 @@ class RestApiPluginSpec extends Specification {
 
     then:
     javaFiles.isEmpty()
+
+    when:
+    ValidationTask validationTask = project.tasks.validateRestSpecs as ValidationTask
+
+    and:
+    validationTask.validate()
+
+    then:
+    noExceptionThrown()
   }
 
 

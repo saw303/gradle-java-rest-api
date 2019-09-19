@@ -26,7 +26,10 @@ package ch.silviowangler.gradle.restapi.validation;
 import static ch.silviowangler.gradle.restapi.builder.ResourceBuilder.JavaTypeRegistry.isSupportedDataType;
 
 import ch.silviowangler.rest.contract.model.v1.ResourceContract;
+import ch.silviowangler.rest.contract.model.v1.ResourceField;
+import java.util.Objects;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -41,15 +44,25 @@ public class FieldTypeIsSupportedValidator implements Validator {
   @Override
   public Set<ConstraintViolation> validate(ResourceContract resourceContract) {
 
+    Predicate<ResourceField> isNotStandardSupportedType =
+        field -> !isSupportedDataType(field.getType());
+    Predicate<ResourceField> isNotCustomType =
+        field ->
+            resourceContract.getTypes().stream()
+                .noneMatch(t -> Objects.equals(t.getName(), field.getType()));
+
+    Predicate<ResourceField> isNotKnownExclusionType = field -> !field.isEnumType();
+
     Set<ConstraintViolation> violations =
         resourceContract.getFields().stream()
-            .filter(field -> !isSupportedDataType(field.getType()))
+            .filter(isNotStandardSupportedType.and(isNotCustomType).and(isNotKnownExclusionType))
             .map(
                 field ->
                     new ConstraintViolation(
                         String.format(
                             "Field '%s' declares an unsupported data type '%s'",
-                            field.getName(), field.getType())))
+                            field.getName(), field.getType()),
+                        this))
             .collect(Collectors.toSet());
 
     return violations;

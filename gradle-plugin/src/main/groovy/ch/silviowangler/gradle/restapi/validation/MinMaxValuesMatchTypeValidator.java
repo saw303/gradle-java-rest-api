@@ -48,12 +48,12 @@ public class MinMaxValuesMatchTypeValidator implements Validator {
 
     Set<ConstraintViolation> violations = new HashSet<>();
 
-    List<ResourceField> fieldsWithMinMaxConstraints =
+    List<ResourceField> fieldsWithMinAndOrMaxConstraints =
         resourceContract.getFields().stream()
             .filter(field -> field.getMin() != null || field.getMax() != null)
             .collect(Collectors.toList());
 
-    for (ResourceField field : fieldsWithMinMaxConstraints) {
+    for (ResourceField field : fieldsWithMinAndOrMaxConstraints) {
 
       // does the current datatype support min/max constraints?
       if (unsupportedTypes.contains(field.getType())) {
@@ -61,30 +61,39 @@ public class MinMaxValuesMatchTypeValidator implements Validator {
             new ConstraintViolation(
                 String.format(
                     "Min/Max not supported for field '%s' with type '%s'",
-                    field.getName(), field.getType())));
+                    field.getName(), field.getType()),
+                this));
         continue;
       }
 
       ClassName className = ResourceBuilder.JavaTypeRegistry.translateToJava(field);
       String fieldClassName = className.reflectionName();
 
-      String minClassName = field.getMin().getClass().getCanonicalName();
-      String maxClassName = field.getMax().getClass().getCanonicalName();
+      if (field.getMin() != null) {
+        String minClassName = field.getMin().getClass().getCanonicalName();
 
-      if (!Objects.equals(minClassName, fieldClassName)) {
-        violations.add(
-            new ConstraintViolation(
-                String.format(
-                    "Min constraints of field '%s' must be of type '%s' but is '%s'",
-                    field.getName(), fieldClassName, minClassName)));
+        if (!Objects.equals(minClassName, fieldClassName)) {
+          violations.add(
+              new ConstraintViolation(
+                  String.format(
+                      "Min constraints of field '%s' must be of type '%s' but is '%s'",
+                      field.getName(), fieldClassName, minClassName),
+                  this));
+        }
       }
 
-      if (!Objects.equals(maxClassName, fieldClassName)) {
-        violations.add(
-            new ConstraintViolation(
-                String.format(
-                    "Max constraints of field '%s' must be of type '%s' but is '%s'",
-                    field.getName(), fieldClassName, maxClassName)));
+      if (field.getMax() != null) {
+
+        String maxClassName = field.getMax().getClass().getCanonicalName();
+
+        if (!Objects.equals(maxClassName, fieldClassName)) {
+          violations.add(
+              new ConstraintViolation(
+                  String.format(
+                      "Max constraints of field '%s' must be of type '%s' but is '%s'",
+                      field.getName(), fieldClassName, maxClassName),
+                  this));
+        }
       }
     }
     return violations;

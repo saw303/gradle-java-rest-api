@@ -30,13 +30,19 @@ package ch.silviowangler.gradle.restapi.validation;
 public class ConstraintViolation {
 
   private final String message;
+  private final Validator source;
 
-  public ConstraintViolation(String message) {
+  public ConstraintViolation(String message, Validator source) {
     this.message = message;
+    this.source = source;
   }
 
   public String getMessage() {
     return message;
+  }
+
+  public Validator getSource() {
+    return source;
   }
 
   @Override

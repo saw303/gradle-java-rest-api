@@ -28,16 +28,25 @@ import ch.silviowangler.gradle.restapi.validation.*
 import ch.silviowangler.rest.contract.model.v1.ResourceContract
 import org.gradle.api.tasks.TaskAction
 
+import java.nio.charset.Charset
+
 /**
  * @author Silvio Wangler
  */
 class ValidationTask extends SpecificationBaseTask {
 
-	List<Validator> validators = [
-		new AtLeastOneVerbValidator(),
-		new FieldTypeIsSupportedValidator(),
-		new MinMaxValuesMatchTypeValidator()
-	]
+	private final List<Validator> validators
+
+	private final RestApiExtension restApiExtension
+
+	ValidationTask() {
+		this.validators= [
+			new AtLeastOneVerbValidator(),
+			new FieldTypeIsSupportedValidator(),
+			new MinMaxValuesMatchTypeValidator()
+		]
+		this.restApiExtension = project.restApi as RestApiExtension
+	}
 
 	@TaskAction
 	void validate() {
@@ -46,7 +55,7 @@ class ValidationTask extends SpecificationBaseTask {
 		Map<ResourceContract, Set<ConstraintViolation>> violationMap = [:]
 
 		for (File specFile in specs) {
-			ResourceContract contract = specGenerator.parseResourceContract(specGenerator, project.restApi as RestApiExtension).resourceContract
+			ResourceContract contract = specGenerator.parseResourceContract(specFile, this.restApiExtension.getResponseEncoding()?: Charset.forName("UTF-8")).resourceContract
 
 			violationMap[contract] = new HashSet<>()
 
@@ -55,9 +64,11 @@ class ValidationTask extends SpecificationBaseTask {
 			}
 		}
 
-		boolean hasViolations = violationMap.values().findAll { c -> c.size() > 0 }.size() > 0
+		Collection<Set<ConstraintViolation>> violations = violationMap.values().findAll { c -> c.size() > 0 }
+		boolean hasViolations = violations.size() > 0
 
 		if (hasViolations) {
+			violations.each { set -> println set.collect { v -> "${v.message} (${v.source.class.simpleName})"}.join(",")}
 			throw new RuntimeException("Your specifications violate with contract")
 		}
 	}

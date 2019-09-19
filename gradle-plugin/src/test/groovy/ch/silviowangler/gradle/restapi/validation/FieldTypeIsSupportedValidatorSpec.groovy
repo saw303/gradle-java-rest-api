@@ -3,6 +3,7 @@ package ch.silviowangler.gradle.restapi.validation
 
 import ch.silviowangler.rest.contract.model.v1.ResourceContract
 import ch.silviowangler.rest.contract.model.v1.ResourceField
+import ch.silviowangler.rest.contract.model.v1.ResourceTypes
 import spock.lang.Specification
 import spock.lang.Subject
 
@@ -47,5 +48,32 @@ class FieldTypeIsSupportedValidatorSpec extends Specification {
 
     and:
     violations.first().message == "Field 'YOLO' declares an unsupported data type 'blabla'"
+  }
+
+  void "Type validation respects custom types"() {
+
+    when:
+    Set<ConstraintViolation> violations = validator.validate(
+        new ResourceContract(
+            fields: [new ResourceField(name: 'YOLO', type: 'blabla')],
+            types: [ new ResourceTypes(name: 'blabla')]
+        )
+    )
+
+    then:
+    violations.isEmpty()
+  }
+
+  void "Ignore enum types"() {
+
+    when:
+    Set<ConstraintViolation> violations = validator.validate(
+        new ResourceContract(
+            fields: [new ResourceField(name: 'YOLO', type: 'enum')]
+        )
+    )
+
+    then:
+    violations.isEmpty()
   }
 }
