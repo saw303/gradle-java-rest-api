@@ -877,7 +877,20 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
             .addSuperinterface(Serializable.class)
             .addSuperinterface(RESTAPI_RESOURCE_MODEL.getTypeName());
 
+    enhanceResourceModelBaseInstance(verb, builder);
     return builder;
+  }
+
+  /**
+   * Can be used to add additional annotations or method to a resource model class by overwriting
+   * this method. The base implementation is NO-OP.
+   *
+   * @param verb the verb (e.g. GET_ENTITY, POST, PUT)
+   * @param builder the initial resource model builder that can be enhanced.
+   * @since 2.0.23
+   */
+  protected void enhanceResourceModelBaseInstance(Verb verb, TypeSpec.Builder builder) {
+    // noop
   }
 
   private List<ParameterSpec> getPathParams(LinkParser parser, boolean addAnnotations) {

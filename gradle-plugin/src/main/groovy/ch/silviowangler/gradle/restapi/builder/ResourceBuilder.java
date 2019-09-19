@@ -151,8 +151,7 @@ public interface ResourceBuilder {
         "Specification filename: " + getResourceContractContainer().getSourceFileName());
 
     if (printTimestamp) {
-      ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
-      map.put("date", utc.toString());
+      map.put("date", ZonedDateTime.now(ZoneOffset.UTC).toString());
     }
 
     return createAnnotation(JAVAX_GENERATED, map);
