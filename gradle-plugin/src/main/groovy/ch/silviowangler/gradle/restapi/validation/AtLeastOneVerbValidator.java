@@ -40,7 +40,9 @@ public class AtLeastOneVerbValidator implements Validator {
     Set<ConstraintViolation> violations = new HashSet<>();
 
     if (resourceContract.getVerbs().isEmpty()) {
-      violations.add(new ConstraintViolation("The resource must contain at least one verb", this));
+      violations.add(
+          new ConstraintViolation(
+              "The resource must contain at least one verb", this, resourceContract));
     }
     return violations;
   }

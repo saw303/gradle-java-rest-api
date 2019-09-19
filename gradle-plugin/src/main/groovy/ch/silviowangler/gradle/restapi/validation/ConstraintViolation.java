@@ -23,6 +23,8 @@
  */
 package ch.silviowangler.gradle.restapi.validation;
 
+import ch.silviowangler.rest.contract.model.v1.ResourceContract;
+
 /**
  * @author Silvio Wangler
  * @since 2.1.0
@@ -31,10 +33,12 @@ public class ConstraintViolation {
 
   private final String message;
   private final Validator source;
+  private final ResourceContract resourceContract;
 
-  public ConstraintViolation(String message, Validator source) {
+  public ConstraintViolation(String message, Validator source, ResourceContract resourceContract) {
     this.message = message;
     this.source = source;
+    this.resourceContract = resourceContract;
   }
 
   public String getMessage() {
@@ -45,8 +49,16 @@ public class ConstraintViolation {
     return source;
   }
 
+  public ResourceContract getResourceContract() {
+    return resourceContract;
+  }
+
   @Override
   public String toString() {
-    return this.message;
+    return String.format(
+        "%s (Resource: %s, Validator: %s)",
+        this.message,
+        this.resourceContract.getGeneral().getName(),
+        this.source.getClass().getSimpleName());
   }
 }

@@ -62,7 +62,8 @@ public class FieldTypeIsSupportedValidator implements Validator {
                         String.format(
                             "Field '%s' declares an unsupported data type '%s'",
                             field.getName(), field.getType()),
-                        this))
+                        this,
+                        resourceContract))
             .collect(Collectors.toSet());
 
     return violations;
