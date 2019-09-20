@@ -65,8 +65,8 @@ public class ResourceFieldDeserializer implements JsonDeserializer<ResourceField
     }
     field.setMandatory(mandatoryValues);
 
-    field.setMin(asNumber(jsonObject.get("min")));
-    field.setMax(asNumber(jsonObject.get("max")));
+    field.setMin(asNumberForType(jsonObject.get("min"), type));
+    field.setMax(asNumberForType(jsonObject.get("max"), type));
     field.setMultiple(asBoolean(jsonObject.get("multiple")));
     field.setDefaultValue(asString(jsonObject.get("defaultValue")));
     field.setShield(null);
@@ -101,12 +101,26 @@ public class ResourceFieldDeserializer implements JsonDeserializer<ResourceField
     }
   }
 
-  private Number asNumber(JsonElement jsonElement) {
+  private Number asNumberForType(JsonElement jsonElement, String type) {
 
     if (jsonElement == null) return null;
 
     if (!jsonElement.isJsonNull()) {
-      return jsonElement.getAsNumber();
+
+      switch (type) {
+        case "string":
+        case "int":
+          return jsonElement.getAsInt();
+        case "double":
+        case "float":
+        case "decimal":
+        case "money":
+          return jsonElement.getAsDouble();
+        case "long":
+          return jsonElement.getAsLong();
+        default:
+          throw new RuntimeException("Unknown number type " + type);
+      }
     } else {
       return null;
     }
