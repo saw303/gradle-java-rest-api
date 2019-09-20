@@ -40,10 +40,11 @@ class ValidationTask extends SpecificationBaseTask {
 	private final RestApiExtension restApiExtension
 
 	ValidationTask() {
-		this.validators= [
+		this.validators = [
 			new AtLeastOneVerbValidator(),
 			new FieldTypeIsSupportedValidator(),
-			new MinMaxValuesMatchTypeValidator()
+			new MinMaxValuesMatchTypeValidator(),
+			new MandatoryFieldValidator()
 		]
 		this.restApiExtension = project.restApi as RestApiExtension
 	}
@@ -55,7 +56,7 @@ class ValidationTask extends SpecificationBaseTask {
 		Map<ResourceContract, Set<ConstraintViolation>> violationMap = [:]
 
 		for (File specFile in specs) {
-			ResourceContract contract = specGenerator.parseResourceContract(specFile, this.restApiExtension.getResponseEncoding()?: Charset.forName("UTF-8")).resourceContract
+			ResourceContract contract = specGenerator.parseResourceContract(specFile, this.restApiExtension.getResponseEncoding() ?: Charset.forName("UTF-8")).resourceContract
 
 			violationMap[contract] = new HashSet<>()
 
@@ -68,7 +69,7 @@ class ValidationTask extends SpecificationBaseTask {
 		boolean hasViolations = violations.size() > 0
 
 		if (hasViolations) {
-			violations.each { set -> println set.collect { v -> v.toString() }.join("\n")}
+			violations.each { set -> println set.collect { v -> v.toString() }.join("\n") }
 			throw new RuntimeException("Your specifications violate with contract")
 		}
 	}
