@@ -1,7 +1,7 @@
 buildscript {
 
     ext {
-        restApiVersion = '2.0.8'
+        restApiVersion = '2.0.0'
     }
 
     repositories {
@@ -17,6 +17,9 @@ buildscript {
 plugins {
     id "io.spring.dependency-management" version "1.0.6.RELEASE"
     id "com.github.johnrengelman.shadow" version "4.0.2"
+    id "net.ltgt.apt-eclipse" version "0.18"
+    id "net.ltgt.apt-idea" version "0.18"
+
 }
 
 apply plugin:"application"
@@ -36,7 +39,7 @@ repositories {
 
 dependencyManagement {
     imports {
-        mavenBom 'io.micronaut:micronaut-bom:1.2.5'
+        mavenBom 'io.micronaut:micronaut-bom:1.1.3'
     }
 }
 
