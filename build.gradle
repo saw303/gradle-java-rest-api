@@ -14,7 +14,7 @@ buildscript {
 
     springVersion='5.1.9.RELEASE'
     micronautVersion='1.2.2'
-    slf4jVersion='1.7.28'
+    slf4jVersion='1.7.29'
   }
 
   dependencies {
