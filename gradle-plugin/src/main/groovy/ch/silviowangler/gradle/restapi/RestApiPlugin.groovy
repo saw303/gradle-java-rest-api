@@ -73,9 +73,9 @@ class RestApiPlugin implements Plugin<Project> {
 			project.configurations.create(CONFIGURATION_REST_API)
 		}
 
-		final String springVersion = "5.1.3.RELEASE"
-		final String pluginVersion = "2.0.23"
-		final String libPhoneNumberVersion = "8.10.12"
+		final String springVersion = "5.2.1.RELEASE"
+		final String pluginVersion = "2.0.24"
+		final String libPhoneNumberVersion = "8.10.22"
 
 		project.afterEvaluate {
 
