@@ -207,6 +207,15 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
 
       Map<String, Object> variables = new HashMap<>(routeMatchCurrentResource.getVariableValues());
 
+      if (mustAddEntityId) {
+        variables.put("id", ((Identifiable) initialBody.getData()).getId());
+      }
+
+      String targetUri =
+          UriPlaceholderReplacer.replacePlaceholders(subResourceContract.getHref(), variables);
+
+      Optional<UriRouteMatch<Object, Object>> routeMatch = router.GET(targetUri);
+
       for (Verb verb : contract.getVerbs()) {
         for (Header header : verb.getHeaders()) {
           String headerName = header.getName();
@@ -217,15 +226,6 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
           }
         }
       }
-
-      if (mustAddEntityId) {
-        variables.put("id", ((Identifiable) initialBody.getData()).getId());
-      }
-
-      String targetUri =
-          UriPlaceholderReplacer.replacePlaceholders(subResourceContract.getHref(), variables);
-
-      Optional<UriRouteMatch<Object, Object>> routeMatch = router.GET(targetUri);
 
       if (routeMatch.isPresent()) {
         UriRouteMatch<Object, Object> routeMatchSubResource = routeMatch.get();
