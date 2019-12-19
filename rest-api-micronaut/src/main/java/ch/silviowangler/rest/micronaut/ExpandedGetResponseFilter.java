@@ -23,10 +23,14 @@
  */
 package ch.silviowangler.rest.micronaut;
 
+import static com.google.common.base.CaseFormat.*;
+import static io.micronaut.http.HttpHeaders.ACCEPT_LANGUAGE;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import ch.silviowangler.rest.contract.model.v1.Header;
 import ch.silviowangler.rest.contract.model.v1.ResourceContract;
 import ch.silviowangler.rest.contract.model.v1.SubResource;
+import ch.silviowangler.rest.contract.model.v1.Verb;
 import ch.silviowangler.rest.model.CollectionExpand;
 import ch.silviowangler.rest.model.CollectionModel;
 import ch.silviowangler.rest.model.EntityExpand;
@@ -52,6 +56,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -139,8 +144,8 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
                   if (Objects.equals("*", expands)) {
                     expands =
                         contract.getSubresources().stream()
-                            .filter(subResource -> subResource.isExpandable())
-                            .map(subResource -> subResource.getName())
+                            .filter(SubResource::isExpandable)
+                            .map(SubResource::getName)
                             .collect(Collectors.joining(","));
                   }
 
@@ -151,13 +156,14 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
                         expands,
                         routeMatchCurrentResource,
                         contract,
+                        request,
                         (EntityModel) initialBody,
                         false);
                     ((MutableHttpResponse) res).body(initialBody);
                   } else if (initialBody instanceof CollectionModel) {
                     for (EntityModel model : ((CollectionModel) initialBody).getData()) {
                       attachExpandedGetsBody(
-                          expands, routeMatchCurrentResource, contract, model, true);
+                          expands, routeMatchCurrentResource, contract, request, model, true);
                     }
                     ((MutableHttpResponse) res).body(initialBody);
                   } else {
@@ -176,6 +182,7 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
       String expands,
       UriRouteMatch routeMatchCurrentResource,
       ResourceContract contract,
+      HttpRequest<?> request,
       EntityModel initialBody,
       boolean mustAddEntityId) {
     for (String expand : expands.trim().split(",")) {
@@ -199,6 +206,17 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
       }
 
       Map<String, Object> variables = new HashMap<>(routeMatchCurrentResource.getVariableValues());
+
+      for (Verb verb : contract.getVerbs()) {
+        for (Header header : verb.getHeaders()) {
+          String headerName = header.getName();
+
+          if (variables.get(headerName) == null) {
+            String variableName = LOWER_HYPHEN.to(LOWER_CAMEL, headerName.toLowerCase());
+            variables.put(variableName, extractHeader(request, header));
+          }
+        }
+      }
 
       if (mustAddEntityId) {
         variables.put("id", ((Identifiable) initialBody.getData()).getId());
@@ -242,6 +260,26 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
         }
       }
     }
+  }
+
+  private Object extractHeader(HttpRequest<?> request, Header header) {
+
+    if (ACCEPT_LANGUAGE.equals(header.getName())) {
+      Optional<Locale> locale = request.getLocale();
+
+      if (header.isMandatory()) {
+        return locale.orElseThrow(
+            () ->
+                new IllegalStateException(
+                    String.format(
+                        "The header '%s' is mandatory but was not found in the request",
+                        header.getName())));
+      }
+
+      return locale.orElse(null);
+    }
+
+    return request.getHeaders().get(header.getName());
   }
 
   private Optional<ResourceContract> fetchContract(Object resourceBean) {
