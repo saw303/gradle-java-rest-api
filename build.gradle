@@ -5,7 +5,7 @@ buildscript {
   }
 
   ext {
-    libPhoneNumberVersion = '8.10.22'
+    libPhoneNumberVersion = '8.11.1'
     javaPoetVersion='1.11.1'
     guavaVersion='28.1-jre'
 
