@@ -2,7 +2,7 @@
 
 This Gradle plugin helps you to design REST API for Java backends in a unique way. The plugin currently supports
 
-- **Micronaut** - a shiny new star at the Java landscape
+- **Micronaut** - a shiny new star at the Java landscape (Supported versions are 1.2.6 at greater)
 - **JAX RS** - well, the specification dude!
 - **Spring Boot**, the way who Spring does it.
 

@@ -28,7 +28,6 @@ import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_NULLABLE;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_SINGLETON;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_NOT_NULL;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_SIZE;
-import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_VALID;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_CONTROLLER;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_DATE_FORMAT;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_DATE_TIME_FORMAT;
@@ -46,7 +45,6 @@ import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_PRODUCES;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_PUT;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_QUERY_VALUE;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_STATUS;
-import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_VALIDATED;
 import static ch.silviowangler.gradle.restapi.PluginTypes.RESTAPI_RESPONSE_CREATOR;
 import static ch.silviowangler.gradle.restapi.builder.ArtifactType.DELEGATOR_RESOURCE;
 
@@ -102,7 +100,6 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
     args.put("value", getPath());
 
     resourceBuilder.addAnnotation(createAnnotation(MICRONAUT_CONTROLLER, args));
-    resourceBuilder.addAnnotation(createAnnotation(MICRONAUT_VALIDATED));
 
     ClassName delegatorClass = ClassName.get(getCurrentPackageName(), resourceDelegateName());
 
@@ -166,7 +163,6 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
   public List<AnnotationSpec> getQueryParamAnnotations(VerbParameter param) {
     List<AnnotationSpec> annotationSpecs = new ArrayList<>();
 
-    annotationSpecs.add(AnnotationSpec.builder(JAVAX_VALIDATION_VALID.getClassName()).build());
     if (param.getMandatory()) {
       annotationSpecs.add(AnnotationSpec.builder(JAVAX_VALIDATION_NOT_NULL.getClassName()).build());
     } else {
