@@ -16,4 +16,6 @@ dependencies {
 
 	testImplementation "io.micronaut:micronaut-core:${micronautVersion}"
 	testImplementation "io.micronaut:micronaut-router:${micronautVersion}"
+
+	implementation "com.google.guava:guava:${guavaVersion}"
 }
