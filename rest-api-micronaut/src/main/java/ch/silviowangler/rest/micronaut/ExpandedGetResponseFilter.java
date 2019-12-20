@@ -93,6 +93,7 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
   private final ApplicationContext applicationContext;
   private final Router router;
   private static final String EXPAND_PARAM_NAME = "expands";
+  private static final String GET_COLLECTION = "GET_COLLECTION";
   private Map<Class, ResourceContract> contractStore;
   private static final Logger log = getLogger(ExpandedGetResponseFilter.class);
   private final ObjectMapper objectMapper;
@@ -216,21 +217,33 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
 
       Optional<UriRouteMatch<Object, Object>> routeMatch = router.GET(targetUri);
 
-      for (Verb verb : contract.getVerbs()) {
-        for (Header header : verb.getHeaders()) {
-          String headerName = header.getName();
-
-          if (variables.get(headerName) == null) {
-            String variableName = LOWER_HYPHEN.to(LOWER_CAMEL, headerName.toLowerCase());
-            variables.put(variableName, extractHeader(request, header));
-          }
-        }
-      }
-
       if (routeMatch.isPresent()) {
         UriRouteMatch<Object, Object> routeMatchSubResource = routeMatch.get();
         ExecutableMethod<Object, Object> executableMethod =
             (ExecutableMethod<Object, Object>) routeMatchSubResource.getExecutableMethod();
+
+        Optional<Verb> getCollectionVerb =
+            contract.getVerbs().stream()
+                .filter(v -> GET_COLLECTION.equals(v.getVerb()))
+                .findFirst();
+
+        if (getCollectionVerb.isPresent()) {
+          for (Header header : getCollectionVerb.get().getHeaders()) {
+            if (variables.get(header.getName()) == null) {
+              String variableName = LOWER_HYPHEN.to(LOWER_CAMEL, header.getName().toLowerCase());
+              Object extractedHeader = extractHeader(request, header);
+
+              if (extractedHeader != null) {
+                variables.put(variableName, extractedHeader);
+              } else {
+                log.debug(
+                    "Extracted header value in {} was null for variableName '{}'",
+                    getClass().getCanonicalName(),
+                    variableName);
+              }
+            }
+          }
+        }
 
         Class declaringType = executableMethod.getDeclaringType();
 
@@ -265,21 +278,25 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
   private Object extractHeader(HttpRequest<?> request, Header header) {
 
     if (ACCEPT_LANGUAGE.equals(header.getName())) {
-      Optional<Locale> locale = request.getLocale();
-
-      if (header.isMandatory()) {
-        return locale.orElseThrow(
-            () ->
-                new IllegalStateException(
-                    String.format(
-                        "The header '%s' is mandatory but was not found in the request",
-                        header.getName())));
-      }
-
-      return locale.orElse(null);
+      Optional<Locale> value = request.getLocale();
+      return extractValueOfOptional(value, header);
     }
 
-    return request.getHeaders().get(header.getName());
+    Optional<String> value = request.getHeaders().get(header.getName(), String.class);
+    return extractValueOfOptional(value, header);
+  }
+
+  private Object extractValueOfOptional(Optional<?> value, Header header) {
+    if (header.isMandatory()) {
+      return value.orElseThrow(
+          () ->
+              new IllegalStateException(
+                  String.format(
+                      "The header '%s' is mandatory but was not found in the request",
+                      header.getName())));
+    }
+
+    return value.orElse(null);
   }
 
   private Optional<ResourceContract> fetchContract(Object resourceBean) {
