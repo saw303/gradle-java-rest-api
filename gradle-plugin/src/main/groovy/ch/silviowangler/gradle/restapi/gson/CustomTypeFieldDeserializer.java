@@ -23,27 +23,24 @@
  */
 package ch.silviowangler.gradle.restapi.gson;
 
-import ch.silviowangler.rest.contract.model.v1.ResourceField;
+import ch.silviowangler.rest.contract.model.v1.CustomTypeField;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Objects;
 
 /** @author Silvio Wangler */
-public class ResourceFieldDeserializer extends DeserializerBase
-    implements JsonDeserializer<ResourceField> {
+public class CustomTypeFieldDeserializer extends DeserializerBase
+    implements JsonDeserializer<CustomTypeField> {
 
   @Override
-  public ResourceField deserialize(
+  public CustomTypeField deserialize(
       JsonElement json, Type typeOfT, JsonDeserializationContext context)
       throws JsonParseException {
-    ResourceField field = new ResourceField();
+    CustomTypeField field = new CustomTypeField();
 
     JsonObject jsonObject = json.getAsJsonObject();
 
@@ -58,23 +55,11 @@ public class ResourceFieldDeserializer extends DeserializerBase
       field.setOptions(asString(jsonObject.get("options")));
     }
 
-    Iterator<JsonElement> iterator = jsonObject.get("mandatory").getAsJsonArray().iterator();
-    List<String> mandatoryValues = new ArrayList<>();
-    while (iterator.hasNext()) {
-      mandatoryValues.add(asString(iterator.next()));
-    }
-    field.setMandatory(mandatoryValues);
-
     field.setMin(asNumber(jsonObject.get("min")));
     field.setMax(asNumber(jsonObject.get("max")));
     field.setMultiple(asBoolean(jsonObject.get("multiple")));
     field.setDefaultValue(asString(jsonObject.get("defaultValue")));
-    field.setShield(null);
-    field.setVisible(asBoolean(jsonObject.get("visible")));
-    field.setSortable(asBoolean(jsonObject.get("sortable")));
-    field.setReadonly(asBoolean(jsonObject.get("readonly")));
-    field.setFilterable(asBoolean(jsonObject.get("filterable")));
-    field.setxComment(asString(jsonObject.get("x-comment")));
+    field.setComment(asString(jsonObject.get("x-comment")));
 
     return field;
   }

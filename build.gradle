@@ -5,15 +5,15 @@ buildscript {
   }
 
   ext {
-    libPhoneNumberVersion = '8.11.1'
+    libPhoneNumberVersion = '8.11.5'
     javaPoetVersion='1.12.1'
     guavaVersion='28.1-jre'
 
     spockVersion='1.3-groovy-2.5'
     gsonVersion='2.8.6'
 
-    springVersion='5.2.1.RELEASE'
-    micronautVersion='1.3.0'
+    springVersion='5.2.4.RELEASE'
+    micronautVersion='1.3.3'
     slf4jVersion='1.7.29'
   }
 
@@ -27,7 +27,7 @@ buildscript {
 
 subprojects {
 
-  version = '2.0.25'
+  version = '2.0.26'
 
   apply from: "${rootDir}/gradle/java.gradle"
   apply from: "${rootDir}/gradle/groovy.gradle"

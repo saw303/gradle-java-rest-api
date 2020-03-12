@@ -49,12 +49,12 @@ import static javax.lang.model.element.Modifier.STATIC;
 
 import ch.silviowangler.gradle.restapi.LinkParser;
 import ch.silviowangler.gradle.restapi.UnsupportedDataTypeException;
+import ch.silviowangler.rest.contract.model.v1.CustomTypeField;
 import ch.silviowangler.rest.contract.model.v1.FieldType;
 import ch.silviowangler.rest.contract.model.v1.GeneralDetails;
 import ch.silviowangler.rest.contract.model.v1.Representation;
 import ch.silviowangler.rest.contract.model.v1.ResourceContract;
 import ch.silviowangler.rest.contract.model.v1.ResourceField;
-import ch.silviowangler.rest.contract.model.v1.ResourceTypeField;
 import ch.silviowangler.rest.contract.model.v1.ResourceTypes;
 import ch.silviowangler.rest.contract.model.v1.Verb;
 import com.squareup.javapoet.AnnotationSpec;
@@ -400,7 +400,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
       builder.addAnnotation(createGeneratedAnnotation(this.printTimestamp));
 
-      for (ResourceTypeField field : type.getFields()) {
+      for (CustomTypeField field : type.getFields()) {
 
         TypeName fieldType;
         try {
@@ -417,12 +417,18 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
           }
         }
 
-        if ("true".equals(field.getMultiple())) {
+        if (field.isMultiple()) {
           ClassName list = ClassName.get(List.class);
           fieldType = ParameterizedTypeName.get(list, fieldType);
         }
 
-        builder.addField(FieldSpec.builder(fieldType, field.getName(), PRIVATE).build());
+        FieldSpec.Builder fieldBuilder = FieldSpec.builder(fieldType, field.getName(), PRIVATE);
+
+        if (field.getComment() != null) {
+          fieldBuilder.addJavadoc(field.getComment());
+        }
+
+        builder.addField(fieldBuilder.build());
 
         // write Getter/Setters
         writeGetterSetter(builder, fieldType, field.getName());

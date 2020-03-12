@@ -11,10 +11,19 @@ import javax.money.MonetaryAmount;
 public class ProposalType implements Serializable {
   private String label;
 
+  /**
+   * product id
+   */
   private String productid;
 
+  /**
+   * product premium
+   */
   private MonetaryAmount productPremium;
 
+  /**
+   * set of attributes that are relevant for calculating the premium
+   */
   private String productAttributes;
 
   public String getLabel() {
