@@ -408,9 +408,10 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
         } catch (UnsupportedDataTypeException ex) {
           // handle case where a type contains an enum field
           if (field.isEnumType()) {
+
             TypeSpec customEnum = buildEnumType(field);
+            builder.addType(customEnum);
             types.add(ClassName.get(packageName, customEnum.name));
-            specTypes.add(customEnum);
             fieldType = getFieldType(types, field);
           } else {
             throw ex;
