@@ -75,7 +75,7 @@ import org.reactivestreams.Publisher;
  * @author Silvio Wangler
  */
 @Filter("${restapi.hateoas.filter.uri}")
-@Requires(property = "restapi.hateoas.filter.enabled")
+@Requires(property = "restapi.hateoas.filter.enabled", value = "true")
 public class HateoasResponseFilter implements HttpServerFilter {
   private final List<LinkProvider> linkProviderList;
   private final String baseUrl;

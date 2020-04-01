@@ -87,7 +87,7 @@ import org.slf4j.Logger;
  * @author Silvio Wangler
  */
 @Filter("${restapi.hateoas.filter.uri}")
-@Requires(property = "restapi.hateoas.filter.enabled")
+@Requires(property = "restapi.hateoas.filter.enabled", value = "true")
 public class ExpandedGetResponseFilter implements HttpServerFilter {
 
   private final ApplicationContext applicationContext;
