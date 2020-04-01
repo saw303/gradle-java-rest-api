@@ -411,8 +411,9 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
             TypeSpec customEnum = buildEnumType(field);
             builder.addType(customEnum);
-            types.add(ClassName.get(packageName, customEnum.name));
-            fieldType = getFieldType(types, field);
+            fieldType =
+                ClassName.get(
+                    packageName, resourceTypeName(type.getName()) + "." + customEnum.name);
           } else {
             throw ex;
           }
@@ -870,10 +871,14 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
   private TypeSpec.Builder resourceTypeBaseInstance(String name) {
     TypeSpec.Builder builder =
-        TypeSpec.classBuilder(LOWER_CAMEL.to(UPPER_CAMEL, name) + "Type")
+        TypeSpec.classBuilder(resourceTypeName(name))
             .addModifiers(PUBLIC)
             .addSuperinterface(ClassName.get(Serializable.class));
     return this.typeBuilder = builder;
+  }
+
+  private String resourceTypeName(String name) {
+    return LOWER_CAMEL.to(UPPER_CAMEL, name) + "Type";
   }
 
   private TypeSpec.Builder resourceModelBaseInstance(Verb verb) {

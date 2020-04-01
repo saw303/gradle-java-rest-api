@@ -8,13 +8,13 @@ import javax.annotation.Generated;
     value = "ch.silviowangler.restapi"
 )
 public class DummyType implements Serializable {
-  private org.acme.rest.v1.ColorType color;
+  private DummyType.ColorType color;
 
-  public org.acme.rest.v1.ColorType getColor() {
+  public DummyType.ColorType getColor() {
     return this.color;
   }
 
-  public void setColor(org.acme.rest.v1.ColorType color) {
+  public void setColor(DummyType.ColorType color) {
     this.color = color;
   }
 
