@@ -95,7 +95,7 @@ class RestApiPlugin implements Plugin<Project> {
 		}
 
 		final String springVersion = "5.2.4.RELEASE"
-		final String pluginVersion = "2.1.0-SNAPSHOT"
+		final String pluginVersion = "2.1.0"
 		final String libPhoneNumberVersion = "8.11.5"
 
 		project.afterEvaluate {
