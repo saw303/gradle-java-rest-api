@@ -56,7 +56,15 @@ public class OnlyOnePostVerbValidator implements Validator {
             .filter(v -> ResourceBuilder.POST_METHODS.contains(v))
             .collect(Collectors.toSet());
 
-    if (candidates.size() > 1) {}
+    if (candidates.size() > 1) {
+      violations.add(
+          new ConstraintViolation(
+              String.format(
+                  "Choose either POST, POST_ENTITY or POST_COLLECTION. Only one of them is allowed since they map all to the same URI path. You chose %s",
+                  candidates.stream().collect(Collectors.joining(", "))),
+              this,
+              resourceContract));
+    }
 
     return violations;
   }

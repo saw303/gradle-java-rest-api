@@ -66,7 +66,10 @@ class OnlyOnePostVerbValidatorSpec extends Specification {
     Set<ConstraintViolation> violations = validator.validate(contract)
 
     then:
-    violations.isEmpty()
+    violations.size() == 1
+
+    and:
+    violations.first().message == "Choose either POST, POST_ENTITY or POST_COLLECTION. Only one of them is allowed since they map all to the same URI path. You chose ${comb.join(", ")}"
 
     where:
     comb                           | _
