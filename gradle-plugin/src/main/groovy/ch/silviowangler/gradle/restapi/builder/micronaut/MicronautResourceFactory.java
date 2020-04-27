@@ -336,7 +336,7 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
   @Override
   protected void enhanceResourceModelBaseInstance(Verb verb, TypeSpec.Builder builder) {
 
-    if (verb.getVerb().equals("PUT") || verb.getVerb().equals("POST")) {
+    if (POST_METHODS.contains(verb.getVerb()) || PUT_METHODS.contains(verb.getVerb())) {
       builder.addAnnotation(createAnnotation(MICRONAUT_INTROSPECTED));
     }
   }

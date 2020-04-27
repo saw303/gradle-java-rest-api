@@ -70,6 +70,8 @@ public interface ResourceBuilder {
   String HEAD_COLLECTION = "HEAD_COLLECTION";
   String HEAD_ENTITY = "HEAD_ENTITY";
   String POST = "POST";
+  String POST_ENTITY = "POST_ENTITY";
+  String POST_COLLECTION = "POST_COLLECTION";
   String PUT = "PUT";
   String PUT_ENTITY = "PUT_ENTITY";
   String PUT_COLLECTION = "PUT_COLLECTION";
@@ -81,6 +83,7 @@ public interface ResourceBuilder {
   List<String> HEAD_METHODS = Arrays.asList(HEAD_ENTITY, HEAD_COLLECTION);
   List<String> DELETE_METHODS = Arrays.asList(DELETE_ENTITY, DELETE_COLLECTION);
   List<String> PUT_METHODS = Arrays.asList(PUT, PUT_ENTITY, PUT_COLLECTION);
+  List<String> POST_METHODS = Arrays.asList(POST, POST_ENTITY, POST_COLLECTION);
 
   String getCurrentPackageName();
 
@@ -124,7 +127,7 @@ public interface ResourceBuilder {
       v = "Head";
     } else if (PUT_METHODS.contains(verbName)) {
       v = "Put";
-    } else if (POST.equals(verbName)) {
+    } else if (POST_METHODS.contains(verbName)) {
       v = "Post";
     } else if (OPTIONS.equals(verbName)) {
       v = "Options";
@@ -377,7 +380,13 @@ public interface ResourceBuilder {
   default boolean isIdGenerationRequired(MethodContext context) {
     List<String> noId =
         Arrays.asList(
-            "getOptions", "createEntity", "getCollection", "headCollection", "deleteCollection");
+            "getOptions",
+            "createEntity",
+            "createCollection",
+            "updateCollection",
+            "getCollection",
+            "headCollection",
+            "deleteCollection");
 
     if (context.isDirectEntity()) return false;
 

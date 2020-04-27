@@ -144,7 +144,7 @@
       "permissions": []
     },
     {
-      "verb": "PUT",
+      "verb": "PUT_ENTITY",
       "rel": "Land ändern",
       "responseStates": [
         {
@@ -177,8 +177,74 @@
       ]
     },
     {
-      "verb": "POST",
+      "verb": "PUT_COLLECTION",
+      "rel": "Land ändern",
+      "responseStates": [
+        {
+          "code": 200,
+          "message": "200 Ok",
+          "comment": "content in response body"
+        },
+        {
+          "code": 503,
+          "message": "503 Service Unavailable",
+          "comment": "Backend server eventually not reachable or to slow"
+        }
+      ],
+      "representations": [
+        {
+          "name": "json",
+          "comment": "",
+          "responseExample": "{...}",
+          "isDefault": true,
+          "mimetype": "application/json"
+        }
+      ],
+      "parameters": [],
+      "permissions": [
+        {
+          "name": "mitarbeiter",
+          "mode": "all",
+          "comment": "Jeder darf ein Land ändern"
+        }
+      ]
+    },
+    {
+      "verb": "POST_ENTITY",
       "rel": "Land anlegen",
+      "responseStates": [
+        {
+          "code": 200,
+          "message": "200 Ok",
+          "comment": "content in response body"
+        },
+        {
+          "code": 503,
+          "message": "503 Service Unavailable",
+          "comment": "Backend server eventually not reachable or to slow"
+        }
+      ],
+      "representations": [
+        {
+          "name": "json",
+          "comment": "",
+          "responseExample": "{...}",
+          "isDefault": true,
+          "mimetype": "application/json"
+        }
+      ],
+      "parameters": [],
+      "permissions": [
+        {
+          "name": "mitarbeiter",
+          "mode": "all",
+          "comment": "Jeder darf Länder ändern"
+        }
+      ]
+    },
+    {
+      "verb": "POST_COLLECTION",
+      "rel": "Laender anlegen",
       "responseStates": [
         {
           "code": 200,
@@ -216,7 +282,8 @@
       "type": "uuid",
       "options": null,
       "mandatory": [
-        "PUT"
+        "PUT_ENTITY",
+        "PUT_COLLECTION"
       ],
       "min": null,
       "max": null,
@@ -235,7 +302,10 @@
       "type": "string",
       "options": null,
       "mandatory": [
-        "PUT", "POST"
+        "PUT_ENTITY",
+        "PUT_COLLECTION",
+        "POST_ENTITY",
+        "POST_COLLECTION"
       ],
       "min": 0,
       "max": 100,
@@ -254,7 +324,10 @@
       "type": "date",
       "options": null,
       "mandatory": [
-        "PUT", "POST"
+        "PUT_ENTITY",
+        "PUT_COLLECTION",
+        "POST_ENTITY",
+        "POST_COLLECTION"
       ],
       "min": null,
       "max": null,
@@ -273,7 +346,10 @@
       "type": "int",
       "options": null,
       "mandatory": [
-        "PUT", "POST"
+        "PUT_ENTITY",
+        "PUT_COLLECTION",
+        "POST_ENTITY",
+        "POST_COLLECTION"
       ],
       "min": 1,
       "max": 1200,
@@ -292,7 +368,10 @@
       "type": "coordinates",
       "options": null,
       "mandatory": [
-        "PUT", "POST"
+        "PUT_ENTITY",
+        "PUT_COLLECTION",
+        "POST_ENTITY",
+        "POST_COLLECTION"
       ],
       "min": null,
       "max": null,

@@ -22,7 +22,17 @@ public class LandResourceImpl implements LandResource {
   }
 
   @Override
+  public Response createCollection(Collection<LandPostResourceModel> model) {
+    throw new NotYetImplementedException();
+  }
+
+  @Override
   public IdType createEntity(LandPostResourceModel model) {
+    throw new NotYetImplementedException();
+  }
+
+  @Override
+  public Response updateCollection(Collection<LandPutResourceModel> model) {
     throw new NotYetImplementedException();
   }
 

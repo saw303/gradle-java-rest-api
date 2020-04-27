@@ -24,7 +24,17 @@ public class LandResourceImpl extends LandResource {
   }
 
   @Override
+  public ResponseEntity handleCreateCollection(Collection<LandPostResourceModel> model) {
+    throw new NotYetImplementedException();
+  }
+
+  @Override
   public IdType handleCreateEntity(LandPostResourceModel model) {
+    throw new NotYetImplementedException();
+  }
+
+  @Override
+  public ResponseEntity handleUpdateCollection(Collection<LandPutResourceModel> model) {
     throw new NotYetImplementedException();
   }
 

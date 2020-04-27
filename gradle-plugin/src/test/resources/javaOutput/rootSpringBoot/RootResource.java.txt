@@ -42,15 +42,16 @@ public abstract class RootResource {
     return handleGetEntity();
   }
 
-  public abstract ResponseEntity handleUpdateEntities(Collection<RootPutResourceModel> model);
+  public abstract ResponseEntity handleUpdateCollection(Collection<RootPutResourceModel> model);
 
   @RequestMapping(
       method = RequestMethod.PUT,
       produces = "application/json"
   )
   @ResponseBody
-  public ResponseEntity updateEntities(@Valid @RequestBody Collection<RootPutResourceModel> model) {
-    return handleUpdateEntities(model);
+  public ResponseEntity updateCollection(
+      @Valid @RequestBody Collection<RootPutResourceModel> model) {
+    return handleUpdateCollection(model);
   }
 
   @RequestMapping(
@@ -78,16 +79,6 @@ public abstract class RootResource {
   )
   @ResponseBody
   public ResponseEntity deleteEntityAutoAnswer(@PathVariable("id") String id) {
-    return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
-  }
-
-  @RequestMapping(
-      method = RequestMethod.PUT,
-      path = "/{id}",
-      produces = "application/json"
-  )
-  @ResponseBody
-  public ResponseEntity updateEntityAutoAnswer(@PathVariable("id") String id) {
     return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
   }
 }

@@ -20,7 +20,15 @@ public class LandResourceDelegate {
     throw new NotYetImplementedException();
   }
 
+  public HttpResponse createCollection(Collection<LandPostResourceModel> model) {
+    throw new NotYetImplementedException();
+  }
+
   public IdType createEntity(LandPostResourceModel model) {
+    throw new NotYetImplementedException();
+  }
+
+  public HttpResponse updateCollection(Collection<LandPutResourceModel> model) {
     throw new NotYetImplementedException();
   }
 

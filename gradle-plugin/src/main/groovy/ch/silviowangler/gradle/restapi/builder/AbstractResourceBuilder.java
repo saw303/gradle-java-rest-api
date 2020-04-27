@@ -317,10 +317,16 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
         } else {
           ClassName model = resourceModelName(verb);
 
-          if (POST.equals(verb.getVerb())) {
+          if (POST.equals(verb.getVerb()) || POST_ENTITY.equals(verb.getVerb())) {
 
             paramClasses.put("model", model);
             context.setMethodName("createEntity");
+            methodBuilder = createMethod(context);
+
+          } else if (POST_COLLECTION.equals(verb.getVerb())) {
+            paramClasses.put(
+                "model", ParameterizedTypeName.get(ClassName.get(Collection.class), model));
+            context.setMethodName("createCollection");
             methodBuilder = createMethod(context);
 
           } else if (PUT.equals(verb.getVerb()) || PUT_ENTITY.equals(verb.getVerb())) {
@@ -333,7 +339,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
             paramClasses.put(
                 "model", ParameterizedTypeName.get(ClassName.get(Collection.class), model));
-            context.setMethodName("updateEntities");
+            context.setMethodName("updateCollection");
             methodBuilder = createMethod(context);
 
           } else if (DELETE_COLLECTION.equals(verb.getVerb())) {
@@ -847,11 +853,11 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
   }
 
   private boolean hasPostVerb() {
-    return hasVerb(POST);
+    return hasVerb(POST) || hasVerb(POST_COLLECTION) || hasVerb(POST_ENTITY);
   }
 
   private boolean hasPutVerb() {
-    return hasVerb(PUT);
+    return hasVerb(PUT) || hasVerb(PUT_COLLECTION) || hasVerb(PUT_ENTITY);
   }
 
   private boolean hasDeleteCollectionVerb() {

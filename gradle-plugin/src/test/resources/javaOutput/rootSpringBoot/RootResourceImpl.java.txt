@@ -13,7 +13,7 @@ public class RootResourceImpl extends RootResource {
   }
 
   @Override
-  public ResponseEntity handleUpdateEntities(Collection<RootPutResourceModel> model) {
+  public ResponseEntity handleUpdateCollection(Collection<RootPutResourceModel> model) {
     throw new NotYetImplementedException();
   }
 }
