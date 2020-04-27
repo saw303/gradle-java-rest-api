@@ -65,8 +65,8 @@ public class ResourceFieldDeserializer extends DeserializerBase
     }
     field.setMandatory(mandatoryValues);
 
-    field.setMin(asNumber(jsonObject.get("min")));
-    field.setMax(asNumber(jsonObject.get("max")));
+    field.setMin(asNumberForType(jsonObject.get("min"), type));
+    field.setMax(asNumberForType(jsonObject.get("max"), type));
     field.setMultiple(asBoolean(jsonObject.get("multiple")));
     field.setDefaultValue(asString(jsonObject.get("defaultValue")));
     field.setShield(null);

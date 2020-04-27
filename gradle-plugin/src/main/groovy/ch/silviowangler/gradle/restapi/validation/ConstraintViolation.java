@@ -21,30 +21,44 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package ch.silviowangler.gradle.restapi
+package ch.silviowangler.gradle.restapi.validation;
 
-import groovy.io.FileType
+import ch.silviowangler.rest.contract.model.v1.ResourceContract;
 
 /**
  * @author Silvio Wangler
+ * @since 2.1.0
  */
-trait Specification {
+public class ConstraintViolation {
 
-	List<File> findSpecifications(File folder) {
+  private final String message;
+  private final Validator source;
+  private final ResourceContract resourceContract;
 
-		if (!folder.exists()) {
-			throw new IllegalArgumentException("$folder.absolutePath does not exist")
-		}
+  public ConstraintViolation(String message, Validator source, ResourceContract resourceContract) {
+    this.message = message;
+    this.source = source;
+    this.resourceContract = resourceContract;
+  }
 
-		if (!folder.isDirectory()) {
-			throw new IllegalArgumentException("$folder.absolutePath is not a directory")
-		}
+  public String getMessage() {
+    return message;
+  }
 
-		List<File> specs = []
-		folder.eachFile(FileType.FILES, { f -> if (f.name.endsWith('.json')) specs << f })
+  public Validator getSource() {
+    return source;
+  }
 
-		Collections.sort(specs, new ResourceFileComparator())
+  public ResourceContract getResourceContract() {
+    return resourceContract;
+  }
 
-		return specs
-	}
+  @Override
+  public String toString() {
+    return String.format(
+        "%s (Resource: %s, Validator: %s)",
+        this.message,
+        this.resourceContract.getGeneral().getName(),
+        this.source.getClass().getSimpleName());
+  }
 }

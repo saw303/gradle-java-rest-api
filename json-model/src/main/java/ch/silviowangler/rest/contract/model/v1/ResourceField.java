@@ -24,6 +24,7 @@
 package ch.silviowangler.rest.contract.model.v1;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -33,7 +34,7 @@ public class ResourceField implements Serializable, FieldType {
   private String name;
   private String type;
   private Object options;
-  private List<String> mandatory;
+  private List<String> mandatory = new ArrayList<>();
   private Number min;
   private Number max;
   private boolean multiple;
@@ -44,7 +45,7 @@ public class ResourceField implements Serializable, FieldType {
   private boolean sortable;
   private boolean readonly;
   private boolean filterable;
-  private List<String> alias;
+  private List<String> alias = new ArrayList<>();
   private String xComment;
 
   @Override

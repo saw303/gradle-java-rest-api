@@ -24,20 +24,14 @@
 package ch.silviowangler.gradle.restapi.tasks
 
 import ch.silviowangler.gradle.restapi.GeneratedSpecContainer
-import ch.silviowangler.gradle.restapi.GeneratorUtil
 import ch.silviowangler.gradle.restapi.RestApiExtension
-import ch.silviowangler.gradle.restapi.Specification
-import ch.silviowangler.gradle.restapi.builder.SpecGenerator
 import com.squareup.javapoet.JavaFile
 import com.squareup.javapoet.TypeSpec
 import org.gradle.api.GradleException
-import org.gradle.api.internal.AbstractTask
-import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 
-class GenerateRestApiTask extends AbstractTask implements Specification {
-
+class GenerateRestApiTask extends SpecificationBaseTask {
 
 	public static final String GET_COLLECTION = 'GET_COLLECTION'
 	public static final String GET_ENTITY = 'GET_ENTITY'
@@ -49,14 +43,6 @@ class GenerateRestApiTask extends AbstractTask implements Specification {
 	public static final String PUT_COLLECTION = 'PUT_COLLECTION'
 	public static final String DELETE_ENTITY = 'DELETE_ENTITY'
 	public static final String DELETE_COLLECTION = 'DELETE_COLLECTION'
-
-	@InputDirectory
-	File getOptionsSource() {
-		if (project.restApi.optionsSource) {
-			return project.restApi.optionsSource
-		}
-		return new File(GeneratorUtil.generatorInput(project), "spec")
-	}
 
 	@OutputDirectory
 	File getRootOutputDir() {
@@ -80,8 +66,6 @@ class GenerateRestApiTask extends AbstractTask implements Specification {
 		List<File> specs = findSpecifications(getOptionsSource())
 
 		logger.lifecycle("Found ${specs.size()} specification files (${specs.collect { it.name}})")
-
-		SpecGenerator specGenerator = new SpecGenerator()
 
 		for (File specFile in specs) {
 

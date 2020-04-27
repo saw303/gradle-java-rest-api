@@ -29,9 +29,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * your description goes here...
+ * Helper methods for Jackson deserializers.
  *
- * @author Silvio Wangler (silvio.wangler@onstructive.ch)
+ * @author Silvio Wangler (silvio.wangler@gmail.ch)
  */
 public abstract class DeserializerBase {
 
@@ -75,6 +75,31 @@ public abstract class DeserializerBase {
       return jsonElement.getAsBoolean();
     } else {
       return false;
+    }
+  }
+
+  protected Number asNumberForType(JsonElement jsonElement, String type) {
+
+    if (jsonElement == null) return null;
+
+    if (!jsonElement.isJsonNull()) {
+
+      switch (type) {
+        case "string":
+        case "int":
+          return jsonElement.getAsInt();
+        case "double":
+        case "float":
+        case "decimal":
+        case "money":
+          return jsonElement.getAsDouble();
+        case "long":
+          return jsonElement.getAsLong();
+        default:
+          return null;
+      }
+    } else {
+      return null;
     }
   }
 }

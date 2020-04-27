@@ -23,14 +23,17 @@
  */
 package ch.silviowangler.gradle.restapi
 
+
 import ch.silviowangler.gradle.restapi.tasks.CleanRestApiTask
 import ch.silviowangler.gradle.restapi.tasks.ExtractRestApiSpecsTask
 import ch.silviowangler.gradle.restapi.tasks.GenerateRestApiTask
 import ch.silviowangler.gradle.restapi.tasks.PlantUmlTask
+import ch.silviowangler.gradle.restapi.tasks.ValidationTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.tasks.compile.JavaCompile
 
 import static ch.silviowangler.gradle.restapi.Consts.CONFIGURATION_REST_API
 import static ch.silviowangler.gradle.restapi.Consts.TASK_GROUP_REST_API
@@ -53,17 +56,35 @@ class RestApiPlugin implements Plugin<Project> {
 		project.extensions.add('restApi', extension)
 
 
-		Task clean = project.task('cleanRestArtifacts', type: CleanRestApiTask, group: TASK_GROUP_REST_API)
-		Task extract = project.task('extractSpecs', type: ExtractRestApiSpecsTask, group: TASK_GROUP_REST_API)
-		Task generate = project.task('generateRestArtifacts', type: GenerateRestApiTask, group: TASK_GROUP_REST_API)
-		project.task('generateDiagrams', type: PlantUmlTask, group: TASK_GROUP_REST_API)
+		def clean = project.tasks.register('cleanRestArtifacts', CleanRestApiTask) { CleanRestApiTask t ->
+			t.group = TASK_GROUP_REST_API
+		}
+		def extract = project.tasks.register('extractSpecs', ExtractRestApiSpecsTask) { ExtractRestApiSpecsTask t ->
+			t.group = TASK_GROUP_REST_API
+		}
+		def validate = project.tasks.register('validateRestSpecs', ValidationTask) { ValidationTask t ->
+			t.group = TASK_GROUP_REST_API
+		}
+		def generate = project.tasks.register('generateRestArtifacts', GenerateRestApiTask) { GenerateRestApiTask t ->
+			t.group = TASK_GROUP_REST_API
+			t.dependsOn(validate)
+		}
+		def generateDiagrams = project.tasks.register('generateDiagrams', PlantUmlTask) { PlantUmlTask t ->
+			t.group = TASK_GROUP_REST_API
+		}
 
-		project.clean.dependsOn clean
-		extract.dependsOn extract
-		project.compileJava.dependsOn generate
+		project.tasks.named('clean').configure {
+			dependsOn(clean)
+		}
 
-		project.compileJava.options.encoding = 'UTF-8'
-		project.compileTestJava.options.encoding = 'UTF-8'
+		project.tasks.named('compileJava').configure {
+			dependsOn(generate)
+			options.encoding = 'UTF-8'
+		}
+
+		project.tasks.named('compileTestJava').configure {
+			options.encoding = 'UTF-8'
+		}
 
 		project.sourceSets.main.java.srcDir { project.restApi.generatorOutput }
 
@@ -74,7 +95,7 @@ class RestApiPlugin implements Plugin<Project> {
 		}
 
 		final String springVersion = "5.2.4.RELEASE"
-		final String pluginVersion = "2.0.29"
+		final String pluginVersion = "2.1.0-SNAPSHOT"
 		final String libPhoneNumberVersion = "8.11.5"
 
 		project.afterEvaluate {
