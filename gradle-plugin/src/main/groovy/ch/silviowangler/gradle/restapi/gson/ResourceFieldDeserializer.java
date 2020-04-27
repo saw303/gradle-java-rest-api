@@ -78,29 +78,4 @@ public class ResourceFieldDeserializer extends DeserializerBase
 
     return field;
   }
-
-  private Number asNumberForType(JsonElement jsonElement, String type) {
-
-    if (jsonElement == null) return null;
-
-    if (!jsonElement.isJsonNull()) {
-
-      switch (type) {
-        case "string":
-        case "int":
-          return jsonElement.getAsInt();
-        case "double":
-        case "float":
-        case "decimal":
-        case "money":
-          return jsonElement.getAsDouble();
-        case "long":
-          return jsonElement.getAsLong();
-        default:
-          throw new RuntimeException("Unknown number type " + type);
-      }
-    } else {
-      return null;
-    }
-  }
 }
