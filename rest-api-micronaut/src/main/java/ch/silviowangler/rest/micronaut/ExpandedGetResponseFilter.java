@@ -23,10 +23,14 @@
  */
 package ch.silviowangler.rest.micronaut;
 
+import static com.google.common.base.CaseFormat.*;
+import static io.micronaut.http.HttpHeaders.ACCEPT_LANGUAGE;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import ch.silviowangler.rest.contract.model.v1.Header;
 import ch.silviowangler.rest.contract.model.v1.ResourceContract;
 import ch.silviowangler.rest.contract.model.v1.SubResource;
+import ch.silviowangler.rest.contract.model.v1.Verb;
 import ch.silviowangler.rest.model.CollectionExpand;
 import ch.silviowangler.rest.model.CollectionModel;
 import ch.silviowangler.rest.model.EntityExpand;
@@ -52,6 +56,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -82,12 +87,13 @@ import org.slf4j.Logger;
  * @author Silvio Wangler
  */
 @Filter("${restapi.hateoas.filter.uri}")
-@Requires(property = "restapi.hateoas.filter.enabled")
+@Requires(property = "restapi.hateoas.filter.enabled", value = "true")
 public class ExpandedGetResponseFilter implements HttpServerFilter {
 
   private final ApplicationContext applicationContext;
   private final Router router;
   private static final String EXPAND_PARAM_NAME = "expands";
+  private static final String GET_COLLECTION = "GET_COLLECTION";
   private Map<Class, ResourceContract> contractStore;
   private static final Logger log = getLogger(ExpandedGetResponseFilter.class);
   private final ObjectMapper objectMapper;
@@ -139,8 +145,8 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
                   if (Objects.equals("*", expands)) {
                     expands =
                         contract.getSubresources().stream()
-                            .filter(subResource -> subResource.isExpandable())
-                            .map(subResource -> subResource.getName())
+                            .filter(SubResource::isExpandable)
+                            .map(SubResource::getName)
                             .collect(Collectors.joining(","));
                   }
 
@@ -151,13 +157,14 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
                         expands,
                         routeMatchCurrentResource,
                         contract,
+                        request,
                         (EntityModel) initialBody,
                         false);
                     ((MutableHttpResponse) res).body(initialBody);
                   } else if (initialBody instanceof CollectionModel) {
                     for (EntityModel model : ((CollectionModel) initialBody).getData()) {
                       attachExpandedGetsBody(
-                          expands, routeMatchCurrentResource, contract, model, true);
+                          expands, routeMatchCurrentResource, contract, request, model, true);
                     }
                     ((MutableHttpResponse) res).body(initialBody);
                   } else {
@@ -176,6 +183,7 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
       String expands,
       UriRouteMatch routeMatchCurrentResource,
       ResourceContract contract,
+      HttpRequest<?> request,
       EntityModel initialBody,
       boolean mustAddEntityId) {
     for (String expand : expands.trim().split(",")) {
@@ -214,6 +222,29 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
         ExecutableMethod<Object, Object> executableMethod =
             (ExecutableMethod<Object, Object>) routeMatchSubResource.getExecutableMethod();
 
+        Optional<Verb> getCollectionVerb =
+            contract.getVerbs().stream()
+                .filter(v -> GET_COLLECTION.equals(v.getVerb()))
+                .findFirst();
+
+        if (getCollectionVerb.isPresent()) {
+          for (Header header : getCollectionVerb.get().getHeaders()) {
+            if (variables.get(header.getName()) == null) {
+              String variableName = LOWER_HYPHEN.to(LOWER_CAMEL, header.getName().toLowerCase());
+              Object extractedHeader = extractHeader(request, header);
+
+              if (extractedHeader != null) {
+                variables.put(variableName, extractedHeader);
+              } else {
+                log.debug(
+                    "Extracted header value in {} was null for variableName '{}'",
+                    getClass().getCanonicalName(),
+                    variableName);
+              }
+            }
+          }
+        }
+
         Class declaringType = executableMethod.getDeclaringType();
 
         Object bean = applicationContext.getBean(declaringType);
@@ -242,6 +273,30 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
         }
       }
     }
+  }
+
+  private Object extractHeader(HttpRequest<?> request, Header header) {
+
+    if (ACCEPT_LANGUAGE.equals(header.getName())) {
+      Optional<Locale> value = request.getLocale();
+      return extractValueOfOptional(value, header);
+    }
+
+    Optional<String> value = request.getHeaders().get(header.getName(), String.class);
+    return extractValueOfOptional(value, header);
+  }
+
+  private Object extractValueOfOptional(Optional<?> value, Header header) {
+    if (header.isMandatory()) {
+      return value.orElseThrow(
+          () ->
+              new IllegalStateException(
+                  String.format(
+                      "The header '%s' is mandatory but was not found in the request",
+                      header.getName())));
+    }
+
+    return value.orElse(null);
   }
 
   private Optional<ResourceContract> fetchContract(Object resourceBean) {

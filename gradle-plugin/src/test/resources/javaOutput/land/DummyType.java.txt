@@ -8,13 +8,25 @@ import javax.annotation.Generated;
     value = "ch.silviowangler.restapi"
 )
 public class DummyType implements Serializable {
-  private ColorType color;
+  private DummyType.ColorType color;
 
-  public ColorType getColor() {
+  public DummyType.ColorType getColor() {
     return this.color;
   }
 
-  public void setColor(ColorType color) {
+  public void setColor(DummyType.ColorType color) {
     this.color = color;
+  }
+
+  @Generated(
+      comments = "Specification filename: root.v1.json",
+      value = "ch.silviowangler.restapi"
+  )
+  public enum ColorType {
+    BLACK,
+
+    GREY,
+
+    WHITE
   }
 }

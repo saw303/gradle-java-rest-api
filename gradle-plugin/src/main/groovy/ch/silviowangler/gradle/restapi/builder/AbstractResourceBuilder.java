@@ -49,12 +49,12 @@ import static javax.lang.model.element.Modifier.STATIC;
 
 import ch.silviowangler.gradle.restapi.LinkParser;
 import ch.silviowangler.gradle.restapi.UnsupportedDataTypeException;
+import ch.silviowangler.rest.contract.model.v1.CustomTypeField;
 import ch.silviowangler.rest.contract.model.v1.FieldType;
 import ch.silviowangler.rest.contract.model.v1.GeneralDetails;
 import ch.silviowangler.rest.contract.model.v1.Representation;
 import ch.silviowangler.rest.contract.model.v1.ResourceContract;
 import ch.silviowangler.rest.contract.model.v1.ResourceField;
-import ch.silviowangler.rest.contract.model.v1.ResourceTypeField;
 import ch.silviowangler.rest.contract.model.v1.ResourceTypes;
 import ch.silviowangler.rest.contract.model.v1.Verb;
 import com.squareup.javapoet.AnnotationSpec;
@@ -400,7 +400,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
       builder.addAnnotation(createGeneratedAnnotation(this.printTimestamp));
 
-      for (ResourceTypeField field : type.getFields()) {
+      for (CustomTypeField field : type.getFields()) {
 
         TypeName fieldType;
         try {
@@ -408,21 +408,29 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
         } catch (UnsupportedDataTypeException ex) {
           // handle case where a type contains an enum field
           if (field.isEnumType()) {
+
             TypeSpec customEnum = buildEnumType(field);
-            types.add(ClassName.get(packageName, customEnum.name));
-            specTypes.add(customEnum);
-            fieldType = getFieldType(types, field);
+            builder.addType(customEnum);
+            fieldType =
+                ClassName.get(
+                    packageName, resourceTypeName(type.getName()) + "." + customEnum.name);
           } else {
             throw ex;
           }
         }
 
-        if ("true".equals(field.getMultiple())) {
+        if (field.isMultiple()) {
           ClassName list = ClassName.get(List.class);
           fieldType = ParameterizedTypeName.get(list, fieldType);
         }
 
-        builder.addField(FieldSpec.builder(fieldType, field.getName(), PRIVATE).build());
+        FieldSpec.Builder fieldBuilder = FieldSpec.builder(fieldType, field.getName(), PRIVATE);
+
+        if (field.getComment() != null) {
+          fieldBuilder.addJavadoc(field.getComment());
+        }
+
+        builder.addField(fieldBuilder.build());
 
         // write Getter/Setters
         writeGetterSetter(builder, fieldType, field.getName());
@@ -863,10 +871,14 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
   private TypeSpec.Builder resourceTypeBaseInstance(String name) {
     TypeSpec.Builder builder =
-        TypeSpec.classBuilder(LOWER_CAMEL.to(UPPER_CAMEL, name) + "Type")
+        TypeSpec.classBuilder(resourceTypeName(name))
             .addModifiers(PUBLIC)
             .addSuperinterface(ClassName.get(Serializable.class));
     return this.typeBuilder = builder;
+  }
+
+  private String resourceTypeName(String name) {
+    return LOWER_CAMEL.to(UPPER_CAMEL, name) + "Type";
   }
 
   private TypeSpec.Builder resourceModelBaseInstance(Verb verb) {

@@ -28,10 +28,12 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import ch.silviowangler.gradle.restapi.GeneratedSpecContainer;
 import ch.silviowangler.gradle.restapi.GenerationMode;
 import ch.silviowangler.gradle.restapi.RestApiExtension;
+import ch.silviowangler.gradle.restapi.gson.CustomTypeFieldDeserializer;
 import ch.silviowangler.gradle.restapi.gson.GeneralDetailsDeserializer;
 import ch.silviowangler.gradle.restapi.gson.HeaderDeserializer;
 import ch.silviowangler.gradle.restapi.gson.RepresentationDeserializer;
 import ch.silviowangler.gradle.restapi.gson.ResourceFieldDeserializer;
+import ch.silviowangler.rest.contract.model.v1.CustomTypeField;
 import ch.silviowangler.rest.contract.model.v1.GeneralDetails;
 import ch.silviowangler.rest.contract.model.v1.Header;
 import ch.silviowangler.rest.contract.model.v1.Representation;
@@ -65,6 +67,7 @@ public class SpecGenerator {
         new GsonBuilder()
             .registerTypeAdapter(GeneralDetails.class, new GeneralDetailsDeserializer())
             .registerTypeAdapter(ResourceField.class, new ResourceFieldDeserializer())
+            .registerTypeAdapter(CustomTypeField.class, new CustomTypeFieldDeserializer())
             .registerTypeAdapter(Representation.class, new RepresentationDeserializer())
             .registerTypeAdapter(Header.class, new HeaderDeserializer())
             .create();

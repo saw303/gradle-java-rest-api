@@ -31,7 +31,7 @@ import java.util.Objects;
 public class ResourceTypes implements Serializable {
 
   private String name;
-  private List<ResourceTypeField> fields;
+  private List<CustomTypeField> fields;
 
   public String getName() {
     return name;
@@ -41,11 +41,11 @@ public class ResourceTypes implements Serializable {
     this.name = name;
   }
 
-  public List<ResourceTypeField> getFields() {
+  public List<CustomTypeField> getFields() {
     return fields;
   }
 
-  public void setFields(List<ResourceTypeField> fields) {
+  public void setFields(List<CustomTypeField> fields) {
     this.fields = fields;
   }
 

@@ -27,15 +27,16 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /** @author Silvio Wangler */
-public class ResourceTypeField implements Serializable, FieldType {
+public class CustomTypeField implements Serializable, FieldType {
 
   private String name;
   private String type;
   private Object options;
-  private String min;
-  private String max;
-  private String multiple;
+  private Number min;
+  private Number max;
+  private boolean multiple;
   private String defaultValue;
+  private String comment;
 
   @Override
   public String getName() {
@@ -64,27 +65,27 @@ public class ResourceTypeField implements Serializable, FieldType {
     this.options = options;
   }
 
-  public String getMin() {
+  public Number getMin() {
     return min;
   }
 
-  public void setMin(String min) {
+  public void setMin(Number min) {
     this.min = min;
   }
 
-  public String getMax() {
+  public Number getMax() {
     return max;
   }
 
-  public void setMax(String max) {
+  public void setMax(Number max) {
     this.max = max;
   }
 
-  public String getMultiple() {
+  public boolean isMultiple() {
     return multiple;
   }
 
-  public void setMultiple(String multiple) {
+  public void setMultiple(boolean multiple) {
     this.multiple = multiple;
   }
 
@@ -96,23 +97,31 @@ public class ResourceTypeField implements Serializable, FieldType {
     this.defaultValue = defaultValue;
   }
 
+  public String getComment() {
+    return comment;
+  }
+
+  public void setComment(String comment) {
+    this.comment = comment;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-    ResourceTypeField that = (ResourceTypeField) o;
+    CustomTypeField that = (CustomTypeField) o;
     return Objects.equals(name, that.name)
         && Objects.equals(type, that.type)
         && Objects.equals(options, that.options)
         && Objects.equals(min, that.min)
         && Objects.equals(max, that.max)
         && Objects.equals(multiple, that.multiple)
-        && Objects.equals(defaultValue, that.defaultValue);
+        && Objects.equals(defaultValue, that.defaultValue)
+        && Objects.equals(comment, that.comment);
   }
 
   @Override
   public int hashCode() {
-
-    return Objects.hash(name, type, options, min, max, multiple, defaultValue);
+    return Objects.hash(name, type, options, min, max, multiple, defaultValue, comment);
   }
 }

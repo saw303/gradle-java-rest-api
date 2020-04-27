@@ -53,10 +53,7 @@ class RestApiPlugin implements Plugin<Project> {
 		Task clean = project.task('cleanRestArtifacts', type: CleanRestApiTask, group: TASK_GROUP_REST_API)
 		Task extract = project.task('extractSpecs', type: ExtractRestApiSpecsTask, group: TASK_GROUP_REST_API)
 		Task generate = project.task('generateRestArtifacts', type: GenerateRestApiTask, group: TASK_GROUP_REST_API)
-		Task validate = project.task('validateRestSpecs', type: ValidationTask, group: TASK_GROUP_REST_API)
 		project.task('generateDiagrams', type: PlantUmlTask, group: TASK_GROUP_REST_API)
-
-		generate.dependsOn(validate)
 
 		project.clean.dependsOn clean
 		extract.dependsOn extract
@@ -73,19 +70,19 @@ class RestApiPlugin implements Plugin<Project> {
 			project.configurations.create(CONFIGURATION_REST_API)
 		}
 
-		final String springVersion = "5.2.1.RELEASE"
+		final String springVersion = "5.2.4.RELEASE"
 		final String pluginVersion = "2.1.0-SNAPSHOT"
-		final String libPhoneNumberVersion = "8.10.22"
+		final String libPhoneNumberVersion = "8.11.5"
 
 		project.afterEvaluate {
 
 			project.dependencies {
 
-				api "javax.annotation:javax.annotation-api:1.3.2"
-				api "ch.silviowangler.rest:rest-model:${pluginVersion}"
-				api "javax.money:money-api:1.0.3"
-				api "javax.validation:validation-api:2.0.1.Final"
-				api "com.googlecode.libphonenumber:libphonenumber:${libPhoneNumberVersion}"
+				implementation "javax.annotation:javax.annotation-api:1.3.2"
+				implementation "ch.silviowangler.rest:rest-model:${pluginVersion}"
+				implementation "javax.money:money-api:1.0.3"
+				implementation "javax.validation:validation-api:2.0.1.Final"
+				implementation "com.googlecode.libphonenumber:libphonenumber:${libPhoneNumberVersion}"
 
 				if (extension.generationMode != GenerationMode.API) {
 

@@ -196,7 +196,7 @@ class RestApiPluginSpec extends Specification {
     new File(temporaryFolder.getRoot(), 'org/acme/rest').exists()
 
     and:
-    assertGeneratedFiles javaFiles, 16
+    assertGeneratedFiles javaFiles, 15
 
     and:
     javaFiles.collect {
@@ -205,7 +205,6 @@ class RestApiPluginSpec extends Specification {
 
     and: 'Ressourcen validieren'
     assertJavaFile('org.acme.rest.v1', 'CoordinatesType', 'land')
-    assertJavaFile('org.acme.rest.v1', 'ColorType', 'land')
     assertJavaFile('org.acme.rest.v1', 'DummyType', 'land')
     assertJavaFile('org.acme.rest.v1.laender', 'LandGetResourceModel', 'land')
     assertJavaFile('org.acme.rest.v1.laender', 'LandPostResourceModel', 'land')
@@ -267,7 +266,7 @@ class RestApiPluginSpec extends Specification {
     new File(temporaryFolder.getRoot(), 'org/acme/rest').exists()
 
     and:
-    assertGeneratedFiles javaFiles, 16
+    assertGeneratedFiles javaFiles, 15
 
     and:
     javaFiles.collect {
@@ -276,7 +275,6 @@ class RestApiPluginSpec extends Specification {
 
     and: 'Ressourcen validieren'
     assertJavaFile('org.acme.rest.v1', 'CoordinatesType', 'land')
-    assertJavaFile('org.acme.rest.v1', 'ColorType', 'land')
     assertJavaFile('org.acme.rest.v1', 'DummyType', 'land')
     assertJavaFile('org.acme.rest.v1.laender', 'LandGetResourceModel', 'land')
     assertJavaFile('org.acme.rest.v1.laender', 'LandPostResourceModel', testName)
@@ -397,7 +395,7 @@ class RestApiPluginSpec extends Specification {
     new File(temporaryFolder.getRoot(), 'org/acme/rest').exists()
 
     and:
-    assertGeneratedFiles javaFiles, 16
+    assertGeneratedFiles javaFiles, 15
 
     and:
     javaFiles.collect {
@@ -406,7 +404,6 @@ class RestApiPluginSpec extends Specification {
 
     and: 'Ressourcen validieren'
     assertJavaFile('org.acme.rest.v1', 'CoordinatesType', testName)
-    assertJavaFile('org.acme.rest.v1', 'ColorType', testName)
     assertJavaFile('org.acme.rest.v1', 'DummyType', testName)
     assertJavaFile('org.acme.rest.v1.laender', 'LandGetResourceModel', testName)
     assertJavaFile('org.acme.rest.v1.laender', 'LandPostResourceModel', testName)
