@@ -96,7 +96,7 @@ public abstract class DeserializerBase {
         case "long":
           return jsonElement.getAsLong();
         default:
-          throw new RuntimeException("Unknown number type " + type);
+          return null;
       }
     } else {
       return null;

@@ -56,7 +56,7 @@ class RestApiPluginSpec extends Specification {
       if (field.name == 'leistungsabrechnungspositionen') {
         return ClassName.get(BigDecimal)
       } else if (field.name == 'sprache') {
-        return ClassName.get('java.util', 'Locale')
+        return ClassName.get(Locale)
       }
     }
     throw new RuntimeException("Mapping no defined for ${field.name} of resource '${resource.general.description}'")
@@ -70,7 +70,7 @@ class RestApiPluginSpec extends Specification {
   void "The plugin provides the following tasks"() {
 
     expect:
-    project.tasks.findAll { Task task -> task.group == TASK_GROUP_REST_API }.size() == 5
+    project.tasks.findAll { task -> task.group == TASK_GROUP_REST_API }.size() == 5
 
     and:
     project.tasks.validateRestSpecs instanceof ValidationTask
@@ -78,7 +78,7 @@ class RestApiPluginSpec extends Specification {
 
     and:
     project.tasks.generateRestArtifacts instanceof GenerateRestApiTask
-    project.tasks.generateRestArtifacts.dependsOn == [project.tasks.validateRestSpecs] as Set
+    project.tasks.generateRestArtifacts.dependsOn*.type == [ValidationTask]
     project.tasks.generateRestArtifacts.group == TASK_GROUP_REST_API
 
     and:
