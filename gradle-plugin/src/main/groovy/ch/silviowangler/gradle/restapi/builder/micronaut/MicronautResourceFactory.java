@@ -44,6 +44,7 @@ import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_POST;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_PRODUCES;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_PUT;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_QUERY_VALUE;
+import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_REQUEST_BODY;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_STATUS;
 import static ch.silviowangler.gradle.restapi.PluginTypes.RESTAPI_RESPONSE_CREATOR;
 import static ch.silviowangler.gradle.restapi.builder.ArtifactType.DELEGATOR_RESOURCE;
@@ -295,8 +296,13 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
   }
 
   @Override
+  public boolean providesRequestBodyAnnotation() {
+    return true;
+  }
+
+  @Override
   public AnnotationSpec buildRequestBodyAnnotation() {
-    throw new UnsupportedOperationException("Micronaut does not have a request body annotation");
+    return createAnnotation(MICRONAUT_REQUEST_BODY);
   }
 
   @Override

@@ -96,6 +96,7 @@ public enum PluginTypes {
   MICRONAUT_POST(ClassName.get("io.micronaut.http.annotation", "Post")),
   MICRONAUT_PUT(ClassName.get("io.micronaut.http.annotation", "Put")),
   MICRONAUT_DELETE(ClassName.get("io.micronaut.http.annotation", "Delete")),
+  MICRONAUT_REQUEST_BODY(ClassName.get("io.micronaut.http.annotation", "Body")),
   MICRONAUT_HTTP_RESPONSE(ClassName.get("io.micronaut.http", "HttpResponse")),
   MICRONAUT_HTTP_STATUS(ClassName.get("io.micronaut.http", "HttpStatus")),
   MICRONAUT_HTTP_MEDIA_TYPE(ClassName.get("io.micronaut.http", "MediaType")),

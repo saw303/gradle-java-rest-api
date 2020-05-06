@@ -3,6 +3,7 @@ package org.acme.rest.v1.laender.orte;
 import ch.silviowangler.rest.types.IdType;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
+import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Delete;
 import io.micronaut.http.annotation.Get;
@@ -74,7 +75,7 @@ public class OrtResource {
   @Post
   @Produces("application/json; charset=UTF-8")
   @Status(HttpStatus.CREATED)
-  public IdType createEntity(@Valid OrtPostResourceModel model, String land) {
+  public IdType createEntity(@Valid @Body OrtPostResourceModel model, String land) {
     return delegate.createEntity(model, land);
   }
 
@@ -82,7 +83,7 @@ public class OrtResource {
       uri = "/{id}"
   )
   @Produces("application/json; charset=UTF-8")
-  public IdType updateEntity(@Valid OrtPutResourceModel model, String id, String land) {
+  public IdType updateEntity(@Valid @Body OrtPutResourceModel model, String id, String land) {
     return delegate.updateEntity(model, id, land);
   }
 }

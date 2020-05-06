@@ -5,6 +5,7 @@ import ch.silviowangler.rest.types.IdType;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.MediaType;
+import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.Head;
@@ -88,20 +89,20 @@ public class LandResource {
 
   @Post
   @Produces("application/json; charset=UTF-8")
-  public HttpResponse createCollection(@Valid Collection<LandPostResourceModel> model) {
+  public HttpResponse createCollection(@Valid @Body Collection<LandPostResourceModel> model) {
     return delegate.createCollection(model);
   }
 
   @Post
   @Produces("application/json; charset=UTF-8")
   @Status(HttpStatus.CREATED)
-  public IdType createEntity(@Valid LandPostResourceModel model) {
+  public IdType createEntity(@Valid @Body LandPostResourceModel model) {
     return delegate.createEntity(model);
   }
 
   @Put
   @Produces("application/json; charset=UTF-8")
-  public HttpResponse updateCollection(@Valid Collection<LandPutResourceModel> model) {
+  public HttpResponse updateCollection(@Valid @Body Collection<LandPutResourceModel> model) {
     return delegate.updateCollection(model);
   }
 
@@ -109,7 +110,7 @@ public class LandResource {
       uri = "/{id}"
   )
   @Produces("application/json; charset=UTF-8")
-  public IdType updateEntity(@Valid LandPutResourceModel model, String id) {
+  public IdType updateEntity(@Valid @Body LandPutResourceModel model, String id) {
     return delegate.updateEntity(model, id);
   }
 }
