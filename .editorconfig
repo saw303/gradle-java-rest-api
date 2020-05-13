@@ -3,7 +3,7 @@ root = true
 [*]
 indent_style = space
 indent_size = 2
-continuation_indent_size = 4
+ij_continuation_indent_size = 4
 
 [*.{java,groovy}]
 charset = utf-8
