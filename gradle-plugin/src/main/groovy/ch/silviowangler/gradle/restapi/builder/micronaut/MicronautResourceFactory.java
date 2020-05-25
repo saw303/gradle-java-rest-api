@@ -222,6 +222,10 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
       } else {
         annotationsFields.put("uri", String.format("/{id}.%s", representation.getName()));
       }
+    } else {
+      if (!representation.isJson()) {
+        annotationsFields.put("uri", String.format("/.%s", representation.getName()));
+      }
     }
 
     switch (httpMethod.toLowerCase()) {

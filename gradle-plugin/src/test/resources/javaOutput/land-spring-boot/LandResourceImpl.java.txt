@@ -14,6 +14,11 @@ public class LandResourceImpl extends LandResource {
   }
 
   @Override
+  public ResponseEntity handleGetCollectionPdf() {
+    throw new NotYetImplementedException();
+  }
+
+  @Override
   public LandGetResourceModel handleGetEntity(String id) {
     throw new NotYetImplementedException();
   }

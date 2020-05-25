@@ -12,6 +12,10 @@ public class LandResourceDelegate {
     throw new NotYetImplementedException();
   }
 
+  public HttpResponse getCollectionPdf() {
+    throw new NotYetImplementedException();
+  }
+
   public LandGetResourceModel getEntity(String id) {
     throw new NotYetImplementedException();
   }

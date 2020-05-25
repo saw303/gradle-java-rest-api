@@ -12,6 +12,11 @@ public class LandResourceImpl implements LandResource {
   }
 
   @Override
+  public Response getCollectionPdf() {
+    throw new NotYetImplementedException();
+  }
+
+  @Override
   public LandGetResourceModel getEntity(String id) {
     throw new NotYetImplementedException();
   }
