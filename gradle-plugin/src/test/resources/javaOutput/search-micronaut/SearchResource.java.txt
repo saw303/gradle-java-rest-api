@@ -16,8 +16,7 @@ import java.util.Optional;
 import javax.annotation.Generated;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.NotEmpty;
 
 /**
  * This resource generates the search endpoint
@@ -45,7 +44,7 @@ public class SearchResource {
 
   @Get
   @Produces("application/json")
-  public SearchGetResourceModel getEntity(@NotNull @Size(min = 1) @QueryValue List<String> q,
+  public SearchGetResourceModel getEntity(@NotEmpty @QueryValue List<String> q,
       @Nullable @QueryValue @DateFormat LocalDate startDate,
       @Nullable @QueryValue @DateTimeFormat Instant endTime, @Header Locale acceptedLanguage,
       @Header Optional<String> origin) {

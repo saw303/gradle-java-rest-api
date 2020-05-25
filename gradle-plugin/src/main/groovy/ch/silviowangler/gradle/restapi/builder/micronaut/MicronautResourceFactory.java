@@ -26,6 +26,7 @@ package ch.silviowangler.gradle.restapi.builder.micronaut;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_INJECT;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_NULLABLE;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_SINGLETON;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_NOT_EMPTY;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_NOT_NULL;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_SIZE;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_CONTROLLER;
@@ -165,12 +166,18 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
     List<AnnotationSpec> annotationSpecs = new ArrayList<>();
 
     if (param.getMandatory()) {
-      annotationSpecs.add(AnnotationSpec.builder(JAVAX_VALIDATION_NOT_NULL.getClassName()).build());
+      if (param.isMultiple()) {
+        annotationSpecs.add(
+            AnnotationSpec.builder(JAVAX_VALIDATION_NOT_EMPTY.getClassName()).build());
+      } else {
+        annotationSpecs.add(
+            AnnotationSpec.builder(JAVAX_VALIDATION_NOT_NULL.getClassName()).build());
+      }
     } else {
       annotationSpecs.add(AnnotationSpec.builder(JAVAX_NULLABLE.getClassName()).build());
     }
 
-    if (param.hasMinMaxConstraints()) {
+    if (param.hasMinMaxConstraints() && !param.isMultiple()) {
       AnnotationSpec.Builder sizeAnnotationBuilder =
           AnnotationSpec.builder(JAVAX_VALIDATION_SIZE.getClassName());
 
