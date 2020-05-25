@@ -270,9 +270,7 @@ public interface ResourceBuilder {
                   isResourceInterface || isAbstractResourceClass || isDelegateResourceClass;
 
               if (isResource && !isHandleMethod) {
-                for (AnnotationSpec queryParamAnnotation : getQueryParamAnnotations(p)) {
-                  builder.addAnnotation(queryParamAnnotation);
-                }
+                builder.addAnnotations(getQueryParamAnnotations(p));
               }
 
               ParameterSpec parameter = builder.build();
