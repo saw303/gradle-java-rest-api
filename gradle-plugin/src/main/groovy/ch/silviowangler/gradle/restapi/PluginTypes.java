@@ -61,6 +61,7 @@ public enum PluginTypes {
   JAVAX_VALIDATION_MIN(ClassName.get("javax.validation.constraints", "Min")),
   JAVAX_VALIDATION_MAX(ClassName.get("javax.validation.constraints", "Max")),
   JAVAX_VALIDATION_NOT_NULL(ClassName.get("javax.validation.constraints", "NotNull")),
+  JAVAX_VALIDATION_NOT_EMPTY(ClassName.get("javax.validation.constraints", "NotEmpty")),
   JAVAX_VALIDATION_EMAIL(ClassName.get("javax.validation.constraints", "Email")),
   JAVAX_VALIDATION_VALID(ClassName.get("javax.validation", "Valid")),
   JAVAX_GENERATED(ClassName.get("javax.annotation", "Generated")),

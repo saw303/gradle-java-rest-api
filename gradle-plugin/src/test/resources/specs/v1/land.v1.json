@@ -77,6 +77,13 @@
           "responseExample": "{...}",
           "isDefault": true,
           "mimetype": "application/ch.silviowangler.land.collection"
+        },
+        {
+          "name": "pdf",
+          "comment": "",
+          "responseExample": "{...}",
+          "isDefault": false,
+          "mimetype": "application/pdf"
         }
       ],
       "permissions": []
