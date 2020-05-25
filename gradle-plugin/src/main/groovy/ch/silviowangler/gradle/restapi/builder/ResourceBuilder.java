@@ -256,8 +256,14 @@ public interface ResourceBuilder {
         .getParams()
         .forEach(
             p -> {
-              ParameterSpec.Builder builder =
-                  ParameterSpec.builder(translateToJava(p), p.getName());
+              TypeName type = translateToJava(p);
+
+              if (p.isMultiple()) {
+                ClassName list = ClassName.get(List.class);
+                type = ParameterizedTypeName.get(list, type);
+              }
+
+              ParameterSpec.Builder builder = ParameterSpec.builder(type, p.getName());
 
               final boolean isHandleMethod = methodNameCopy.startsWith("handle");
               final boolean isResource =

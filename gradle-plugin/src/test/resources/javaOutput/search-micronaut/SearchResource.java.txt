@@ -10,6 +10,7 @@ import io.micronaut.http.annotation.Produces;
 import io.micronaut.http.annotation.QueryValue;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import javax.annotation.Generated;
@@ -44,7 +45,7 @@ public class SearchResource {
 
   @Get
   @Produces("application/json")
-  public SearchGetResourceModel getEntity(@NotNull @Size(min = 1) @QueryValue String q,
+  public SearchGetResourceModel getEntity(@NotNull @Size(min = 1) @QueryValue List<String> q,
       @Nullable @QueryValue @DateFormat LocalDate startDate,
       @Nullable @QueryValue @DateTimeFormat Instant endTime, @Header Locale acceptedLanguage,
       @Header Optional<String> origin) {
