@@ -26,9 +26,12 @@ package ch.silviowangler.rest.micronaut;
 import ch.silviowangler.rest.model.CollectionModel;
 import ch.silviowangler.rest.model.EntityModel;
 import ch.silviowangler.rest.model.Identifiable;
+import ch.silviowangler.rest.model.PaginationCollectionModel;
 import ch.silviowangler.rest.model.ResourceLink;
 import ch.silviowangler.rest.model.ResourceModel;
 import ch.silviowangler.rest.model.SelfLinkProvider;
+import ch.silviowangler.rest.model.pagination.Page;
+import ch.silviowangler.rest.model.pagination.Slice;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.http.HttpAttributes;
@@ -47,6 +50,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import org.reactivestreams.Publisher;
 
 /**
@@ -143,13 +147,94 @@ public class HateoasResponseFilter implements HttpServerFilter {
 
                     ((MutableHttpResponse) res).body(entityModel);
 
-                  } else if (res.body() instanceof Collection) {
+                  } else if (res.body() instanceof Collection || res.body() instanceof Slice) {
 
-                    Collection models = (Collection) res.body();
+                    Iterable models;
+                    CollectionModel collectionModel;
 
-                    CollectionModel collectionModel = new CollectionModel();
+                    if (res.body() instanceof Page) {
+                      collectionModel = new PaginationCollectionModel((Page) res.body());
+                      models = ((Page) res.body()).getContent();
+                    } else if (res.body() instanceof Slice) {
+                      collectionModel = new PaginationCollectionModel((Slice) res.body());
+                      models = ((Slice) res.body()).getContent();
+                    } else {
+                      collectionModel = new CollectionModel();
+                      models = (Collection) res.body();
+                    }
+
                     ResourceLink collectionSelfLink = ResourceLink.selfLink(uriRouteMatch.getUri());
                     collectionModel.getLinks().add(addBaseUrl(collectionSelfLink));
+
+                    if (collectionModel instanceof PaginationCollectionModel
+                        && res.body() instanceof Slice) {
+
+                      String params =
+                          StreamSupport.stream(request.getParameters().spliterator(), false)
+                              .filter(
+                                  p -> !p.getKey().equals("page") && !p.getKey().equals("limit"))
+                              .filter(p -> !p.getValue().isEmpty())
+                              .map(p -> p.getKey() + "=" + p.getValue().get(0))
+                              .collect(Collectors.joining("&"));
+
+                      Slice slice = (Slice) res.body();
+
+                      collectionModel
+                          .getLinks()
+                          .add(
+                              ResourceLink.relLink(
+                                  "first",
+                                  uriRouteMatch.getUri()
+                                      + "?page=0&limit="
+                                      + slice.getSize()
+                                      + addExistingParams(params)));
+
+                      if (slice instanceof Page) {
+
+                        Page page = (Page) slice;
+
+                        if (page.getPageNumber() > 1
+                            && page.getTotalPages() >= page.getPageNumber()) {
+                          collectionModel
+                              .getLinks()
+                              .add(
+                                  ResourceLink.relLink(
+                                      "previous",
+                                      uriRouteMatch.getUri()
+                                          + "?page="
+                                          + (slice.getPageNumber() - 1)
+                                          + "&limit="
+                                          + slice.getSize()
+                                          + addExistingParams(params)));
+                        }
+
+                        if (!page.isLastPage()) {
+                          collectionModel
+                              .getLinks()
+                              .add(
+                                  ResourceLink.relLink(
+                                      "next",
+                                      uriRouteMatch.getUri()
+                                          + "?page="
+                                          + (slice.getPageNumber() + 1)
+                                          + "&limit="
+                                          + slice.getSize()
+                                          + addExistingParams(params)));
+                        }
+
+                        collectionModel
+                            .getLinks()
+                            .add(
+                                ResourceLink.relLink(
+                                    "last",
+                                    uriRouteMatch.getUri()
+                                        + "?page="
+                                        + (page.getTotalPages() - 1)
+                                        + "&limit="
+                                        + slice.getSize()
+                                        + addExistingParams(params)));
+                      }
+                    }
 
                     for (Object model : models) {
                       if (model instanceof ResourceModel) {
@@ -208,5 +293,12 @@ public class HateoasResponseFilter implements HttpServerFilter {
     return entityModel.getLinks().stream()
         .map(ResourceLink::getRel)
         .anyMatch(it -> Objects.equals(relName, it));
+  }
+
+  private String addExistingParams(String params) {
+    if (params == null || params.length() == 0) {
+      return "";
+    }
+    return "&" + params;
   }
 }

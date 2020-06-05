@@ -102,4 +102,8 @@ public class ResourceLink implements Serializable {
   public static ResourceLink selfLink(String uri) {
     return new ResourceLink(URI.create(uri));
   }
+
+  public static ResourceLink relLink(String rel, String uri) {
+    return new ResourceLink(rel, "GET", URI.create(uri));
+  }
 }
