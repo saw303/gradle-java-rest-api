@@ -24,7 +24,7 @@
 package ch.silviowangler.rest.model.pagination;
 
 /**
- * Models pageable data. Inspired by Micronaut Data {@link io.micronaut.data.model.Pageable}.
+ * Models pageable data. Inspired by Micronaut Data {@code Pageable}.
  *
  * @author Silvio Wangler
  * @since 2.2.0
