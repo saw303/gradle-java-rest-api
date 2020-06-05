@@ -7,12 +7,12 @@ import javax.ws.rs.core.Response;
 
 public class LandResourceImpl implements LandResource {
   @Override
-  public Collection<LandGetResourceModel> getCollection() {
+  public Collection<LandGetResourceModel> getCollection(Integer limit) {
     throw new NotYetImplementedException();
   }
 
   @Override
-  public Response getCollectionPdf() {
+  public Response getCollectionPdf(Integer limit) {
     throw new NotYetImplementedException();
   }
 

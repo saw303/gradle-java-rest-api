@@ -86,7 +86,20 @@
           "mimetype": "application/pdf"
         }
       ],
-      "permissions": []
+      "permissions": [],
+      "parameters": [
+        {
+          "name": "limit",
+          "type": "int",
+          "options": null,
+          "mandatory": false,
+          "min": null,
+          "max": null,
+          "multiple": false,
+          "defaultValue": 10,
+          "x-comment": "limit result"
+        }
+      ]
     },
     {
       "verb": "HEAD_ENTITY",

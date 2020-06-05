@@ -182,12 +182,13 @@ public class HateoasResponseFilter implements HttpServerFilter {
                       collectionModel
                           .getLinks()
                           .add(
-                              ResourceLink.relLink(
-                                  "first",
-                                  uriRouteMatch.getUri()
-                                      + "?page=0&limit="
-                                      + slice.getSize()
-                                      + addExistingParams(params)));
+                              addBaseUrl(
+                                  ResourceLink.relLink(
+                                      "first",
+                                      uriRouteMatch.getUri()
+                                          + "?page=0&limit="
+                                          + slice.getSize()
+                                          + addExistingParams(params))));
 
                       if (slice instanceof Page) {
 
@@ -198,41 +199,44 @@ public class HateoasResponseFilter implements HttpServerFilter {
                           collectionModel
                               .getLinks()
                               .add(
-                                  ResourceLink.relLink(
-                                      "previous",
-                                      uriRouteMatch.getUri()
-                                          + "?page="
-                                          + (slice.getPageNumber() - 1)
-                                          + "&limit="
-                                          + slice.getSize()
-                                          + addExistingParams(params)));
+                                  addBaseUrl(
+                                      ResourceLink.relLink(
+                                          "previous",
+                                          uriRouteMatch.getUri()
+                                              + "?page="
+                                              + (slice.getPageNumber() - 1)
+                                              + "&limit="
+                                              + slice.getSize()
+                                              + addExistingParams(params))));
                         }
 
                         if (!page.isLastPage()) {
                           collectionModel
                               .getLinks()
                               .add(
-                                  ResourceLink.relLink(
-                                      "next",
-                                      uriRouteMatch.getUri()
-                                          + "?page="
-                                          + (slice.getPageNumber() + 1)
-                                          + "&limit="
-                                          + slice.getSize()
-                                          + addExistingParams(params)));
+                                  addBaseUrl(
+                                      ResourceLink.relLink(
+                                          "next",
+                                          uriRouteMatch.getUri()
+                                              + "?page="
+                                              + (slice.getPageNumber() + 1)
+                                              + "&limit="
+                                              + slice.getSize()
+                                              + addExistingParams(params))));
                         }
 
                         collectionModel
                             .getLinks()
                             .add(
-                                ResourceLink.relLink(
-                                    "last",
-                                    uriRouteMatch.getUri()
-                                        + "?page="
-                                        + (page.getTotalPages() - 1)
-                                        + "&limit="
-                                        + slice.getSize()
-                                        + addExistingParams(params)));
+                                addBaseUrl(
+                                    ResourceLink.relLink(
+                                        "last",
+                                        uriRouteMatch.getUri()
+                                            + "?page="
+                                            + (page.getTotalPages() - 1)
+                                            + "&limit="
+                                            + slice.getSize()
+                                            + addExistingParams(params))));
                       }
                     }
 
