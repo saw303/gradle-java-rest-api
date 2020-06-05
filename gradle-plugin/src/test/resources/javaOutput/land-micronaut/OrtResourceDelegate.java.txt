@@ -3,7 +3,6 @@ package org.acme.rest.v1.laender.orte;
 import ch.silviowangler.rest.NotYetImplementedException;
 import ch.silviowangler.rest.types.IdType;
 import io.micronaut.http.HttpResponse;
-import java.util.Collection;
 import javax.inject.Singleton;
 
 @Singleton
@@ -12,7 +11,7 @@ public class OrtResourceDelegate {
     throw new NotYetImplementedException();
   }
 
-  public Collection<OrtGetResourceModel> getCollection(String land) {
+  public Iterable<OrtGetResourceModel> getCollection(String land) {
     throw new NotYetImplementedException();
   }
 

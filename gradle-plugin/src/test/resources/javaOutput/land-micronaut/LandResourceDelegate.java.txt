@@ -8,7 +8,7 @@ import javax.inject.Singleton;
 
 @Singleton
 public class LandResourceDelegate {
-  public Collection<LandGetResourceModel> getCollection() {
+  public Iterable<LandGetResourceModel> getCollection() {
     throw new NotYetImplementedException();
   }
 

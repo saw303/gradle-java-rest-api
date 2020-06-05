@@ -45,7 +45,7 @@ public class LandResource {
 
   @Get
   @Produces("application/json; charset=UTF-8")
-  public Collection<LandGetResourceModel> getCollection() {
+  public Iterable<LandGetResourceModel> getCollection() {
     return delegate.getCollection();
   }
 

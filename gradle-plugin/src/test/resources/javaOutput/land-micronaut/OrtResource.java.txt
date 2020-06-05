@@ -12,7 +12,6 @@ import io.micronaut.http.annotation.Post;
 import io.micronaut.http.annotation.Produces;
 import io.micronaut.http.annotation.Put;
 import io.micronaut.http.annotation.Status;
-import java.util.Collection;
 import javax.annotation.Generated;
 import javax.inject.Inject;
 import javax.validation.Valid;
@@ -52,7 +51,7 @@ public class OrtResource {
 
   @Get
   @Produces("application/json; charset=UTF-8")
-  public Collection<OrtGetResourceModel> getCollection(String land) {
+  public Iterable<OrtGetResourceModel> getCollection(String land) {
     return delegate.getCollection(land);
   }
 
