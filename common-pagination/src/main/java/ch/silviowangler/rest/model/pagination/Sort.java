@@ -28,9 +28,10 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * your description goes here...
+ * An interface for objects that can be sorted. Sorted instances are immutable and all mutating
+ * operations on this interface return a new instance.
  *
- * @author Silvio Wangler (silvio.wangler@onstructive.ch)
+ * @author Silvio Wangler (silvio.wangler@gmail.com)
  */
 public interface Sort {
 

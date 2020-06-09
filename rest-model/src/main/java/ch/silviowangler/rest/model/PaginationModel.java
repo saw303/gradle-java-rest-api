@@ -28,9 +28,9 @@ import ch.silviowangler.rest.model.pagination.Slice;
 import java.io.Serializable;
 
 /**
- * your description goes here...
+ * Context information for a client for pagination.
  *
- * @author Silvio Wangler (silvio.wangler@onstructive.ch)
+ * @author Silvio Wangler (silvio.wangler@gmail.com)
  */
 public class PaginationModel implements Serializable {
 

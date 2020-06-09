@@ -28,9 +28,9 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * your description goes here...
+ * Default implementation of the sort interface.
  *
- * @author Silvio Wangler (silvio.wangler@onstructive.ch)
+ * @author Silvio Wangler (silvio.wangler@gmail.com)
  */
 public class DefaultSort implements Sort {
 
