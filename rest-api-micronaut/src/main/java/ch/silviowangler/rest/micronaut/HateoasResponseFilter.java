@@ -194,7 +194,7 @@ public class HateoasResponseFilter implements HttpServerFilter {
 
                         Page page = (Page) slice;
 
-                        if (page.getPageNumber() > 1
+                        if (page.getPageNumber() > 0
                             && page.getTotalPages() >= page.getPageNumber()) {
                           collectionModel
                               .getLinks()
