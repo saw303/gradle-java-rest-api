@@ -43,6 +43,7 @@ import io.micronaut.http.filter.HttpServerFilter;
 import io.micronaut.http.filter.ServerFilterChain;
 import io.micronaut.web.router.UriRouteMatch;
 import io.reactivex.Flowable;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
@@ -177,11 +178,18 @@ public class HateoasResponseFilter implements HttpServerFilter {
                                   p -> !p.getKey().equals("page") && !p.getKey().equals("limit"))
                               .filter(p -> !p.getValue().isEmpty())
                               .map(
-                                  p ->
-                                      p.getKey()
-                                          + "="
-                                          + URLEncoder.encode(
-                                              p.getValue().get(0), StandardCharsets.UTF_8))
+                                  p -> {
+                                    String value;
+                                    try {
+                                      value =
+                                          URLEncoder.encode(
+                                              p.getValue().get(0),
+                                              StandardCharsets.UTF_8.toString());
+                                    } catch (UnsupportedEncodingException e) {
+                                      value = p.getValue().get(0);
+                                    }
+                                    return String.format("%s=%s", p.getKey(), value);
+                                  })
                               .collect(Collectors.joining("&"));
 
                       Slice slice = (Slice) res.body();
