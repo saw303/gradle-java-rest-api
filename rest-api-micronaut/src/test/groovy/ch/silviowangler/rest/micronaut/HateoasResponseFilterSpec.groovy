@@ -23,8 +23,7 @@ class HateoasResponseFilterSpec extends Specification {
   void "Ensure parameter encoding works as expected"() {
 
     given: "a request"
-    String uri = "/api"
-    HttpRequest<?> request = HttpRequestFactory.INSTANCE.get(uri)
+    HttpRequest<?> request = HttpRequestFactory.INSTANCE.get("/api/endpoint")
     request.parameters.add("param1", "hello world")
     request.parameters.add("param2", "this?is=a test")
 
