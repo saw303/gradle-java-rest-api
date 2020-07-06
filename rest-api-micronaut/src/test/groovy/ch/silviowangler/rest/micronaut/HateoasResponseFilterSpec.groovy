@@ -26,7 +26,7 @@ class HateoasResponseFilterSpec extends Specification {
     String uri = "/api"
     HttpRequest<?> request = HttpRequestFactory.INSTANCE.get(uri)
     request.parameters.add("param1", "hello world")
-    request.parameters.add("param2", "this is a test")
+    request.parameters.add("param2", "this?is=a test")
 
     and: "a response"
     MutableHttpResponse<?> response = HttpResponseFactory.INSTANCE.ok()
@@ -38,7 +38,7 @@ class HateoasResponseFilterSpec extends Specification {
     response.body(model)
 
     and:
-    String expectedPageLink = "/api/endpoint?page=0&limit=10&param1=hello+world&param2=this+is+a+test"
+    String expectedPageLink = "/api/endpoint?page=0&limit=10&param1=hello+world&param2=this%3Fis%3Da+test"
 
     when:
     hateoasResponseFilter.enrichHateoasData(request, response)
