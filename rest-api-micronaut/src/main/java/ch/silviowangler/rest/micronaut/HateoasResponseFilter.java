@@ -112,167 +112,177 @@ public class HateoasResponseFilter implements HttpServerFilter {
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public Publisher<MutableHttpResponse<?>> doFilter(
       HttpRequest<?> request, ServerFilterChain chain) {
 
     return Flowable.fromPublisher(chain.proceed(request))
-        .doOnNext(response -> enrichHateoasData(request, response));
-  }
+        .doOnNext(
+            response -> {
+              Optional<UriRouteMatch> potUriRouteMatch =
+                  response
+                      .getAttributes()
+                      .get(HttpAttributes.ROUTE_MATCH.toString(), UriRouteMatch.class);
 
-  @SuppressWarnings("unchecked")
-  private void enrichHateoasData(HttpRequest<?> request, MutableHttpResponse<?> response) {
-    Optional<UriRouteMatch> potUriRouteMatch =
-        response.getAttributes().get(HttpAttributes.ROUTE_MATCH.toString(), UriRouteMatch.class);
+              if (potUriRouteMatch.isPresent()) {
+                UriRouteMatch uriRouteMatch = potUriRouteMatch.get();
 
-    if (potUriRouteMatch.isPresent()) {
-      UriRouteMatch uriRouteMatch = potUriRouteMatch.get();
+                if (uriRouteMatch.getProduces().contains(MediaType.APPLICATION_JSON_TYPE)) {
 
-      if (uriRouteMatch.getProduces().contains(MediaType.APPLICATION_JSON_TYPE)) {
+                  if (response.body() instanceof ResourceModel) {
 
-        if (response.body() instanceof ResourceModel) {
+                    ResourceModel resourceModel = (ResourceModel) response.body();
+                    EntityModel entityModel = new EntityModel(resourceModel);
 
-          ResourceModel resourceModel = (ResourceModel) response.body();
-          EntityModel entityModel = new EntityModel(resourceModel);
+                    addProviderLinks(uriRouteMatch, resourceModel, entityModel);
 
-          addProviderLinks(uriRouteMatch, resourceModel, entityModel);
+                    if (!hasLink(entityModel, "self")) {
+                      if (resourceModel instanceof SelfLinkProvider) {
+                        ((SelfLinkProvider) resourceModel)
+                            .selfLink()
+                            .ifPresent(
+                                selfLink -> entityModel.getLinks().add(addBaseUrl(selfLink)));
+                      } else {
+                        entityModel
+                            .getLinks()
+                            .add(addBaseUrl(ResourceLink.selfLink(uriRouteMatch.getUri())));
+                      }
+                    }
 
-          if (!hasLink(entityModel, "self")) {
-            if (resourceModel instanceof SelfLinkProvider) {
-              ((SelfLinkProvider) resourceModel)
-                  .selfLink()
-                  .ifPresent(selfLink -> entityModel.getLinks().add(addBaseUrl(selfLink)));
-            } else {
-              entityModel.getLinks().add(addBaseUrl(ResourceLink.selfLink(uriRouteMatch.getUri())));
-            }
-          }
+                    ((MutableHttpResponse) response).body(entityModel);
 
-          ((MutableHttpResponse) response).body(entityModel);
+                  } else if (response.body() instanceof Collection
+                      || response.body() instanceof Slice) {
 
-        } else if (response.body() instanceof Collection || response.body() instanceof Slice) {
+                    Iterable models;
+                    CollectionModel collectionModel;
 
-          Iterable models;
-          CollectionModel collectionModel;
+                    if (response.body() instanceof Page) {
+                      collectionModel = new PaginationCollectionModel((Page) response.body());
+                      models = ((Page) response.body()).getContent();
+                    } else if (response.body() instanceof Slice) {
+                      collectionModel = new PaginationCollectionModel((Slice) response.body());
+                      models = ((Slice) response.body()).getContent();
+                    } else {
+                      collectionModel = new CollectionModel();
+                      models = (Collection) response.body();
+                    }
 
-          if (response.body() instanceof Page) {
-            collectionModel = new PaginationCollectionModel((Page) response.body());
-            models = ((Page) response.body()).getContent();
-          } else if (response.body() instanceof Slice) {
-            collectionModel = new PaginationCollectionModel((Slice) response.body());
-            models = ((Slice) response.body()).getContent();
-          } else {
-            collectionModel = new CollectionModel();
-            models = (Collection) response.body();
-          }
+                    ResourceLink collectionSelfLink = ResourceLink.selfLink(uriRouteMatch.getUri());
+                    collectionModel.getLinks().add(addBaseUrl(collectionSelfLink));
 
-          ResourceLink collectionSelfLink = ResourceLink.selfLink(uriRouteMatch.getUri());
-          collectionModel.getLinks().add(addBaseUrl(collectionSelfLink));
+                    if (collectionModel instanceof PaginationCollectionModel
+                        && response.body() instanceof Slice) {
 
-          if (collectionModel instanceof PaginationCollectionModel
-              && response.body() instanceof Slice) {
+                      String params =
+                          StreamSupport.stream(request.getParameters().spliterator(), false)
+                              .filter(
+                                  p -> !p.getKey().equals("page") && !p.getKey().equals("limit"))
+                              .filter(p -> !p.getValue().isEmpty())
+                              .map(
+                                  p -> {
+                                    String value;
+                                    try {
+                                      value =
+                                          URLEncoder.encode(
+                                              p.getValue().get(0),
+                                              StandardCharsets.UTF_8.toString());
+                                    } catch (UnsupportedEncodingException e) {
+                                      value = p.getValue().get(0);
+                                    }
+                                    return String.format("%s=%s", p.getKey(), value);
+                                  })
+                              .collect(Collectors.joining("&"));
 
-            String params =
-                StreamSupport.stream(request.getParameters().spliterator(), false)
-                    .filter(p -> !p.getKey().equals("page") && !p.getKey().equals("limit"))
-                    .filter(p -> !p.getValue().isEmpty())
-                    .map(
-                        p -> {
-                          String value;
-                          try {
-                            value =
-                                URLEncoder.encode(
-                                    p.getValue().get(0), StandardCharsets.UTF_8.toString());
-                          } catch (UnsupportedEncodingException e) {
-                            value = p.getValue().get(0);
-                          }
-                          return String.format("%s=%s", p.getKey(), value);
-                        })
-                    .collect(Collectors.joining("&"));
+                      Slice slice = (Slice) response.body();
 
-            Slice slice = (Slice) response.body();
+                      collectionModel
+                          .getLinks()
+                          .add(
+                              addBaseUrl(
+                                  ResourceLink.relLink(
+                                      "first",
+                                      uriRouteMatch.getUri()
+                                          + "?page=0&limit="
+                                          + slice.getSize()
+                                          + addExistingParams(params))));
 
-            collectionModel
-                .getLinks()
-                .add(
-                    addBaseUrl(
-                        ResourceLink.relLink(
-                            "first",
-                            uriRouteMatch.getUri()
-                                + "?page=0&limit="
-                                + slice.getSize()
-                                + addExistingParams(params))));
+                      if (slice instanceof Page) {
 
-            if (slice instanceof Page) {
+                        Page page = (Page) slice;
 
-              Page page = (Page) slice;
+                        if (page.getPageNumber() > 0
+                            && page.getTotalPages() >= page.getPageNumber()) {
+                          collectionModel
+                              .getLinks()
+                              .add(
+                                  addBaseUrl(
+                                      ResourceLink.relLink(
+                                          "previous",
+                                          uriRouteMatch.getUri()
+                                              + "?page="
+                                              + (slice.getPageNumber() - 1)
+                                              + "&limit="
+                                              + slice.getSize()
+                                              + addExistingParams(params))));
+                        }
 
-              if (page.getPageNumber() > 0 && page.getTotalPages() >= page.getPageNumber()) {
-                collectionModel
-                    .getLinks()
-                    .add(
-                        addBaseUrl(
-                            ResourceLink.relLink(
-                                "previous",
-                                uriRouteMatch.getUri()
-                                    + "?page="
-                                    + (slice.getPageNumber() - 1)
-                                    + "&limit="
-                                    + slice.getSize()
-                                    + addExistingParams(params))));
+                        if (!page.isLastPage()) {
+                          collectionModel
+                              .getLinks()
+                              .add(
+                                  addBaseUrl(
+                                      ResourceLink.relLink(
+                                          "next",
+                                          uriRouteMatch.getUri()
+                                              + "?page="
+                                              + (slice.getPageNumber() + 1)
+                                              + "&limit="
+                                              + slice.getSize()
+                                              + addExistingParams(params))));
+                        }
+
+                        collectionModel
+                            .getLinks()
+                            .add(
+                                addBaseUrl(
+                                    ResourceLink.relLink(
+                                        "last",
+                                        uriRouteMatch.getUri()
+                                            + "?page="
+                                            + (page.getTotalPages() - 1)
+                                            + "&limit="
+                                            + slice.getSize()
+                                            + addExistingParams(params))));
+                      }
+                    }
+
+                    for (Object model : models) {
+                      if (model instanceof ResourceModel) {
+                        ResourceModel resourceModel = (ResourceModel) model;
+                        EntityModel entityModel = new EntityModel(resourceModel);
+
+                        addProviderLinks(uriRouteMatch, resourceModel, entityModel);
+
+                        // this self link is only added if the linkProviders are not already
+                        // defining one
+                        if (model instanceof Identifiable && !hasLink(entityModel, "self")) {
+                          ResourceLink selfLink =
+                              ResourceLink.selfLink(
+                                  uriRouteMatch.getUri()
+                                      + "/"
+                                      + ((Identifiable) resourceModel).getId());
+                          entityModel.getLinks().add(addBaseUrl(selfLink));
+                        }
+
+                        collectionModel.getData().add(entityModel);
+                      }
+                    }
+                    ((MutableHttpResponse) response).body(collectionModel);
+                  }
+                }
               }
-
-              if (!page.isLastPage()) {
-                collectionModel
-                    .getLinks()
-                    .add(
-                        addBaseUrl(
-                            ResourceLink.relLink(
-                                "next",
-                                uriRouteMatch.getUri()
-                                    + "?page="
-                                    + (slice.getPageNumber() + 1)
-                                    + "&limit="
-                                    + slice.getSize()
-                                    + addExistingParams(params))));
-              }
-
-              collectionModel
-                  .getLinks()
-                  .add(
-                      addBaseUrl(
-                          ResourceLink.relLink(
-                              "last",
-                              uriRouteMatch.getUri()
-                                  + "?page="
-                                  + (page.getTotalPages() - 1)
-                                  + "&limit="
-                                  + slice.getSize()
-                                  + addExistingParams(params))));
-            }
-          }
-
-          for (Object model : models) {
-            if (model instanceof ResourceModel) {
-              ResourceModel resourceModel = (ResourceModel) model;
-              EntityModel entityModel = new EntityModel(resourceModel);
-
-              addProviderLinks(uriRouteMatch, resourceModel, entityModel);
-
-              // this self link is only added if the linkProviders are not already
-              // defining one
-              if (model instanceof Identifiable && !hasLink(entityModel, "self")) {
-                ResourceLink selfLink =
-                    ResourceLink.selfLink(
-                        uriRouteMatch.getUri() + "/" + ((Identifiable) resourceModel).getId());
-                entityModel.getLinks().add(addBaseUrl(selfLink));
-              }
-
-              collectionModel.getData().add(entityModel);
-            }
-          }
-          ((MutableHttpResponse) response).body(collectionModel);
-        }
-      }
-    }
+            });
   }
 
   private void addProviderLinks(

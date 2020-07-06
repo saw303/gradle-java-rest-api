@@ -1,6 +1,5 @@
 package ch.silviowangler.rest.micronaut
 
-
 import ch.silviowangler.rest.model.ResourceLink
 import ch.silviowangler.rest.model.pagination.DefaultPage
 import ch.silviowangler.rest.model.pagination.DefaultPageable
@@ -11,7 +10,9 @@ import io.micronaut.http.HttpRequestFactory
 import io.micronaut.http.HttpResponseFactory
 import io.micronaut.http.MediaType
 import io.micronaut.http.MutableHttpResponse
+import io.micronaut.http.filter.ServerFilterChain
 import io.micronaut.web.router.UriRouteMatch
+import io.reactivex.Flowable
 import spock.lang.Specification
 import spock.lang.Subject
 
@@ -39,9 +40,13 @@ class HateoasResponseFilterSpec extends Specification {
     and:
     String expectedPageLink = "/api/endpoint?page=0&limit=10&param1=hello+world&param2=this%3Fis%3Da+test"
 
+    and:
+    ServerFilterChain chain = Mock()
+    _ * chain.proceed(_) >> { Flowable.just(response) }
+
     when:
-    hateoasResponseFilter.enrichHateoasData(request, response)
-    List<ResourceLink> enrichedLinks = response.body()["links"]
+    MutableHttpResponse<?> filteredResponse = Flowable.fromPublisher(hateoasResponseFilter.doFilter(request, chain)).blockingSingle()
+    List<ResourceLink> enrichedLinks = filteredResponse.body()["links"] as List<ResourceLink>
 
     then: "ensure parameters are encoded correctly"
     enrichedLinks.find { it["rel"] == "first" }["href"].toString() == expectedPageLink
