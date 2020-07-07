@@ -24,10 +24,7 @@
 package ch.silviowangler.rest.model;
 
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -107,11 +104,6 @@ public class ResourceLink implements Serializable {
   }
 
   public static ResourceLink relLink(String rel, String uri) {
-    try {
-      return new ResourceLink(
-          rel, "GET", URI.create(URLEncoder.encode(uri, StandardCharsets.UTF_8.toString())));
-    } catch (UnsupportedEncodingException e) {
-      return new ResourceLink(rel, "GET", URI.create(uri));
-    }
+    return new ResourceLink(rel, "GET", URI.create(uri));
   }
 }
