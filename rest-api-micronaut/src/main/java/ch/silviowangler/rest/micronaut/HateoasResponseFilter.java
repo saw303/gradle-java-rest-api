@@ -180,18 +180,21 @@ public class HateoasResponseFilter implements HttpServerFilter {
                                   p -> !p.getKey().equals("page") && !p.getKey().equals("limit"))
                               .filter(p -> !p.getValue().isEmpty())
                               .map(
-                                  p -> {
-                                    String value;
-                                    try {
-                                      value =
-                                          URLEncoder.encode(
-                                              p.getValue().get(0),
-                                              StandardCharsets.UTF_8.toString());
-                                    } catch (UnsupportedEncodingException e) {
-                                      value = p.getValue().get(0);
-                                    }
-                                    return String.format("%s=%s", p.getKey(), value);
-                                  })
+                                  p ->
+                                      p.getValue().stream()
+                                          .map(
+                                              v -> {
+                                                String value;
+                                                try {
+                                                  value =
+                                                      URLEncoder.encode(
+                                                          v, StandardCharsets.UTF_8.toString());
+                                                } catch (UnsupportedEncodingException e) {
+                                                  value = v;
+                                                }
+                                                return String.format("%s=%s", p.getKey(), value);
+                                              })
+                                          .collect(Collectors.joining("&")))
                               .collect(Collectors.joining("&"));
 
                       Slice slice = (Slice) response.body();

@@ -52,4 +52,35 @@ class HateoasResponseFilterSpec extends Specification {
     enrichedLinks.find { it["rel"] == "first" }["href"].toString() == expectedPageLink
     enrichedLinks.find { it["rel"] == "last" }["href"].toString() == expectedPageLink
   }
+
+  void "Ensure parameter with same name can exist multiple times"() {
+
+    given: "a request"
+    HttpRequest<?> request = HttpRequestFactory.INSTANCE.get("/api/endpoint")
+    request.parameters.add("status", ["NEW", "MODIFIED"])
+
+    and: "a response"
+    MutableHttpResponse<?> response = HttpResponseFactory.INSTANCE.ok()
+    Slice model = new DefaultPage([], new DefaultPageable(0, 10), 10)
+    UriRouteMatch uriRouteMatch = Mock()
+    _ * uriRouteMatch.getUri() >> "/endpoint"
+    _ * uriRouteMatch.getProduces() >> [MediaType.APPLICATION_JSON_TYPE]
+    response.attributes.put(HttpAttributes.ROUTE_MATCH.toString(), uriRouteMatch)
+    response.body(model)
+
+    and:
+    String expectedPageLink = "/api/endpoint?page=0&limit=10&status=NEW&status=MODIFIED"
+
+    and:
+    ServerFilterChain chain = Mock()
+    _ * chain.proceed(_) >> { Flowable.just(response) }
+
+    when:
+    MutableHttpResponse<?> filteredResponse = Flowable.fromPublisher(hateoasResponseFilter.doFilter(request, chain)).blockingSingle()
+    List<ResourceLink> enrichedLinks = filteredResponse.body()["links"] as List<ResourceLink>
+
+    then: "ensure parameters are encoded correctly"
+    enrichedLinks.find { it["rel"] == "first" }["href"].toString() == expectedPageLink
+    enrichedLinks.find { it["rel"] == "last" }["href"].toString() == expectedPageLink
+  }
 }
