@@ -169,7 +169,6 @@ public class HateoasResponseFilter implements HttpServerFilter {
                     }
 
                     ResourceLink collectionSelfLink = ResourceLink.selfLink(uriRouteMatch.getUri());
-                    collectionModel.getLinks().add(addBaseUrl(collectionSelfLink));
 
                     if (collectionModel instanceof PaginationCollectionModel
                         && response.body() instanceof Slice) {
@@ -198,6 +197,15 @@ public class HateoasResponseFilter implements HttpServerFilter {
                               .collect(Collectors.joining("&"));
 
                       Slice slice = (Slice) response.body();
+
+                      collectionSelfLink =
+                          ResourceLink.selfLink(
+                              uriRouteMatch.getUri()
+                                  + "?page="
+                                  + slice.getPageNumber()
+                                  + "&limit="
+                                  + slice.getSize()
+                                  + addExistingParams(params));
 
                       collectionModel
                           .getLinks()
@@ -259,6 +267,8 @@ public class HateoasResponseFilter implements HttpServerFilter {
                                             + addExistingParams(params))));
                       }
                     }
+
+                    collectionModel.getLinks().add(addBaseUrl(collectionSelfLink));
 
                     for (Object model : models) {
                       if (model instanceof ResourceModel) {
