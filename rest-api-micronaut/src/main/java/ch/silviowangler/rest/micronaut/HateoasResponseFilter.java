@@ -43,8 +43,11 @@ import io.micronaut.http.filter.HttpServerFilter;
 import io.micronaut.http.filter.ServerFilterChain;
 import io.micronaut.web.router.UriRouteMatch;
 import io.reactivex.Flowable;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -115,9 +118,10 @@ public class HateoasResponseFilter implements HttpServerFilter {
 
     return Flowable.fromPublisher(chain.proceed(request))
         .doOnNext(
-            res -> {
+            response -> {
               Optional<UriRouteMatch> potUriRouteMatch =
-                  res.getAttributes()
+                  response
+                      .getAttributes()
                       .get(HttpAttributes.ROUTE_MATCH.toString(), UriRouteMatch.class);
 
               if (potUriRouteMatch.isPresent()) {
@@ -125,9 +129,9 @@ public class HateoasResponseFilter implements HttpServerFilter {
 
                 if (uriRouteMatch.getProduces().contains(MediaType.APPLICATION_JSON_TYPE)) {
 
-                  if (res.body() instanceof ResourceModel) {
+                  if (response.body() instanceof ResourceModel) {
 
-                    ResourceModel resourceModel = (ResourceModel) res.body();
+                    ResourceModel resourceModel = (ResourceModel) response.body();
                     EntityModel entityModel = new EntityModel(resourceModel);
 
                     addProviderLinks(uriRouteMatch, resourceModel, entityModel);
@@ -145,39 +149,63 @@ public class HateoasResponseFilter implements HttpServerFilter {
                       }
                     }
 
-                    ((MutableHttpResponse) res).body(entityModel);
+                    ((MutableHttpResponse) response).body(entityModel);
 
-                  } else if (res.body() instanceof Collection || res.body() instanceof Slice) {
+                  } else if (response.body() instanceof Collection
+                      || response.body() instanceof Slice) {
 
                     Iterable models;
                     CollectionModel collectionModel;
 
-                    if (res.body() instanceof Page) {
-                      collectionModel = new PaginationCollectionModel((Page) res.body());
-                      models = ((Page) res.body()).getContent();
-                    } else if (res.body() instanceof Slice) {
-                      collectionModel = new PaginationCollectionModel((Slice) res.body());
-                      models = ((Slice) res.body()).getContent();
+                    if (response.body() instanceof Page) {
+                      collectionModel = new PaginationCollectionModel((Page) response.body());
+                      models = ((Page) response.body()).getContent();
+                    } else if (response.body() instanceof Slice) {
+                      collectionModel = new PaginationCollectionModel((Slice) response.body());
+                      models = ((Slice) response.body()).getContent();
                     } else {
                       collectionModel = new CollectionModel();
-                      models = (Collection) res.body();
+                      models = (Collection) response.body();
                     }
 
                     ResourceLink collectionSelfLink = ResourceLink.selfLink(uriRouteMatch.getUri());
-                    collectionModel.getLinks().add(addBaseUrl(collectionSelfLink));
 
                     if (collectionModel instanceof PaginationCollectionModel
-                        && res.body() instanceof Slice) {
+                        && response.body() instanceof Slice) {
 
                       String params =
                           StreamSupport.stream(request.getParameters().spliterator(), false)
                               .filter(
                                   p -> !p.getKey().equals("page") && !p.getKey().equals("limit"))
                               .filter(p -> !p.getValue().isEmpty())
-                              .map(p -> p.getKey() + "=" + p.getValue().get(0))
+                              .map(
+                                  p ->
+                                      p.getValue().stream()
+                                          .map(
+                                              v -> {
+                                                String value;
+                                                try {
+                                                  value =
+                                                      URLEncoder.encode(
+                                                          v, StandardCharsets.UTF_8.toString());
+                                                } catch (UnsupportedEncodingException e) {
+                                                  value = v;
+                                                }
+                                                return String.format("%s=%s", p.getKey(), value);
+                                              })
+                                          .collect(Collectors.joining("&")))
                               .collect(Collectors.joining("&"));
 
-                      Slice slice = (Slice) res.body();
+                      Slice slice = (Slice) response.body();
+
+                      collectionSelfLink =
+                          ResourceLink.selfLink(
+                              uriRouteMatch.getUri()
+                                  + "?page="
+                                  + slice.getPageNumber()
+                                  + "&limit="
+                                  + slice.getSize()
+                                  + addExistingParams(params));
 
                       collectionModel
                           .getLinks()
@@ -240,6 +268,8 @@ public class HateoasResponseFilter implements HttpServerFilter {
                       }
                     }
 
+                    collectionModel.getLinks().add(addBaseUrl(collectionSelfLink));
+
                     for (Object model : models) {
                       if (model instanceof ResourceModel) {
                         ResourceModel resourceModel = (ResourceModel) model;
@@ -261,7 +291,7 @@ public class HateoasResponseFilter implements HttpServerFilter {
                         collectionModel.getData().add(entityModel);
                       }
                     }
-                    ((MutableHttpResponse) res).body(collectionModel);
+                    ((MutableHttpResponse) response).body(collectionModel);
                   }
                 }
               }
