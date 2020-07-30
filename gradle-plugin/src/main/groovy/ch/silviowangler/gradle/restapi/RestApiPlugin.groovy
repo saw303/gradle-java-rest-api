@@ -102,10 +102,18 @@ class RestApiPlugin implements Plugin<Project> {
 
 			project.dependencies {
 
-				api "javax.annotation:javax.annotation-api:1.3.2"
-				api "ch.silviowangler.rest:rest-model:${pluginVersion}"
-				api "javax.money:money-api:1.0.3"
-				api "javax.validation:validation-api:2.0.1.Final"
+				if (extension.generationMode == GenerationMode.API) {
+          api "javax.annotation:javax.annotation-api:1.3.2"
+          api "ch.silviowangler.rest:rest-model:${pluginVersion}"
+          api "javax.money:money-api:1.0.3"
+          api "javax.validation:validation-api:2.0.1.Final"
+        }
+        else {
+				  implementation "javax.annotation:javax.annotation-api:1.3.2"
+				  implementation "ch.silviowangler.rest:rest-model:${pluginVersion}"
+				  implementation "javax.money:money-api:1.0.3"
+				  implementation "javax.validation:validation-api:2.0.1.Final"
+        }
 				implementation "com.googlecode.libphonenumber:libphonenumber:${libPhoneNumberVersion}"
 
 				if (extension.generationMode != GenerationMode.API) {
