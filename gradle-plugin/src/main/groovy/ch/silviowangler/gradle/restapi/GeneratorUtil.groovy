@@ -95,7 +95,7 @@ class GeneratorUtil {
 
 	static TypeName getMicronautReturnType(String fileName, String verb, boolean collection = false, String packageName, Representation representation) {
 
-		if (representation.name != "json") {
+		if (representation.name != "json" || representation.isRaw()) {
 			return PluginTypes.MICRONAUT_HTTP_RESPONSE.className
 		}
 

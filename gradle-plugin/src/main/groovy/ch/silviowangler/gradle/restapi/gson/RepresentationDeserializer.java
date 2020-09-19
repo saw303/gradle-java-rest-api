@@ -41,7 +41,8 @@ public class RepresentationDeserializer implements JsonDeserializer<Representati
     representation.setName(jsonObject.get("name").getAsString());
     representation.setComment(jsonObject.get("comment").getAsString());
     representation.setResponseExample(jsonObject.get("responseExample").getAsString());
-    representation.setStandard(readBool(jsonObject.get("isDefault")).orElse(Boolean.FALSE));
+    representation.setStandard(readBool(jsonObject.get("isDefault")).orElse(false));
+    representation.setRaw(readBool(jsonObject.get("raw")).orElse(false));
     String mimeType = jsonObject.get("mimetype").getAsString();
 
     try {

@@ -33,7 +33,8 @@
           "comment": "",
           "responseExample": "{...}",
           "isDefault": true,
-          "mimetype": "application/ch.silviowangler.land"
+          "mimetype": "application/ch.silviowangler.land",
+          "raw": true
         },
         {
           "name": "pdf",

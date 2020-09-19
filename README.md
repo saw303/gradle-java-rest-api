@@ -828,3 +828,25 @@ Not yet supported
 ### JAX-RS
 
 Not yet supported
+
+## Additional features
+
+### Raw return types (Micronaut only)
+
+By defining a representation of an HTTP verb as `raw` 
+
+```json
+"representations": [
+    {
+      "name": "json",
+      "comment": "",
+      "responseExample": "{...}",
+      "isDefault": true,
+      "mimetype": "application/json",
+      "raw": true
+    }
+  ]
+```
+
+the plugin generates a controller method with an HttpResponse insted of the specific model. This gives you more freedom to control the http headers.
+For example if you would like to answer a POST call with an `HTTP 303 - See other` you might want to set the JSON represention of the POST verb to `raw=true`. 
