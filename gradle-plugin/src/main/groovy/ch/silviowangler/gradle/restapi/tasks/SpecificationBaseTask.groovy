@@ -29,6 +29,7 @@ import ch.silviowangler.gradle.restapi.builder.SpecGenerator
 import groovy.io.FileType
 import org.gradle.api.internal.AbstractTask
 import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.Internal
 
 /**
  * @author Silvio Wangler
@@ -73,6 +74,7 @@ class SpecificationBaseTask extends AbstractTask {
 		return specs
 	}
 
+	@Internal
 	SpecGenerator getSpecGenerator() {
 		return this.specGenerator;
 	}

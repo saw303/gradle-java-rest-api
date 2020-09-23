@@ -64,6 +64,9 @@ class RestApiPlugin implements Plugin<Project> {
 		}
 		def validate = project.tasks.register('validateRestSpecs', ValidationTask) { ValidationTask t ->
 			t.group = TASK_GROUP_REST_API
+			if (ExtractRestApiSpecsTask.isConfigurationRestApiDefined(project)) {
+				t.dependsOn(extract)
+			}
 		}
 		def generate = project.tasks.register('generateRestArtifacts', GenerateRestApiTask) { GenerateRestApiTask t ->
 			t.group = TASK_GROUP_REST_API
@@ -95,7 +98,7 @@ class RestApiPlugin implements Plugin<Project> {
 		}
 
 		final String springVersion = "5.2.4.RELEASE"
-		final String pluginVersion = "2.2.9"
+		final String pluginVersion = "2.2.10"
 		final String libPhoneNumberVersion = "8.11.5"
 
 		project.afterEvaluate {
