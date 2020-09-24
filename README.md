@@ -27,7 +27,7 @@ buildscript {
 }
 
 plugins {
-  id 'ch.silviowangler.restapi' version '2.2.10'
+  id 'ch.silviowangler.restapi' version '2.2.11'
 }
 ```
 
@@ -72,7 +72,7 @@ buildscript {
         maven { url "https://dl.bintray.com/saw303/gradle-plugins" }
     }
     ext {
-        restApiPluginVersion = '2.2.10'
+        restApiPluginVersion = '2.2.11'
     }
 }
 
