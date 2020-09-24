@@ -18,6 +18,21 @@ Use this [link](https://bintray.com/saw303/gradle-plugins/gradle-java-rest-api?s
 The Gradle plugin is hosted at the following Bintray repository https://dl.bintray.com/saw303/gradle-plugins. In order to get this running with Gradle you need to declare that repository and apply the plugin.
 If you feel uncomfortable on relying on a private repository feel free to create a mirror for it.
 
+
+```
+buildscript {
+    repositories {
+        maven { url "https://dl.bintray.com/saw303/gradle-plugins" }
+    }
+}
+
+plugins {
+  id 'ch.silviowangler.restapi' version '2.2.10'
+}
+```
+
+or with the old way:
+
 ```
 buildscript {
     repositories {
@@ -57,15 +72,14 @@ buildscript {
         maven { url "https://dl.bintray.com/saw303/gradle-plugins" }
     }
     ext {
-        restApiPluginVersion = '2.0.1'
-    }
-    dependencies {
-        classpath "ch.silviowangler.rest:gradle-java-rest-api:2.0.1"
+        restApiPluginVersion = '2.2.10'
     }
 }
 
 // apply it to your build
-apply plugin: 'ch.silviowangler.restapi'
+plugins {
+  id 'ch.silviowangler.restapi' version "${restApiPluginVersion}"
+}
 
 // configure it
 

@@ -23,6 +23,7 @@
  */
 package ch.silviowangler.gradle.restapi
 
+import ch.silviowangler.gradle.restapi.tasks.ExtractRestApiSpecsTask
 import org.gradle.api.Project
 
 import java.nio.charset.Charset
@@ -67,8 +68,7 @@ class RestApiExtension {
 	}
 
 	void setOptionsSource(File optionsSource) {
-
-		if (!optionsSource?.isDirectory()) {
+		if (!optionsSource?.isDirectory() && !ExtractRestApiSpecsTask.isConfigurationRestApiDefined(project)) {
 			throw new IllegalArgumentException("optionsSource '${optionsSource.absolutePath}' must be a directory")
 		}
 		this.optionsSource = optionsSource

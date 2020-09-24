@@ -27,7 +27,7 @@ buildscript {
 
 subprojects {
 
-  version = "2.2.9"
+  version = "2.2.10"
 
   apply from: "${rootDir}/gradle/java.gradle"
   apply from: "${rootDir}/gradle/groovy.gradle"
