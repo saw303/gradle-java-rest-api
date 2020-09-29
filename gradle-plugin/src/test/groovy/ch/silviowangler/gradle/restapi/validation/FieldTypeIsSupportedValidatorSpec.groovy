@@ -20,7 +20,7 @@ class FieldTypeIsSupportedValidatorSpec extends Specification {
   void "No fields result in no violations"() {
 
     when:
-    Set<ConstraintViolation> violations = validator.validate(new ResourceContract())
+    Set<ConstraintViolation> violations = validator.validate(new ResourceContract(), [])
 
     then:
     violations.isEmpty()
@@ -29,10 +29,10 @@ class FieldTypeIsSupportedValidatorSpec extends Specification {
   void "All supported field types are accepted"() {
 
     given:
-    List<ResourceField> fields = getSupportedTypeNames().collect { typeName -> new ResourceField(name: UUID.randomUUID().toString(), type: typeName)}
+    List<ResourceField> fields = getSupportedTypeNames().collect { typeName -> new ResourceField(name: UUID.randomUUID().toString(), type: typeName) }
 
     when:
-    Set<ConstraintViolation> violations = validator.validate(new ResourceContract(fields: fields))
+    Set<ConstraintViolation> violations = validator.validate(new ResourceContract(fields: fields), [])
 
     then:
     violations.isEmpty()
@@ -41,7 +41,7 @@ class FieldTypeIsSupportedValidatorSpec extends Specification {
   void "Unknown field type causes a constraint violation"() {
 
     when:
-    Set<ConstraintViolation> violations = validator.validate(new ResourceContract(fields: [new ResourceField(name: 'YOLO', type: 'blabla')]))
+    Set<ConstraintViolation> violations = validator.validate(new ResourceContract(fields: [new ResourceField(name: 'YOLO', type: 'blabla')]), [])
 
     then:
     violations.size() == 1
@@ -56,8 +56,23 @@ class FieldTypeIsSupportedValidatorSpec extends Specification {
     Set<ConstraintViolation> violations = validator.validate(
         new ResourceContract(
             fields: [new ResourceField(name: 'YOLO', type: 'blabla')],
-            types: [ new ResourceTypes(name: 'blabla')]
-        )
+            types: [new ResourceTypes(name: 'blabla')]
+        ),
+        []
+    )
+
+    then:
+    violations.isEmpty()
+  }
+
+  void "Type validation respects custom types from previous contract"() {
+
+    when:
+    Set<ConstraintViolation> violations = validator.validate(
+        new ResourceContract(
+            fields: [new ResourceField(name: 'YOLO', type: 'blabla')],
+        ),
+        [new ResourceTypes(name: 'blabla')]
     )
 
     then:
@@ -70,7 +85,8 @@ class FieldTypeIsSupportedValidatorSpec extends Specification {
     Set<ConstraintViolation> violations = validator.validate(
         new ResourceContract(
             fields: [new ResourceField(name: 'YOLO', type: 'enum')]
-        )
+        ),
+        []
     )
 
     then:
