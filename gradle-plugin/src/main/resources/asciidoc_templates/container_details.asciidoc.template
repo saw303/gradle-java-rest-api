@@ -6,26 +6,14 @@ Description: ${description}
 
 Endpoint: ${endpoint}
 
-<% if (!fields.isEmpty()) { %>
+<% if (!fieldAssistant.fields.isEmpty()) { %>
 ===  Model
 |===
-|Name |Type |Options |Mandatory |Minimum |Maximum |Multiple |Default Value |Shield |Visible |Sortable |Read Only |Filterable |Alias |Comment
-<%for(field in fields) { %>
-|${field.name}
-|${field.type}
-|${field.options == null ? "" : field.options}
-|${field.mandatory.isEmpty() ? "" : field.mandatory}
-|${field.min == null ? "" : field.min}
-|${field.max == null ? "" : field.max}
-|${field.multiple}
-|${field.defaultValue == null ? "" : field.defaultValue}
-|${field.shield == null ? "" : field.shield}
-|${field.visible}
-|${field.sortable}
-|${field.readonly}
-|${field.filterable}
-|${field.alias.isEmpty() ? "" : field.alias}
-|${field.xComment}
+<%for(colName in fieldAssistant.columns) {%>|${fieldAssistant.TITLES[colName]}<%}%>
+<%for(field in fieldAssistant.fields) { %>
+<%for(colName in fieldAssistant.columns) {%>
+|${fieldAssistant.getValueFor(field, colName)}
+<%}%>
 <%}%>
 |===
 <%}%>

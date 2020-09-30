@@ -73,12 +73,12 @@ class RestApiPlugin implements Plugin<Project> {
 			t.group = TASK_GROUP_REST_API
 			t.dependsOn(validate)
 		}
-    def generateDiagrams = project.tasks.register('generateDiagrams', PlantUmlTask) { PlantUmlTask t ->
-      t.group = TASK_GROUP_REST_API
-    }
-    def generateAsciiDocs = project.tasks.register('generateAsciiDocs', GenerateRestApiAsciiDocTask) { GenerateRestApiAsciiDocTask t ->
-      t.group = TASK_GROUP_REST_API
-    }
+		def generateDiagrams = project.tasks.register('generateDiagrams', PlantUmlTask) { PlantUmlTask t ->
+			t.group = TASK_GROUP_REST_API
+		}
+		def generateAsciiDocs = project.tasks.register('generateAsciiDocs', GenerateRestApiAsciiDocTask) { GenerateRestApiAsciiDocTask t ->
+			t.group = TASK_GROUP_REST_API
+		}
 
 		project.tasks.named('clean').configure {
 			dependsOn(clean)

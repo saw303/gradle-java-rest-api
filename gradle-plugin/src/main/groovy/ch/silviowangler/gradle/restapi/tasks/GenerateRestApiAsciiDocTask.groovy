@@ -23,6 +23,7 @@
  */
 package ch.silviowangler.gradle.restapi.tasks
 
+import ch.silviowangler.gradle.restapi.asciidoc.AsciiDocFieldsAssistant
 import ch.silviowangler.gradle.restapi.builder.ResourceContractContainer
 import groovy.text.SimpleTemplateEngine
 import org.apache.commons.lang3.StringUtils
@@ -41,7 +42,7 @@ class GenerateRestApiAsciiDocTask extends SpecificationBaseTask {
 
 	@TaskAction
 	void generateAsciiDoc() {
-    SimpleTemplateEngine templateEngine = new SimpleTemplateEngine()
+		SimpleTemplateEngine templateEngine = new SimpleTemplateEngine()
 		List<File> specs = findSpecifications(getOptionsSource())
 		List<ResourceContractContainer> contracts = []
 		specs.each { File specFile -> contracts << specGenerator.parseResourceContract(specFile) }
@@ -50,35 +51,35 @@ class GenerateRestApiAsciiDocTask extends SpecificationBaseTask {
 		URL url = getClass().getResource(resource)
 		def template = templateEngine.createTemplate(url).make([containers: contracts])
 
-    getRootOutputDir().listFiles().collect {f -> f.delete()}
+		getRootOutputDir().listFiles().collect {f -> f.delete()}
 
 		File targetFile = new File(getRootOutputDir(), 'index.adoc')
 		targetFile.createNewFile()
 		targetFile.write(template.toString(), 'UTF-8')
 
-    println "Writing ASCIIDoc file: ${targetFile.absolutePath}"
+		println "Writing ASCIIDoc file: ${targetFile.absolutePath}"
 
-    resource = '/asciidoc_templates/container_details.asciidoc.template'
-    url = getClass().getResource(resource)
+		resource = '/asciidoc_templates/container_details.asciidoc.template'
+		url = getClass().getResource(resource)
 		contracts.collect {container ->
 
-      String[] title = StringUtils.splitByCharacterTypeCamelCase(container.resourceContract.general.name)
-      title[0] = StringUtils.capitalize(title[0])
-      def vars = [
-          'title': StringUtils.join(title, ' '),
-          'version': container.resourceContract.general.version,
-          'description': container.resourceContract.general.description,
-          'endpoint': container.resourceContract.general.xRoute,
-          'verbs': container.resourceContract.verbs,
-          'fields': container.resourceContract.fields,
-          'subResources': container.resourceContract.subresources]
+			String[] title = StringUtils.splitByCharacterTypeCamelCase(container.resourceContract.general.name)
+			title[0] = StringUtils.capitalize(title[0])
+			def vars = [
+				'title': StringUtils.join(title, ' '),
+				'version': container.resourceContract.general.version,
+				'description': container.resourceContract.general.description,
+				'endpoint': container.resourceContract.general.xRoute,
+				'verbs': container.resourceContract.verbs,
+				'fieldAssistant': new AsciiDocFieldsAssistant(container.resourceContract.fields),
+				'subResources': container.resourceContract.subresources]
 
-      template = templateEngine.createTemplate(url).make(vars)
+			template = templateEngine.createTemplate(url).make(vars)
 
-      targetFile = new File(getRootOutputDir(), "${container.resourceContract.general.name}.adoc")
-      targetFile.createNewFile()
-      targetFile.write(template.toString(), 'UTF-8')
-      println "Writing ASCIIDoc file: ${targetFile.absolutePath}"
-    }
+			targetFile = new File(getRootOutputDir(), "${container.resourceContract.general.name}.adoc")
+			targetFile.createNewFile()
+			targetFile.write(template.toString(), 'UTF-8')
+			println "Writing ASCIIDoc file: ${targetFile.absolutePath}"
+		}
 	}
 }
