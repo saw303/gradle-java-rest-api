@@ -7,7 +7,7 @@ Description: ${description}
 Endpoint: ${endpoint}
 
 <% if (!fields.isEmpty()) { %>
-==  Model
+===  Model
 |===
 |Name |Type |Options |Mandatory |Minimum |Maximum |Multiple |Default Value |Shield |Visible |Sortable |Read Only |Filterable |Alias |Comment
 <%for(field in fields) { %>
@@ -32,7 +32,7 @@ Endpoint: ${endpoint}
 
 
 <% if (!subResources.isEmpty()) { %>
-== Subresources
+=== Subresources
 |===
 |Name |Type |Relationship |Href |Method |Expandable
 <%for(subResource in subResources) { %>
@@ -49,7 +49,7 @@ Endpoint: ${endpoint}
 
 <% if (!verbs.isEmpty()) { %>
   <%for(verb in verbs) { %>
-== ${verb.verb}
+=== ${verb.verb}
   <% if (!verb.responseStates.isEmpty()) { %>
 Response Codes::
 |===
