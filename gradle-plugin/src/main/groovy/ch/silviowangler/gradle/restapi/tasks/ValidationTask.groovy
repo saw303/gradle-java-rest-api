@@ -32,6 +32,7 @@ import ch.silviowangler.gradle.restapi.validation.MinMaxValuesMatchTypeValidator
 import ch.silviowangler.gradle.restapi.validation.OnlyOnePostVerbValidator
 import ch.silviowangler.gradle.restapi.validation.Validator
 import ch.silviowangler.rest.contract.model.v1.ResourceContract
+import ch.silviowangler.rest.contract.model.v1.ResourceTypes
 import org.gradle.api.tasks.TaskAction
 
 import java.nio.charset.Charset
@@ -61,6 +62,7 @@ class ValidationTask extends SpecificationBaseTask {
 		List<File> specs = findSpecifications(getOptionsSource())
 
 		Map<ResourceContract, Set<ConstraintViolation>> violationMap = [:]
+		List<ResourceTypes> definedResourceTypes = []
 
 		for (File specFile in specs) {
 			ResourceContract contract = specGenerator.parseResourceContract(specFile, this.restApiExtension.getResponseEncoding() ?: Charset.forName("UTF-8")).resourceContract
@@ -68,8 +70,10 @@ class ValidationTask extends SpecificationBaseTask {
 			violationMap[contract] = new HashSet<>()
 
 			for (Validator validator in validators) {
-				violationMap[contract].addAll(validator.validate(contract))
+				violationMap[contract].addAll(validator.validate(contract, definedResourceTypes))
 			}
+
+			definedResourceTypes.addAll(contract.getTypes())
 		}
 
 		Collection<Set<ConstraintViolation>> violations = violationMap.values().findAll { c -> c.size() > 0 }

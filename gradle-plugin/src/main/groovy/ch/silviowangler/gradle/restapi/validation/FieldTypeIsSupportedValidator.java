@@ -27,6 +27,9 @@ import static ch.silviowangler.gradle.restapi.builder.ResourceBuilder.JavaTypeRe
 
 import ch.silviowangler.rest.contract.model.v1.ResourceContract;
 import ch.silviowangler.rest.contract.model.v1.ResourceField;
+import ch.silviowangler.rest.contract.model.v1.ResourceTypes;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -43,13 +46,21 @@ public class FieldTypeIsSupportedValidator implements Validator {
 
   @Override
   public Set<ConstraintViolation> validate(ResourceContract resourceContract) {
+    return validate(resourceContract, Collections.emptyList());
+  }
+
+  @Override
+  public Set<ConstraintViolation> validate(
+      ResourceContract resourceContract, List<ResourceTypes> definedResourceTypes) {
 
     Predicate<ResourceField> isNotStandardSupportedType =
         field -> !isSupportedDataType(field.getType());
     Predicate<ResourceField> isNotCustomType =
         field ->
             resourceContract.getTypes().stream()
-                .noneMatch(t -> Objects.equals(t.getName(), field.getType()));
+                    .noneMatch(t -> Objects.equals(t.getName(), field.getType()))
+                && definedResourceTypes.stream()
+                    .noneMatch(t -> Objects.equals(t.getName(), field.getType()));
 
     Predicate<ResourceField> isNotKnownExclusionType = field -> !field.isEnumType();
 

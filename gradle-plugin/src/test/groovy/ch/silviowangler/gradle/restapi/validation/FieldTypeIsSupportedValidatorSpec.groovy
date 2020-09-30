@@ -29,7 +29,7 @@ class FieldTypeIsSupportedValidatorSpec extends Specification {
   void "All supported field types are accepted"() {
 
     given:
-    List<ResourceField> fields = getSupportedTypeNames().collect { typeName -> new ResourceField(name: UUID.randomUUID().toString(), type: typeName)}
+    List<ResourceField> fields = getSupportedTypeNames().collect { typeName -> new ResourceField(name: UUID.randomUUID().toString(), type: typeName) }
 
     when:
     Set<ConstraintViolation> violations = validator.validate(new ResourceContract(fields: fields))
@@ -56,8 +56,22 @@ class FieldTypeIsSupportedValidatorSpec extends Specification {
     Set<ConstraintViolation> violations = validator.validate(
         new ResourceContract(
             fields: [new ResourceField(name: 'YOLO', type: 'blabla')],
-            types: [ new ResourceTypes(name: 'blabla')]
+            types: [new ResourceTypes(name: 'blabla')]
         )
+    )
+
+    then:
+    violations.isEmpty()
+  }
+
+  void "Type validation respects custom types from previous contract"() {
+
+    when:
+    Set<ConstraintViolation> violations = validator.validate(
+        new ResourceContract(
+            fields: [new ResourceField(name: 'YOLO', type: 'blabla')],
+        ),
+        [new ResourceTypes(name: 'blabla')]
     )
 
     then:
