@@ -45,6 +45,7 @@ class RestApiExtension {
 	TargetFramework targetFramework = TargetFramework.JAX_RS
 	Charset responseEncoding
 	File diagramOutput = new File(project.buildDir, 'diagrams')
+	File asciiDocOutput = new File(project.buildDir, 'asciiDocGenerated')
 	boolean diagramShowFields = false
 	GenerationMode generationMode = GenerationMode.ALL
 

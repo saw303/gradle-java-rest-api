@@ -26,6 +26,7 @@ package ch.silviowangler.gradle.restapi
 
 import ch.silviowangler.gradle.restapi.tasks.CleanRestApiTask
 import ch.silviowangler.gradle.restapi.tasks.ExtractRestApiSpecsTask
+import ch.silviowangler.gradle.restapi.tasks.GenerateRestApiAsciiDocTask
 import ch.silviowangler.gradle.restapi.tasks.GenerateRestApiTask
 import ch.silviowangler.gradle.restapi.tasks.PlantUmlTask
 import ch.silviowangler.gradle.restapi.tasks.ValidationTask
@@ -73,6 +74,9 @@ class RestApiPlugin implements Plugin<Project> {
 			t.dependsOn(validate)
 		}
 		def generateDiagrams = project.tasks.register('generateDiagrams', PlantUmlTask) { PlantUmlTask t ->
+			t.group = TASK_GROUP_REST_API
+		}
+		def generateAsciiDocs = project.tasks.register('generateAsciiDocs', GenerateRestApiAsciiDocTask) { GenerateRestApiAsciiDocTask t ->
 			t.group = TASK_GROUP_REST_API
 		}
 
