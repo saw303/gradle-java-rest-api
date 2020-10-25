@@ -299,7 +299,9 @@ public class HateoasResponseFilter implements HttpServerFilter {
   }
 
   private void addProviderLinks(
-      UriRouteMatch uriRouteMatch, ResourceModel resourceModel, EntityModel entityModel) {
+      UriRouteMatch uriRouteMatch,
+      ResourceModel resourceModel,
+      EntityModel<? extends ResourceModel> entityModel) {
     linkProviderList.forEach(
         provider -> {
           List<ResourceLink> links = provider.getLinks(uriRouteMatch, resourceModel);
@@ -320,7 +322,7 @@ public class HateoasResponseFilter implements HttpServerFilter {
     return links.stream().map(this::addBaseUrl).collect(Collectors.toList());
   }
 
-  private boolean hasLink(EntityModel entityModel, String relName) {
+  private boolean hasLink(EntityModel<? extends ResourceModel> entityModel, String relName) {
     if (entityModel.getLinks() == null) {
       return false;
     }

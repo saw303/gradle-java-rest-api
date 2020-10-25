@@ -33,9 +33,9 @@ import java.util.List;
  *
  * @author Silvio Wangler
  */
-public class EntityModel implements Serializable {
+public class EntityModel<R extends ResourceModel> implements Serializable {
 
-  private ResourceModel data;
+  private R data;
   private List<ResourceLink> links;
   private List<Expand> expands;
 
@@ -43,21 +43,21 @@ public class EntityModel implements Serializable {
     this(null);
   }
 
-  public EntityModel(ResourceModel data) {
+  public EntityModel(R data) {
     this(data, new ArrayList<>());
   }
 
-  public EntityModel(ResourceModel data, List<ResourceLink> links) {
+  public EntityModel(R data, List<ResourceLink> links) {
     this.data = data;
     this.links = links;
     this.expands = new ArrayList<>();
   }
 
-  public ResourceModel getData() {
+  public R getData() {
     return data;
   }
 
-  public void setData(ResourceModel data) {
+  public void setData(R data) {
     this.data = data;
   }
 

@@ -162,7 +162,8 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
                         false);
                     ((MutableHttpResponse) res).body(initialBody);
                   } else if (initialBody instanceof CollectionModel) {
-                    for (EntityModel model : ((CollectionModel) initialBody).getData()) {
+                    for (EntityModel<? extends ResourceModel> model :
+                        ((CollectionModel<? extends ResourceModel>) initialBody).getData()) {
                       attachExpandedGetsBody(
                           expands, routeMatchCurrentResource, contract, request, model, true);
                     }
