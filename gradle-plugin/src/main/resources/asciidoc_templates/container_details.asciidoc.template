@@ -89,7 +89,7 @@ Headers::
 |${header.name}
 |${header.type}
 |${header.mandatory}
-|${header.comment}
+|${header.xComment}
     <%}%>
 |===
   <%}%>
