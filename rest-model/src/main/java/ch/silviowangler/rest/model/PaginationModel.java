@@ -52,6 +52,14 @@ public class PaginationModel implements Serializable {
     this.totalSize = page.getTotalSize();
   }
 
+  // Used for Jackson deserialization
+  public PaginationModel() {
+    this.size = 0;
+    this.totalSize = 0L;
+    this.page = 0;
+    this.totalPages = 0;
+  }
+
   public int getSize() {
     return size;
   }
