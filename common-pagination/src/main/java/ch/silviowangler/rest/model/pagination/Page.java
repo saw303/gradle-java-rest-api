@@ -44,6 +44,11 @@ public interface Page<T> extends Slice<T> {
     return size == 0 ? 1 : (int) Math.ceil((double) getTotalSize() / (double) size);
   }
 
+  /**
+   * Indicated whether this is the last page or not.
+   *
+   * @return yes / no.
+   */
   default boolean isLastPage() {
     return getTotalPages() - 1 == getPageNumber();
   }

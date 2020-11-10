@@ -39,6 +39,9 @@ public class CollectionExpand extends Expand {
     this.data = data;
   }
 
+  // for Jackson deserialization
+  public CollectionExpand() {}
+
   public Collection<ResourceModel> getData() {
     return data;
   }

@@ -36,6 +36,9 @@ public abstract class Expand {
     this.name = name;
   }
 
+  // for Jackson deserialization
+  public Expand() {}
+
   public String getName() {
     return name;
   }

@@ -36,6 +36,12 @@ public class DefaultSlice<T> implements Slice<T> {
   private final List<T> content;
   private final Pageable pageable;
 
+  /**
+   * Constructor to create a slice.
+   *
+   * @param content slice content.
+   * @param pageable Pageable context.
+   */
   public DefaultSlice(List<T> content, Pageable pageable) {
     this.content = content;
     this.pageable = pageable;
