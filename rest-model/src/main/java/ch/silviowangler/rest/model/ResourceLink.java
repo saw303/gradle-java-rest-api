@@ -36,10 +36,13 @@ import java.util.Objects;
  */
 public class ResourceLink implements Serializable {
 
-  private final String rel;
-  private final String method;
-  private final URI href;
-  private final List<LinkParameter> params;
+  private String rel;
+  private String method;
+  private URI href;
+  private List<LinkParameter> params;
+
+  // for jackson
+  public ResourceLink() {}
 
   public ResourceLink(URI href) {
     this.href = href;
@@ -66,16 +69,32 @@ public class ResourceLink implements Serializable {
     return rel;
   }
 
+  public void setRel(String rel) {
+    this.rel = rel;
+  }
+
   public String getMethod() {
     return method;
+  }
+
+  public void setMethod(String method) {
+    this.method = method;
   }
 
   public URI getHref() {
     return href;
   }
 
+  public void setHref(URI href) {
+    this.href = href;
+  }
+
   public List<LinkParameter> getParams() {
     return params;
+  }
+
+  public void setParams(List<LinkParameter> params) {
+    this.params = params;
   }
 
   @Override
