@@ -1,7 +1,7 @@
 /*
  * MIT License
  * <p>
- * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
+ * Copyright (c) 2016 - 2020 Silvio Wangler (silvio.wangler@gmail.com)
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,9 +26,12 @@ package ch.silviowangler.rest.micronaut;
 import ch.silviowangler.rest.model.CollectionModel;
 import ch.silviowangler.rest.model.EntityModel;
 import ch.silviowangler.rest.model.Identifiable;
+import ch.silviowangler.rest.model.PaginationCollectionModel;
 import ch.silviowangler.rest.model.ResourceLink;
 import ch.silviowangler.rest.model.ResourceModel;
 import ch.silviowangler.rest.model.SelfLinkProvider;
+import ch.silviowangler.rest.model.pagination.Page;
+import ch.silviowangler.rest.model.pagination.Slice;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.http.HttpAttributes;
@@ -40,13 +43,17 @@ import io.micronaut.http.filter.HttpServerFilter;
 import io.micronaut.http.filter.ServerFilterChain;
 import io.micronaut.web.router.UriRouteMatch;
 import io.reactivex.Flowable;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import org.reactivestreams.Publisher;
 
 /**
@@ -111,9 +118,10 @@ public class HateoasResponseFilter implements HttpServerFilter {
 
     return Flowable.fromPublisher(chain.proceed(request))
         .doOnNext(
-            res -> {
+            response -> {
               Optional<UriRouteMatch> potUriRouteMatch =
-                  res.getAttributes()
+                  response
+                      .getAttributes()
                       .get(HttpAttributes.ROUTE_MATCH.toString(), UriRouteMatch.class);
 
               if (potUriRouteMatch.isPresent()) {
@@ -121,9 +129,9 @@ public class HateoasResponseFilter implements HttpServerFilter {
 
                 if (uriRouteMatch.getProduces().contains(MediaType.APPLICATION_JSON_TYPE)) {
 
-                  if (res.body() instanceof ResourceModel) {
+                  if (response.body() instanceof ResourceModel) {
 
-                    ResourceModel resourceModel = (ResourceModel) res.body();
+                    ResourceModel resourceModel = (ResourceModel) response.body();
                     EntityModel entityModel = new EntityModel(resourceModel);
 
                     addProviderLinks(uriRouteMatch, resourceModel, entityModel);
@@ -141,14 +149,125 @@ public class HateoasResponseFilter implements HttpServerFilter {
                       }
                     }
 
-                    ((MutableHttpResponse) res).body(entityModel);
+                    ((MutableHttpResponse) response).body(entityModel);
 
-                  } else if (res.body() instanceof Collection) {
+                  } else if (response.body() instanceof Collection
+                      || response.body() instanceof Slice) {
 
-                    Collection models = (Collection) res.body();
+                    Iterable models;
+                    CollectionModel collectionModel;
 
-                    CollectionModel collectionModel = new CollectionModel();
+                    if (response.body() instanceof Page) {
+                      collectionModel = new PaginationCollectionModel((Page) response.body());
+                      models = ((Page) response.body()).getContent();
+                    } else if (response.body() instanceof Slice) {
+                      collectionModel = new PaginationCollectionModel((Slice) response.body());
+                      models = ((Slice) response.body()).getContent();
+                    } else {
+                      collectionModel = new CollectionModel();
+                      models = (Collection) response.body();
+                    }
+
                     ResourceLink collectionSelfLink = ResourceLink.selfLink(uriRouteMatch.getUri());
+
+                    if (collectionModel instanceof PaginationCollectionModel
+                        && response.body() instanceof Slice) {
+
+                      String params =
+                          StreamSupport.stream(request.getParameters().spliterator(), false)
+                              .filter(
+                                  p -> !p.getKey().equals("page") && !p.getKey().equals("limit"))
+                              .filter(p -> !p.getValue().isEmpty())
+                              .map(
+                                  p ->
+                                      p.getValue().stream()
+                                          .map(
+                                              v -> {
+                                                String value;
+                                                try {
+                                                  value =
+                                                      URLEncoder.encode(
+                                                          v, StandardCharsets.UTF_8.toString());
+                                                } catch (UnsupportedEncodingException e) {
+                                                  value = v;
+                                                }
+                                                return String.format("%s=%s", p.getKey(), value);
+                                              })
+                                          .collect(Collectors.joining("&")))
+                              .collect(Collectors.joining("&"));
+
+                      Slice slice = (Slice) response.body();
+
+                      collectionSelfLink =
+                          ResourceLink.selfLink(
+                              uriRouteMatch.getUri()
+                                  + "?page="
+                                  + slice.getPageNumber()
+                                  + "&limit="
+                                  + slice.getSize()
+                                  + addExistingParams(params));
+
+                      collectionModel
+                          .getLinks()
+                          .add(
+                              addBaseUrl(
+                                  ResourceLink.relLink(
+                                      "first",
+                                      uriRouteMatch.getUri()
+                                          + "?page=0&limit="
+                                          + slice.getSize()
+                                          + addExistingParams(params))));
+
+                      if (slice instanceof Page) {
+
+                        Page page = (Page) slice;
+
+                        if (page.getPageNumber() > 0
+                            && page.getTotalPages() >= page.getPageNumber()) {
+                          collectionModel
+                              .getLinks()
+                              .add(
+                                  addBaseUrl(
+                                      ResourceLink.relLink(
+                                          "previous",
+                                          uriRouteMatch.getUri()
+                                              + "?page="
+                                              + (slice.getPageNumber() - 1)
+                                              + "&limit="
+                                              + slice.getSize()
+                                              + addExistingParams(params))));
+                        }
+
+                        if (!page.isLastPage()) {
+                          collectionModel
+                              .getLinks()
+                              .add(
+                                  addBaseUrl(
+                                      ResourceLink.relLink(
+                                          "next",
+                                          uriRouteMatch.getUri()
+                                              + "?page="
+                                              + (slice.getPageNumber() + 1)
+                                              + "&limit="
+                                              + slice.getSize()
+                                              + addExistingParams(params))));
+                        }
+
+                        collectionModel
+                            .getLinks()
+                            .add(
+                                addBaseUrl(
+                                    ResourceLink.relLink(
+                                        "last",
+                                        uriRouteMatch.getUri()
+                                            + "?page="
+                                            + (page.getTotalPages() - 1)
+                                            + "&limit="
+                                            + slice.getSize()
+                                            + addExistingParams(params))));
+                      }
+                    }
+
                     collectionModel.getLinks().add(addBaseUrl(collectionSelfLink));
 
                     for (Object model : models) {
@@ -172,7 +291,7 @@ public class HateoasResponseFilter implements HttpServerFilter {
                         collectionModel.getData().add(entityModel);
                       }
                     }
-                    ((MutableHttpResponse) res).body(collectionModel);
+                    ((MutableHttpResponse) response).body(collectionModel);
                   }
                 }
               }
@@ -180,7 +299,9 @@ public class HateoasResponseFilter implements HttpServerFilter {
   }
 
   private void addProviderLinks(
-      UriRouteMatch uriRouteMatch, ResourceModel resourceModel, EntityModel entityModel) {
+      UriRouteMatch uriRouteMatch,
+      ResourceModel resourceModel,
+      EntityModel<? extends ResourceModel> entityModel) {
     linkProviderList.forEach(
         provider -> {
           List<ResourceLink> links = provider.getLinks(uriRouteMatch, resourceModel);
@@ -201,12 +322,19 @@ public class HateoasResponseFilter implements HttpServerFilter {
     return links.stream().map(this::addBaseUrl).collect(Collectors.toList());
   }
 
-  private boolean hasLink(EntityModel entityModel, String relName) {
+  private boolean hasLink(EntityModel<? extends ResourceModel> entityModel, String relName) {
     if (entityModel.getLinks() == null) {
       return false;
     }
     return entityModel.getLinks().stream()
         .map(ResourceLink::getRel)
         .anyMatch(it -> Objects.equals(relName, it));
+  }
+
+  private String addExistingParams(String params) {
+    if (params == null || params.length() == 0) {
+      return "";
+    }
+    return "&" + params;
   }
 }

@@ -14,7 +14,7 @@ import static ch.silviowangler.gradle.restapi.builder.ResourceBuilder.POST_ENTIT
 /**
  * your description goes here...
  *
- * @author Silvio Wangler (silvio.wangler@onstructive.ch)
+ * @author Silvio Wangler
  */
 class OnlyOnePostVerbValidatorSpec extends Specification {
 

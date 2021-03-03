@@ -1,7 +1,7 @@
 /*
  * MIT License
  * <p>
- * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
+ * Copyright (c) 2016 - 2020 Silvio Wangler (silvio.wangler@gmail.com)
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,17 +28,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** @author Silvio Wangler */
-public class CollectionModel implements Serializable {
+public class CollectionModel<R extends ResourceModel> implements Serializable {
 
-  private List<EntityModel> data = new ArrayList<>();
+  private List<EntityModel<R>> data = new ArrayList<>();
 
   private List<ResourceLink> links = new ArrayList<>();
 
-  public List<EntityModel> getData() {
+  public List<EntityModel<R>> getData() {
     return data;
   }
 
-  public void setData(List<EntityModel> data) {
+  public void setData(List<EntityModel<R>> data) {
     this.data = data;
   }
 

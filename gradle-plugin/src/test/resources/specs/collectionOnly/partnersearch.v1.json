@@ -40,20 +40,20 @@
       ],
       "parameters": [
         {
-        "name": "q",
-        "type": "string",
-        "options": null,
-        "mandatory": false,
-        "min": null,
-        "max": null,
-        "multiple": false,
-        "defaultValue": null,
-        "protected": false,
-        "visible": true,
-        "sortable": false,
-        "filterable": false,
-        "x-comment": "Suchquery"
-      }
+          "name": "q",
+          "type": "string",
+          "options": null,
+          "mandatory": false,
+          "min": null,
+          "max": null,
+          "multiple": false,
+          "defaultValue": null,
+          "protected": false,
+          "visible": true,
+          "sortable": false,
+          "filterable": false,
+          "x-comment": "Suchquery"
+        }
       ],
       "permissions": [
         {
@@ -81,7 +81,8 @@
       "filterable": false,
       "alias": [],
       "x-comment": "Eindeutige ID des Partners"
-    },{
+    },
+    {
       "name": "name",
       "type": "string",
       "options": null,

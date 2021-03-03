@@ -1,3 +1,18 @@
+plugins {
+	id 'java-gradle-plugin'
+}
+
+gradlePlugin {
+	plugins {
+		restapi {
+			id = 'ch.silviowangler.restapi'
+			implementationClass = 'ch.silviowangler.gradle.restapi.RestApiPlugin'
+		}
+	}
+}
+
+group = 'ch.silviowangler.rest'
+
 ext { pomDescription = 'Gradle plugin to generate REST APIs for JAX-RS or Spring-Boot projects' }
 
 dependencies {
@@ -11,6 +26,9 @@ dependencies {
 	implementation "com.squareup:javapoet:${javaPoetVersion}"
 	implementation "com.google.guava:guava:${guavaVersion}"
 	implementation "com.google.code.gson:gson:${gsonVersion}"
+
+	implementation 'net.sourceforge.plantuml:plantuml:8059'
+	implementation 'org.apache.commons:commons-lang3:3.11'
 }
 
 task checkVersion(type: Test) {

@@ -3,6 +3,7 @@ package org.acme.rest.v1.laender.orte;
 import ch.silviowangler.rest.types.IdType;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
+import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Delete;
 import io.micronaut.http.annotation.Get;
@@ -11,7 +12,6 @@ import io.micronaut.http.annotation.Post;
 import io.micronaut.http.annotation.Produces;
 import io.micronaut.http.annotation.Put;
 import io.micronaut.http.annotation.Status;
-import java.util.Collection;
 import javax.annotation.Generated;
 import javax.inject.Inject;
 import javax.validation.Valid;
@@ -51,7 +51,7 @@ public class OrtResource {
 
   @Get
   @Produces("application/json; charset=UTF-8")
-  public Collection<OrtGetResourceModel> getCollection(String land) {
+  public Iterable<OrtGetResourceModel> getCollection(String land) {
     return delegate.getCollection(land);
   }
 
@@ -74,7 +74,7 @@ public class OrtResource {
   @Post
   @Produces("application/json; charset=UTF-8")
   @Status(HttpStatus.CREATED)
-  public IdType createEntity(@Valid OrtPostResourceModel model, String land) {
+  public IdType createEntity(@Valid @Body OrtPostResourceModel model, String land) {
     return delegate.createEntity(model, land);
   }
 
@@ -82,7 +82,7 @@ public class OrtResource {
       uri = "/{id}"
   )
   @Produces("application/json; charset=UTF-8")
-  public IdType updateEntity(@Valid OrtPutResourceModel model, String id, String land) {
+  public IdType updateEntity(@Valid @Body OrtPutResourceModel model, String id, String land) {
     return delegate.updateEntity(model, id, land);
   }
 }

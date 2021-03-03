@@ -1,7 +1,7 @@
 /*
  * MIT License
  * <p>
- * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
+ * Copyright (c) 2016 - 2020 Silvio Wangler (silvio.wangler@gmail.com)
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,8 +28,14 @@ import ch.silviowangler.gradle.restapi.diagrams.Dependency
 import ch.silviowangler.gradle.restapi.diagrams.Knot
 import ch.silviowangler.rest.contract.model.v1.SubResource
 import groovy.text.SimpleTemplateEngine
+import net.sourceforge.plantuml.FileFormatOption
+import net.sourceforge.plantuml.GeneratedImage
+import net.sourceforge.plantuml.ISourceFileReader
+import net.sourceforge.plantuml.SourceFileReader
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
+
+import static net.sourceforge.plantuml.FileFormat.SVG
 
 /**
  * @author Silvio Wangler
@@ -66,6 +72,18 @@ class PlantUmlTask extends SpecificationBaseTask {
 		targetFile.createNewFile()
 
 		targetFile.write(template.toString(), 'UTF-8')
+
+		ISourceFileReader reader = new SourceFileReader(targetFile)
+
+		for (GeneratedImage image in reader.getGeneratedImages()) {
+			logger.info("Wrote PNG file {}", image.getPngFile().absolutePath)
+		}
+
+		reader.setFileFormatOption(new FileFormatOption(SVG))
+
+		for (GeneratedImage image in reader.getGeneratedImages()) {
+			logger.info("Wrote SVG file {}", image.getPngFile().absolutePath)
+		}
 	}
 
 

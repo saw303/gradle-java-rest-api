@@ -1,7 +1,7 @@
 /*
  * MIT License
  * <p>
- * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
+ * Copyright (c) 2016 - 2020 Silvio Wangler (silvio.wangler@gmail.com)
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@ package ch.silviowangler.gradle.restapi.tasks
 
 import ch.silviowangler.gradle.restapi.Consts
 import ch.silviowangler.gradle.restapi.GeneratorUtil
+import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.internal.AbstractTask
 import org.gradle.api.tasks.OutputDirectory
@@ -45,11 +46,9 @@ class ExtractRestApiSpecsTask extends AbstractTask {
 
 	@TaskAction
 	void extract() {
+		if (isConfigurationRestApiDefined(project)) {
 
-		Configuration configuration = project.configurations.findByName(Consts.CONFIGURATION_REST_API)
-
-		if (configuration && !configuration.files.isEmpty()) {
-
+			Configuration configuration = project.configurations.findByName(Consts.CONFIGURATION_REST_API)
 			Set<File> files = configuration.files
 
 			for (File file in files) {
@@ -59,5 +58,10 @@ class ExtractRestApiSpecsTask extends AbstractTask {
 				}
 			}
 		}
+	}
+
+	static boolean isConfigurationRestApiDefined(Project project) {
+		Configuration configuration = project.configurations.findByName(Consts.CONFIGURATION_REST_API)
+		return configuration && !configuration.files.isEmpty()
 	}
 }

@@ -1,7 +1,7 @@
 /*
  * MIT License
  * <p>
- * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
+ * Copyright (c) 2016 - 2020 Silvio Wangler (silvio.wangler@gmail.com)
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,9 @@ import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.ParameterizedTypeName
 import com.squareup.javapoet.TypeName
 import org.gradle.api.Project
+
+import static ch.silviowangler.gradle.restapi.TargetFramework.JAX_RS
+import static ch.silviowangler.gradle.restapi.TargetFramework.MICRONAUT
 
 /**
  * Created by Silvio Wangler on 25/01/16.
@@ -92,11 +95,11 @@ class GeneratorUtil {
 
 	static TypeName getMicronautReturnType(String fileName, String verb, boolean collection = false, String packageName, Representation representation) {
 
-		if (representation.name != "json") {
+		if (representation.name != "json" || representation.isRaw()) {
 			return PluginTypes.MICRONAUT_HTTP_RESPONSE.className
 		}
 
-		return getReturnType(fileName, verb, collection, packageName, TargetFramework.MICRONAUT)
+		return getReturnType(fileName, verb, collection, packageName, MICRONAUT)
 	}
 
 	static TypeName getSpringBootReturnType(String fileName, String verb, boolean collection = false, String packageName, Representation representation) {
@@ -117,29 +120,29 @@ class GeneratorUtil {
 		if (representation.name != "json") {
 			return PluginTypes.JAX_RS_RESPONSE.className
 		}
-		return getReturnType(fileName, verb, collection, packageName, TargetFramework.JAX_RS)
+		return getReturnType(fileName, verb, collection, packageName, JAX_RS)
 	}
 
 	private static TypeName getReturnType(String fileName,
 			String verb,
 			boolean collection = false,
 			String packageName,
-			TargetFramework targetFramework = TargetFramework.JAX_RS) {
+			TargetFramework targetFramework = JAX_RS) {
 
 		if (verb == 'Get') {
 			String resourceModelName = createResourceModelName(fileName, verb)
 			if (collection) {
-				return ParameterizedTypeName.get(ClassName.get(Collection.class), ClassName.get(packageName, resourceModelName))
+				return ParameterizedTypeName.get(ClassName.get(targetFramework == MICRONAUT ? Iterable.class :  Collection.class), ClassName.get(packageName, resourceModelName))
 			} else {
 				return ClassName.get(packageName, resourceModelName)
 			}
 		} else if (verb == 'Head') {
 			switch (targetFramework) {
-				case TargetFramework.JAX_RS:
+				case JAX_RS:
 					return PluginTypes.JAX_RS_RESPONSE.typeName
 				case TargetFramework.SPRING_BOOT:
 					return PluginTypes.SPRING_RESPONSE_ENTITY.typeName
-				case TargetFramework.MICRONAUT:
+				case MICRONAUT:
 					return PluginTypes.MICRONAUT_HTTP_RESPONSE.typeName
 				default:
 					throw new RuntimeException("Unknown framework ${targetFramework}")
@@ -147,11 +150,11 @@ class GeneratorUtil {
 		} else if (verb == 'Put' || verb == 'Post') {
 			if (collection) {
 				switch (targetFramework) {
-					case TargetFramework.JAX_RS:
+					case JAX_RS:
 						return PluginTypes.JAX_RS_RESPONSE.typeName
 					case TargetFramework.SPRING_BOOT:
 						return PluginTypes.SPRING_RESPONSE_ENTITY.typeName
-					case TargetFramework.MICRONAUT:
+					case MICRONAUT:
 						return PluginTypes.MICRONAUT_HTTP_RESPONSE.typeName
 					default:
 						throw new RuntimeException("Unknown framework ${targetFramework}")
@@ -162,11 +165,11 @@ class GeneratorUtil {
 		} else if (verb == 'Delete') {
 
 			switch (targetFramework) {
-				case TargetFramework.JAX_RS:
+				case JAX_RS:
 					return PluginTypes.JAX_RS_RESPONSE.typeName
 				case TargetFramework.SPRING_BOOT:
 					return PluginTypes.SPRING_RESPONSE_ENTITY.typeName
-				case TargetFramework.MICRONAUT:
+				case MICRONAUT:
 					return TypeName.VOID
 				default:
 					throw new RuntimeException("Unknown framework ${targetFramework}")

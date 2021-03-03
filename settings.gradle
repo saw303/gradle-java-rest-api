@@ -1,6 +1,19 @@
+pluginManagement {
+  repositories {
+    gradlePluginPortal()
+  }
+}
+
+dependencyResolutionManagement {
+  repositories {
+    mavenCentral()
+  }
+}
+
 rootProject.name = 'Gradle REST Generator'
 
 include 'json-model'
+include 'common-pagination'
 include 'rest-model'
 include 'rest-api-micronaut'
 include 'rest-api-spring'

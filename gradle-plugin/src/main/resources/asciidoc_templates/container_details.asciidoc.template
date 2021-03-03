@@ -1,0 +1,97 @@
+== ${title}
+
+Version: ${version}
+
+Description: ${description}
+
+Endpoint: ${endpoint}
+
+<% if (!fieldAssistant.fields.isEmpty()) { %>
+===  Model
+|===
+<%for(colName in fieldAssistant.columns) {%>|${fieldAssistant.TITLES[colName]}<%}%>
+<%for(field in fieldAssistant.fields) { %>
+<%for(colName in fieldAssistant.columns) {%>
+|${fieldAssistant.getValueFor(field, colName)}
+<%}%>
+<%}%>
+|===
+<%}%>
+
+
+<% if (!subResources.isEmpty()) { %>
+=== Subresources
+|===
+|Name |Type |Relationship |Href |Method |Expandable
+<%for(subResource in subResources) { %>
+|${subResource.name}
+|${subResource.type}
+|${subResource.rel == null ? "" : subResource.rel}
+|${subResource.href}
+|${subResource.method == null ? "" : subResource.method}
+|${subResource.expandable}
+<%}%>
+|===
+<%}%>
+
+
+<% if (!verbs.isEmpty()) { %>
+  <%for(verb in verbs) { %>
+=== ${verb.verb}
+  <% if (!verb.responseStates.isEmpty()) { %>
+Response Codes::
+|===
+|Code |Message |Comment
+    <%for(state in verb.responseStates) { %>
+|${state.code}
+|${state.message}
+|${state.comment}
+    <%}%>
+|===
+  <%}%>
+
+  <% if (!verb.representations.isEmpty()) { %>
+Representations::
+|===
+|Name |Comment |Example |Default |Mime Type
+    <%for(representation in verb.representations) { %>
+|${representation.name}
+|${representation.comment}
+|${representation.responseExample}
+|${representation.standard}
+|${representation.mimetype}
+    <%}%>
+|===
+  <%}%>
+
+  <% if (!verb.parameters.isEmpty()) { %>
+Parameters::
+|===
+|Name |Type |Options |Mandatory |Minimum |Maximum |Multiple |Default Value
+    <%for(param in verb.parameters) { %>
+|${param.name}
+|${param.type}
+|${param.options == null ? "" : param.options}
+|${param.mandatory}
+|${param.min == null ? "" : param.min}
+|${param.max == null ? "" : param.max}
+|${param.multiple}
+|${param.defaultValue == null ? "" : param.defaultValue}
+    <%}%>
+|===
+  <%}%>
+
+  <% if (!verb.headers.isEmpty()) { %>
+Headers::
+|===
+|Name |Type |Mandatory |Comment
+    <%for(header in verb.headers) { %>
+|${header.name}
+|${header.type}
+|${header.mandatory}
+|${header.xComment}
+    <%}%>
+|===
+  <%}%>
+<%}%>
+<%}%>

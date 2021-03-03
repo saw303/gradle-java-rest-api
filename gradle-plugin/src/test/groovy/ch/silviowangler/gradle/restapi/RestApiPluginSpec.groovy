@@ -70,7 +70,7 @@ class RestApiPluginSpec extends Specification {
   void "The plugin provides the following tasks"() {
 
     expect:
-    project.tasks.findAll { task -> task.group == TASK_GROUP_REST_API }.size() == 5
+    project.tasks.findAll { task -> task.group == TASK_GROUP_REST_API }.size() == 6
 
     and:
     project.tasks.validateRestSpecs instanceof ValidationTask

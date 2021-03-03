@@ -18,8 +18,12 @@ bintray {
             released = new Date()
         }
     }
-
-    publications = ['MyPublication']
+    if (project.name != 'gradle-java-rest-api') {
+      publications = ['MyPublication']
+    }
+    else {
+      publications = ['MyPublication', 'restapiPluginMarkerMaven']
+    }
 }
 
 def pomConfig = {

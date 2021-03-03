@@ -1,7 +1,7 @@
 /*
  * MIT License
  * <p>
- * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
+ * Copyright (c) 2016 - 2020 Silvio Wangler (silvio.wangler@gmail.com)
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,7 @@ package ch.silviowangler.gradle.restapi.builder.micronaut;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_INJECT;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_NULLABLE;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_SINGLETON;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_NOT_EMPTY;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_NOT_NULL;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_SIZE;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_CONTROLLER;
@@ -44,6 +45,7 @@ import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_POST;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_PRODUCES;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_PUT;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_QUERY_VALUE;
+import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_REQUEST_BODY;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_STATUS;
 import static ch.silviowangler.gradle.restapi.PluginTypes.RESTAPI_RESPONSE_CREATOR;
 import static ch.silviowangler.gradle.restapi.builder.ArtifactType.DELEGATOR_RESOURCE;
@@ -68,6 +70,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import javax.lang.model.element.Modifier;
 
 /** @author Silvio Wangler */
@@ -164,12 +167,18 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
     List<AnnotationSpec> annotationSpecs = new ArrayList<>();
 
     if (param.getMandatory()) {
-      annotationSpecs.add(AnnotationSpec.builder(JAVAX_VALIDATION_NOT_NULL.getClassName()).build());
+      if (param.isMultiple()) {
+        annotationSpecs.add(
+            AnnotationSpec.builder(JAVAX_VALIDATION_NOT_EMPTY.getClassName()).build());
+      } else {
+        annotationSpecs.add(
+            AnnotationSpec.builder(JAVAX_VALIDATION_NOT_NULL.getClassName()).build());
+      }
     } else {
       annotationSpecs.add(AnnotationSpec.builder(JAVAX_NULLABLE.getClassName()).build());
     }
 
-    if (param.hasMinMaxConstraints()) {
+    if (param.hasMinMaxConstraints() && !param.isMultiple()) {
       AnnotationSpec.Builder sizeAnnotationBuilder =
           AnnotationSpec.builder(JAVAX_VALIDATION_SIZE.getClassName());
 
@@ -183,7 +192,20 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
       annotationSpecs.add(sizeAnnotationBuilder.build());
     }
 
-    annotationSpecs.add(AnnotationSpec.builder(MICRONAUT_QUERY_VALUE.getClassName()).build());
+    AnnotationSpec.Builder queryValueBuilder =
+        AnnotationSpec.builder(MICRONAUT_QUERY_VALUE.getClassName());
+
+    if (param.getDefaultValue() != null) {
+
+      if (Objects.equals(param.getType(), "int") && param.getDefaultValue() instanceof Number) {
+        queryValueBuilder.addMember(
+            "defaultValue", "$S", ((Number) param.getDefaultValue()).intValue());
+      } else {
+        queryValueBuilder.addMember("defaultValue", "$S", param.getDefaultValue().toString());
+      }
+    }
+
+    annotationSpecs.add(queryValueBuilder.build());
 
     if ("date".equals(param.getType())) {
       AnnotationSpec.Builder formatBuilder =
@@ -220,6 +242,10 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
         annotationsFields.put("uri", "/{id}");
       } else {
         annotationsFields.put("uri", String.format("/{id}.%s", representation.getName()));
+      }
+    } else {
+      if (!representation.isJson()) {
+        annotationsFields.put("uri", String.format("/.%s", representation.getName()));
       }
     }
 
@@ -295,8 +321,13 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
   }
 
   @Override
+  public boolean providesRequestBodyAnnotation() {
+    return true;
+  }
+
+  @Override
   public AnnotationSpec buildRequestBodyAnnotation() {
-    throw new UnsupportedOperationException("Micronaut does not have a request body annotation");
+    return createAnnotation(MICRONAUT_REQUEST_BODY);
   }
 
   @Override

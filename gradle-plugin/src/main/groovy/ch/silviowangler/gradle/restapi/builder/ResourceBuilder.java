@@ -1,7 +1,7 @@
 /*
  * MIT License
  * <p>
- * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
+ * Copyright (c) 2016 - 2020 Silvio Wangler (silvio.wangler@gmail.com)
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -256,17 +256,21 @@ public interface ResourceBuilder {
         .getParams()
         .forEach(
             p -> {
-              ParameterSpec.Builder builder =
-                  ParameterSpec.builder(translateToJava(p), p.getName());
+              TypeName type = translateToJava(p);
+
+              if (p.isMultiple()) {
+                ClassName list = ClassName.get(List.class);
+                type = ParameterizedTypeName.get(list, type);
+              }
+
+              ParameterSpec.Builder builder = ParameterSpec.builder(type, p.getName());
 
               final boolean isHandleMethod = methodNameCopy.startsWith("handle");
               final boolean isResource =
                   isResourceInterface || isAbstractResourceClass || isDelegateResourceClass;
 
               if (isResource && !isHandleMethod) {
-                for (AnnotationSpec queryParamAnnotation : getQueryParamAnnotations(p)) {
-                  builder.addAnnotation(queryParamAnnotation);
-                }
+                builder.addAnnotations(getQueryParamAnnotations(p));
               }
 
               ParameterSpec parameter = builder.build();

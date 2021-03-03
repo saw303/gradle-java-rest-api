@@ -9,7 +9,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class LandResourceImpl extends LandResource {
   @Override
-  public Collection<LandGetResourceModel> handleGetCollection() {
+  public Collection<LandGetResourceModel> handleGetCollection(Integer limit) {
+    throw new NotYetImplementedException();
+  }
+
+  @Override
+  public ResponseEntity handleGetCollectionPdf(Integer limit) {
     throw new NotYetImplementedException();
   }
 

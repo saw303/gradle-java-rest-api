@@ -1,7 +1,7 @@
 /*
  * MIT License
  * <p>
- * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
+ * Copyright (c) 2016 - 2020 Silvio Wangler (silvio.wangler@gmail.com)
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -61,6 +61,7 @@ public enum PluginTypes {
   JAVAX_VALIDATION_MIN(ClassName.get("javax.validation.constraints", "Min")),
   JAVAX_VALIDATION_MAX(ClassName.get("javax.validation.constraints", "Max")),
   JAVAX_VALIDATION_NOT_NULL(ClassName.get("javax.validation.constraints", "NotNull")),
+  JAVAX_VALIDATION_NOT_EMPTY(ClassName.get("javax.validation.constraints", "NotEmpty")),
   JAVAX_VALIDATION_EMAIL(ClassName.get("javax.validation.constraints", "Email")),
   JAVAX_VALIDATION_VALID(ClassName.get("javax.validation", "Valid")),
   JAVAX_GENERATED(ClassName.get("javax.annotation", "Generated")),
@@ -96,6 +97,7 @@ public enum PluginTypes {
   MICRONAUT_POST(ClassName.get("io.micronaut.http.annotation", "Post")),
   MICRONAUT_PUT(ClassName.get("io.micronaut.http.annotation", "Put")),
   MICRONAUT_DELETE(ClassName.get("io.micronaut.http.annotation", "Delete")),
+  MICRONAUT_REQUEST_BODY(ClassName.get("io.micronaut.http.annotation", "Body")),
   MICRONAUT_HTTP_RESPONSE(ClassName.get("io.micronaut.http", "HttpResponse")),
   MICRONAUT_HTTP_STATUS(ClassName.get("io.micronaut.http", "HttpStatus")),
   MICRONAUT_HTTP_MEDIA_TYPE(ClassName.get("io.micronaut.http", "MediaType")),

@@ -1,7 +1,7 @@
 /*
  * MIT License
  * <p>
- * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
+ * Copyright (c) 2016 - 2020 Silvio Wangler (silvio.wangler@gmail.com)
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,7 @@
  */
 package ch.silviowangler.gradle.restapi
 
+import ch.silviowangler.gradle.restapi.tasks.ExtractRestApiSpecsTask
 import org.gradle.api.Project
 
 import java.nio.charset.Charset
@@ -44,6 +45,7 @@ class RestApiExtension {
 	TargetFramework targetFramework = TargetFramework.JAX_RS
 	Charset responseEncoding
 	File diagramOutput = new File(project.buildDir, 'diagrams')
+	File asciiDocOutput = new File(project.buildDir, 'asciiDocGenerated')
 	boolean diagramShowFields = false
 	GenerationMode generationMode = GenerationMode.ALL
 
@@ -67,8 +69,7 @@ class RestApiExtension {
 	}
 
 	void setOptionsSource(File optionsSource) {
-
-		if (!optionsSource?.isDirectory()) {
+		if (!optionsSource?.isDirectory() && !ExtractRestApiSpecsTask.isConfigurationRestApiDefined(project)) {
 			throw new IllegalArgumentException("optionsSource '${optionsSource.absolutePath}' must be a directory")
 		}
 		this.optionsSource = optionsSource

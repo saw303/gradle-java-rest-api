@@ -1,7 +1,7 @@
 /*
  * MIT License
  * <p>
- * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
+ * Copyright (c) 2016 - 2020 Silvio Wangler (silvio.wangler@gmail.com)
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,7 @@ package ch.silviowangler.gradle.restapi
 
 import ch.silviowangler.gradle.restapi.tasks.CleanRestApiTask
 import ch.silviowangler.gradle.restapi.tasks.ExtractRestApiSpecsTask
+import ch.silviowangler.gradle.restapi.tasks.GenerateRestApiAsciiDocTask
 import ch.silviowangler.gradle.restapi.tasks.GenerateRestApiTask
 import ch.silviowangler.gradle.restapi.tasks.PlantUmlTask
 import ch.silviowangler.gradle.restapi.tasks.ValidationTask
@@ -64,12 +65,18 @@ class RestApiPlugin implements Plugin<Project> {
 		}
 		def validate = project.tasks.register('validateRestSpecs', ValidationTask) { ValidationTask t ->
 			t.group = TASK_GROUP_REST_API
+			if (ExtractRestApiSpecsTask.isConfigurationRestApiDefined(project)) {
+				t.dependsOn(extract)
+			}
 		}
 		def generate = project.tasks.register('generateRestArtifacts', GenerateRestApiTask) { GenerateRestApiTask t ->
 			t.group = TASK_GROUP_REST_API
 			t.dependsOn(validate)
 		}
 		def generateDiagrams = project.tasks.register('generateDiagrams', PlantUmlTask) { PlantUmlTask t ->
+			t.group = TASK_GROUP_REST_API
+		}
+		def generateAsciiDocs = project.tasks.register('generateAsciiDocs', GenerateRestApiAsciiDocTask) { GenerateRestApiAsciiDocTask t ->
 			t.group = TASK_GROUP_REST_API
 		}
 
@@ -95,17 +102,25 @@ class RestApiPlugin implements Plugin<Project> {
 		}
 
 		final String springVersion = "5.2.4.RELEASE"
-		final String pluginVersion = "2.1.1"
+		final String pluginVersion = "2.2.19"
 		final String libPhoneNumberVersion = "8.11.5"
 
 		project.afterEvaluate {
 
 			project.dependencies {
 
-				implementation "javax.annotation:javax.annotation-api:1.3.2"
-				implementation "ch.silviowangler.rest:rest-model:${pluginVersion}"
-				implementation "javax.money:money-api:1.0.3"
-				implementation "javax.validation:validation-api:2.0.1.Final"
+				if (extension.generationMode == GenerationMode.API) {
+					api "javax.annotation:javax.annotation-api:1.3.2"
+					api "ch.silviowangler.rest:rest-model:${pluginVersion}"
+					api "javax.money:money-api:1.0.3"
+					api "javax.validation:validation-api:2.0.1.Final"
+				}
+				else {
+					implementation "javax.annotation:javax.annotation-api:1.3.2"
+					implementation "ch.silviowangler.rest:rest-model:${pluginVersion}"
+					implementation "javax.money:money-api:1.0.3"
+					implementation "javax.validation:validation-api:2.0.1.Final"
+				}
 				implementation "com.googlecode.libphonenumber:libphonenumber:${libPhoneNumberVersion}"
 
 				if (extension.generationMode != GenerationMode.API) {

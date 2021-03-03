@@ -1,7 +1,7 @@
 /*
  * MIT License
  * <p>
- * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
+ * Copyright (c) 2016 - 2020 Silvio Wangler (silvio.wangler@gmail.com)
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,6 +37,7 @@ public class Representation implements Serializable {
   private String responseExample;
   private boolean standard;
   private MimeType mimetype;
+  private boolean raw = false;
 
   public static Representation json(Charset charset) {
     Representation representation = new Representation();
@@ -99,12 +100,21 @@ public class Representation implements Serializable {
     return getName() != null && getName().equals("json");
   }
 
+  public boolean isRaw() {
+    return raw;
+  }
+
+  public void setRaw(boolean raw) {
+    this.raw = raw;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Representation that = (Representation) o;
     return standard == that.standard
+        && raw == that.raw
         && Objects.equals(name, that.name)
         && Objects.equals(comment, that.comment)
         && Objects.equals(responseExample, that.responseExample)
@@ -113,6 +123,6 @@ public class Representation implements Serializable {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, comment, responseExample, standard, mimetype);
+    return Objects.hash(name, comment, responseExample, standard, mimetype, raw);
   }
 }

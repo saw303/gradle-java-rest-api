@@ -1,7 +1,7 @@
 /*
  * MIT License
  * <p>
- * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
+ * Copyright (c) 2016 - 2020 Silvio Wangler (silvio.wangler@gmail.com)
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -41,18 +41,21 @@ public class ResourceLink implements Serializable {
   private URI href;
   private List<LinkParameter> params;
 
+  // for jackson
+  public ResourceLink() {}
+
   public ResourceLink(URI href) {
     this.href = href;
     this.rel = "self";
     this.method = "GET";
-    this.params = Collections.unmodifiableList(Collections.emptyList());
+    this.params = Collections.emptyList();
   }
 
   public ResourceLink(String rel, String method, URI href) {
     this.rel = rel;
     this.method = method;
     this.href = href;
-    this.params = Collections.unmodifiableList(Collections.emptyList());
+    this.params = Collections.emptyList();
   }
 
   public ResourceLink(String rel, String method, URI href, List<LinkParameter> params) {
@@ -66,16 +69,32 @@ public class ResourceLink implements Serializable {
     return rel;
   }
 
+  public void setRel(String rel) {
+    this.rel = rel;
+  }
+
   public String getMethod() {
     return method;
+  }
+
+  public void setMethod(String method) {
+    this.method = method;
   }
 
   public URI getHref() {
     return href;
   }
 
+  public void setHref(URI href) {
+    this.href = href;
+  }
+
   public List<LinkParameter> getParams() {
     return params;
+  }
+
+  public void setParams(List<LinkParameter> params) {
+    this.params = params;
   }
 
   @Override
@@ -101,5 +120,9 @@ public class ResourceLink implements Serializable {
    */
   public static ResourceLink selfLink(String uri) {
     return new ResourceLink(URI.create(uri));
+  }
+
+  public static ResourceLink relLink(String rel, String uri) {
+    return new ResourceLink(rel, "GET", URI.create(uri));
   }
 }

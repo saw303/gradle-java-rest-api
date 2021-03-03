@@ -1,0 +1,6 @@
+= REST API
+
+<%for(container in containers) { String name = container.resourceContract.general.name  %>
+include::${name}.adoc[leveloffset=+1]
+'''
+<%}%>

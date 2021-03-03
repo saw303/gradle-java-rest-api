@@ -5,4 +5,5 @@ dependencies {
 	implementation "com.google.code.gson:gson:${gsonVersion}"
 	implementation "com.googlecode.libphonenumber:libphonenumber:${libPhoneNumberVersion}"
 	api "javax.validation:validation-api:2.0.1.Final"
+	api project(":common-pagination")
 }

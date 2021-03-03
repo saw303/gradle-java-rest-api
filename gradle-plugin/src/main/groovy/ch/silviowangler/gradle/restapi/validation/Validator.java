@@ -1,7 +1,7 @@
 /*
  * MIT License
  * <p>
- * Copyright (c) 2016 - 2019 Silvio Wangler (silvio.wangler@gmail.com)
+ * Copyright (c) 2016 - 2020 Silvio Wangler (silvio.wangler@gmail.com)
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,8 @@
 package ch.silviowangler.gradle.restapi.validation;
 
 import ch.silviowangler.rest.contract.model.v1.ResourceContract;
+import ch.silviowangler.rest.contract.model.v1.ResourceTypes;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -43,4 +45,19 @@ public interface Validator {
    *     violations.
    */
   Set<ConstraintViolation> validate(ResourceContract resourceContract);
+
+  /**
+   * Validates the given resource contract and reports potential constraint validation errors in
+   * return. An empty result means that the validation was successful and is good.
+   *
+   * @param resourceContract the resource contract to validate.
+   * @param definedResourceTypes the resource types which have already been defined in resources
+   *     further up the hierarchy.
+   * @return constraint validations, if empty the validation did not found any constraint
+   *     violations.
+   */
+  default Set<ConstraintViolation> validate(
+      ResourceContract resourceContract, List<ResourceTypes> definedResourceTypes) {
+    return validate(resourceContract);
+  }
 }

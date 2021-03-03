@@ -8,11 +8,15 @@ import javax.inject.Singleton;
 
 @Singleton
 public class LandResourceDelegate {
-  public Collection<LandGetResourceModel> getCollection() {
+  public Iterable<LandGetResourceModel> getCollection(Integer limit) {
     throw new NotYetImplementedException();
   }
 
-  public LandGetResourceModel getEntity(String id) {
+  public HttpResponse getCollectionPdf(Integer limit) {
+    throw new NotYetImplementedException();
+  }
+
+  public HttpResponse getEntity(String id) {
     throw new NotYetImplementedException();
   }
 
