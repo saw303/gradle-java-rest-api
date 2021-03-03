@@ -1,3 +1,15 @@
+pluginManagement {
+  repositories {
+    gradlePluginPortal()
+  }
+}
+
+dependencyResolutionManagement {
+  repositories {
+    mavenCentral()
+  }
+}
+
 rootProject.name = 'Gradle REST Generator'
 
 include 'json-model'
