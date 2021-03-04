@@ -134,7 +134,7 @@ class RestApiPluginSpec extends Specification {
       it.parent == new File(temporaryFolder.getRoot(), path)
     }.size() == javaFiles.size()
 
-    and: 'Ressourcen validieren'
+    and: 'validate resources'
     assertJavaFile("${project.restApi.packageName}/api/v1", 'RootResource', 'rootSpringBoot')
     assertJavaFile("${project.restApi.packageName}/api/v1", 'RootResourceImpl', 'rootSpringBoot')
     assertJavaFile("${project.restApi.packageName}/api/v1", 'RootGetResourceModel', 'rootSpringBoot')
@@ -203,7 +203,7 @@ class RestApiPluginSpec extends Specification {
       it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
     }.size() == javaFiles.size()
 
-    and: 'Ressourcen validieren'
+    and: 'validate resources'
     assertJavaFile('org.acme.rest.v1', 'CoordinatesType', 'land')
     assertJavaFile('org.acme.rest.v1', 'DummyType', 'land')
     assertJavaFile('org.acme.rest.v1.laender', 'LandGetResourceModel', 'land')
@@ -273,7 +273,7 @@ class RestApiPluginSpec extends Specification {
       it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
     }.size() == javaFiles.size()
 
-    and: 'Ressourcen validieren'
+    and: 'validate resources'
     assertJavaFile('org.acme.rest.v1', 'CoordinatesType', 'land')
     assertJavaFile('org.acme.rest.v1', 'DummyType', 'land')
     assertJavaFile('org.acme.rest.v1.laender', 'LandGetResourceModel', 'land')
@@ -339,7 +339,7 @@ class RestApiPluginSpec extends Specification {
       it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
     }.size() == javaFiles.size()
 
-    and: 'Ressourcen validieren'
+    and: 'validate resources'
     assertJavaFile('org.acme.rest.v1.partner', 'PartnerResource')
     assertJavaFile('org.acme.rest.v1.partner', 'PartnerResourceImpl')
     assertJavaFile('org.acme.rest.v1.partner', 'PartnerGetResourceModel')
@@ -402,7 +402,7 @@ class RestApiPluginSpec extends Specification {
       it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
     }.size() == javaFiles.size()
 
-    and: 'Ressourcen validieren'
+    and: 'validate resources'
     assertJavaFile('org.acme.rest.v1', 'CoordinatesType', testName)
     assertJavaFile('org.acme.rest.v1', 'DummyType', testName)
     assertJavaFile('org.acme.rest.v1.laender', 'LandGetResourceModel', testName)
@@ -472,7 +472,7 @@ class RestApiPluginSpec extends Specification {
       it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
     }.size() == javaFiles.size()
 
-    and: 'Ressourcen validieren'
+    and: 'validate resources'
     assertJavaFile('org.acme.rest.v1', 'RootResource', 'rootSimple')
     assertJavaFile('org.acme.rest.v1', 'RootResourceImpl', 'rootSimple')
 
@@ -526,7 +526,7 @@ class RestApiPluginSpec extends Specification {
       it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
     }.size() == javaFiles.size()
 
-    and: 'Ressourcen validieren'
+    and: 'validate resources'
     assertJavaFile('org.acme.rest.v1', 'RootGetResourceModel', 'root')
     assertJavaFile('org.acme.rest.v1', 'RootResource', 'root')
     assertJavaFile('org.acme.rest.v1', 'RootResourceImpl', 'root')
@@ -605,7 +605,7 @@ class RestApiPluginSpec extends Specification {
       it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
     }.size() == javaFiles.size()
 
-    and: 'Ressourcen validieren'
+    and: 'validate resources'
     assertJavaFile('org.acme.rest.v1.search', 'SearchResource', 'search-micronaut')
     assertJavaFile('org.acme.rest.v1.search', 'SearchResourceDelegate', 'search-micronaut')
     assertJavaFile('org.acme.rest.v1.search', 'SearchGetResourceModel', 'search-micronaut')
@@ -660,7 +660,7 @@ class RestApiPluginSpec extends Specification {
       it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
     }.size() == javaFiles.size()
 
-    and: 'Ressourcen validieren'
+    and: 'validate resources'
     assertJavaFile('org.acme.rest.v1.download', 'DownloadResource', 'csvOnly')
     assertJavaFile('org.acme.rest.v1.download', 'DownloadResourceDelegate', 'csvOnly')
 
@@ -713,7 +713,7 @@ class RestApiPluginSpec extends Specification {
       it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
     }.size() == javaFiles.size()
 
-    and: 'Ressourcen validieren'
+    and: 'validate resources'
     assertJavaFile('org.acme.rest.v1.partner', 'PartnersearchResource', 'collectionOnly')
     assertJavaFile('org.acme.rest.v1.partner', 'PartnersearchResourceImpl', 'collectionOnly')
     assertJavaFile('org.acme.rest.v1.partner', 'PartnersearchGetResourceModel', 'collectionOnly')
@@ -768,7 +768,7 @@ class RestApiPluginSpec extends Specification {
       it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
     }.size() == javaFiles.size()
 
-    and: 'Ressourcen validieren'
+    and: 'validate resources'
     assertJavaFile('org.acme.rest.v1.session.insurableperson.insuranceneeds.productproposal', 'ProductproposalResource', 'proposal-spring-boot')
     assertJavaFile('org.acme.rest.v1.session.insurableperson.insuranceneeds.productproposal', 'ProductproposalResourceImpl', 'proposal-spring-boot')
     assertJavaFile('org.acme.rest.v1.session.insurableperson.insuranceneeds.productproposal', 'ProductproposalGetResourceModel', 'proposal-spring-boot')
@@ -895,7 +895,7 @@ class RestApiPluginSpec extends Specification {
       it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
     }.size() == javaFiles.size()
 
-    and: 'Ressourcen validieren'
+    and: 'validate resources'
     assertJavaFile('org.acme.rest.v1', 'RootGetResourceModel', 'root-no-id')
     assertJavaFile('org.acme.rest.v1', 'RootResource', 'root-no-id')
     assertJavaFile('org.acme.rest.v1', 'RootResourceDelegate', 'root-no-id')
