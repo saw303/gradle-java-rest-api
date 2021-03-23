@@ -7,7 +7,7 @@ plugins {
 
 subprojects {
 
-  version = "2.2.19"
+  version = "2.2.20"
 
   apply from: "${rootDir}/gradle/java.gradle"
   apply from: "${rootDir}/gradle/groovy.gradle"

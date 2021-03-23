@@ -3,5 +3,5 @@ apply plugin: 'groovy'
 compileGroovy.options.compilerArgs << '-Xlint:unchecked'
 
 dependencies {
-    compile localGroovy()
+    implementation localGroovy()
 }

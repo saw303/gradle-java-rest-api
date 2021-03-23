@@ -25,13 +25,13 @@ package ch.silviowangler.gradle.restapi.tasks
 
 import ch.silviowangler.gradle.restapi.Consts
 import ch.silviowangler.gradle.restapi.GeneratorUtil
+import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
-import org.gradle.api.internal.AbstractTask
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 
-class ExtractRestApiSpecsTask extends AbstractTask {
+class ExtractRestApiSpecsTask extends DefaultTask {
 
 	File extractOutputDir
 

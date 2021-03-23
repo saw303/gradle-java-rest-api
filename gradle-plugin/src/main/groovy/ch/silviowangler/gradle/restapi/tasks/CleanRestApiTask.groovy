@@ -23,7 +23,7 @@
  */
 package ch.silviowangler.gradle.restapi.tasks
 
-import org.gradle.api.internal.AbstractTask
+import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
 import static groovy.io.FileType.DIRECTORIES
@@ -32,7 +32,7 @@ import static groovy.io.FileType.DIRECTORIES
  *
  * @author Silvio Wangler
  */
-class CleanRestApiTask extends AbstractTask {
+class CleanRestApiTask extends DefaultTask {
 
 	@TaskAction
 	void cleanUp() {
