@@ -33,6 +33,7 @@ import org.gradle.api.Project
 
 import static ch.silviowangler.gradle.restapi.TargetFramework.JAX_RS
 import static ch.silviowangler.gradle.restapi.TargetFramework.MICRONAUT
+import static ch.silviowangler.gradle.restapi.TargetFramework.MICRONAUT_24
 
 /**
  * Created by Silvio Wangler on 25/01/16.
@@ -132,7 +133,7 @@ class GeneratorUtil {
 		if (verb == 'Get') {
 			String resourceModelName = createResourceModelName(fileName, verb)
 			if (collection) {
-				return ParameterizedTypeName.get(ClassName.get(targetFramework == MICRONAUT ? Iterable.class :  Collection.class), ClassName.get(packageName, resourceModelName))
+				return ParameterizedTypeName.get(ClassName.get(targetFramework.isMicronaut() ? Iterable.class : Collection.class), ClassName.get(packageName, resourceModelName))
 			} else {
 				return ClassName.get(packageName, resourceModelName)
 			}
@@ -143,6 +144,7 @@ class GeneratorUtil {
 				case TargetFramework.SPRING_BOOT:
 					return PluginTypes.SPRING_RESPONSE_ENTITY.typeName
 				case MICRONAUT:
+				case MICRONAUT_24:
 					return PluginTypes.MICRONAUT_HTTP_RESPONSE.typeName
 				default:
 					throw new RuntimeException("Unknown framework ${targetFramework}")
@@ -155,6 +157,7 @@ class GeneratorUtil {
 					case TargetFramework.SPRING_BOOT:
 						return PluginTypes.SPRING_RESPONSE_ENTITY.typeName
 					case MICRONAUT:
+					case MICRONAUT_24:
 						return PluginTypes.MICRONAUT_HTTP_RESPONSE.typeName
 					default:
 						throw new RuntimeException("Unknown framework ${targetFramework}")
@@ -170,6 +173,7 @@ class GeneratorUtil {
 				case TargetFramework.SPRING_BOOT:
 					return PluginTypes.SPRING_RESPONSE_ENTITY.typeName
 				case MICRONAUT:
+				case MICRONAUT_24:
 					return TypeName.VOID
 				default:
 					throw new RuntimeException("Unknown framework ${targetFramework}")

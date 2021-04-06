@@ -86,23 +86,28 @@ public enum PluginTypes {
       ClassName.get("org.springframework.web.bind.annotation", "ResponseStatus")),
   JAVAX_SINGLETON(ClassName.get("javax.inject", "Singleton")),
   JAVAX_INJECT(ClassName.get("javax.inject", "Inject")),
-  MICRONAUT_CONTROLLER(ClassName.get("io.micronaut.http.annotation", "Controller")),
-  MICRONAUT_STATUS(ClassName.get("io.micronaut.http.annotation", "Status")),
+  /** Introduced with Micronaut 2.4. Will be default in Micronaut 3.0 and greater. */
+  JAKARTA_SINGLETON(ClassName.get(Constants.PACKAGE_JAKARTA_INJECT, "Singleton")),
+  /** Introduced with Micronaut 2.4. Will be default in Micronaut 3.0 and greater. */
+  JAKARTA_INJECT(ClassName.get(Constants.PACKAGE_JAKARTA_INJECT, "Inject")),
+  MICRONAUT_CONTROLLER(ClassName.get(Constants.PACKAGE_IO_MICRONAUT_HTTP_ANNOTATION, "Controller")),
+  MICRONAUT_STATUS(ClassName.get(Constants.PACKAGE_IO_MICRONAUT_HTTP_ANNOTATION, "Status")),
   MICRONAUT_VALIDATED(ClassName.get("io.micronaut.validation", "Validated")),
-  MICRONAUT_CONSUMES(ClassName.get("io.micronaut.http.annotation", "Consumes")),
-  MICRONAUT_PRODUCES(ClassName.get("io.micronaut.http.annotation", "Produces")),
-  MICRONAUT_OPTIONS(ClassName.get("io.micronaut.http.annotation", "Options")),
-  MICRONAUT_HEAD(ClassName.get("io.micronaut.http.annotation", "Head")),
-  MICRONAUT_GET(ClassName.get("io.micronaut.http.annotation", "Get")),
-  MICRONAUT_POST(ClassName.get("io.micronaut.http.annotation", "Post")),
-  MICRONAUT_PUT(ClassName.get("io.micronaut.http.annotation", "Put")),
-  MICRONAUT_DELETE(ClassName.get("io.micronaut.http.annotation", "Delete")),
-  MICRONAUT_REQUEST_BODY(ClassName.get("io.micronaut.http.annotation", "Body")),
-  MICRONAUT_HTTP_RESPONSE(ClassName.get("io.micronaut.http", "HttpResponse")),
-  MICRONAUT_HTTP_STATUS(ClassName.get("io.micronaut.http", "HttpStatus")),
-  MICRONAUT_HTTP_MEDIA_TYPE(ClassName.get("io.micronaut.http", "MediaType")),
-  MICRONAUT_QUERY_VALUE(ClassName.get("io.micronaut.http.annotation", "QueryValue")),
-  MICRONAUT_HEADER(ClassName.get("io.micronaut.http.annotation", "Header")),
+  MICRONAUT_CONSUMES(ClassName.get(Constants.PACKAGE_IO_MICRONAUT_HTTP_ANNOTATION, "Consumes")),
+  MICRONAUT_PRODUCES(ClassName.get(Constants.PACKAGE_IO_MICRONAUT_HTTP_ANNOTATION, "Produces")),
+  MICRONAUT_OPTIONS(ClassName.get(Constants.PACKAGE_IO_MICRONAUT_HTTP_ANNOTATION, "Options")),
+  MICRONAUT_HEAD(ClassName.get(Constants.PACKAGE_IO_MICRONAUT_HTTP_ANNOTATION, "Head")),
+  MICRONAUT_GET(ClassName.get(Constants.PACKAGE_IO_MICRONAUT_HTTP_ANNOTATION, "Get")),
+  MICRONAUT_POST(ClassName.get(Constants.PACKAGE_IO_MICRONAUT_HTTP_ANNOTATION, "Post")),
+  MICRONAUT_PUT(ClassName.get(Constants.PACKAGE_IO_MICRONAUT_HTTP_ANNOTATION, "Put")),
+  MICRONAUT_DELETE(ClassName.get(Constants.PACKAGE_IO_MICRONAUT_HTTP_ANNOTATION, "Delete")),
+  MICRONAUT_REQUEST_BODY(ClassName.get(Constants.PACKAGE_IO_MICRONAUT_HTTP_ANNOTATION, "Body")),
+  MICRONAUT_HTTP_RESPONSE(ClassName.get(Constants.PACKAGE_IO_MICRONAUT_HTTP, "HttpResponse")),
+  MICRONAUT_HTTP_STATUS(ClassName.get(Constants.PACKAGE_IO_MICRONAUT_HTTP, "HttpStatus")),
+  MICRONAUT_HTTP_MEDIA_TYPE(ClassName.get(Constants.PACKAGE_IO_MICRONAUT_HTTP, "MediaType")),
+  MICRONAUT_QUERY_VALUE(
+      ClassName.get(Constants.PACKAGE_IO_MICRONAUT_HTTP_ANNOTATION, "QueryValue")),
+  MICRONAUT_HEADER(ClassName.get(Constants.PACKAGE_IO_MICRONAUT_HTTP_ANNOTATION, "Header")),
   MICRONAUT_FORMAT(ClassName.get("io.micronaut.core.convert.format", "Format")),
   MICRONAUT_DATE_FORMAT(ClassName.get("ch.silviowangler.rest.micronaut.binding", "DateFormat")),
   MICRONAUT_INTROSPECTED(ClassName.get("io.micronaut.core.annotation", "Introspected")),
@@ -126,5 +131,12 @@ public enum PluginTypes {
     throw new UnsupportedOperationException(
         String.format(
             "TypeName %s is not a ClassName", this.typeName.getClass().getCanonicalName()));
+  }
+
+  private static class Constants {
+    public static final String PACKAGE_JAKARTA_INJECT = "jakarta.inject";
+    public static final String PACKAGE_IO_MICRONAUT_HTTP_ANNOTATION =
+        "io.micronaut.http.annotation";
+    public static final String PACKAGE_IO_MICRONAUT_HTTP = "io.micronaut.http";
   }
 }

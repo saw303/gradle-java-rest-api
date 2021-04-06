@@ -23,10 +23,10 @@
  */
 package ch.silviowangler.gradle.restapi.builder;
 
-import static ch.silviowangler.gradle.restapi.TargetFramework.MICRONAUT;
 import static ch.silviowangler.gradle.restapi.TargetFramework.SPRING_BOOT;
 
 import ch.silviowangler.gradle.restapi.RestApiExtension;
+import ch.silviowangler.gradle.restapi.TargetFramework;
 import ch.silviowangler.gradle.restapi.builder.jaxrs.JaxRsRootResourceFactory;
 import ch.silviowangler.gradle.restapi.builder.micronaut.MicronautResourceFactory;
 import ch.silviowangler.gradle.restapi.builder.spring.SpringRootResourceFactory;
@@ -36,11 +36,12 @@ class ResourceBuilderFactory {
 
   public static ResourceBuilder getRootResourceBuilder(RestApiExtension restApiExtension) {
 
-    if (SPRING_BOOT
-        == Objects.requireNonNull(restApiExtension, "restApiExtension must not be null")
-            .getTargetFramework()) {
+    TargetFramework targetFramework =
+        Objects.requireNonNull(restApiExtension, "restApiExtension must not be null")
+            .getTargetFramework();
+    if (SPRING_BOOT == targetFramework) {
       return new SpringRootResourceFactory();
-    } else if (MICRONAUT == restApiExtension.getTargetFramework()) {
+    } else if (targetFramework.isMicronaut()) {
       return new MicronautResourceFactory();
     } else {
       return new JaxRsRootResourceFactory();
