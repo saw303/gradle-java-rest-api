@@ -16,8 +16,11 @@ subprojects {
   apply plugin: 'com.github.ben-manes.versions'
 
   dependencies {
-    testImplementation("org.spockframework:spock-core:${spockVersion}") {
-      exclude group: 'org.codehaus.groovy', module: 'groovy-all'
-    }
+    testImplementation platform("org.spockframework:spock-bom:2.0-M4-groovy-3.0")
+    testImplementation "org.spockframework:spock-core"
+  }
+
+  test {
+    useJUnitPlatform()
   }
 }
