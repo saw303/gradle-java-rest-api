@@ -23,16 +23,19 @@
  */
 package ch.silviowangler.gradle.restapi
 
-import ch.silviowangler.gradle.restapi.tasks.*
+
+import ch.silviowangler.gradle.restapi.tasks.CleanRestApiTask
+import ch.silviowangler.gradle.restapi.tasks.ExtractRestApiSpecsTask
+import ch.silviowangler.gradle.restapi.tasks.GenerateRestApiTask
+import ch.silviowangler.gradle.restapi.tasks.PlantUmlTask
+import ch.silviowangler.gradle.restapi.tasks.ValidationTask
 import com.squareup.javapoet.ClassName
 import groovy.io.FileType
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.testfixtures.ProjectBuilder
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import spock.lang.Shared
 import spock.lang.Specification
+import spock.lang.TempDir
 import spock.lang.Unroll
 
 import java.nio.charset.Charset
@@ -45,8 +48,8 @@ class RestApiPluginSpec extends Specification {
 
   Project project = ProjectBuilder.builder().build()
 
-  @Rule
-  TemporaryFolder temporaryFolder
+  @TempDir
+  File tempDir
 
   @Shared
   def customFieldModelMapping = { resource, field ->
@@ -100,8 +103,8 @@ class RestApiPluginSpec extends Specification {
 
   void "The plugin generates valid Java 8 code for Spring Boot"() {
     given:
-    project.restApi.generatorOutput = temporaryFolder.getRoot()
-    project.restApi.generatorImplOutput = temporaryFolder.getRoot()
+    project.restApi.generatorOutput = tempDir
+    project.restApi.generatorImplOutput = tempDir
     project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/rootSpringBoot")
     project.restApi.packageName = 'org.acme.rest.v1'
     project.restApi.generateDateAttribute = false
@@ -119,19 +122,19 @@ class RestApiPluginSpec extends Specification {
 
     and:
     def javaFiles = []
-    temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+    tempDir.eachFileRecurse(FileType.FILES, {
       if (it.name.endsWith('.java')) javaFiles << it
     })
 
     then:
-    new File(temporaryFolder.getRoot(), path).exists()
+    new File(tempDir, path).exists()
 
     and:
     assertGeneratedFiles javaFiles, 6
 
     and:
     javaFiles.collect {
-      it.parent == new File(temporaryFolder.getRoot(), path)
+      it.parent == new File(tempDir, path)
     }.size() == javaFiles.size()
 
     and: 'validate resources'
@@ -150,7 +153,7 @@ class RestApiPluginSpec extends Specification {
 
     and:
     javaFiles.clear()
-    temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+    tempDir.eachFileRecurse(FileType.FILES, {
       if (it.name.endsWith('.java')) javaFiles << it
     })
 
@@ -171,8 +174,8 @@ class RestApiPluginSpec extends Specification {
   void "The plugin generates valid Java 8 code for Spring Boot and the Land/Ort specs"() {
 
     given:
-    project.restApi.generatorOutput = temporaryFolder.getRoot()
-    project.restApi.generatorImplOutput = temporaryFolder.getRoot()
+    project.restApi.generatorOutput = tempDir
+    project.restApi.generatorImplOutput = tempDir
     project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/v1")
     project.restApi.packageName = 'org.acme.rest'
     project.restApi.generateDateAttribute = false
@@ -188,19 +191,19 @@ class RestApiPluginSpec extends Specification {
 
     and:
     List<File> javaFiles = []
-    temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+    tempDir.eachFileRecurse(FileType.FILES, {
       if (it.name.endsWith('.java')) javaFiles << it
     })
 
     then:
-    new File(temporaryFolder.getRoot(), 'org/acme/rest').exists()
+    new File(tempDir, 'org/acme/rest').exists()
 
     and:
     assertGeneratedFiles javaFiles, 15
 
     and:
     javaFiles.collect {
-      it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
+      it.parent == new File(tempDir, 'org/acme/rest')
     }.size() == javaFiles.size()
 
     and: 'validate resources'
@@ -228,7 +231,7 @@ class RestApiPluginSpec extends Specification {
 
     and:
     javaFiles.clear()
-    temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+    tempDir.eachFileRecurse(FileType.FILES, {
       if (it.name.endsWith('.java')) javaFiles << it
     })
 
@@ -239,8 +242,8 @@ class RestApiPluginSpec extends Specification {
   void "The plugin generates valid Java 8 code for Micronaut and the Land/Ort specs"() {
 
     given:
-    project.restApi.generatorOutput = temporaryFolder.getRoot()
-    project.restApi.generatorImplOutput = temporaryFolder.getRoot()
+    project.restApi.generatorOutput = tempDir
+    project.restApi.generatorImplOutput = tempDir
     project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/v1")
     project.restApi.packageName = 'org.acme.rest'
     project.restApi.generateDateAttribute = false
@@ -258,19 +261,19 @@ class RestApiPluginSpec extends Specification {
 
     and:
     List<File> javaFiles = []
-    temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+    tempDir.eachFileRecurse(FileType.FILES, {
       if (it.name.endsWith('.java')) javaFiles << it
     })
 
     then:
-    new File(temporaryFolder.getRoot(), 'org/acme/rest').exists()
+    new File(tempDir, 'org/acme/rest').exists()
 
     and:
     assertGeneratedFiles javaFiles, 15
 
     and:
     javaFiles.collect {
-      it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
+      it.parent == new File(tempDir, 'org/acme/rest')
     }.size() == javaFiles.size()
 
     and: 'validate resources'
@@ -298,7 +301,7 @@ class RestApiPluginSpec extends Specification {
 
     and:
     javaFiles.clear()
-    temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+    tempDir.eachFileRecurse(FileType.FILES, {
       if (it.name.endsWith('.java')) javaFiles << it
     })
 
@@ -309,8 +312,8 @@ class RestApiPluginSpec extends Specification {
   void "The plugin generates valid JAX-RS Java 8 code"() {
 
     given:
-    project.restApi.generatorOutput = temporaryFolder.getRoot()
-    project.restApi.generatorImplOutput = temporaryFolder.getRoot()
+    project.restApi.generatorOutput = tempDir
+    project.restApi.generatorImplOutput = tempDir
     project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/demo")
     project.restApi.packageName = 'org.acme.rest'
     project.restApi.generateDateAttribute = false
@@ -324,19 +327,19 @@ class RestApiPluginSpec extends Specification {
 
     and:
     def javaFiles = []
-    temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+    tempDir.eachFileRecurse(FileType.FILES, {
       if (it.name.endsWith('.java')) javaFiles << it
     })
 
     then:
-    new File(temporaryFolder.getRoot(), 'org/acme/rest').exists()
+    new File(tempDir, 'org/acme/rest').exists()
 
     and:
     assertGeneratedFiles javaFiles, 14
 
     and:
     javaFiles.collect {
-      it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
+      it.parent == new File(tempDir, 'org/acme/rest')
     }.size() == javaFiles.size()
 
     and: 'validate resources'
@@ -355,7 +358,7 @@ class RestApiPluginSpec extends Specification {
 
     and:
     javaFiles.clear()
-    temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+    tempDir.eachFileRecurse(FileType.FILES, {
       if (it.name.endsWith('.java')) javaFiles << it
     })
 
@@ -367,8 +370,8 @@ class RestApiPluginSpec extends Specification {
   void "Typ Definitionen in der Root Ressource werden berücksichtigt"() {
 
     given:
-    project.restApi.generatorOutput = temporaryFolder.getRoot()
-    project.restApi.generatorImplOutput = temporaryFolder.getRoot()
+    project.restApi.generatorOutput = tempDir
+    project.restApi.generatorImplOutput = tempDir
     project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/v1/")
     project.restApi.packageName = 'org.acme.rest'
     project.restApi.generateDateAttribute = false
@@ -387,19 +390,19 @@ class RestApiPluginSpec extends Specification {
 
     and:
     def javaFiles = []
-    temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+    tempDir.eachFileRecurse(FileType.FILES, {
       if (it.name.endsWith('.java')) javaFiles << it
     })
 
     then:
-    new File(temporaryFolder.getRoot(), 'org/acme/rest').exists()
+    new File(tempDir, 'org/acme/rest').exists()
 
     and:
     assertGeneratedFiles javaFiles, 15
 
     and:
     javaFiles.collect {
-      it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
+      it.parent == new File(tempDir, 'org/acme/rest')
     }.size() == javaFiles.size()
 
     and: 'validate resources'
@@ -429,7 +432,7 @@ class RestApiPluginSpec extends Specification {
 
     and:
     javaFiles.clear()
-    temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+    tempDir.eachFileRecurse(FileType.FILES, {
       if (it.name.endsWith('.java')) javaFiles << it
     })
 
@@ -440,8 +443,8 @@ class RestApiPluginSpec extends Specification {
   void "Empty verbs and fields in root works"() {
 
     given:
-    project.restApi.generatorOutput = temporaryFolder.getRoot()
-    project.restApi.generatorImplOutput = temporaryFolder.getRoot()
+    project.restApi.generatorOutput = tempDir
+    project.restApi.generatorImplOutput = tempDir
     project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/rootSimple/")
     project.restApi.packageName = 'org.acme.rest'
     project.restApi.generateDateAttribute = false
@@ -457,19 +460,19 @@ class RestApiPluginSpec extends Specification {
 
     and:
     def javaFiles = []
-    temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+    tempDir.eachFileRecurse(FileType.FILES, {
       if (it.name.endsWith('.java')) javaFiles << it
     })
 
     then:
-    new File(temporaryFolder.getRoot(), 'org/acme/rest').exists()
+    new File(tempDir, 'org/acme/rest').exists()
 
     and:
     assertGeneratedFiles javaFiles, 2
 
     and:
     javaFiles.collect {
-      it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
+      it.parent == new File(tempDir, 'org/acme/rest')
     }.size() == javaFiles.size()
 
     and: 'validate resources'
@@ -484,7 +487,7 @@ class RestApiPluginSpec extends Specification {
 
     and:
     javaFiles.clear()
-    temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+    tempDir.eachFileRecurse(FileType.FILES, {
       if (it.name.endsWith('.java')) javaFiles << it
     })
 
@@ -495,8 +498,8 @@ class RestApiPluginSpec extends Specification {
   void "Not specified verbs are explicitly excluded"() {
 
     given:
-    project.restApi.generatorOutput = temporaryFolder.getRoot()
-    project.restApi.generatorImplOutput = temporaryFolder.getRoot()
+    project.restApi.generatorOutput = tempDir
+    project.restApi.generatorImplOutput = tempDir
     project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/root/")
     project.restApi.packageName = 'org.acme.rest'
     project.restApi.generateDateAttribute = false
@@ -511,19 +514,19 @@ class RestApiPluginSpec extends Specification {
 
     and:
     def javaFiles = []
-    temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+    tempDir.eachFileRecurse(FileType.FILES, {
       if (it.name.endsWith('.java')) javaFiles << it
     })
 
     then:
-    new File(temporaryFolder.getRoot(), 'org/acme/rest').exists()
+    new File(tempDir, 'org/acme/rest').exists()
 
     and:
     assertGeneratedFiles javaFiles, 3
 
     and:
     javaFiles.collect {
-      it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
+      it.parent == new File(tempDir, 'org/acme/rest')
     }.size() == javaFiles.size()
 
     and: 'validate resources'
@@ -539,7 +542,7 @@ class RestApiPluginSpec extends Specification {
 
     and:
     javaFiles.clear()
-    temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+    tempDir.eachFileRecurse(FileType.FILES, {
       if (it.name.endsWith('.java')) javaFiles << it
     })
 
@@ -550,8 +553,8 @@ class RestApiPluginSpec extends Specification {
   void "The plugin refuses to generate a resource containing a HEAD verb without a corresponding GET verb"() {
 
     given:
-    project.restApi.generatorOutput = temporaryFolder.getRoot()
-    project.restApi.generatorImplOutput = temporaryFolder.getRoot()
+    project.restApi.generatorOutput = tempDir
+    project.restApi.generatorImplOutput = tempDir
     project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/invalid")
     project.restApi.packageName = 'org.acme.rest'
     project.restApi.generateDateAttribute = false
@@ -574,8 +577,8 @@ class RestApiPluginSpec extends Specification {
   void "Das Plugin generiert auch read only Ressourcen mit query parameters und explicit extensions (Micronaut)"() {
 
     given:
-    project.restApi.generatorOutput = temporaryFolder.getRoot()
-    project.restApi.generatorImplOutput = temporaryFolder.getRoot()
+    project.restApi.generatorOutput = tempDir
+    project.restApi.generatorImplOutput = tempDir
     project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/search")
     project.restApi.packageName = 'org.acme.rest'
     project.restApi.generateDateAttribute = false
@@ -590,19 +593,19 @@ class RestApiPluginSpec extends Specification {
 
     and:
     def javaFiles = []
-    temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+    tempDir.eachFileRecurse(FileType.FILES, {
       if (it.name.endsWith('.java')) javaFiles << it
     })
 
     then:
-    new File(temporaryFolder.getRoot(), 'org/acme/rest').exists()
+    new File(tempDir, 'org/acme/rest').exists()
 
     and:
     assertGeneratedFiles javaFiles, 3
 
     and:
     javaFiles.collect {
-      it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
+      it.parent == new File(tempDir, 'org/acme/rest')
     }.size() == javaFiles.size()
 
     and: 'validate resources'
@@ -618,7 +621,7 @@ class RestApiPluginSpec extends Specification {
 
     and:
     javaFiles.clear()
-    temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+    tempDir.eachFileRecurse(FileType.FILES, {
       if (it.name.endsWith('.java')) javaFiles << it
     })
 
@@ -629,8 +632,8 @@ class RestApiPluginSpec extends Specification {
   void "Das Plugin generiert auch read only Ressourcen mit nur einem CSV GET (Micronaut)"() {
 
     given:
-    project.restApi.generatorOutput = temporaryFolder.getRoot()
-    project.restApi.generatorImplOutput = temporaryFolder.getRoot()
+    project.restApi.generatorOutput = tempDir
+    project.restApi.generatorImplOutput = tempDir
     project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/csvOnly")
     project.restApi.packageName = 'org.acme.rest'
     project.restApi.generateDateAttribute = false
@@ -645,19 +648,19 @@ class RestApiPluginSpec extends Specification {
 
     and:
     def javaFiles = []
-    temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+    tempDir.eachFileRecurse(FileType.FILES, {
       if (it.name.endsWith('.java')) javaFiles << it
     })
 
     then:
-    new File(temporaryFolder.getRoot(), 'org/acme/rest').exists()
+    new File(tempDir, 'org/acme/rest').exists()
 
     and:
     assertGeneratedFiles javaFiles, 2
 
     and:
     javaFiles.collect {
-      it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
+      it.parent == new File(tempDir, 'org/acme/rest')
     }.size() == javaFiles.size()
 
     and: 'validate resources'
@@ -672,7 +675,7 @@ class RestApiPluginSpec extends Specification {
 
     and:
     javaFiles.clear()
-    temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+    tempDir.eachFileRecurse(FileType.FILES, {
       if (it.name.endsWith('.java')) javaFiles << it
     })
 
@@ -683,8 +686,8 @@ class RestApiPluginSpec extends Specification {
   void "Das Plugin generiert auch read only Ressourcen mit nur einem Collection GET"() {
 
     given:
-    project.restApi.generatorOutput = temporaryFolder.getRoot()
-    project.restApi.generatorImplOutput = temporaryFolder.getRoot()
+    project.restApi.generatorOutput = tempDir
+    project.restApi.generatorImplOutput = tempDir
     project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/collectionOnly")
     project.restApi.packageName = 'org.acme.rest'
     project.restApi.generateDateAttribute = false
@@ -698,19 +701,19 @@ class RestApiPluginSpec extends Specification {
 
     and:
     def javaFiles = []
-    temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+    tempDir.eachFileRecurse(FileType.FILES, {
       if (it.name.endsWith('.java')) javaFiles << it
     })
 
     then:
-    new File(temporaryFolder.getRoot(), 'org/acme/rest').exists()
+    new File(tempDir, 'org/acme/rest').exists()
 
     and:
     assertGeneratedFiles javaFiles, 3
 
     and:
     javaFiles.collect {
-      it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
+      it.parent == new File(tempDir, 'org/acme/rest')
     }.size() == javaFiles.size()
 
     and: 'validate resources'
@@ -726,7 +729,7 @@ class RestApiPluginSpec extends Specification {
 
     and:
     javaFiles.clear()
-    temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+    tempDir.eachFileRecurse(FileType.FILES, {
       if (it.name.endsWith('.java')) javaFiles << it
     })
 
@@ -737,8 +740,8 @@ class RestApiPluginSpec extends Specification {
   void "Das Plugin generiert auch read only Ressourcen mit nur einem Collection GET (Spring Boot)"() {
 
     given:
-    project.restApi.generatorOutput = temporaryFolder.getRoot()
-    project.restApi.generatorImplOutput = temporaryFolder.getRoot()
+    project.restApi.generatorOutput = tempDir
+    project.restApi.generatorImplOutput = tempDir
     project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/proposal")
     project.restApi.packageName = 'org.acme.rest'
     project.restApi.generateDateAttribute = false
@@ -753,19 +756,19 @@ class RestApiPluginSpec extends Specification {
 
     and:
     def javaFiles = []
-    temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+    tempDir.eachFileRecurse(FileType.FILES, {
       if (it.name.endsWith('.java')) javaFiles << it
     })
 
     then:
-    new File(temporaryFolder.getRoot(), 'org/acme/rest').exists()
+    new File(tempDir, 'org/acme/rest').exists()
 
     and:
     assertGeneratedFiles javaFiles, 6
 
     and:
     javaFiles.collect {
-      it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
+      it.parent == new File(tempDir, 'org/acme/rest')
     }.size() == javaFiles.size()
 
     and: 'validate resources'
@@ -784,7 +787,7 @@ class RestApiPluginSpec extends Specification {
 
     and:
     javaFiles.clear()
-    temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+    tempDir.eachFileRecurse(FileType.FILES, {
       if (it.name.endsWith('.java')) javaFiles << it
     })
 
@@ -795,14 +798,14 @@ class RestApiPluginSpec extends Specification {
   void "The plugin can generate resource diagrams"() {
 
     given:
-    project.restApi.generatorOutput = temporaryFolder.getRoot()
-    project.restApi.generatorImplOutput = temporaryFolder.getRoot()
+    project.restApi.generatorOutput = tempDir
+    project.restApi.generatorImplOutput = tempDir
     project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/rootSpringBoot")
     project.restApi.packageName = 'org.acme.rest'
     project.restApi.generateDateAttribute = false
     project.restApi.objectResourceModelMapping = customFieldModelMapping
     project.restApi.targetFramework = SPRING_BOOT
-    project.restApi.diagramOutput = temporaryFolder.getRoot()
+    project.restApi.diagramOutput = tempDir
 
     and:
     PlantUmlTask task = project.tasks.generateDiagrams as PlantUmlTask
@@ -812,7 +815,7 @@ class RestApiPluginSpec extends Specification {
 
     and:
     def files = []
-    temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+    tempDir.eachFileRecurse(FileType.FILES, {
       if (it.name.endsWith('.puml')) files << it
     })
 
@@ -827,14 +830,14 @@ class RestApiPluginSpec extends Specification {
   void "The plugin can generate resource diagrams for land/ort showfields: #showFields"() {
 
     given:
-    project.restApi.generatorOutput = temporaryFolder.getRoot()
-    project.restApi.generatorImplOutput = temporaryFolder.getRoot()
+    project.restApi.generatorOutput = tempDir
+    project.restApi.generatorImplOutput = tempDir
     project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/v1")
     project.restApi.packageName = 'org.acme.rest'
     project.restApi.generateDateAttribute = false
     project.restApi.objectResourceModelMapping = customFieldModelMapping
     project.restApi.targetFramework = SPRING_BOOT
-    project.restApi.diagramOutput = temporaryFolder.getRoot()
+    project.restApi.diagramOutput = tempDir
     project.restApi.diagramShowFields = showFields
 
     and:
@@ -845,7 +848,7 @@ class RestApiPluginSpec extends Specification {
 
     and:
     def files = []
-    temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+    tempDir.eachFileRecurse(FileType.FILES, {
       if (it.name.endsWith('.puml')) files << it
     })
 
@@ -863,8 +866,8 @@ class RestApiPluginSpec extends Specification {
   void "No id field is present in a resource"() {
 
     given:
-    project.restApi.generatorOutput = temporaryFolder.getRoot()
-    project.restApi.generatorImplOutput = temporaryFolder.getRoot()
+    project.restApi.generatorOutput = tempDir
+    project.restApi.generatorImplOutput = tempDir
     project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/root-no-id")
     project.restApi.packageName = 'org.acme.rest'
     project.restApi.generateDateAttribute = false
@@ -880,19 +883,19 @@ class RestApiPluginSpec extends Specification {
 
     and:
     List<File> javaFiles = []
-    temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+    tempDir.eachFileRecurse(FileType.FILES, {
       if (it.name.endsWith('.java')) javaFiles << it
     })
 
     then:
-    new File(temporaryFolder.getRoot(), 'org/acme/rest').exists()
+    new File(tempDir, 'org/acme/rest').exists()
 
     and:
     assertGeneratedFiles javaFiles, 3
 
     and:
     javaFiles.collect {
-      it.parent == new File(temporaryFolder.getRoot(), 'org/acme/rest')
+      it.parent == new File(tempDir, 'org/acme/rest')
     }.size() == javaFiles.size()
 
     and: 'validate resources'
@@ -908,7 +911,7 @@ class RestApiPluginSpec extends Specification {
 
     and:
     javaFiles.clear()
-    temporaryFolder.getRoot().eachFileRecurse(FileType.FILES, {
+    tempDir.eachFileRecurse(FileType.FILES, {
       if (it.name.endsWith('.java')) javaFiles << it
     })
 
@@ -918,7 +921,7 @@ class RestApiPluginSpec extends Specification {
 
   private void assertPlantUmlFile(String expectedFileName, String actualFileName, String testSetName) {
     final String ENCODING = 'UTF-8'
-    File expectedFile = new File(temporaryFolder.getRoot(), expectedFileName)
+    File expectedFile = new File(tempDir, expectedFileName)
     URL resource = getClass().getResource("/puml/${testSetName}/${actualFileName}")
     File actualFile = new File(resource.file)
 
@@ -934,7 +937,7 @@ class RestApiPluginSpec extends Specification {
 
   private void assertJavaFile(String packageName, String className, String testName) {
     final String ENCODING = 'UTF-8'
-    File expectedJavaFile = new File(temporaryFolder.getRoot().absolutePath + '/' + packageName.replaceAll('\\.', '/'), "${className}.java")
+    File expectedJavaFile = new File(tempDir.absolutePath + '/' + packageName.replaceAll('\\.', '/'), "${className}.java")
     URL resource = getClass().getResource("/javaOutput/${testName}/${className}.java.txt")
     File actualJavaFile = resource ? new File(resource.file) : new File(className)
 
