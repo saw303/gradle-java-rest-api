@@ -731,7 +731,7 @@ The plugin knows the following generation modes:
 - `IMPLEMENTATION`: Generates the framework specific implementation classes only.
 - `CLIENT`: Generates the framework specific client implementation.
 
-The following configuration will create a Micronaut http clients within the given project.
+The following configuration will create a Micronaut http clients within the given Gradle project.
 
 ```groovy
 restApi {

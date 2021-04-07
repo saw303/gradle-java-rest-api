@@ -102,14 +102,14 @@ class RestApiPlugin implements Plugin<Project> {
 		}
 
 		final String springVersion = "5.2.4.RELEASE"
-		final String pluginVersion = "2.3.0"
+		final String pluginVersion = "2.3.1"
 		final String libPhoneNumberVersion = "8.11.5"
 
 		project.afterEvaluate {
 
 			project.dependencies {
 
-				if (extension.generationMode == GenerationMode.API) {
+				if (extension.generationMode.isApiCodeGenerationRequired() || extension.generationMode.isClientCodeGenerationRequired()) {
 					api "javax.annotation:javax.annotation-api:1.3.2"
 					api "ch.silviowangler.rest:rest-model:${pluginVersion}"
 					api "javax.money:money-api:1.0.3"

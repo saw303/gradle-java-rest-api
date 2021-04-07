@@ -57,6 +57,7 @@ import static ch.silviowangler.gradle.restapi.builder.ArtifactType.DELEGATOR_RES
 import ch.silviowangler.gradle.restapi.GenerationMode;
 import ch.silviowangler.gradle.restapi.GeneratorUtil;
 import ch.silviowangler.gradle.restapi.PluginTypes;
+import ch.silviowangler.gradle.restapi.RestApiExtension;
 import ch.silviowangler.gradle.restapi.builder.AbstractResourceBuilder;
 import ch.silviowangler.gradle.restapi.builder.ArtifactType;
 import ch.silviowangler.gradle.restapi.builder.MethodContext;
@@ -86,9 +87,9 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
   private final GenerationMode generationMode;
   private final String clientId;
 
-  public MicronautResourceFactory(GenerationMode generationMode, String clientId) {
-    this.generationMode = generationMode;
-    this.clientId = clientId;
+  public MicronautResourceFactory(RestApiExtension restApiExtension) {
+    this.generationMode = restApiExtension.getGenerationMode();
+    this.clientId = restApiExtension.getClientId();
   }
 
   @Override
@@ -268,7 +269,12 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
     Map<String, Object> annotationsFields = new HashMap<>();
 
     if (this.generationMode == GenerationMode.CLIENT) {
-      annotationsFields.put("value", methodContext.getLinkParser().toBasePath());
+
+      if (applyId) {
+        annotationsFields.put("value", methodContext.getLinkParser().toBasePath() + "/{id}");
+      } else {
+        annotationsFields.put("value", methodContext.getLinkParser().toBasePath());
+      }
     } else {
       if (applyId) {
         if (representation.isJson()) {
