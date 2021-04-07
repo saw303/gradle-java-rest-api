@@ -331,9 +331,11 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
         throw new IllegalArgumentException("Unknown method name " + methodName);
       }
 
-      AnnotationSpec.Builder b = AnnotationSpec.builder(MICRONAUT_STATUS.getClassName());
-      b.addMember("value", v, MICRONAUT_HTTP_STATUS.getClassName());
-      methodAnnotations.add(b.build());
+      if (!this.generationMode.isClientCodeGenerationRequired()) {
+        AnnotationSpec.Builder b = AnnotationSpec.builder(MICRONAUT_STATUS.getClassName());
+        b.addMember("value", v, MICRONAUT_HTTP_STATUS.getClassName());
+        methodAnnotations.add(b.build());
+      }
     }
 
     return methodAnnotations;
