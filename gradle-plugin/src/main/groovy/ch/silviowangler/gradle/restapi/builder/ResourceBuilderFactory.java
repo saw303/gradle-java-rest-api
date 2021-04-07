@@ -42,7 +42,8 @@ class ResourceBuilderFactory {
     if (SPRING_BOOT == targetFramework) {
       return new SpringRootResourceFactory();
     } else if (targetFramework.isMicronaut()) {
-      return new MicronautResourceFactory();
+      return new MicronautResourceFactory(
+          restApiExtension.getGenerationMode(), restApiExtension.getClientId());
     } else {
       return new JaxRsRootResourceFactory();
     }

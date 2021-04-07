@@ -367,7 +367,7 @@ class RestApiPluginSpec extends Specification {
   }
 
 
-  void "Typ Definitionen in der Root Ressource werden berücksichtigt"() {
+  void "Typ definitions of the root resource are respected"() {
 
     given:
     project.restApi.generatorOutput = tempDir
@@ -574,7 +574,7 @@ class RestApiPluginSpec extends Specification {
     ex.message == "Verb: [HEAD_ENTITY] Representation: [json] has no GET counterpart"
   }
 
-  void "Das Plugin generiert auch read only Ressourcen mit query parameters und explicit extensions (Micronaut)"() {
+  void "The plugin generates read only resources with query parameter and explicit extension (Micronaut)"() {
 
     given:
     project.restApi.generatorOutput = tempDir
@@ -612,6 +612,61 @@ class RestApiPluginSpec extends Specification {
     assertJavaFile('org.acme.rest.v1.search', 'SearchResource', 'search-micronaut')
     assertJavaFile('org.acme.rest.v1.search', 'SearchResourceDelegate', 'search-micronaut')
     assertJavaFile('org.acme.rest.v1.search', 'SearchGetResourceModel', 'search-micronaut')
+
+    when:
+    CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask
+
+    and:
+    cleanTask.cleanUp()
+
+    and:
+    javaFiles.clear()
+    tempDir.eachFileRecurse(FileType.FILES, {
+      if (it.name.endsWith('.java')) javaFiles << it
+    })
+
+    then:
+    javaFiles.isEmpty()
+  }
+
+  void "The plugin generates read only resources with query parameter and explicit extension (Micronaut Client)"() {
+
+    given:
+    project.restApi.generatorOutput = tempDir
+    project.restApi.generatorImplOutput = tempDir
+    project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/search")
+    project.restApi.packageName = 'org.acme.rest'
+    project.restApi.generateDateAttribute = false
+    project.restApi.targetFramework = MICRONAUT
+    project.restApi.generationMode = GenerationMode.CLIENT
+    project.restApi.objectResourceModelMapping = customFieldModelMapping
+
+    and:
+    GenerateRestApiTask task = project.tasks.generateRestArtifacts as GenerateRestApiTask
+
+    when:
+    task.exec()
+
+    and:
+    def javaFiles = []
+    tempDir.eachFileRecurse(FileType.FILES, {
+      if (it.name.endsWith('.java')) javaFiles << it
+    })
+
+    then:
+    new File(tempDir, 'org/acme/rest').exists()
+
+    and:
+    assertGeneratedFiles javaFiles, 2
+
+    and:
+    javaFiles.collect {
+      it.parent == new File(tempDir, 'org/acme/rest')
+    }.size() == javaFiles.size()
+
+    and: 'validate resources'
+    assertJavaFile('org.acme.rest.v1.search', 'SearchGetResourceModel', 'search-micronaut')
+    assertJavaFile('org.acme.rest.v1.search', 'SearchResourceClient', 'search-micronaut-client')
 
     when:
     CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask

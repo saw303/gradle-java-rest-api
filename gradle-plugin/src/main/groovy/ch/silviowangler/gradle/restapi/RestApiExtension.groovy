@@ -48,6 +48,7 @@ class RestApiExtension {
 	File asciiDocOutput = new File(project.buildDir, 'asciiDocGenerated')
 	boolean diagramShowFields = false
 	GenerationMode generationMode = GenerationMode.ALL
+	String clientId = "osl"
 
 	RestApiExtension(Project project) {
 		this.project = project

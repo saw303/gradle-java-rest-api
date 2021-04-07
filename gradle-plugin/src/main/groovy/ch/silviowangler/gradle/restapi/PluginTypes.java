@@ -90,6 +90,7 @@ public enum PluginTypes {
   JAKARTA_SINGLETON(ClassName.get(Constants.PACKAGE_JAKARTA_INJECT, "Singleton")),
   /** Introduced with Micronaut 2.4. Will be default in Micronaut 3.0 and greater. */
   JAKARTA_INJECT(ClassName.get(Constants.PACKAGE_JAKARTA_INJECT, "Inject")),
+  MICRONAUT_CLIENT(ClassName.get(Constants.PACKAGE_IO_MICRONAUT_HTTP_CLIENT_ANNOTATION, "Client")),
   MICRONAUT_CONTROLLER(ClassName.get(Constants.PACKAGE_IO_MICRONAUT_HTTP_ANNOTATION, "Controller")),
   MICRONAUT_STATUS(ClassName.get(Constants.PACKAGE_IO_MICRONAUT_HTTP_ANNOTATION, "Status")),
   MICRONAUT_VALIDATED(ClassName.get("io.micronaut.validation", "Validated")),
@@ -137,6 +138,8 @@ public enum PluginTypes {
     public static final String PACKAGE_JAKARTA_INJECT = "jakarta.inject";
     public static final String PACKAGE_IO_MICRONAUT_HTTP_ANNOTATION =
         "io.micronaut.http.annotation";
+    public static final String PACKAGE_IO_MICRONAUT_HTTP_CLIENT_ANNOTATION =
+        "io.micronaut.http.client.annotation";
     public static final String PACKAGE_IO_MICRONAUT_HTTP = "io.micronaut.http";
   }
 }

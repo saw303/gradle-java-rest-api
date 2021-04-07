@@ -1,0 +1,38 @@
+package org.acme.rest.v1.search;
+
+import ch.silviowangler.rest.micronaut.binding.DateFormat;
+import ch.silviowangler.rest.micronaut.binding.DateTimeFormat;
+import io.micronaut.http.annotation.Consumes;
+import io.micronaut.http.annotation.Get;
+import io.micronaut.http.annotation.Header;
+import io.micronaut.http.annotation.QueryValue;
+import io.micronaut.http.client.annotation.Client;
+import io.micronaut.validation.Validated;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import javax.annotation.Generated;
+import javax.annotation.Nullable;
+import javax.validation.constraints.NotEmpty;
+
+/**
+ * This resource generates the search endpoint
+ */
+@Generated(
+    comments = "Specification filename: search.v1.json",
+    value = "ch.silviowangler.restapi"
+)
+@Client(
+    id = "osl"
+)
+@Validated
+public interface SearchResourceClient {
+  @Get("v1/search")
+  @Consumes("application/json")
+  SearchGetResourceModel getEntity(@NotEmpty @QueryValue List<String> q,
+      @Nullable @QueryValue @DateFormat LocalDate startDate,
+      @Nullable @QueryValue @DateTimeFormat Instant endTime, @Header Locale acceptedLanguage,
+      @Header Optional<String> origin);
+}

@@ -26,7 +26,6 @@ package ch.silviowangler.gradle.restapi.builder;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import ch.silviowangler.gradle.restapi.GeneratedSpecContainer;
-import ch.silviowangler.gradle.restapi.GenerationMode;
 import ch.silviowangler.gradle.restapi.RestApiExtension;
 import ch.silviowangler.gradle.restapi.gson.CustomTypeFieldDeserializer;
 import ch.silviowangler.gradle.restapi.gson.GeneralDetailsDeserializer;
@@ -113,14 +112,18 @@ public class SpecGenerator {
       resourceTypeCache.add(ClassName.get(packageName, type.name));
     }
 
-    if (!Objects.equals(GenerationMode.IMPLEMENTATION, extension.getGenerationMode())) {
+    if (extension.getGenerationMode().isApiCodeGenerationRequired()) {
       result.setModels(resourceBuilder.buildResourceModels(resourceTypeCache));
       result.setTypes(types);
     }
 
-    if (!Objects.equals(GenerationMode.API, extension.getGenerationMode())) {
+    if (extension.getGenerationMode().isServerCodeGenerationRequired()) {
       result.setRestInterface(resourceBuilder.buildResource());
       result.setRestImplementation(resourceBuilder.buildResourceImpl());
+    }
+
+    if (extension.getGenerationMode().isClientCodeGenerationRequired()) {
+      result.setRestInterface(resourceBuilder.buildClient());
     }
 
     return result;

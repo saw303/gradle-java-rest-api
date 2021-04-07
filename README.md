@@ -722,6 +722,24 @@ will create the following Java output
 public enum GenderType { MALE, FEMALE }
 ```
 
+## Controlling the generators output
+
+The plugin knows the following generation modes:
+
+- `ALL`: Generates API (Java POJOs for the resource model and custom types) and the framework specific implementation classes.
+- `API`: Generates API (Java POJOs for the resource model and custom types) only.
+- `IMPLEMENTATION`: Generates the framework specific implementation classes only.
+- `CLIENT`: Generates the framework specific client implementation.
+
+The following configuration will create a Micronaut http clients within the given project.
+
+```groovy
+restApi {
+  targetFramework = MICRONAUT
+  generationMode = GenerationMode.CLIENT
+}
+```
+
 ## Hateoas Functionality
 
 ### Micronaut

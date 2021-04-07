@@ -284,7 +284,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
                 paramClasses,
                 representation,
                 pathParams,
-                directEntity);
+                parser);
 
         if (GET_COLLECTION.equals(verb.getVerb())) {
 

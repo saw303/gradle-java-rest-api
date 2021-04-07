@@ -27,6 +27,7 @@ import ch.silviowangler.gradle.restapi.GeneratorUtil
 import ch.silviowangler.gradle.restapi.PluginTypes
 import ch.silviowangler.gradle.restapi.builder.AbstractResourceBuilder
 import ch.silviowangler.gradle.restapi.builder.ArtifactType
+import ch.silviowangler.gradle.restapi.builder.MethodContext
 import ch.silviowangler.rest.contract.model.v1.Header
 import ch.silviowangler.rest.contract.model.v1.Representation
 import ch.silviowangler.rest.contract.model.v1.Verb
@@ -84,6 +85,11 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder {
 	}
 
 	@Override
+	TypeSpec buildClient() {
+		throw new UnsupportedOperationException("Client code generation is not supported with JAX-RS")
+	}
+
+	@Override
 	TypeSpec buildResourceImpl() {
 		reset()
 		setArtifactType(ArtifactType.RESOURCE_IMPL)
@@ -111,7 +117,7 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder {
 	}
 
 	@Override
-	Iterable<AnnotationSpec> getResourceMethodAnnotations(boolean applyId, Representation representation, String methodName) {
+	Iterable<AnnotationSpec> getResourceMethodAnnotations(MethodContext methodContext) {
 
 		List<AnnotationSpec> specs = []
 
@@ -129,9 +135,10 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder {
 			specs << createAnnotation(JAX_RS_DELETE_VERB)
 		}
 
+		Representation representation = methodContext.representation
 		specs << createProducesAnnotation(representation)
 
-		if (applyId) {
+		if (isIdGenerationRequired(methodContext)) {
 			String postfix = representation.isJson() ? '' : ".${representation.name}"
 			specs << createAnnotation(JAX_RS_PATH, ['value': "{id}${postfix}"])
 		}
