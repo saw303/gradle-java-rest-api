@@ -36,6 +36,15 @@ public class OrtPostResourceModel implements Serializable, ResourceModel, Identi
   @NotNull
   private CoordinatesType koordinaten;
 
+  public OrtPostResourceModel() {
+  }
+
+  public OrtPostResourceModel(String id, String name, CoordinatesType koordinaten) {
+    this.id = id;
+    this.name = name;
+    this.koordinaten = koordinaten;
+  }
+
   public String getId() {
     return this.id;
   }

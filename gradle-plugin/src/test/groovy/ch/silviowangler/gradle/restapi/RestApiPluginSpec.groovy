@@ -171,7 +171,7 @@ class RestApiPluginSpec extends Specification {
   }
 
 
-  void "The plugin generates valid Java 8 code for Spring Boot and the Land/Ort specs"() {
+  void "The plugin generates valid Java 8 code for Spring Boot and the Land-Ort specs"() {
 
     given:
     project.restApi.generatorOutput = tempDir
@@ -239,7 +239,7 @@ class RestApiPluginSpec extends Specification {
     javaFiles.isEmpty()
   }
 
-  void "The plugin generates valid Java 8 code for Micronaut and the Land/Ort specs"() {
+  void "The plugin generates valid Java 8 code for Micronaut and the Land-Ort specs"() {
 
     given:
     project.restApi.generatorOutput = tempDir

@@ -26,6 +26,15 @@ public class RootGetResourceModel implements Serializable, ResourceModel, Identi
    */
   private Boolean draft = Boolean.FALSE;
 
+  public RootGetResourceModel() {
+  }
+
+  public RootGetResourceModel(String id, String name, Boolean draft) {
+    this.id = id;
+    this.name = name;
+    this.draft = draft;
+  }
+
   public String getId() {
     return this.id;
   }

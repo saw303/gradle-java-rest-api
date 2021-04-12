@@ -81,6 +81,28 @@ public class PartnerGetResourceModel implements Serializable, ResourceModel, Ide
    */
   private String telefon;
 
+  public PartnerGetResourceModel() {
+  }
+
+  public PartnerGetResourceModel(String id, String name, String vorname, String titel, String email,
+      LocalDate geburtsdatum, BigDecimal gewicht, MonetaryAmount lohn, List<String> tags,
+      List<BigDecimal> leistungsabrechnungspositionen, Locale sprache, GenderType gender,
+      String telefon) {
+    this.id = id;
+    this.name = name;
+    this.vorname = vorname;
+    this.titel = titel;
+    this.email = email;
+    this.geburtsdatum = geburtsdatum;
+    this.gewicht = gewicht;
+    this.lohn = lohn;
+    this.tags = tags;
+    this.leistungsabrechnungspositionen = leistungsabrechnungspositionen;
+    this.sprache = sprache;
+    this.gender = gender;
+    this.telefon = telefon;
+  }
+
   public String getId() {
     return this.id;
   }

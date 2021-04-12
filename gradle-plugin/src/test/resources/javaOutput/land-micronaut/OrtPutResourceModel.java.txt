@@ -37,6 +37,15 @@ public class OrtPutResourceModel implements Serializable, ResourceModel, Identif
   @NotNull
   private CoordinatesType koordinaten;
 
+  public OrtPutResourceModel() {
+  }
+
+  public OrtPutResourceModel(String id, String name, CoordinatesType koordinaten) {
+    this.id = id;
+    this.name = name;
+    this.koordinaten = koordinaten;
+  }
+
   public String getId() {
     return this.id;
   }

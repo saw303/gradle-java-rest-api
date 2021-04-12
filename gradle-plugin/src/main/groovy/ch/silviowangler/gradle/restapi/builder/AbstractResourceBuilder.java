@@ -524,7 +524,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
         continue;
       }
 
-      List<String> fieldNamesApplied = new ArrayList<>();
+      List<ResourceField> fieldNamesApplied = new ArrayList<>();
 
       TypeSpec.Builder builder = resourceModelBaseInstance(verb);
       Optional<Representation> jsonRepresentation =
@@ -539,12 +539,15 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
           builder.addSuperinterface(RESTAPI_IDENTIFIABLE.getTypeName());
         }
 
+        // add default constructor
+        builder.addMethod(MethodSpec.constructorBuilder().addModifiers(PUBLIC).build());
+
         for (ResourceField field : fields) {
 
           if (!field.isVisible() && verb.equals(verbGet)) continue;
           if (field.isReadonly() && !verb.equals(verbGet)) continue;
 
-          fieldNamesApplied.add(field.getName());
+          fieldNamesApplied.add(field);
 
           TypeName fieldType = getFieldType(types, field);
 
@@ -646,8 +649,8 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
         ClassName resourceModelName = resourceModelName(verb);
 
         // --> overwrite equals method
-        String equalsParamName = "other";
-        String equalsCastVarName = "that";
+        final String equalsParamName = "other";
+        final String equalsCastVarName = "that";
 
         MethodSpec.Builder equalsBuilder =
             MethodSpec.methodBuilder("equals")
@@ -669,6 +672,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
         String code =
             fieldNamesApplied.stream()
+                .map(ResourceField::getName)
                 .map(f -> "get" + LOWER_CAMEL.to(UPPER_CAMEL, f))
                 .map(f -> "$T.equals(" + f + "(), " + equalsCastVarName + "." + f + "())")
                 .collect(Collectors.joining(" && "));
@@ -686,11 +690,36 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
                 .addModifiers(PUBLIC)
                 .returns(INT);
 
-        code = "$T.hash(" + String.join(", ", fieldNamesApplied) + ")";
+        code =
+            "$T.hash("
+                + String.join(
+                    ", ",
+                    fieldNamesApplied.stream()
+                        .map(ResourceField::getName)
+                        .collect(Collectors.toList()))
+                + ")";
 
         hashCodeBuilder.addStatement("return " + code, Objects.class);
 
         builder.addMethod(hashCodeBuilder.build());
+
+        // fully qualified constructor
+        MethodSpec.Builder constructorBuilder =
+            MethodSpec.constructorBuilder().addModifiers(PUBLIC);
+
+        fieldNamesApplied.stream()
+            .forEach(
+                field -> {
+                  TypeName fieldType = getFieldType(types, field);
+                  if (field.isMultiple()) {
+                    ClassName list = ClassName.get(List.class);
+                    fieldType = ParameterizedTypeName.get(list, fieldType);
+                  }
+
+                  constructorBuilder.addParameter(fieldType, field.getName());
+                  constructorBuilder.addStatement("this.$N = $N", field.getName(), field.getName());
+                });
+        builder.addMethod(constructorBuilder.build());
 
         specTypes.add(builder.build());
       }
