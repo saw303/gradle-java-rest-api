@@ -13,7 +13,7 @@ dependencies {
 	compileOnly "io.micronaut:micronaut-router:${micronautVersion}"
 	compileOnly "io.reactivex.rxjava2:rxjava:2.2.12"
 	compileOnly "com.fasterxml.jackson.core:jackson-databind:2.10.0"
-	compileOnly 'io.micronaut.data:micronaut-data-model:1.0.2'
+	compileOnly 'io.micronaut.data:micronaut-data-model:2.4.0'
 
 	testImplementation "io.micronaut:micronaut-core:${micronautVersion}"
 	testImplementation "io.micronaut:micronaut-router:${micronautVersion}"
