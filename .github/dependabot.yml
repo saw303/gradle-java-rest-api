@@ -1,0 +1,61 @@
+version: 2
+updates:
+- package-ecosystem: gradle
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "00:00"
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: io.micronaut.data:micronaut-data-model
+    versions:
+    - 2.2.4
+    - 2.3.0
+    - 2.3.1
+    - 2.4.0
+  - dependency-name: com.diffplug.gradle.spotless
+    versions:
+    - 5.11.0
+  - dependency-name: com.googlecode.libphonenumber:libphonenumber
+    versions:
+    - 8.12.2
+  - dependency-name: org.springframework:spring-webmvc
+    versions:
+    - 5.3.3
+    - 5.3.4
+  - dependency-name: com.google.guava:guava
+    versions:
+    - 30.1-jre
+  - dependency-name: io.micronaut:micronaut-core
+    versions:
+    - 2.2.1
+  - dependency-name: io.micronaut:micronaut-router
+    versions:
+    - 2.2.1
+  - dependency-name: io.micronaut:micronaut-http
+    versions:
+    - 2.2.1
+  - dependency-name: io.micronaut:micronaut-runtime
+    versions:
+    - 2.2.1
+  - dependency-name: io.micronaut:micronaut-validation
+    versions:
+    - 2.2.1
+  - dependency-name: io.micronaut:micronaut-inject-java
+    versions:
+    - 2.2.1
+  - dependency-name: io.reactivex.rxjava2:rxjava
+    versions:
+    - 2.2.20
+  - dependency-name: com.squareup:javapoet
+    versions:
+    - 1.13.0
+  - dependency-name: com.jfrog.bintray.gradle:gradle-bintray-plugin
+    versions:
+    - 1.8.5
+  - dependency-name: org.slf4j:slf4j-api
+    versions:
+    - 1.7.30
+  - dependency-name: com.diffplug.spotless:spotless-plugin-gradle
+    versions:
+    - 3.28.1
