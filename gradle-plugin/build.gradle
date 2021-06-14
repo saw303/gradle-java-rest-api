@@ -1,6 +1,6 @@
 plugins {
 	id 'java-gradle-plugin'
-  id 'maven-publish'
+	id 'maven-publish'
 }
 
 gradlePlugin {
@@ -13,24 +13,24 @@ gradlePlugin {
 }
 
 publishing {
-  repositories {
-    maven {
-      name = "GitHubPackages"
-      url = uri("https://maven.pkg.github.com/saw303/gradle-java-rest-api")
-      credentials {
-        username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
-        password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
-      }
-    }
-    maven {
-      name = "Onstructive"
-      url = uri(project.findProperty("artifactory_url"))
-      credentials {
-        username = project.findProperty("artifactory_user") ?: System.getenv("A_USERNAME")
-        password = project.findProperty("artifactory_password") ?: System.getenv("A_TOKEN")
-      }
-    }
-  }
+	repositories {
+		maven {
+			name = "GitHubPackages"
+			url = uri("https://maven.pkg.github.com/saw303/gradle-java-rest-api")
+			credentials {
+				username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+				password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+			}
+		}
+		maven {
+			name = "Onstructive"
+			url = uri(project.findProperty("artifactory_url"))
+			credentials {
+				username = project.findProperty("artifactory_user") ?: System.getenv("A_USERNAME")
+				password = project.findProperty("artifactory_password") ?: System.getenv("A_TOKEN")
+			}
+		}
+	}
 }
 
 group = 'ch.silviowangler.rest'
