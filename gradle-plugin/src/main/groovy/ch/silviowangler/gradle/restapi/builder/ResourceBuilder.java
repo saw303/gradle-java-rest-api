@@ -187,6 +187,8 @@ public interface ResourceBuilder {
 
   void generateResourceMethods();
 
+  void generateClientMethods();
+
   void generateMethodNotAllowedStatement(MethodSpec.Builder builder);
 
   ClassName getMethodNowAllowedReturnType();

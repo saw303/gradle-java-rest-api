@@ -2,6 +2,7 @@ package org.acme.rest.v1.search;
 
 import ch.silviowangler.rest.micronaut.binding.DateFormat;
 import ch.silviowangler.rest.micronaut.binding.DateTimeFormat;
+import ch.silviowangler.rest.model.EntityModel;
 import io.micronaut.http.annotation.Consumes;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.Header;
@@ -32,6 +33,13 @@ public interface SearchResourceClient {
   @Get("v1/search")
   @Consumes("application/json")
   SearchGetResourceModel getEntity(@NotEmpty @QueryValue List<String> q,
+      @Nullable @QueryValue @DateFormat LocalDate startDate,
+      @Nullable @QueryValue @DateTimeFormat Instant endTime, @Header Locale acceptedLanguage,
+      @Header Optional<String> origin);
+
+  @Get("v1/search")
+  @Consumes("application/json")
+  EntityModel<SearchGetResourceModel> getEntityHateoas(@NotEmpty @QueryValue List<String> q,
       @Nullable @QueryValue @DateFormat LocalDate startDate,
       @Nullable @QueryValue @DateTimeFormat Instant endTime, @Header Locale acceptedLanguage,
       @Header Optional<String> origin);

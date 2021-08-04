@@ -152,6 +152,7 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
     resourceBuilder.addAnnotation(createAnnotation(MICRONAUT_VALIDATED));
 
     generateResourceMethods();
+    generateClientMethods();
 
     return resourceBuilder.build();
   }

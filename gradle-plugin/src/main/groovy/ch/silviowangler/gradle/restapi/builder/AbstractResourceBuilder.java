@@ -23,6 +23,8 @@
  */
 package ch.silviowangler.gradle.restapi.builder;
 
+import static ch.silviowangler.gradle.restapi.PluginTypes.COLLECTION_MODEL;
+import static ch.silviowangler.gradle.restapi.PluginTypes.ENTITY_MODEL;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_DECIMAL_MAX;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_DECIMAL_MIN;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_EMAIL;
@@ -33,6 +35,7 @@ import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_SIZE;
 import static ch.silviowangler.gradle.restapi.PluginTypes.RESTAPI_IDENTIFIABLE;
 import static ch.silviowangler.gradle.restapi.PluginTypes.RESTAPI_RESOURCE_MODEL;
 import static ch.silviowangler.gradle.restapi.PluginTypes.VALIDATION_PHONE_NUMBER;
+import static ch.silviowangler.gradle.restapi.builder.ArtifactType.CLIENT;
 import static ch.silviowangler.gradle.restapi.builder.ArtifactType.RESOURCE;
 import static ch.silviowangler.gradle.restapi.util.SupportedDataTypes.BOOL;
 import static ch.silviowangler.gradle.restapi.util.SupportedDataTypes.DATE;
@@ -226,6 +229,124 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
   }
 
   protected abstract void createOptionsMethod();
+
+  @Override
+  public void generateClientMethods() {
+
+    if (artifactType != CLIENT) {
+      throw new IllegalStateException("Only available for client generation");
+    }
+
+    List<Verb> verbs = getResourceContractContainer().getResourceContract().getVerbs();
+    verbs.sort(Comparator.comparing(Verb::getVerb));
+
+    LinkParser parser =
+        new LinkParser(
+            getResourceContractContainer().getResourceContract().getGeneral().getxRoute(),
+            getResourceContractContainer()
+                .getResourceContract()
+                .getGeneral()
+                .getVersion()
+                .split("\\.")[0]);
+
+    for (Verb verb : verbs) {
+
+      this.currentVerb = verb;
+
+      if (HEAD_METHODS.contains(verb.getVerb()) && !shouldGenerateHeadMethod()) {
+        continue;
+      }
+
+      Map<String, TypeName> paramClasses = new HashMap<>();
+
+      for (Representation representation : verb.getRepresentations()) {
+
+        boolean directEntity = parser.isDirectEntity();
+
+        List<ParameterSpec> pathParams =
+            getPathParams(parser, isAbstractOrInterfaceResource() && !isDelegatorResource());
+
+        MethodContext context =
+            new MethodContext(
+                ParameterizedTypeName.get(
+                    GET_COLLECTION.equals(verb.getVerb())
+                        ? COLLECTION_MODEL.getClassName()
+                        : ENTITY_MODEL.getClassName(),
+                    resourceMethodReturnType(verb, representation)),
+                verb.getParameters(),
+                verb.getHeaders(),
+                paramClasses,
+                representation,
+                pathParams,
+                parser);
+
+        if (GET_COLLECTION.equals(verb.getVerb())) {
+
+          if (directEntity) {
+            continue;
+          }
+
+          context.setMethodName("getCollectionHateoas");
+          this.typeBuilder.addMethod(createMethod(context).build());
+
+        } else if (GET_ENTITY.equals(verb.getVerb())) {
+
+          context.setMethodName("getEntityHateoas");
+          this.typeBuilder.addMethod(createMethod(context).build());
+
+        } else if (HEAD_COLLECTION.equals(verb.getVerb())) {
+
+          // do nothing
+
+        } else if (HEAD_ENTITY.equals(verb.getVerb())) {
+
+          // do nothing
+
+        } else {
+          ClassName model = resourceModelName(verb);
+
+          if (POST.equals(verb.getVerb()) || POST_ENTITY.equals(verb.getVerb())) {
+
+            paramClasses.put("model", model);
+            context.setMethodName("createEntityHateoas");
+            this.typeBuilder.addMethod(createMethod(context).build());
+
+          } else if (POST_COLLECTION.equals(verb.getVerb())) {
+            paramClasses.put(
+                "model", ParameterizedTypeName.get(ClassName.get(Collection.class), model));
+            context.setMethodName("createCollectionHateoas");
+            this.typeBuilder.addMethod(createMethod(context).build());
+
+          } else if (PUT.equals(verb.getVerb()) || PUT_ENTITY.equals(verb.getVerb())) {
+            paramClasses.put("model", model);
+            context.setMethodName("updateEntityHateoas");
+            this.typeBuilder.addMethod(createMethod(context).build());
+
+          } else if (PUT_COLLECTION.equals(verb.getVerb())) {
+
+            paramClasses.put(
+                "model", ParameterizedTypeName.get(ClassName.get(Collection.class), model));
+            context.setMethodName("updateCollectionHateoas");
+            this.typeBuilder.addMethod(createMethod(context).build());
+
+          } else if (DELETE_COLLECTION.equals(verb.getVerb())) {
+
+            context.setMethodName("deleteCollectionHateoas");
+            this.typeBuilder.addMethod(createMethod(context).build());
+
+          } else if (DELETE_ENTITY.equals(verb.getVerb())) {
+
+            context.setMethodName("deleteEntityHateoas");
+            this.typeBuilder.addMethod(createMethod(context).build());
+
+          } else {
+            throw new IllegalArgumentException(String.format("Verb %s is unknown", verb.getVerb()));
+          }
+        }
+      }
+      this.currentVerb = null;
+    }
+  }
 
   @Override
   public void generateResourceMethods() {

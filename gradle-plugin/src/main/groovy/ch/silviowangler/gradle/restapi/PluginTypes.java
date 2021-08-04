@@ -23,6 +23,8 @@
  */
 package ch.silviowangler.gradle.restapi;
 
+import ch.silviowangler.rest.model.CollectionModel;
+import ch.silviowangler.rest.model.EntityModel;
 import ch.silviowangler.rest.validation.PhoneNumber;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.ParameterizedTypeName;
@@ -114,7 +116,9 @@ public enum PluginTypes {
   MICRONAUT_INTROSPECTED(ClassName.get("io.micronaut.core.annotation", "Introspected")),
   MICRONAUT_DATE_TIME_FORMAT(
       ClassName.get("ch.silviowangler.rest.micronaut.binding", "DateTimeFormat")),
-  VALIDATION_PHONE_NUMBER(ClassName.get(PhoneNumber.class));
+  VALIDATION_PHONE_NUMBER(ClassName.get(PhoneNumber.class)),
+  COLLECTION_MODEL(ClassName.get(CollectionModel.class)),
+  ENTITY_MODEL(ClassName.get(EntityModel.class));
 
   private final TypeName typeName;
 
