@@ -259,20 +259,33 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
       Map<String, TypeName> paramClasses = new HashMap<>();
 
-      for (Representation representation : verb.getRepresentations()) {
+      for (Representation representation :
+          verb.getRepresentations().stream()
+              .filter(representation -> representation.getName().equals("json"))
+              .collect(Collectors.toList())) {
 
         boolean directEntity = parser.isDirectEntity();
 
         List<ParameterSpec> pathParams =
             getPathParams(parser, isAbstractOrInterfaceResource() && !isDelegatorResource());
 
+        TypeName returnType;
+        if (DELETE_COLLECTION.equals(verb.getVerb()) || DELETE_ENTITY.equals(verb.getVerb())) {
+          returnType = resourceMethodReturnType(verb, representation);
+        } else {
+          returnType =
+              ParameterizedTypeName.get(
+                  GET_COLLECTION.equals(verb.getVerb())
+                      ? COLLECTION_MODEL.getClassName()
+                      : ENTITY_MODEL.getClassName(),
+                  resourceMethodReturnType(
+                      GET_COLLECTION.equals(verb.getVerb()) ? new Verb(GET_ENTITY) : verb,
+                      representation));
+        }
+
         MethodContext context =
             new MethodContext(
-                ParameterizedTypeName.get(
-                    GET_COLLECTION.equals(verb.getVerb())
-                        ? COLLECTION_MODEL.getClassName()
-                        : ENTITY_MODEL.getClassName(),
-                    resourceMethodReturnType(verb, representation)),
+                returnType,
                 verb.getParameters(),
                 verb.getHeaders(),
                 paramClasses,
