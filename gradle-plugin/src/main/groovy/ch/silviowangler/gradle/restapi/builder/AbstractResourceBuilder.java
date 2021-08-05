@@ -32,6 +32,7 @@ import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_MAX;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_MIN;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_NOT_NULL;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_SIZE;
+import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_HTTP_RESPONSE;
 import static ch.silviowangler.gradle.restapi.PluginTypes.RESTAPI_IDENTIFIABLE;
 import static ch.silviowangler.gradle.restapi.PluginTypes.RESTAPI_RESOURCE_MODEL;
 import static ch.silviowangler.gradle.restapi.PluginTypes.VALIDATION_PHONE_NUMBER;
@@ -293,6 +294,18 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
                 pathParams,
                 parser);
 
+        MethodContext contextRaw =
+            new MethodContext(
+                returnType == TypeName.VOID
+                    ? MICRONAUT_HTTP_RESPONSE.getTypeName()
+                    : ParameterizedTypeName.get(MICRONAUT_HTTP_RESPONSE.getClassName(), returnType),
+                verb.getParameters(),
+                verb.getHeaders(),
+                paramClasses,
+                representation,
+                pathParams,
+                parser);
+
         if (GET_COLLECTION.equals(verb.getVerb())) {
 
           if (directEntity) {
@@ -302,10 +315,16 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
           context.setMethodName("getCollectionHateoas");
           this.typeBuilder.addMethod(createMethod(context).build());
 
+          contextRaw.setMethodName("getCollectionRaw");
+          this.typeBuilder.addMethod(createMethod(contextRaw).build());
+
         } else if (GET_ENTITY.equals(verb.getVerb())) {
 
           context.setMethodName("getEntityHateoas");
           this.typeBuilder.addMethod(createMethod(context).build());
+
+          contextRaw.setMethodName("getEntityRaw");
+          this.typeBuilder.addMethod(createMethod(contextRaw).build());
 
         } else if (HEAD_COLLECTION.equals(verb.getVerb())) {
 
@@ -324,16 +343,25 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
             context.setMethodName("createEntityHateoas");
             this.typeBuilder.addMethod(createMethod(context).build());
 
+            contextRaw.setMethodName("createEntityRaw");
+            this.typeBuilder.addMethod(createMethod(contextRaw).build());
+
           } else if (POST_COLLECTION.equals(verb.getVerb())) {
             paramClasses.put(
                 "model", ParameterizedTypeName.get(ClassName.get(Collection.class), model));
             context.setMethodName("createCollectionHateoas");
             this.typeBuilder.addMethod(createMethod(context).build());
 
+            contextRaw.setMethodName("createCollectionRaw");
+            this.typeBuilder.addMethod(createMethod(contextRaw).build());
+
           } else if (PUT.equals(verb.getVerb()) || PUT_ENTITY.equals(verb.getVerb())) {
             paramClasses.put("model", model);
             context.setMethodName("updateEntityHateoas");
             this.typeBuilder.addMethod(createMethod(context).build());
+
+            contextRaw.setMethodName("updateEntityRaw");
+            this.typeBuilder.addMethod(createMethod(contextRaw).build());
 
           } else if (PUT_COLLECTION.equals(verb.getVerb())) {
 
@@ -342,15 +370,24 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
             context.setMethodName("updateCollectionHateoas");
             this.typeBuilder.addMethod(createMethod(context).build());
 
+            contextRaw.setMethodName("updateCollectionRaw");
+            this.typeBuilder.addMethod(createMethod(contextRaw).build());
+
           } else if (DELETE_COLLECTION.equals(verb.getVerb())) {
 
             context.setMethodName("deleteCollectionHateoas");
             this.typeBuilder.addMethod(createMethod(context).build());
 
+            contextRaw.setMethodName("deleteCollectionRaw");
+            this.typeBuilder.addMethod(createMethod(contextRaw).build());
+
           } else if (DELETE_ENTITY.equals(verb.getVerb())) {
 
             context.setMethodName("deleteEntityHateoas");
             this.typeBuilder.addMethod(createMethod(context).build());
+
+            contextRaw.setMethodName("deleteEntityRaw");
+            this.typeBuilder.addMethod(createMethod(contextRaw).build());
 
           } else {
             throw new IllegalArgumentException(String.format("Verb %s is unknown", verb.getVerb()));
