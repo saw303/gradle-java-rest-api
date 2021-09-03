@@ -24,6 +24,7 @@
 package ch.silviowangler.gradle.restapi.tasks
 
 import ch.silviowangler.gradle.restapi.GeneratorUtil
+import ch.silviowangler.gradle.restapi.InputProcessingMode
 import ch.silviowangler.gradle.restapi.ResourceFileComparator
 import ch.silviowangler.gradle.restapi.builder.SpecGenerator
 import groovy.io.FileType
@@ -67,15 +68,40 @@ class SpecificationBaseTask extends DefaultTask {
 		}
 
 		List<File> specs = []
-		folder.eachFile(FileType.FILES, { f -> if (f.name.endsWith('.json')) specs << f })
-
-		Collections.sort(specs, new ResourceFileComparator())
-
+		if (project.restApi.inputProcessingMode == InputProcessingMode.RECURSIVE) {
+			specs = findFilesRecursive(folder)
+		} else {
+			folder.eachFile(FileType.FILES, { f -> if (f.name.endsWith('.json')) specs << f })
+			Collections.sort(specs, new ResourceFileComparator())
+		}
 		return specs
 	}
 
 	@Internal
 	SpecGenerator getSpecGenerator() {
 		return this.specGenerator;
+	}
+
+	private List<File> findFilesRecursive(File folder) {
+
+		List<File> list = folder.listFiles(new FilenameFilter() {
+					@Override
+					boolean accept(File dir, String name) {
+						return name.endsWith(".json")
+					}
+				})
+
+		List<File> subfolders = folder.listFiles(new FilenameFilter() {
+					@Override
+					boolean accept(File dir, String name) {
+						return dir.isDirectory()
+					}
+				})
+
+		for (File subfolder in subfolders) {
+			list.addAll findFilesRecursive(subfolder)
+		}
+
+		return !list ? []: list
 	}
 }

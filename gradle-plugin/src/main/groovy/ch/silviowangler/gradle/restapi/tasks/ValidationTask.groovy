@@ -33,6 +33,7 @@ import ch.silviowangler.gradle.restapi.validation.OnlyOnePostVerbValidator
 import ch.silviowangler.gradle.restapi.validation.Validator
 import ch.silviowangler.rest.contract.model.v1.ResourceContract
 import ch.silviowangler.rest.contract.model.v1.ResourceTypes
+import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.TaskAction
 
 import java.nio.charset.Charset
