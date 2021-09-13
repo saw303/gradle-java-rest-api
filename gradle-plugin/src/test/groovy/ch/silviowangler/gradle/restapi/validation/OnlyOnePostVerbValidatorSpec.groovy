@@ -12,8 +12,6 @@ import static ch.silviowangler.gradle.restapi.builder.ResourceBuilder.POST_COLLE
 import static ch.silviowangler.gradle.restapi.builder.ResourceBuilder.POST_ENTITY
 
 /**
- * your description goes here...
- *
  * @author Silvio Wangler
  */
 class OnlyOnePostVerbValidatorSpec extends Specification {

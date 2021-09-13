@@ -276,6 +276,11 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
       } else {
         annotationsFields.put("value", methodContext.getLinkParser().toBasePath());
       }
+
+      if (methodContext.isExpandable()) {
+        annotationsFields.put("value", annotationsFields.get("value") + "?expands=*");
+      }
+
     } else {
       if (applyId) {
         if (representation.isJson()) {

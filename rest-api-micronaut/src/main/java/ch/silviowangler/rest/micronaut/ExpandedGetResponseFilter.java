@@ -23,7 +23,8 @@
  */
 package ch.silviowangler.rest.micronaut;
 
-import static com.google.common.base.CaseFormat.*;
+import static com.google.common.base.CaseFormat.LOWER_CAMEL;
+import static com.google.common.base.CaseFormat.LOWER_HYPHEN;
 import static io.micronaut.http.HttpHeaders.ACCEPT_LANGUAGE;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -33,9 +34,7 @@ import ch.silviowangler.rest.contract.model.v1.SubResource;
 import ch.silviowangler.rest.contract.model.v1.Verb;
 import ch.silviowangler.rest.model.CollectionExpand;
 import ch.silviowangler.rest.model.CollectionModel;
-import ch.silviowangler.rest.model.EntityExpand;
 import ch.silviowangler.rest.model.EntityModel;
-import ch.silviowangler.rest.model.Expand;
 import ch.silviowangler.rest.model.Identifiable;
 import ch.silviowangler.rest.model.ResourceModel;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -263,12 +262,16 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
 
           Object result = executableMethod.invoke(bean, argumentList);
 
-          Expand expandedData =
-              result instanceof Collection
-                  ? new CollectionExpand(expand, (Collection<ResourceModel>) result)
-                  : new EntityExpand(expand, (ResourceModel) result);
+          if (result instanceof Collection) {
+            CollectionExpand expandedData =
+                new CollectionExpand(expand, (Collection<ResourceModel>) result);
+            initialBody.getExpands().add(expandedData);
+          } else {
+            log.warn(
+                "Cannot add expands since we expects a collection but was '{}'",
+                result.getClass().getCanonicalName());
+          }
 
-          initialBody.getExpands().add(expandedData);
         } catch (Exception e) {
           log.error("Exception caught while expanding sub resource " + expand, e);
         }

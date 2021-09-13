@@ -60,6 +60,7 @@ import ch.silviowangler.rest.contract.model.v1.Representation;
 import ch.silviowangler.rest.contract.model.v1.ResourceContract;
 import ch.silviowangler.rest.contract.model.v1.ResourceField;
 import ch.silviowangler.rest.contract.model.v1.ResourceTypes;
+import ch.silviowangler.rest.contract.model.v1.SubResource;
 import ch.silviowangler.rest.contract.model.v1.Verb;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
@@ -315,6 +316,13 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
           context.setMethodName("getCollectionHateoas");
           this.typeBuilder.addMethod(createMethod(context).build());
 
+          if (resourceContractContainer.getResourceContract().getSubresources().stream()
+              .anyMatch(SubResource::isExpandable)) {
+            context.setMethodName("getCollectionHateoasExpanded");
+            context.setExpandable(true);
+            this.typeBuilder.addMethod(createMethod(context).build());
+          }
+
           contextRaw.setMethodName("getCollectionRaw");
           this.typeBuilder.addMethod(createMethod(contextRaw).build());
 
@@ -322,6 +330,13 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
           context.setMethodName("getEntityHateoas");
           this.typeBuilder.addMethod(createMethod(context).build());
+
+          if (resourceContractContainer.getResourceContract().getSubresources().stream()
+              .anyMatch(SubResource::isExpandable)) {
+            context.setMethodName("getEntityHateoasExpanded");
+            context.setExpandable(true);
+            this.typeBuilder.addMethod(createMethod(context).build());
+          }
 
           contextRaw.setMethodName("getEntityRaw");
           this.typeBuilder.addMethod(createMethod(contextRaw).build());

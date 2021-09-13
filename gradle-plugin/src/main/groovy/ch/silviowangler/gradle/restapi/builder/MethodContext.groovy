@@ -46,6 +46,7 @@ class MethodContext {
 	List<ParameterSpec> pathParams = []
 	boolean directEntity
 	LinkParser linkParser
+	boolean expandable = false
 
 	MethodContext(String methodName, TypeName returnType, Representation representation) {
 		this.methodName = methodName

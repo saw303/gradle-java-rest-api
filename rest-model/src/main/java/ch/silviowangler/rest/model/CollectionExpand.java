@@ -23,24 +23,37 @@
  */
 package ch.silviowangler.rest.model;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.StringJoiner;
 
 /**
  * Implementation model for expanded GETs. Stores a named collection of {@link ResourceModel}.
  *
  * @author Emanuele Mazzotta
  */
-public class CollectionExpand extends Expand {
+public class CollectionExpand {
 
+  private String name;
   private Collection<ResourceModel> data;
 
   public CollectionExpand(String name, Collection<ResourceModel> data) {
-    super(name);
+    this.name = name;
     this.data = data;
   }
 
   // for Jackson deserialization
-  public CollectionExpand() {}
+  public CollectionExpand() {
+    this(null, new ArrayList<>());
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
 
   public Collection<ResourceModel> getData() {
     return data;
@@ -48,5 +61,12 @@ public class CollectionExpand extends Expand {
 
   public void setData(Collection<ResourceModel> data) {
     this.data = data;
+  }
+
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", CollectionExpand.class.getSimpleName() + "[", "]")
+        .add("name='" + name + "'")
+        .toString();
   }
 }
