@@ -25,6 +25,7 @@ package ch.silviowangler.rest.micronaut;
 
 import static com.google.common.base.CaseFormat.LOWER_CAMEL;
 import static com.google.common.base.CaseFormat.LOWER_HYPHEN;
+import static io.micronaut.core.naming.NameUtils.hyphenate;
 import static io.micronaut.http.HttpHeaders.ACCEPT_LANGUAGE;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -40,6 +41,8 @@ import ch.silviowangler.rest.model.ResourceModel;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.ApplicationContext;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.annotation.AnnotationValue;
+import io.micronaut.core.convert.ConversionService;
 import io.micronaut.http.HttpAttributes;
 import io.micronaut.http.HttpMethod;
 import io.micronaut.http.HttpRequest;
@@ -250,12 +253,35 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
         Object bean = applicationContext.getBean(declaringType);
 
         // argument names in the right order
-        String[] argumentNames = executableMethod.getArgumentNames();
         // arguments in the right order
         Object[] argumentList =
-            Stream.of(argumentNames)
+            Stream.of(executableMethod.getArguments())
                 // terrible hack around limitations in REST contracts xRoute naming
-                .map(name -> variables.getOrDefault(name, variables.get("id")))
+                .map(
+                    argument -> {
+                      final Optional<AnnotationValue<io.micronaut.http.annotation.Header>> header =
+                          argument
+                              .getAnnotationMetadata()
+                              .findAnnotation(io.micronaut.http.annotation.Header.class);
+                      if (header.isPresent()) {
+                        final String headerValue =
+                            request
+                                .getHeaders()
+                                .findFirst(hyphenate(argument.getName()))
+                                .orElse(null);
+
+                        if (headerValue != null
+                            && ConversionService.SHARED.canConvert(
+                                headerValue.getClass(), argument.getType())) {
+                          return ConversionService.SHARED
+                              .convert(headerValue, argument.getType())
+                              .get();
+                        }
+                        return headerValue;
+                      } else {
+                        return variables.getOrDefault(argument.getName(), variables.get("id"));
+                      }
+                    })
                 .toArray();
 
         try {
@@ -322,7 +348,8 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
       return Optional.of(contract);
 
     } catch (IllegalAccessException | NoSuchFieldException | IOException ex) {
-      log.error("Unable to read contract from class '{}'", resourceBean.getClass().getSimpleName());
+      log.error(
+          "Unable to read contract from class '{}'", resourceBean.getClass().getSimpleName(), ex);
       return Optional.empty();
     }
   }

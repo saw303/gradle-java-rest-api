@@ -263,7 +263,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
       for (Representation representation :
           verb.getRepresentations().stream()
-              .filter(representation -> representation.getName().equals("json"))
+              .filter(representation -> Objects.equals(representation.getName(), "json"))
               .collect(Collectors.toList())) {
 
         boolean directEntity = parser.isDirectEntity();
