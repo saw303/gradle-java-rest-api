@@ -23,6 +23,8 @@
  */
 package ch.silviowangler.gradle.restapi.builder.micronaut;
 
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAKARTA_INJECT;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAKARTA_SINGLETON;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_INJECT;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_NULLABLE;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_SINGLETON;
@@ -58,6 +60,7 @@ import ch.silviowangler.gradle.restapi.GenerationMode;
 import ch.silviowangler.gradle.restapi.GeneratorUtil;
 import ch.silviowangler.gradle.restapi.PluginTypes;
 import ch.silviowangler.gradle.restapi.RestApiExtension;
+import ch.silviowangler.gradle.restapi.TargetFramework;
 import ch.silviowangler.gradle.restapi.builder.AbstractResourceBuilder;
 import ch.silviowangler.gradle.restapi.builder.ArtifactType;
 import ch.silviowangler.gradle.restapi.builder.MethodContext;
@@ -84,12 +87,10 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
 
   private static final ClassName STRING_CLASS = ClassName.get(String.class);
   private static final String DELEGATE_VAR_NAME = "delegate";
-  private final GenerationMode generationMode;
-  private final String clientId;
+  private final RestApiExtension restApiExtension;
 
   public MicronautResourceFactory(RestApiExtension restApiExtension) {
-    this.generationMode = restApiExtension.getGenerationMode();
-    this.clientId = restApiExtension.getClientId();
+    this.restApiExtension = restApiExtension;
   }
 
   @Override
@@ -124,13 +125,19 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
             .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
             .build();
 
-    MethodSpec constructor =
+    MethodSpec.Builder methodBuilder =
         MethodSpec.constructorBuilder()
             .addModifiers(Modifier.PUBLIC)
             .addParameter(delegatorClass, DELEGATE_VAR_NAME)
-            .addStatement("this.$N = $N", DELEGATE_VAR_NAME, DELEGATE_VAR_NAME)
-            .addAnnotation(createAnnotation(JAVAX_INJECT))
-            .build();
+            .addStatement("this.$N = $N", DELEGATE_VAR_NAME, DELEGATE_VAR_NAME);
+
+    if (this.restApiExtension.getTargetFramework() == TargetFramework.MICRONAUT_3) {
+      methodBuilder = methodBuilder.addAnnotation(createAnnotation(JAKARTA_INJECT));
+    } else {
+      methodBuilder = methodBuilder.addAnnotation(createAnnotation(JAVAX_INJECT));
+    }
+
+    MethodSpec constructor = methodBuilder.build();
 
     resourceBuilder.addField(fieldDelegate);
     resourceBuilder.addMethod(constructor);
@@ -146,7 +153,7 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
     TypeSpec.Builder resourceBuilder = resourceBaseTypeBuilder(clientName());
 
     Map<String, Object> clientArgs = new HashMap<>();
-    clientArgs.put("id", this.clientId);
+    clientArgs.put("id", this.restApiExtension.getClientId());
 
     resourceBuilder.addAnnotation(createAnnotation(MICRONAUT_CLIENT, clientArgs));
     resourceBuilder.addAnnotation(createAnnotation(MICRONAUT_VALIDATED));
@@ -166,7 +173,11 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
             GeneratorUtil.createResourceDelegateName(
                 getResourceContractContainer().getSourceFileName()));
 
-    builder.addAnnotation(createAnnotation(JAVAX_SINGLETON));
+    if (this.restApiExtension.getTargetFramework() == TargetFramework.MICRONAUT_3) {
+      builder.addAnnotation(createAnnotation(JAKARTA_SINGLETON));
+    } else {
+      builder.addAnnotation(createAnnotation(JAVAX_SINGLETON));
+    }
 
     generateResourceMethods();
     return builder.build();
@@ -269,7 +280,7 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
 
     Map<String, Object> annotationsFields = new HashMap<>();
 
-    if (this.generationMode == GenerationMode.CLIENT) {
+    if (this.restApiExtension.getGenerationMode() == GenerationMode.CLIENT) {
 
       if (applyId) {
         annotationsFields.put("value", methodContext.getLinkParser().toBasePath() + "/{id}");
@@ -322,7 +333,7 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
 
     annotationsFields.put("value", representation.getMimetype());
 
-    if (this.generationMode == GenerationMode.CLIENT) {
+    if (this.restApiExtension.getGenerationMode() == GenerationMode.CLIENT) {
       methodAnnotations.add(createAnnotation(MICRONAUT_CONSUMES, annotationsFields));
     } else {
       methodAnnotations.add(createAnnotation(MICRONAUT_PRODUCES, annotationsFields));
@@ -343,7 +354,7 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
         throw new IllegalArgumentException("Unknown method name " + methodName);
       }
 
-      if (!this.generationMode.isClientCodeGenerationRequired()) {
+      if (!this.restApiExtension.getGenerationMode().isClientCodeGenerationRequired()) {
         AnnotationSpec.Builder b = AnnotationSpec.builder(MICRONAUT_STATUS.getClassName());
         b.addMember("value", v, MICRONAUT_HTTP_STATUS.getClassName());
         methodAnnotations.add(b.build());
@@ -365,7 +376,7 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
 
   @Override
   public boolean supportsInterfaces() {
-    return false || this.generationMode == GenerationMode.CLIENT;
+    return false || this.restApiExtension.getGenerationMode() == GenerationMode.CLIENT;
   }
 
   @Override
