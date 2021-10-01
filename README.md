@@ -790,7 +790,7 @@ For our REST clients I would like to provide a feature I call "Expanded Gets" si
 
 **With "Expanded Gets"** a client can read the person and its addresses in only one request.
 
-- `/countries/CHE?expands=countries`
+- `/countries/CHE?expands=cities`
 
 ```
 {
@@ -849,7 +849,7 @@ For our REST clients I would like to provide a feature I call "Expanded Gets" si
 }
 ```
 
-If there are several expandable sub resources a client can either name them all or use an Asterix `*` to fetch them all at once. 
+If there are several expandable sub resources a client can either name them all or use an Asterix (`*`) to fetch them all at once. 
 
 `GET /countries/CHE?expands=*` 
 
