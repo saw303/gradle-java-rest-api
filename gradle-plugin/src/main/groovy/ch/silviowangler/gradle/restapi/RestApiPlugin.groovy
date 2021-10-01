@@ -102,7 +102,7 @@ class RestApiPlugin implements Plugin<Project> {
 		}
 
 		final String springVersion = "5.2.4.RELEASE"
-		final String pluginVersion = "2.3.11"
+		final String pluginVersion = "2.3.12"
 		final String libPhoneNumberVersion = "8.11.5"
 
 		project.afterEvaluate {
@@ -129,7 +129,7 @@ class RestApiPlugin implements Plugin<Project> {
 						implementation "ch.silviowangler.rest:rest-api-spring:${pluginVersion}"
 						compileOnly "org.springframework:spring-web:${springVersion}"
 						compileOnly "org.springframework:spring-webmvc:${springVersion}"
-					} else if (extension.targetFramework == MICRONAUT) {
+					} else if (extension.targetFramework.isMicronaut()) {
 						implementation "ch.silviowangler.rest:rest-api-micronaut:${pluginVersion}"
 					}
 				}
