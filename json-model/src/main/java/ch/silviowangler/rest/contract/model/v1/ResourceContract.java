@@ -91,7 +91,15 @@ public class ResourceContract implements Serializable {
 
   @Override
   public int hashCode() {
-
     return Objects.hash(general, verbs, fields, subresources, types);
+  }
+
+  public String toString() {
+
+    if (general != null) {
+      return this.general.getName();
+    } else {
+      return super.toString();
+    }
   }
 }

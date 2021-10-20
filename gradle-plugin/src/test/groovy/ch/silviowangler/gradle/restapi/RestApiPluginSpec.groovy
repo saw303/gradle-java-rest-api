@@ -738,7 +738,7 @@ class RestApiPluginSpec extends Specification {
     javaFiles.isEmpty()
   }
 
-  void "Das Plugin generiert auch read only Ressourcen mit nur einem Collection GET"() {
+  void "Read only resource with only JSON Collection GET"() {
 
     given:
     project.restApi.generatorOutput = tempDir
