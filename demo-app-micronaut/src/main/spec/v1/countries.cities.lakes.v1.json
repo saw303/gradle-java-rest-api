@@ -29,11 +29,11 @@
       ],
       "representations": [
         {
-          "name": "jpeg",
+          "name": "json",
           "comment": "",
           "responseExample": "{...}",
           "isDefault": true,
-          "mimetype": "image/jpeg"
+          "mimetype": "application/ch.silviowangler.ort"
         }
       ],
       "options": [],
@@ -74,7 +74,9 @@
       "name": "id",
       "type": "uuid",
       "options": null,
-      "mandatory": [],
+      "mandatory": [
+        "PUT"
+      ],
       "min": null,
       "max": null,
       "multiple": false,
@@ -91,7 +93,10 @@
       "name": "name",
       "type": "string",
       "options": null,
-      "mandatory": [],
+      "mandatory": [
+        "PUT",
+        "POST"
+      ],
       "min": null,
       "max": 20,
       "multiple": false,
