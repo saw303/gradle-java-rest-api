@@ -23,7 +23,6 @@
  */
 package ch.silviowangler.gradle.restapi
 
-
 import ch.silviowangler.gradle.restapi.tasks.CleanRestApiTask
 import ch.silviowangler.gradle.restapi.tasks.ExtractRestApiSpecsTask
 import ch.silviowangler.gradle.restapi.tasks.GenerateRestApiAsciiDocTask
@@ -32,13 +31,10 @@ import ch.silviowangler.gradle.restapi.tasks.PlantUmlTask
 import ch.silviowangler.gradle.restapi.tasks.ValidationTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.api.artifacts.Configuration
-import org.gradle.api.tasks.compile.JavaCompile
 
 import static ch.silviowangler.gradle.restapi.Consts.CONFIGURATION_REST_API
 import static ch.silviowangler.gradle.restapi.Consts.TASK_GROUP_REST_API
-import static ch.silviowangler.gradle.restapi.TargetFramework.MICRONAUT
 import static ch.silviowangler.gradle.restapi.TargetFramework.SPRING_BOOT
 
 /**
@@ -102,35 +98,57 @@ class RestApiPlugin implements Plugin<Project> {
 		}
 
 		final String springVersion = "5.2.4.RELEASE"
-		final String pluginVersion = "2.3.14"
+		final String pluginVersion = "2.3.15"
 		final String libPhoneNumberVersion = "8.11.5"
 
-		project.afterEvaluate {
+		final List<String> deps = [
+			"javax.annotation:javax.annotation-api:1.3.2",
+			"ch.silviowangler.rest:rest-model:${pluginVersion}",
+			"javax.money:money-api:1.0.3",
+			"javax.validation:validation-api:2.0.1.Final"
+		]
 
-			project.dependencies {
+		def api = project.configurations.named("api")
+		def implementation = project.configurations.named("implementation")
+		def compileOnly = project.configurations.named("compileOnly")
 
-				if (extension.generationMode.isApiCodeGenerationRequired() || extension.generationMode.isClientCodeGenerationRequired()) {
-					api "javax.annotation:javax.annotation-api:1.3.2"
-					api "ch.silviowangler.rest:rest-model:${pluginVersion}"
-					api "javax.money:money-api:1.0.3"
-					api "javax.validation:validation-api:2.0.1.Final"
+		if (extension.generationMode.isApiCodeGenerationRequired() || extension.generationMode.isClientCodeGenerationRequired()) {
+			api.configure { a ->
+				a.withDependencies {
+					deps.each { dep -> it.add(project.dependencies.create(dep)) }
 				}
-				else {
-					implementation "javax.annotation:javax.annotation-api:1.3.2"
-					implementation "ch.silviowangler.rest:rest-model:${pluginVersion}"
-					implementation "javax.money:money-api:1.0.3"
-					implementation "javax.validation:validation-api:2.0.1.Final"
+			}
+		} else {
+			implementation.configure { impl ->
+				impl.withDependencies {
+					deps.each { dep -> it.add(project.dependencies.create(dep)) }
 				}
-				implementation "com.googlecode.libphonenumber:libphonenumber:${libPhoneNumberVersion}"
+			}
+		}
 
-				if (extension.generationMode != GenerationMode.API) {
+		implementation.configure { impl ->
+			impl.withDependencies {
+				it.add(project.dependencies.create("com.googlecode.libphonenumber:libphonenumber:${libPhoneNumberVersion}"))
+			}
+		}
 
-					if (extension.targetFramework == SPRING_BOOT) {
-						implementation "ch.silviowangler.rest:rest-api-spring:${pluginVersion}"
-						compileOnly "org.springframework:spring-web:${springVersion}"
-						compileOnly "org.springframework:spring-webmvc:${springVersion}"
-					} else if (extension.targetFramework.isMicronaut()) {
-						implementation "ch.silviowangler.rest:rest-api-micronaut:${pluginVersion}"
+		if (extension.generationMode != GenerationMode.API) {
+			if (extension.targetFramework == SPRING_BOOT) {
+				implementation.configure { impl ->
+					impl.withDependencies {
+						it.add(project.dependencies.create("ch.silviowangler.rest:rest-api-spring:${pluginVersion}"))
+					}
+				}
+				compileOnly.configure { cO ->
+					cO.withDependencies {
+						it.add(project.dependencies.create("org.springframework:spring-web:${springVersion}"))
+						it.add(project.dependencies.create("org.springframework:spring-webmvc:${springVersion}"))
+					}
+				}
+			} else if (extension.targetFramework.isMicronaut()) {
+				implementation.configure { impl ->
+					impl.withDependencies {
+						it.add(project.dependencies.create("ch.silviowangler.rest:rest-api-micronaut:${pluginVersion}"))
 					}
 				}
 			}
