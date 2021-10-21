@@ -62,12 +62,4 @@ task checkVersion(type: Test) {
 	if (!content.contains("final String pluginVersion = \"${project.version}\"")) {
 		throw new RuntimeException(msg)
 	}
-
-	if (!content.contains("implementation \"ch.silviowangler.rest:rest-api-spring:\${pluginVersion}\"")) {
-		throw new RuntimeException(msg)
-	}
-
-	if (!content.contains("implementation \"ch.silviowangler.rest:rest-api-micronaut:\${pluginVersion}\"")) {
-		throw new RuntimeException(msg)
-	}
 }

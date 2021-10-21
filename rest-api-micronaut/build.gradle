@@ -1,7 +1,7 @@
 ext { pomDescription = 'Add ons for the Micronaut framework' }
 
 repositories {
-  mavenCentral()
+	mavenCentral()
 }
 
 dependencies {
