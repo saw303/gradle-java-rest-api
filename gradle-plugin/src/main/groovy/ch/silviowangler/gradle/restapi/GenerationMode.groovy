@@ -49,8 +49,7 @@ enum GenerationMode {
 	/**
 	 * Generates the framework specific client implementation.
 	 */
-	CLIENT;
-
+	CLIENT
 
 	boolean isApiCodeGenerationRequired() {
 		return this != IMPLEMENTATION;

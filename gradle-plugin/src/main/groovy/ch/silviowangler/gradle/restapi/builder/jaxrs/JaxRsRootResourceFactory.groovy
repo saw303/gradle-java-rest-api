@@ -108,12 +108,12 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder {
 	@Override
 	List<AnnotationSpec> getQueryParamAnnotations(VerbParameter paramName) {
 		// TODO handle VerbParameter options like required
-		return Collections.singletonList(createAnnotation(JAX_RS_QUERY_PARAM, ['value': paramName.getName()]))
+		return Collections.singletonList(createAnnotation(JAX_RS_QUERY_PARAM, ['value': paramName.name]))
 	}
 
 	@Override
 	List<AnnotationSpec> getHeaderAnnotations(Header header) {
-		return Collections.singletonList(createAnnotation(JAX_RS_HEADER_PARAM, ['value': header.getName()]))
+		return Collections.singletonList(createAnnotation(JAX_RS_HEADER_PARAM, ['value': header.name]))
 	}
 
 	@Override
@@ -139,7 +139,7 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder {
 		specs << createProducesAnnotation(representation)
 
 		if (isIdGenerationRequired(methodContext)) {
-			String postfix = representation.isJson() ? '' : ".${representation.name}"
+			String postfix = representation.json ? '' : ".${representation.name}"
 			specs << createAnnotation(JAX_RS_PATH, ['value': "{id}${postfix}"])
 		}
 		return specs

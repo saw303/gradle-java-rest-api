@@ -133,7 +133,7 @@ class GeneratorUtil {
 		if (verb == 'Get') {
 			String resourceModelName = createResourceModelName(fileName, verb)
 			if (collection) {
-				return ParameterizedTypeName.get(ClassName.get(targetFramework.isMicronaut() ? Iterable.class : Collection.class), ClassName.get(packageName, resourceModelName))
+				return ParameterizedTypeName.get(ClassName.get(targetFramework.micronaut ? Iterable.class : Collection.class), ClassName.get(packageName, resourceModelName))
 			} else {
 				return ClassName.get(packageName, resourceModelName)
 			}
