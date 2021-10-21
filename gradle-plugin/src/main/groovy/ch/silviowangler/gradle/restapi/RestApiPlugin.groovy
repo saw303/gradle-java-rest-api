@@ -42,116 +42,116 @@ import static ch.silviowangler.gradle.restapi.TargetFramework.SPRING_BOOT
  */
 class RestApiPlugin implements Plugin<Project> {
 
-  public static final String PLUGIN_ID = 'ch.silviowangler.restapi'
+	public static final String PLUGIN_ID = 'ch.silviowangler.restapi'
 
 
-  void apply(Project project) {
+	void apply(Project project) {
 
-    project.apply(plugin: 'java-library')
+		project.apply(plugin: 'java-library')
 
-    RestApiExtension extension = new RestApiExtension(project)
-    project.extensions.add('restApi', extension)
+		RestApiExtension extension = new RestApiExtension(project)
+		project.extensions.add('restApi', extension)
 
 
-    def clean = project.tasks.register('cleanRestArtifacts', CleanRestApiTask) { CleanRestApiTask t ->
-      t.group = TASK_GROUP_REST_API
-    }
-    def extract = project.tasks.register('extractSpecs', ExtractRestApiSpecsTask) { ExtractRestApiSpecsTask t ->
-      t.group = TASK_GROUP_REST_API
-    }
-    def validate = project.tasks.register('validateRestSpecs', ValidationTask) { ValidationTask t ->
-      t.group = TASK_GROUP_REST_API
-      if (ExtractRestApiSpecsTask.isConfigurationRestApiDefined(project)) {
-        t.dependsOn(extract)
-      }
-    }
-    def generate = project.tasks.register('generateRestArtifacts', GenerateRestApiTask) { GenerateRestApiTask t ->
-      t.group = TASK_GROUP_REST_API
-      t.dependsOn(validate)
-    }
-    def generateDiagrams = project.tasks.register('generateDiagrams', PlantUmlTask) { PlantUmlTask t ->
-      t.group = TASK_GROUP_REST_API
-    }
-    def generateAsciiDocs = project.tasks.register('generateAsciiDocs', GenerateRestApiAsciiDocTask) { GenerateRestApiAsciiDocTask t ->
-      t.group = TASK_GROUP_REST_API
-    }
+		def clean = project.tasks.register('cleanRestArtifacts', CleanRestApiTask) { CleanRestApiTask t ->
+			t.group = TASK_GROUP_REST_API
+		}
+		def extract = project.tasks.register('extractSpecs', ExtractRestApiSpecsTask) { ExtractRestApiSpecsTask t ->
+			t.group = TASK_GROUP_REST_API
+		}
+		def validate = project.tasks.register('validateRestSpecs', ValidationTask) { ValidationTask t ->
+			t.group = TASK_GROUP_REST_API
+			if (ExtractRestApiSpecsTask.isConfigurationRestApiDefined(project)) {
+				t.dependsOn(extract)
+			}
+		}
+		def generate = project.tasks.register('generateRestArtifacts', GenerateRestApiTask) { GenerateRestApiTask t ->
+			t.group = TASK_GROUP_REST_API
+			t.dependsOn(validate)
+		}
+		def generateDiagrams = project.tasks.register('generateDiagrams', PlantUmlTask) { PlantUmlTask t ->
+			t.group = TASK_GROUP_REST_API
+		}
+		def generateAsciiDocs = project.tasks.register('generateAsciiDocs', GenerateRestApiAsciiDocTask) { GenerateRestApiAsciiDocTask t ->
+			t.group = TASK_GROUP_REST_API
+		}
 
-    project.tasks.named('clean').configure {
-      dependsOn(clean)
-    }
+		project.tasks.named('clean').configure {
+			dependsOn(clean)
+		}
 
-    project.tasks.named('compileJava').configure {
-      dependsOn(generate)
-      options.encoding = 'UTF-8'
-    }
+		project.tasks.named('compileJava').configure {
+			dependsOn(generate)
+			options.encoding = 'UTF-8'
+		}
 
-    project.tasks.named('compileTestJava').configure {
-      options.encoding = 'UTF-8'
-    }
+		project.tasks.named('compileTestJava').configure {
+			options.encoding = 'UTF-8'
+		}
 
-    project.sourceSets.main.java.srcDir { project.restApi.generatorOutput }
+		project.sourceSets.main.java.srcDir { project.restApi.generatorOutput }
 
-    Configuration restApiSpecification = project.configurations.findByName(CONFIGURATION_REST_API)
+		Configuration restApiSpecification = project.configurations.findByName(CONFIGURATION_REST_API)
 
-    if (!restApiSpecification) {
-      project.configurations.create(CONFIGURATION_REST_API)
-    }
+		if (!restApiSpecification) {
+			project.configurations.create(CONFIGURATION_REST_API)
+		}
 
-    final String springVersion = "5.2.4.RELEASE"
-    final String pluginVersion = "2.3.15"
-    final String libPhoneNumberVersion = "8.11.5"
+		final String springVersion = "5.2.4.RELEASE"
+		final String pluginVersion = "2.3.15"
+		final String libPhoneNumberVersion = "8.11.5"
 
-    final List<String> deps = [
-        "javax.annotation:javax.annotation-api:1.3.2",
-        "ch.silviowangler.rest:rest-model:${pluginVersion}",
-        "javax.money:money-api:1.0.3",
-        "javax.validation:validation-api:2.0.1.Final"
-    ]
+		final List<String> deps = [
+			"javax.annotation:javax.annotation-api:1.3.2",
+			"ch.silviowangler.rest:rest-model:${pluginVersion}",
+			"javax.money:money-api:1.0.3",
+			"javax.validation:validation-api:2.0.1.Final"
+		]
 
-    def api = project.configurations.named("api")
-    def implementation = project.configurations.named("implementation")
-    def compileOnly = project.configurations.named("compileOnly")
+		def api = project.configurations.named("api")
+		def implementation = project.configurations.named("implementation")
+		def compileOnly = project.configurations.named("compileOnly")
 
-    if (extension.generationMode.isApiCodeGenerationRequired() || extension.generationMode.isClientCodeGenerationRequired()) {
-      api.configure { a ->
-        a.withDependencies {
-          deps.each { dep -> it.add(project.dependencies.create(dep)) }
-        }
-      }
-    } else {
-      implementation.configure { impl ->
-        impl.withDependencies {
-          deps.each { dep -> it.add(project.dependencies.create(dep)) }
-        }
-      }
-    }
+		if (extension.generationMode.isApiCodeGenerationRequired() || extension.generationMode.isClientCodeGenerationRequired()) {
+			api.configure { a ->
+				a.withDependencies {
+					deps.each { dep -> it.add(project.dependencies.create(dep)) }
+				}
+			}
+		} else {
+			implementation.configure { impl ->
+				impl.withDependencies {
+					deps.each { dep -> it.add(project.dependencies.create(dep)) }
+				}
+			}
+		}
 
-    implementation.configure { impl ->
-      impl.withDependencies {
-        it.add(project.dependencies.create("com.googlecode.libphonenumber:libphonenumber:${libPhoneNumberVersion}"))
-      }
-    }
+		implementation.configure { impl ->
+			impl.withDependencies {
+				it.add(project.dependencies.create("com.googlecode.libphonenumber:libphonenumber:${libPhoneNumberVersion}"))
+			}
+		}
 
-    if (extension.generationMode != GenerationMode.API) {
-      if (extension.targetFramework == SPRING_BOOT) {
-        implementation.configure { impl ->
-          impl.withDependencies {
-            it.add(project.dependencies.create("ch.silviowangler.rest:rest-api-spring:${pluginVersion}"))
-          }
-        }
-        compileOnly.configure { cO ->
-          cO.withDependencies {
-            it.add(project.dependencies.create("org.springframework:spring-web:${springVersion}"))
-            it.add(project.dependencies.create("org.springframework:spring-webmvc:${springVersion}"))
-          }
-        }
-      } else if (extension.targetFramework.isMicronaut()) {
-        implementation.configure { impl ->
-          impl.withDependencies {
-            it.add(project.dependencies.create("ch.silviowangler.rest:rest-api-micronaut:${pluginVersion}"))
-          }
-        }
-      }
-    }
-  }
+		if (extension.generationMode != GenerationMode.API) {
+			if (extension.targetFramework == SPRING_BOOT) {
+				implementation.configure { impl ->
+					impl.withDependencies {
+						it.add(project.dependencies.create("ch.silviowangler.rest:rest-api-spring:${pluginVersion}"))
+					}
+				}
+				compileOnly.configure { cO ->
+					cO.withDependencies {
+						it.add(project.dependencies.create("org.springframework:spring-web:${springVersion}"))
+						it.add(project.dependencies.create("org.springframework:spring-webmvc:${springVersion}"))
+					}
+				}
+			} else if (extension.targetFramework.isMicronaut()) {
+				implementation.configure { impl ->
+					impl.withDependencies {
+						it.add(project.dependencies.create("ch.silviowangler.rest:rest-api-micronaut:${pluginVersion}"))
+					}
+				}
+			}
+		}
+	}
 }
