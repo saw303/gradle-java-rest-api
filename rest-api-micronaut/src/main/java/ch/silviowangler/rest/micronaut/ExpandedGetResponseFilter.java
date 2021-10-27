@@ -56,8 +56,10 @@ import io.micronaut.web.router.UriRouteMatch;
 import io.reactivex.Flowable;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -288,16 +290,16 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
 
           Object result = executableMethod.invoke(bean, argumentList);
 
-          if (result instanceof Collection) {
-            CollectionExpand expandedData =
-                new CollectionExpand(expand, (Collection<ResourceModel>) result);
-            initialBody.getExpands().add(expandedData);
-          } else {
-            log.warn(
-                "Cannot add expands since we expects a collection but was '{}'",
-                result.getClass().getCanonicalName());
-          }
+          CollectionExpand expandedData;
 
+          if (result instanceof Collection) {
+            expandedData = new CollectionExpand(expand, (Collection<ResourceModel>) result);
+          } else {
+            List<ResourceModel> list = new ArrayList<>(1);
+            list.add((ResourceModel) result);
+            expandedData = new CollectionExpand(expand, list);
+          }
+          initialBody.getExpands().add(expandedData);
         } catch (Exception e) {
           log.error("Exception caught while expanding sub resource " + expand, e);
         }
