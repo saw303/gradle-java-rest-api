@@ -1,7 +1,7 @@
 /*
  * MIT License
  * <p>
- * Copyright (c) 2016 - 2020 Silvio Wangler (silvio.wangler@gmail.com)
+ * Copyright (c) 2016 - 2021 Silvio Wangler (silvio.wangler@gmail.com)
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,27 +23,25 @@
  */
 package ch.silviowangler.rest.model;
 
-import java.util.Collection;
-
 /**
- * Implementation model for expanded GETs. Stores a named collection of {@link ResourceModel}.
+ * Implementation model for expanded GETs. Stores a named {@link ResourceModel}.
  *
  * @author Emanuele Mazzotta
  */
-public class CollectionExpand extends Expand {
+public class EntityExpand extends Expand {
 
-  private Collection<ResourceModel> data;
+  private ResourceModel data;
 
-  public CollectionExpand(String name, Collection<ResourceModel> data) {
+  public EntityExpand(String name, ResourceModel data) {
     super(name);
     this.data = data;
   }
 
-  public Collection<ResourceModel> getData() {
+  public ResourceModel getData() {
     return data;
   }
 
-  public void setData(Collection<ResourceModel> data) {
+  public void setData(ResourceModel data) {
     this.data = data;
   }
 }

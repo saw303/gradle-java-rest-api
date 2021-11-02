@@ -37,7 +37,7 @@ public class EntityModel<R extends ResourceModel> implements Serializable {
 
   private R data;
   private List<ResourceLink> links;
-  private List<CollectionExpand> expands;
+  private List<Expand> expands;
 
   public EntityModel() {
     this(null);
@@ -69,11 +69,11 @@ public class EntityModel<R extends ResourceModel> implements Serializable {
     this.links = links;
   }
 
-  public List<CollectionExpand> getExpands() {
+  public List<Expand> getExpands() {
     return expands;
   }
 
-  public void setExpands(List<CollectionExpand> expands) {
+  public void setExpands(List<Expand> expands) {
     this.expands = expands;
   }
 }

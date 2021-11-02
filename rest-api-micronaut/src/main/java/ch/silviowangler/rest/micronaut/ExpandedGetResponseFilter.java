@@ -35,7 +35,9 @@ import ch.silviowangler.rest.contract.model.v1.SubResource;
 import ch.silviowangler.rest.contract.model.v1.Verb;
 import ch.silviowangler.rest.model.CollectionExpand;
 import ch.silviowangler.rest.model.CollectionModel;
+import ch.silviowangler.rest.model.EntityExpand;
 import ch.silviowangler.rest.model.EntityModel;
+import ch.silviowangler.rest.model.Expand;
 import ch.silviowangler.rest.model.Identifiable;
 import ch.silviowangler.rest.model.ResourceModel;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -56,10 +58,8 @@ import io.micronaut.web.router.UriRouteMatch;
 import io.reactivex.Flowable;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -290,16 +290,20 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
 
           Object result = executableMethod.invoke(bean, argumentList);
 
-          CollectionExpand expandedData;
+          Expand expandedData;
 
           if (result instanceof Collection) {
             expandedData = new CollectionExpand(expand, (Collection<ResourceModel>) result);
+            initialBody.getExpands().add(expandedData);
+          } else if (result instanceof ResourceModel) {
+            expandedData = new EntityExpand(expand, (ResourceModel) result);
+            initialBody.getExpands().add(expandedData);
           } else {
-            List<ResourceModel> list = new ArrayList<>(1);
-            list.add((ResourceModel) result);
-            expandedData = new CollectionExpand(expand, list);
+            log.error(
+                "Expand {} is neither a collection nor a resource model (class: {})",
+                expand,
+                result.getClass().getCanonicalName());
           }
-          initialBody.getExpands().add(expandedData);
         } catch (Exception e) {
           log.error("Exception caught while expanding sub resource " + expand, e);
         }
