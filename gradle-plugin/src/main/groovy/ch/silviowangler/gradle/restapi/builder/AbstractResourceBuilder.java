@@ -271,7 +271,10 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
             getPathParams(parser, isAbstractOrInterfaceResource() && !isDelegatorResource());
 
         TypeName returnType;
-        if (DELETE_COLLECTION.equals(verb.getVerb()) || DELETE_ENTITY.equals(verb.getVerb())) {
+        if (DELETE_COLLECTION.equals(verb.getVerb())
+            || DELETE_ENTITY.equals(verb.getVerb())
+            || PUT_ENTITY.equals(verb.getVerb())
+            || PUT_COLLECTION.equals(verb.getVerb())) {
           returnType = resourceMethodReturnType(verb, representation);
         } else {
           returnType =
@@ -294,11 +297,20 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
                 pathParams,
                 parser);
 
+        TypeName rawReturnType;
+
+        if (returnType == TypeName.VOID) {
+          rawReturnType = MICRONAUT_HTTP_RESPONSE.getTypeName();
+        } else if (returnType == MICRONAUT_HTTP_RESPONSE.getTypeName()) {
+          rawReturnType = returnType;
+        } else {
+          rawReturnType =
+              ParameterizedTypeName.get(MICRONAUT_HTTP_RESPONSE.getClassName(), returnType);
+        }
+
         MethodContext contextRaw =
             new MethodContext(
-                returnType == TypeName.VOID
-                    ? MICRONAUT_HTTP_RESPONSE.getTypeName()
-                    : ParameterizedTypeName.get(MICRONAUT_HTTP_RESPONSE.getClassName(), returnType),
+                rawReturnType,
                 verb.getParameters(),
                 verb.getHeaders(),
                 paramClasses,
