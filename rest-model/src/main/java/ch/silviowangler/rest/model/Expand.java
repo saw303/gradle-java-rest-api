@@ -32,6 +32,9 @@ public abstract class Expand {
 
   private String name;
 
+  public Expand() {
+  }
+
   public Expand(String name) {
     this.name = name;
   }

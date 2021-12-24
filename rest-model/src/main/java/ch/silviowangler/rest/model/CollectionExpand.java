@@ -34,6 +34,10 @@ public class CollectionExpand extends Expand {
 
   private Collection<ResourceModel> data;
 
+  public CollectionExpand() {
+    super();
+  }
+
   public CollectionExpand(String name, Collection<ResourceModel> data) {
     super(name);
     this.data = data;

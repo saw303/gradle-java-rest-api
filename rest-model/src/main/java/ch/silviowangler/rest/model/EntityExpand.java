@@ -32,6 +32,10 @@ public class EntityExpand extends Expand {
 
   private ResourceModel data;
 
+  public EntityExpand() {
+    super();
+  }
+
   public EntityExpand(String name, ResourceModel data) {
     super(name);
     this.data = data;
