@@ -56,8 +56,8 @@ import io.micronaut.web.router.UriRouteMatch;
 import io.reactivex.Flowable;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -296,13 +296,15 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
             expandedData.setData((List<ResourceModel>) result);
             initialBody.getExpands().add(expandedData);
           } else if (result instanceof ResourceModel) {
-            expandedData.setData(Arrays.asList((ResourceModel) result));
+            expandedData.setData(Collections.singletonList((ResourceModel) result));
             initialBody.getExpands().add(expandedData);
-          } else {
+          } else if (result != null) {
             log.error(
                 "Expand {} is neither a collection nor a resource model (class: {})",
                 expand,
                 result.getClass().getCanonicalName());
+          } else {
+            log.error("Expand {} is null", expand);
           }
         } catch (Exception e) {
           log.error("Exception caught while expanding sub resource " + expand, e);
