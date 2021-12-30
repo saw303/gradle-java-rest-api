@@ -21,6 +21,14 @@ public class RootGetResourceModel implements Serializable, ResourceModel, Identi
    */
   private String name;
 
+  public RootGetResourceModel() {
+  }
+
+  public RootGetResourceModel(String id, String name) {
+    this.id = id;
+    this.name = name;
+  }
+
   public String getId() {
     return this.id;
   }

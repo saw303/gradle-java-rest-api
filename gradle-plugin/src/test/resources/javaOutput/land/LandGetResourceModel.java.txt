@@ -38,6 +38,18 @@ public class LandGetResourceModel implements Serializable, ResourceModel, Identi
    */
   private CoordinatesType koordinaten;
 
+  public LandGetResourceModel() {
+  }
+
+  public LandGetResourceModel(String id, String name, LocalDate gruendungsDatum, Integer flaeche,
+      CoordinatesType koordinaten) {
+    this.id = id;
+    this.name = name;
+    this.gruendungsDatum = gruendungsDatum;
+    this.flaeche = flaeche;
+    this.koordinaten = koordinaten;
+  }
+
   public String getId() {
     return this.id;
   }

@@ -1,12 +1,18 @@
 buildscript {
 
     ext {
-        restApiVersion = '2.0.0'
+        restApiVersion = '2.3.12'
     }
 
     repositories {
         mavenLocal()
-        maven { url "https://repo.schaltzentrale.ch/artifactory/gesus/" }
+        maven {
+          url = uri("https://maven.pkg.github.com/saw303/gradle-java-rest-api")
+          credentials {
+            username = project.findProperty("gpr.user") ?: System.getenv("GH_USERNAME")
+            password = project.findProperty("gpr.key") ?: System.getenv("GH_TOKEN")
+          }
+        }
     }
 
     dependencies {
@@ -33,8 +39,13 @@ group "demo.app.micronaut"
 repositories {
     mavenLocal()
     mavenCentral()
-    maven { url "https://jcenter.bintray.com" }
-    maven { url "https://repo.schaltzentrale.ch/artifactory/gesus/" }
+    maven {
+      url = uri("https://maven.pkg.github.com/saw303/gradle-java-rest-api/")
+      credentials {
+        username = project.findProperty("gpr.user") ?: System.getenv("GH_USERNAME")
+        password = project.findProperty("gpr.key") ?: System.getenv("GH_TOKEN")
+      }
+    }
 }
 
 dependencyManagement {

@@ -11,7 +11,8 @@ Use this [link](https://bintray.com/saw303/gradle-plugins/gradle-java-rest-api?s
 
 ## Build & Quality
 
-[![CircleCI](https://circleci.com/gh/saw303/gradle-java-rest-api/tree/master.svg?style=svg)](https://circleci.com/gh/saw303/gradle-java-rest-api/tree/master) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/daaa123d3d2c4023908ff8870bdbc7d2)](https://www.codacy.com/app/saw303/gradle-java-rest-api?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=saw303/gradle-java-rest-api&amp;utm_campaign=Badge_Grade)
+[![CircleCI](https://circleci.com/gh/saw303/gradle-java-rest-api/tree/master.svg?style=svg)](https://circleci.com/gh/saw303/gradle-java-rest-api/tree/master) 
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/34e0ef291ad74549ac638eb4d470365d)](https://www.codacy.com/gh/saw303/gradle-java-rest-api/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=saw303/gradle-java-rest-api&amp;utm_campaign=Badge_Grade)
 
 ## Getting started
 
@@ -722,6 +723,24 @@ will create the following Java output
 public enum GenderType { MALE, FEMALE }
 ```
 
+## Controlling the generators output
+
+The plugin knows the following generation modes:
+
+- `ALL`: Generates API (Java POJOs for the resource model and custom types) and the framework specific implementation classes.
+- `API`: Generates API (Java POJOs for the resource model and custom types) only.
+- `IMPLEMENTATION`: Generates the framework specific implementation classes only.
+- `CLIENT`: Generates the framework specific client implementation.
+
+The following configuration will create a Micronaut http clients within the given Gradle project.
+
+```groovy
+restApi {
+  targetFramework = MICRONAUT
+  generationMode = GenerationMode.CLIENT
+}
+```
+
 ## Hateoas Functionality
 
 ### Micronaut
@@ -772,7 +791,7 @@ For our REST clients I would like to provide a feature I call "Expanded Gets" si
 
 **With "Expanded Gets"** a client can read the person and its addresses in only one request.
 
-- `/countries/CHE?expands=countries`
+- `/countries/CHE?expands=cities`
 
 ```
 {
@@ -831,7 +850,7 @@ For our REST clients I would like to provide a feature I call "Expanded Gets" si
 }
 ```
 
-If there are several expandable sub resources a client can either name them all or use an Asterix `*` to fetch them all at once. 
+If there are several expandable sub resources a client can either name them all or use an Asterix (`*`) to fetch them all at once. 
 
 `GET /countries/CHE?expands=*` 
 

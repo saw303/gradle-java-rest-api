@@ -1,23 +1,28 @@
 plugins {
   id "com.github.hierynomus.license" version "0.14.0" apply false
-  id "com.jfrog.bintray" version "1.8.4" apply false
   id "com.github.ben-manes.versions" version "0.36.0" apply false
   id "com.diffplug.gradle.spotless" version "5.11.1" apply false
 }
 
-subprojects {
+subprojects { subproject ->
 
-  version = "2.2.20"
+  version = "3.0.1"
 
   apply from: "${rootDir}/gradle/java.gradle"
   apply from: "${rootDir}/gradle/groovy.gradle"
-  apply from: "${rootDir}/gradle/bintray.gradle"
+
+  if (subproject.name != 'gradle-java-rest-api') {
+    apply from: "${rootDir}/gradle/bintray.gradle"
+  }
 
   apply plugin: 'com.github.ben-manes.versions'
 
   dependencies {
-    testImplementation("org.spockframework:spock-core:${spockVersion}") {
-      exclude group: 'org.codehaus.groovy', module: 'groovy-all'
-    }
+    testImplementation platform("org.spockframework:spock-bom:${spockVersion}")
+    testImplementation "org.spockframework:spock-core"
+  }
+
+  test {
+    useJUnitPlatform()
   }
 }

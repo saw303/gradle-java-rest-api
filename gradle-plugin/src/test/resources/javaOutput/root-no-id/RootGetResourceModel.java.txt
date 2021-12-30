@@ -20,6 +20,14 @@ public class RootGetResourceModel implements Serializable, ResourceModel {
    */
   private Boolean draft = Boolean.FALSE;
 
+  public RootGetResourceModel() {
+  }
+
+  public RootGetResourceModel(String name, Boolean draft) {
+    this.name = name;
+    this.draft = draft;
+  }
+
   public String getName() {
     return this.name;
   }

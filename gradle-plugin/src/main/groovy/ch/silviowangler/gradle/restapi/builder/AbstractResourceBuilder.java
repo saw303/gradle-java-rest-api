@@ -23,6 +23,8 @@
  */
 package ch.silviowangler.gradle.restapi.builder;
 
+import static ch.silviowangler.gradle.restapi.PluginTypes.COLLECTION_MODEL;
+import static ch.silviowangler.gradle.restapi.PluginTypes.ENTITY_MODEL;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_DECIMAL_MAX;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_DECIMAL_MIN;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_EMAIL;
@@ -30,9 +32,11 @@ import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_MAX;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_MIN;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_NOT_NULL;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_SIZE;
+import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_HTTP_RESPONSE;
 import static ch.silviowangler.gradle.restapi.PluginTypes.RESTAPI_IDENTIFIABLE;
 import static ch.silviowangler.gradle.restapi.PluginTypes.RESTAPI_RESOURCE_MODEL;
 import static ch.silviowangler.gradle.restapi.PluginTypes.VALIDATION_PHONE_NUMBER;
+import static ch.silviowangler.gradle.restapi.builder.ArtifactType.CLIENT;
 import static ch.silviowangler.gradle.restapi.builder.ArtifactType.RESOURCE;
 import static ch.silviowangler.gradle.restapi.util.SupportedDataTypes.BOOL;
 import static ch.silviowangler.gradle.restapi.util.SupportedDataTypes.DATE;
@@ -56,6 +60,7 @@ import ch.silviowangler.rest.contract.model.v1.Representation;
 import ch.silviowangler.rest.contract.model.v1.ResourceContract;
 import ch.silviowangler.rest.contract.model.v1.ResourceField;
 import ch.silviowangler.rest.contract.model.v1.ResourceTypes;
+import ch.silviowangler.rest.contract.model.v1.SubResource;
 import ch.silviowangler.rest.contract.model.v1.Verb;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
@@ -68,8 +73,8 @@ import com.squareup.javapoet.TypeSpec;
 import io.github.getify.minify.Minify;
 import java.io.Serializable;
 import java.nio.charset.Charset;
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -79,7 +84,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -228,6 +232,199 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
   protected abstract void createOptionsMethod();
 
   @Override
+  public void generateClientMethods() {
+
+    if (artifactType != CLIENT) {
+      throw new IllegalStateException("Only available for client generation");
+    }
+
+    List<Verb> verbs = getResourceContractContainer().getResourceContract().getVerbs();
+    verbs.sort(Comparator.comparing(Verb::getVerb));
+
+    LinkParser parser =
+        new LinkParser(
+            getResourceContractContainer().getResourceContract().getGeneral().getxRoute(),
+            getResourceContractContainer()
+                .getResourceContract()
+                .getGeneral()
+                .getVersion()
+                .split("\\.")[0]);
+
+    for (Verb verb : verbs) {
+
+      this.currentVerb = verb;
+
+      if (HEAD_METHODS.contains(verb.getVerb()) && !shouldGenerateHeadMethod()) {
+        continue;
+      }
+
+      Map<String, TypeName> paramClasses = new HashMap<>();
+
+      for (Representation representation :
+          verb.getRepresentations().stream()
+              .filter(representation -> Objects.equals(representation.getName(), "json"))
+              .collect(Collectors.toList())) {
+
+        boolean directEntity = parser.isDirectEntity();
+
+        List<ParameterSpec> pathParams =
+            getPathParams(parser, isAbstractOrInterfaceResource() && !isDelegatorResource());
+
+        TypeName returnType;
+        if (DELETE_COLLECTION.equals(verb.getVerb())
+            || DELETE_ENTITY.equals(verb.getVerb())
+            || PUT_ENTITY.equals(verb.getVerb())
+            || PUT_COLLECTION.equals(verb.getVerb())) {
+          returnType = resourceMethodReturnType(verb, representation);
+        } else {
+          returnType =
+              ParameterizedTypeName.get(
+                  GET_COLLECTION.equals(verb.getVerb())
+                      ? COLLECTION_MODEL.getClassName()
+                      : ENTITY_MODEL.getClassName(),
+                  resourceMethodReturnType(
+                      GET_COLLECTION.equals(verb.getVerb()) ? new Verb(GET_ENTITY) : verb,
+                      representation));
+        }
+
+        MethodContext context =
+            new MethodContext(
+                returnType,
+                verb.getParameters(),
+                verb.getHeaders(),
+                paramClasses,
+                representation,
+                pathParams,
+                parser);
+
+        TypeName rawReturnType;
+
+        if (returnType == TypeName.VOID) {
+          rawReturnType = MICRONAUT_HTTP_RESPONSE.getTypeName();
+        } else if (returnType == MICRONAUT_HTTP_RESPONSE.getTypeName()) {
+          rawReturnType = returnType;
+        } else {
+          rawReturnType =
+              ParameterizedTypeName.get(MICRONAUT_HTTP_RESPONSE.getClassName(), returnType);
+        }
+
+        MethodContext contextRaw =
+            new MethodContext(
+                rawReturnType,
+                verb.getParameters(),
+                verb.getHeaders(),
+                paramClasses,
+                representation,
+                pathParams,
+                parser);
+
+        if (GET_COLLECTION.equals(verb.getVerb())) {
+
+          if (directEntity) {
+            continue;
+          }
+
+          context.setMethodName("getCollectionHateoas");
+          this.typeBuilder.addMethod(createMethod(context).build());
+
+          if (resourceContractContainer.getResourceContract().getSubresources().stream()
+              .anyMatch(SubResource::isExpandable)) {
+            context.setMethodName("getCollectionHateoasExpanded");
+            context.setExpandable(true);
+            this.typeBuilder.addMethod(createMethod(context).build());
+          }
+
+          contextRaw.setMethodName("getCollectionRaw");
+          this.typeBuilder.addMethod(createMethod(contextRaw).build());
+
+        } else if (GET_ENTITY.equals(verb.getVerb())) {
+
+          context.setMethodName("getEntityHateoas");
+          this.typeBuilder.addMethod(createMethod(context).build());
+
+          if (resourceContractContainer.getResourceContract().getSubresources().stream()
+              .anyMatch(SubResource::isExpandable)) {
+            context.setMethodName("getEntityHateoasExpanded");
+            context.setExpandable(true);
+            this.typeBuilder.addMethod(createMethod(context).build());
+          }
+
+          contextRaw.setMethodName("getEntityRaw");
+          this.typeBuilder.addMethod(createMethod(contextRaw).build());
+
+        } else if (HEAD_COLLECTION.equals(verb.getVerb())) {
+
+          // do nothing
+
+        } else if (HEAD_ENTITY.equals(verb.getVerb())) {
+
+          // do nothing
+
+        } else {
+          ClassName model = resourceModelName(verb);
+
+          if (POST.equals(verb.getVerb()) || POST_ENTITY.equals(verb.getVerb())) {
+
+            paramClasses.put("model", model);
+            context.setMethodName("createEntityHateoas");
+            this.typeBuilder.addMethod(createMethod(context).build());
+
+            contextRaw.setMethodName("createEntityRaw");
+            this.typeBuilder.addMethod(createMethod(contextRaw).build());
+
+          } else if (POST_COLLECTION.equals(verb.getVerb())) {
+            paramClasses.put(
+                "model", ParameterizedTypeName.get(ClassName.get(Collection.class), model));
+            context.setMethodName("createCollectionHateoas");
+            this.typeBuilder.addMethod(createMethod(context).build());
+
+            contextRaw.setMethodName("createCollectionRaw");
+            this.typeBuilder.addMethod(createMethod(contextRaw).build());
+
+          } else if (PUT.equals(verb.getVerb()) || PUT_ENTITY.equals(verb.getVerb())) {
+            paramClasses.put("model", model);
+            context.setMethodName("updateEntityHateoas");
+            this.typeBuilder.addMethod(createMethod(context).build());
+
+            contextRaw.setMethodName("updateEntityRaw");
+            this.typeBuilder.addMethod(createMethod(contextRaw).build());
+
+          } else if (PUT_COLLECTION.equals(verb.getVerb())) {
+
+            paramClasses.put(
+                "model", ParameterizedTypeName.get(ClassName.get(Collection.class), model));
+            context.setMethodName("updateCollectionHateoas");
+            this.typeBuilder.addMethod(createMethod(context).build());
+
+            contextRaw.setMethodName("updateCollectionRaw");
+            this.typeBuilder.addMethod(createMethod(contextRaw).build());
+
+          } else if (DELETE_COLLECTION.equals(verb.getVerb())) {
+
+            context.setMethodName("deleteCollectionHateoas");
+            this.typeBuilder.addMethod(createMethod(context).build());
+
+            contextRaw.setMethodName("deleteCollectionRaw");
+            this.typeBuilder.addMethod(createMethod(contextRaw).build());
+
+          } else if (DELETE_ENTITY.equals(verb.getVerb())) {
+
+            context.setMethodName("deleteEntityHateoas");
+            this.typeBuilder.addMethod(createMethod(context).build());
+
+            contextRaw.setMethodName("deleteEntityRaw");
+            this.typeBuilder.addMethod(createMethod(contextRaw).build());
+
+          } else {
+            throw new IllegalArgumentException(String.format("Verb %s is unknown", verb.getVerb()));
+          }
+        }
+      }
+      this.currentVerb = null;
+    }
+  }
+
+  @Override
   public void generateResourceMethods() {
 
     if (isAbstractOrInterfaceResource()) {
@@ -284,7 +481,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
                 paramClasses,
                 representation,
                 pathParams,
-                directEntity);
+                parser);
 
         if (GET_COLLECTION.equals(verb.getVerb())) {
 
@@ -485,20 +682,20 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
     ResourceContract resourceContract = getResourceContractContainer().getResourceContract();
 
     List<Verb> verbs;
-    List<Verb> declaredVerbs = resourceContract.getVerbs();
+    List<Verb> declaredVerbs =
+        resourceContract.getVerbs().stream()
+            .filter(Verb::containsRepresentationJson)
+            .collect(Collectors.toList());
     ensureHeadVerbHasGetVerbCounterpart(declaredVerbs);
 
-    if (declaredVerbs.size() == 1 && declaredVerbs.get(0).getVerb().equals(GET_COLLECTION)) {
+    if (declaredVerbs.size() == 1 && GET_COLLECTION.equals(declaredVerbs.get(0).getVerb())) {
       verbs = declaredVerbs;
     } else {
 
       List<String> excludeVerbs = new ArrayList<>();
       excludeVerbs.add(DELETE_ENTITY);
 
-      Optional<Verb> getEntity =
-          declaredVerbs.stream().filter(verb -> verb.getVerb().equals(GET_ENTITY)).findAny();
-
-      if (getEntity.isPresent()) {
+      if (declaredVerbs.stream().anyMatch(verb -> GET_ENTITY.equals(verb.getVerb()))) {
         excludeVerbs.add(GET_COLLECTION);
       }
 
@@ -524,130 +721,124 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
         continue;
       }
 
-      List<String> fieldNamesApplied = new ArrayList<>();
+      List<ResourceField> fieldNamesApplied = new ArrayList<>();
 
       TypeSpec.Builder builder = resourceModelBaseInstance(verb);
-      Optional<Representation> jsonRepresentation =
-          verbGet.getRepresentations().stream().filter(r -> "json".equals(r.getName())).findAny();
 
-      if (jsonRepresentation.isPresent()) {
+      if (fields.stream().anyMatch(f -> "id".equals(f.getName()))) {
+        builder.addSuperinterface(RESTAPI_IDENTIFIABLE.getTypeName());
+      }
 
-        Optional<ResourceField> idField =
-            fields.stream().filter(f -> "id".equals(f.getName())).findAny();
+      // add default constructor
+      builder.addMethod(MethodSpec.constructorBuilder().addModifiers(PUBLIC).build());
 
-        if (idField.isPresent()) {
-          builder.addSuperinterface(RESTAPI_IDENTIFIABLE.getTypeName());
+      for (ResourceField field : fields) {
+
+        if (!field.isVisible() && verb.equals(verbGet)) continue;
+        if (field.isReadonly() && !verb.equals(verbGet)) continue;
+
+        fieldNamesApplied.add(field);
+
+        TypeName fieldType = getFieldType(types, field);
+
+        if (field.isMultiple()) {
+          ClassName list = ClassName.get(List.class);
+          fieldType = ParameterizedTypeName.get(list, fieldType);
         }
 
-        for (ResourceField field : fields) {
+        FieldSpec.Builder fieldBuilder = FieldSpec.builder(fieldType, field.getName(), PRIVATE);
 
-          if (!field.isVisible() && verb.equals(verbGet)) continue;
-          if (field.isReadonly() && !verb.equals(verbGet)) continue;
-
-          fieldNamesApplied.add(field.getName());
-
-          TypeName fieldType = getFieldType(types, field);
-
-          if (field.isMultiple()) {
-            ClassName list = ClassName.get(List.class);
-            fieldType = ParameterizedTypeName.get(list, fieldType);
-          }
-
-          FieldSpec.Builder fieldBuilder = FieldSpec.builder(fieldType, field.getName(), PRIVATE);
-
-          if (field.getxComment() != null) {
-            fieldBuilder.addJavadoc(String.format("%s\n", field.getxComment()));
-          }
-
-          if (field.getMandatory().stream().anyMatch(v -> v.equalsIgnoreCase(verb.getVerb()))) {
-            fieldBuilder.addAnnotation(createAnnotation(JAVAX_VALIDATION_NOT_NULL));
-          }
-
-          boolean isEntityGet = hasGetEntityVerb() && verb.equals(verbGet);
-
-          if (!isEntityGet && "email".equalsIgnoreCase(field.getType())) {
-            fieldBuilder.addAnnotation(
-                AnnotationSpec.builder(JAVAX_VALIDATION_EMAIL.getClassName()).build());
-          }
-
-          if (!isEntityGet && "phoneNumber".equalsIgnoreCase(field.getType())) {
-            fieldBuilder.addAnnotation(
-                AnnotationSpec.builder(VALIDATION_PHONE_NUMBER.getClassName()).build());
-          }
-
-          if (!isEntityGet
-              && (field.getMin() instanceof Number || field.getMax() instanceof Number)) {
-
-            Number min = field.getMin();
-            Number max = field.getMax();
-
-            if ("string".equalsIgnoreCase(field.getType())) {
-
-              AnnotationSpec.Builder annoBuilder =
-                  AnnotationSpec.builder(JAVAX_VALIDATION_SIZE.getClassName());
-
-              if (field.getMin() != null) {
-                annoBuilder.addMember("min", "$L", min.intValue());
-              }
-
-              if (field.getMax() != null) {
-                annoBuilder.addMember("max", "$L", max.intValue());
-              }
-              fieldBuilder.addAnnotation(annoBuilder.build());
-
-            } else if ("decimal".equalsIgnoreCase(field.getType())) {
-              fieldBuilder.addAnnotation(
-                  AnnotationSpec.builder(JAVAX_VALIDATION_DECIMAL_MIN.getClassName())
-                      .addMember("value", "$S", min.doubleValue())
-                      .build());
-              fieldBuilder.addAnnotation(
-                  AnnotationSpec.builder(JAVAX_VALIDATION_DECIMAL_MAX.getClassName())
-                      .addMember("value", "$S", max.doubleValue())
-                      .build());
-            } else if ("int".equalsIgnoreCase(field.getType())) {
-              fieldBuilder.addAnnotation(
-                  AnnotationSpec.builder(JAVAX_VALIDATION_MIN.getClassName())
-                      .addMember("value", "$L", min.intValue())
-                      .build());
-              fieldBuilder.addAnnotation(
-                  AnnotationSpec.builder(JAVAX_VALIDATION_MAX.getClassName())
-                      .addMember("value", "$L", max.intValue())
-                      .build());
-            }
-          }
-
-          if (field.isMultiple()) {
-            fieldBuilder.initializer("new java.util.ArrayList<>()");
-          } else if (field.getDefaultValue() != null) {
-
-            if (fieldType == STRING.getClassName()) {
-              fieldBuilder.initializer("$S", field.getDefaultValue());
-            } else if (fieldType == DATE.getClassName()) {
-              fieldBuilder.initializer("$T.now()", ClassName.get(LocalDate.class));
-            } else if (fieldType == DATETIME.getClassName()) {
-              fieldBuilder.initializer("$T.now()", ClassName.get(LocalDateTime.class));
-            } else if (fieldType == BOOL.getClassName()) {
-              fieldBuilder.initializer(
-                  "$T.$L",
-                  ClassName.get(Boolean.class),
-                  Boolean.TRUE.equals(field.getDefaultValue()) ? "TRUE" : "FALSE");
-            } else {
-              fieldBuilder.initializer("$S", field.getDefaultValue());
-            }
-          }
-          builder.addField(fieldBuilder.build());
-
-          // write Getter/Setters
-          writeGetterSetter(builder, fieldType, field.getName());
+        if (field.getxComment() != null) {
+          fieldBuilder.addJavadoc(String.format("%s\n", field.getxComment()));
         }
+
+        if (field.getMandatory().stream().anyMatch(v -> v.equalsIgnoreCase(verb.getVerb()))) {
+          fieldBuilder.addAnnotation(createAnnotation(JAVAX_VALIDATION_NOT_NULL));
+        }
+
+        boolean isEntityGet = hasGetEntityVerb() && verb.equals(verbGet);
+
+        if (!isEntityGet && "email".equalsIgnoreCase(field.getType())) {
+          fieldBuilder.addAnnotation(
+              AnnotationSpec.builder(JAVAX_VALIDATION_EMAIL.getClassName()).build());
+        }
+
+        if (!isEntityGet && "phoneNumber".equalsIgnoreCase(field.getType())) {
+          fieldBuilder.addAnnotation(
+              AnnotationSpec.builder(VALIDATION_PHONE_NUMBER.getClassName()).build());
+        }
+
+        if (!isEntityGet && (field.getMin() != null || field.getMax() != null)) {
+
+          Number min = field.getMin();
+          Number max = field.getMax();
+
+          if ("string".equalsIgnoreCase(field.getType())) {
+
+            AnnotationSpec.Builder annoBuilder =
+                AnnotationSpec.builder(JAVAX_VALIDATION_SIZE.getClassName());
+
+            if (field.getMin() != null) {
+              annoBuilder.addMember("min", "$L", min.intValue());
+            }
+
+            if (field.getMax() != null) {
+              annoBuilder.addMember("max", "$L", max.intValue());
+            }
+            fieldBuilder.addAnnotation(annoBuilder.build());
+
+          } else if ("decimal".equalsIgnoreCase(field.getType())) {
+            fieldBuilder.addAnnotation(
+                AnnotationSpec.builder(JAVAX_VALIDATION_DECIMAL_MIN.getClassName())
+                    .addMember("value", "$S", min.doubleValue())
+                    .build());
+            fieldBuilder.addAnnotation(
+                AnnotationSpec.builder(JAVAX_VALIDATION_DECIMAL_MAX.getClassName())
+                    .addMember("value", "$S", max.doubleValue())
+                    .build());
+          } else if ("int".equalsIgnoreCase(field.getType())) {
+            fieldBuilder.addAnnotation(
+                AnnotationSpec.builder(JAVAX_VALIDATION_MIN.getClassName())
+                    .addMember("value", "$L", min.intValue())
+                    .build());
+            fieldBuilder.addAnnotation(
+                AnnotationSpec.builder(JAVAX_VALIDATION_MAX.getClassName())
+                    .addMember("value", "$L", max.intValue())
+                    .build());
+          }
+        }
+
+        if (field.isMultiple()) {
+          fieldBuilder.initializer("new java.util.ArrayList<>()");
+        } else if (field.getDefaultValue() != null) {
+
+          if (fieldType == STRING.getClassName()) {
+            fieldBuilder.initializer("$S", field.getDefaultValue());
+          } else if (fieldType == DATE.getClassName()) {
+            fieldBuilder.initializer("$T.now()", ClassName.get(LocalDate.class));
+          } else if (fieldType == DATETIME.getClassName()) {
+            fieldBuilder.initializer("$T.now()", ClassName.get(Instant.class));
+          } else if (fieldType == BOOL.getClassName()) {
+            fieldBuilder.initializer(
+                "$T.$L",
+                ClassName.get(Boolean.class),
+                Boolean.TRUE.equals(field.getDefaultValue()) ? "TRUE" : "FALSE");
+          } else {
+            fieldBuilder.initializer("$S", field.getDefaultValue());
+          }
+        }
+        builder.addField(fieldBuilder.build());
+
+        // write Getter/Setters
+        writeGetterSetter(builder, fieldType, field.getName());
       }
 
       if (!fieldNamesApplied.isEmpty()) {
         ClassName resourceModelName = resourceModelName(verb);
 
         // --> overwrite equals method
-        String equalsParamName = "other";
-        String equalsCastVarName = "that";
+        final String equalsParamName = "other";
+        final String equalsCastVarName = "that";
 
         MethodSpec.Builder equalsBuilder =
             MethodSpec.methodBuilder("equals")
@@ -669,6 +860,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
         String code =
             fieldNamesApplied.stream()
+                .map(ResourceField::getName)
                 .map(f -> "get" + LOWER_CAMEL.to(UPPER_CAMEL, f))
                 .map(f -> "$T.equals(" + f + "(), " + equalsCastVarName + "." + f + "())")
                 .collect(Collectors.joining(" && "));
@@ -686,16 +878,39 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
                 .addModifiers(PUBLIC)
                 .returns(INT);
 
-        code = "$T.hash(" + String.join(", ", fieldNamesApplied) + ")";
+        code =
+            "$T.hash("
+                + String.join(
+                    ", ",
+                    fieldNamesApplied.stream()
+                        .map(ResourceField::getName)
+                        .collect(Collectors.toList()))
+                + ")";
 
         hashCodeBuilder.addStatement("return " + code, Objects.class);
 
         builder.addMethod(hashCodeBuilder.build());
 
+        // fully qualified constructor
+        MethodSpec.Builder constructorBuilder =
+            MethodSpec.constructorBuilder().addModifiers(PUBLIC);
+
+        fieldNamesApplied.forEach(
+            field -> {
+              TypeName fieldType = getFieldType(types, field);
+              if (field.isMultiple()) {
+                ClassName list = ClassName.get(List.class);
+                fieldType = ParameterizedTypeName.get(list, fieldType);
+              }
+
+              constructorBuilder.addParameter(fieldType, field.getName());
+              constructorBuilder.addStatement("this.$N = $N", field.getName(), field.getName());
+            });
+        builder.addMethod(constructorBuilder.build());
+
         specTypes.add(builder.build());
       }
     }
-
     return specTypes;
   }
 

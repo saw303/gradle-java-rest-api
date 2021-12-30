@@ -114,4 +114,12 @@ public class Verb implements Serializable {
   public String toString() {
     return this.getVerb();
   }
+
+  public boolean containsRepresentation(String name) {
+    return this.getRepresentations().stream().anyMatch(r -> r.getName().equals(name));
+  }
+
+  public boolean containsRepresentationJson() {
+    return containsRepresentation("json");
+  }
 }

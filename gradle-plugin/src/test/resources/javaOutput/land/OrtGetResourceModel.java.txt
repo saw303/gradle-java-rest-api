@@ -27,6 +27,15 @@ public class OrtGetResourceModel implements Serializable, ResourceModel, Identif
    */
   private CoordinatesType koordinaten;
 
+  public OrtGetResourceModel() {
+  }
+
+  public OrtGetResourceModel(String id, String name, CoordinatesType koordinaten) {
+    this.id = id;
+    this.name = name;
+    this.koordinaten = koordinaten;
+  }
+
   public String getId() {
     return this.id;
   }

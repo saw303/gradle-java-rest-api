@@ -33,10 +33,10 @@ import java.nio.charset.Charset
  */
 class RestApiExtension {
 
-
 	Project project
 	String packageName
 	File optionsSource
+	InputProcessingMode inputProcessingMode = InputProcessingMode.FLATDIR
 	File generatorOutput = project.file("${project.buildDir}/src/generated/java")
 	File generatorImplOutput = project.file("${project.projectDir}/src/main/java")
 	Closure objectResourceModelMapping = { resource, field -> throw new RuntimeException("No object resource model mapping for field ${field.name} and resource ${description}") }
@@ -48,6 +48,7 @@ class RestApiExtension {
 	File asciiDocOutput = new File(project.buildDir, 'asciiDocGenerated')
 	boolean diagramShowFields = false
 	GenerationMode generationMode = GenerationMode.ALL
+	String clientId = "osl"
 
 	RestApiExtension(Project project) {
 		this.project = project
@@ -66,6 +67,10 @@ class RestApiExtension {
 
 	void setObjectResourceModelMapping(Closure objectResourceModelMapping) {
 		this.objectResourceModelMapping = objectResourceModelMapping
+	}
+
+	void setInputProcessingMode(InputProcessingMode inputProcessingMode) {
+		this.inputProcessingMode = inputProcessingMode
 	}
 
 	void setOptionsSource(File optionsSource) {

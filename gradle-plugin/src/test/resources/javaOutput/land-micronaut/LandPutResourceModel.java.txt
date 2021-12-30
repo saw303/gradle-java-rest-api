@@ -55,6 +55,18 @@ public class LandPutResourceModel implements Serializable, ResourceModel, Identi
   @NotNull
   private CoordinatesType koordinaten;
 
+  public LandPutResourceModel() {
+  }
+
+  public LandPutResourceModel(String id, String name, LocalDate gruendungsDatum, Integer flaeche,
+      CoordinatesType koordinaten) {
+    this.id = id;
+    this.name = name;
+    this.gruendungsDatum = gruendungsDatum;
+    this.flaeche = flaeche;
+    this.koordinaten = koordinaten;
+  }
+
   public String getId() {
     return this.id;
   }

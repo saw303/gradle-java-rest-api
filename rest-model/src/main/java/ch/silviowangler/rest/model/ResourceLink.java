@@ -28,6 +28,7 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * Represents a resource link used in {@link EntityModel} or {@link CollectionModel}.
@@ -97,21 +98,6 @@ public class ResourceLink implements Serializable {
     this.params = params;
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    ResourceLink that = (ResourceLink) o;
-    return Objects.equals(rel, that.rel)
-        && Objects.equals(method, that.method)
-        && Objects.equals(href, that.href);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(rel, method, href);
-  }
-
   /**
    * Generates a self link from URI string representation.
    *
@@ -124,5 +110,31 @@ public class ResourceLink implements Serializable {
 
   public static ResourceLink relLink(String rel, String uri) {
     return new ResourceLink(rel, "GET", URI.create(uri));
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    ResourceLink that = (ResourceLink) o;
+    return Objects.equals(rel, that.rel)
+        && Objects.equals(method, that.method)
+        && Objects.equals(href, that.href)
+        && Objects.equals(params, that.params);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(rel, method, href, params);
+  }
+
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", ResourceLink.class.getSimpleName() + "[", "]")
+        .add("rel='" + rel + "'")
+        .add("method='" + method + "'")
+        .add("href=" + href)
+        .add("params=" + params)
+        .toString();
   }
 }

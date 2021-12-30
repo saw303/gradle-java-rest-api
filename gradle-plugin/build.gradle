@@ -1,5 +1,6 @@
 plugins {
 	id 'java-gradle-plugin'
+	id 'maven-publish'
 }
 
 gradlePlugin {
@@ -7,6 +8,27 @@ gradlePlugin {
 		restapi {
 			id = 'ch.silviowangler.restapi'
 			implementationClass = 'ch.silviowangler.gradle.restapi.RestApiPlugin'
+		}
+	}
+}
+
+publishing {
+	repositories {
+		maven {
+			name = "GitHubPackages"
+			url = uri("https://maven.pkg.github.com/saw303/gradle-java-rest-api")
+			credentials {
+				username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+				password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+			}
+		}
+		maven {
+			name = "Onstructive"
+			url = uri(project.findProperty("artifactory_url"))
+			credentials {
+				username = project.findProperty("artifactory_user") ?: System.getenv("A_USERNAME")
+				password = project.findProperty("artifactory_password") ?: System.getenv("A_TOKEN")
+			}
 		}
 	}
 }
@@ -27,7 +49,7 @@ dependencies {
 	implementation "com.google.guava:guava:${guavaVersion}"
 	implementation "com.google.code.gson:gson:${gsonVersion}"
 
-	implementation 'net.sourceforge.plantuml:plantuml:8059'
+	implementation 'net.sourceforge.plantuml:plantuml:1.2021.4'
 	implementation 'org.apache.commons:commons-lang3:3.11'
 }
 
@@ -38,14 +60,6 @@ task checkVersion(type: Test) {
 	String msg = "Wrong version in ${file.absolutePath}"
 
 	if (!content.contains("final String pluginVersion = \"${project.version}\"")) {
-		throw new RuntimeException(msg)
-	}
-
-	if (!content.contains("implementation \"ch.silviowangler.rest:rest-api-spring:\${pluginVersion}\"")) {
-		throw new RuntimeException(msg)
-	}
-
-	if (!content.contains("implementation \"ch.silviowangler.rest:rest-api-micronaut:\${pluginVersion}\"")) {
 		throw new RuntimeException(msg)
 	}
 }

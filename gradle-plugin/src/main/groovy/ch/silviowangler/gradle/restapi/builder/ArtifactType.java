@@ -29,5 +29,6 @@ public enum ArtifactType {
   ABSTRACT_RESOURCE,
   DELEGATOR_RESOURCE,
   RESOURCE_IMPL,
-  MODEL
+  MODEL,
+  CLIENT
 }
