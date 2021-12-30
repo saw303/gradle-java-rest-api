@@ -1,5 +1,9 @@
 ext { pomDescription = 'Add ons for the Micronaut framework' }
 
+repositories {
+	mavenCentral()
+}
+
 dependencies {
 
 	api project(':rest-model')
@@ -11,6 +15,7 @@ dependencies {
 	compileOnly "io.micronaut:micronaut-runtime:${micronautVersion}"
 	compileOnly "io.micronaut:micronaut-http:${micronautVersion}"
 	compileOnly "io.micronaut:micronaut-router:${micronautVersion}"
+	compileOnly "io.micronaut:micronaut-validation:${micronautVersion}"
 	compileOnly "io.reactivex.rxjava2:rxjava:2.2.12"
 	compileOnly "com.fasterxml.jackson.core:jackson-databind:2.10.0"
 	compileOnly 'io.micronaut.data:micronaut-data-model:1.0.2'

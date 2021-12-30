@@ -32,6 +32,17 @@ public class ProductproposalGetResourceModel implements Serializable, ResourceMo
    */
   private Boolean nextButtonSelected;
 
+  public ProductproposalGetResourceModel() {
+  }
+
+  public ProductproposalGetResourceModel(List<ProposalType> proposal, MonetaryAmount premiumTotal,
+      Boolean addAnotherPersonSelected, Boolean nextButtonSelected) {
+    this.proposal = proposal;
+    this.premiumTotal = premiumTotal;
+    this.addAnotherPersonSelected = addAnotherPersonSelected;
+    this.nextButtonSelected = nextButtonSelected;
+  }
+
   public List<ProposalType> getProposal() {
     return this.proposal;
   }

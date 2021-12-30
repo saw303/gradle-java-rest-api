@@ -39,6 +39,7 @@ import ch.silviowangler.gradle.restapi.GeneratorUtil;
 import ch.silviowangler.gradle.restapi.PluginTypes;
 import ch.silviowangler.gradle.restapi.builder.AbstractResourceBuilder;
 import ch.silviowangler.gradle.restapi.builder.ArtifactType;
+import ch.silviowangler.gradle.restapi.builder.MethodContext;
 import ch.silviowangler.rest.contract.model.v1.Header;
 import ch.silviowangler.rest.contract.model.v1.Representation;
 import ch.silviowangler.rest.contract.model.v1.Verb;
@@ -77,6 +78,12 @@ public class SpringRootResourceFactory extends AbstractResourceBuilder {
 
     generateResourceMethods();
     return resourceBuilder.build();
+  }
+
+  @Override
+  public TypeSpec buildClient() {
+    throw new UnsupportedOperationException(
+        "Client code generation is not supported with Spring Boot");
   }
 
   @Override
@@ -144,8 +151,7 @@ public class SpringRootResourceFactory extends AbstractResourceBuilder {
   }
 
   @Override
-  public Iterable<AnnotationSpec> getResourceMethodAnnotations(
-      boolean applyId, Representation representation, String methodName) {
+  public Iterable<AnnotationSpec> getResourceMethodAnnotations(MethodContext methodContext) {
     List<AnnotationSpec> annotations = new ArrayList<>();
 
     String httpMethod = getHttpMethod();
@@ -155,7 +161,8 @@ public class SpringRootResourceFactory extends AbstractResourceBuilder {
     builder.addMember(
         "method", "$T." + httpMethod.toUpperCase(), SPRING_REQUEST_METHOD.getClassName());
 
-    if (applyId) {
+    Representation representation = methodContext.getRepresentation();
+    if (isIdGenerationRequired(methodContext)) {
       if (representation.isJson()) {
         builder.addMember("path", "\"/{$L}\"", "id");
       } else {
@@ -174,6 +181,7 @@ public class SpringRootResourceFactory extends AbstractResourceBuilder {
     List<String> responseStatusRequired =
         Arrays.asList("createEntity", "deleteEntity", "deleteCollection");
 
+    String methodName = methodContext.getMethodName();
     if (responseStatusRequired.contains(methodName)) {
 
       String v;

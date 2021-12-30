@@ -54,6 +54,18 @@ public class LandPostResourceModel implements Serializable, ResourceModel, Ident
   @NotNull
   private CoordinatesType koordinaten;
 
+  public LandPostResourceModel() {
+  }
+
+  public LandPostResourceModel(String id, String name, LocalDate gruendungsDatum, Integer flaeche,
+      CoordinatesType koordinaten) {
+    this.id = id;
+    this.name = name;
+    this.gruendungsDatum = gruendungsDatum;
+    this.flaeche = flaeche;
+    this.koordinaten = koordinaten;
+  }
+
   public String getId() {
     return this.id;
   }

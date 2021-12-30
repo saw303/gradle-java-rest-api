@@ -62,6 +62,35 @@
           "comment": "Jeder darf nach Partner suchen"
         }
       ]
+    },
+    {
+      "verb": "GET_ENTITY",
+      "rel": "entity",
+      "collectionLimit": 19,
+      "maxCollectionLimit": 101,
+      "responseStates": [
+        {
+          "code": 200,
+          "message": "200 Ok",
+          "comment": "content in response body"
+        },
+        {
+          "code": 503,
+          "message": "503 Service Unavailable",
+          "comment": "Backend server eventually not reachable or to slow"
+        }
+      ],
+      "representations": [
+        {
+          "name": "xml",
+          "comment": "",
+          "responseExample": "{...}",
+          "isDefault": true,
+          "mimetype": "application/xml"
+        }
+      ],
+      "parameters": [],
+      "permissions": []
     }
   ],
   "fields": [

@@ -44,5 +44,22 @@ enum GenerationMode {
 	/**
 	 * Generates the framework specific implementation classes only.
 	 */
-	IMPLEMENTATION
+	IMPLEMENTATION,
+
+	/**
+	 * Generates the framework specific client implementation.
+	 */
+	CLIENT
+
+	boolean isApiCodeGenerationRequired() {
+		return this != IMPLEMENTATION;
+	}
+
+	boolean isServerCodeGenerationRequired() {
+		return this == ALL || this == IMPLEMENTATION;
+	}
+
+	boolean isClientCodeGenerationRequired() {
+		return this == CLIENT;
+	}
 }

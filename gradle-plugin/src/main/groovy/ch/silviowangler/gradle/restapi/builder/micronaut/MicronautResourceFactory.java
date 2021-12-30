@@ -23,12 +23,16 @@
  */
 package ch.silviowangler.gradle.restapi.builder.micronaut;
 
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAKARTA_INJECT;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAKARTA_SINGLETON;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_INJECT;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_NULLABLE;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_SINGLETON;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_NOT_EMPTY;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_NOT_NULL;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_SIZE;
+import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_CLIENT;
+import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_CONSUMES;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_CONTROLLER;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_DATE_FORMAT;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_DATE_TIME_FORMAT;
@@ -47,11 +51,16 @@ import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_PUT;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_QUERY_VALUE;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_REQUEST_BODY;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_STATUS;
+import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_VALIDATED;
 import static ch.silviowangler.gradle.restapi.PluginTypes.RESTAPI_RESPONSE_CREATOR;
+import static ch.silviowangler.gradle.restapi.builder.ArtifactType.CLIENT;
 import static ch.silviowangler.gradle.restapi.builder.ArtifactType.DELEGATOR_RESOURCE;
 
+import ch.silviowangler.gradle.restapi.GenerationMode;
 import ch.silviowangler.gradle.restapi.GeneratorUtil;
 import ch.silviowangler.gradle.restapi.PluginTypes;
+import ch.silviowangler.gradle.restapi.RestApiExtension;
+import ch.silviowangler.gradle.restapi.TargetFramework;
 import ch.silviowangler.gradle.restapi.builder.AbstractResourceBuilder;
 import ch.silviowangler.gradle.restapi.builder.ArtifactType;
 import ch.silviowangler.gradle.restapi.builder.MethodContext;
@@ -78,6 +87,11 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
 
   private static final ClassName STRING_CLASS = ClassName.get(String.class);
   private static final String DELEGATE_VAR_NAME = "delegate";
+  private final RestApiExtension restApiExtension;
+
+  public MicronautResourceFactory(RestApiExtension restApiExtension) {
+    this.restApiExtension = restApiExtension;
+  }
 
   @Override
   protected void createOptionsMethod() {
@@ -111,18 +125,42 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
             .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
             .build();
 
-    MethodSpec constructor =
+    MethodSpec.Builder methodBuilder =
         MethodSpec.constructorBuilder()
             .addModifiers(Modifier.PUBLIC)
             .addParameter(delegatorClass, DELEGATE_VAR_NAME)
-            .addStatement("this.$N = $N", DELEGATE_VAR_NAME, DELEGATE_VAR_NAME)
-            .addAnnotation(createAnnotation(JAVAX_INJECT))
-            .build();
+            .addStatement("this.$N = $N", DELEGATE_VAR_NAME, DELEGATE_VAR_NAME);
+
+    if (this.restApiExtension.getTargetFramework() == TargetFramework.MICRONAUT_3) {
+      methodBuilder = methodBuilder.addAnnotation(createAnnotation(JAKARTA_INJECT));
+    } else {
+      methodBuilder = methodBuilder.addAnnotation(createAnnotation(JAVAX_INJECT));
+    }
+
+    MethodSpec constructor = methodBuilder.build();
 
     resourceBuilder.addField(fieldDelegate);
     resourceBuilder.addMethod(constructor);
 
     generateResourceMethods();
+    return resourceBuilder.build();
+  }
+
+  @Override
+  public TypeSpec buildClient() {
+    reset();
+    setArtifactType(CLIENT);
+    TypeSpec.Builder resourceBuilder = resourceBaseTypeBuilder(clientName());
+
+    Map<String, Object> clientArgs = new HashMap<>();
+    clientArgs.put("id", this.restApiExtension.getClientId());
+
+    resourceBuilder.addAnnotation(createAnnotation(MICRONAUT_CLIENT, clientArgs));
+    resourceBuilder.addAnnotation(createAnnotation(MICRONAUT_VALIDATED));
+
+    generateResourceMethods();
+    generateClientMethods();
+
     return resourceBuilder.build();
   }
 
@@ -135,7 +173,11 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
             GeneratorUtil.createResourceDelegateName(
                 getResourceContractContainer().getSourceFileName()));
 
-    builder.addAnnotation(createAnnotation(JAVAX_SINGLETON));
+    if (this.restApiExtension.getTargetFramework() == TargetFramework.MICRONAUT_3) {
+      builder.addAnnotation(createAnnotation(JAKARTA_SINGLETON));
+    } else {
+      builder.addAnnotation(createAnnotation(JAVAX_SINGLETON));
+    }
 
     generateResourceMethods();
     return builder.build();
@@ -229,23 +271,38 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
   }
 
   @Override
-  public Iterable<AnnotationSpec> getResourceMethodAnnotations(
-      boolean applyId, Representation representation, String methodName) {
+  public Iterable<AnnotationSpec> getResourceMethodAnnotations(MethodContext methodContext) {
 
     List<AnnotationSpec> methodAnnotations = new ArrayList<>();
     String httpMethod = getHttpMethod();
+    boolean applyId = isIdGenerationRequired(methodContext);
+    Representation representation = methodContext.getRepresentation();
 
     Map<String, Object> annotationsFields = new HashMap<>();
 
-    if (applyId) {
-      if (representation.isJson()) {
-        annotationsFields.put("uri", "/{id}");
+    if (this.restApiExtension.getGenerationMode() == GenerationMode.CLIENT) {
+
+      if (applyId) {
+        annotationsFields.put("value", methodContext.getLinkParser().toBasePath() + "/{id}");
       } else {
-        annotationsFields.put("uri", String.format("/{id}.%s", representation.getName()));
+        annotationsFields.put("value", methodContext.getLinkParser().toBasePath());
       }
+
+      if (methodContext.isExpandable()) {
+        annotationsFields.put("value", annotationsFields.get("value") + "?expands=*");
+      }
+
     } else {
-      if (!representation.isJson()) {
-        annotationsFields.put("uri", String.format("/.%s", representation.getName()));
+      if (applyId) {
+        if (representation.isJson()) {
+          annotationsFields.put("uri", "/{id}");
+        } else {
+          annotationsFields.put("uri", String.format("/{id}.%s", representation.getName()));
+        }
+      } else {
+        if (!representation.isJson()) {
+          annotationsFields.put("uri", String.format("/.%s", representation.getName()));
+        }
       }
     }
 
@@ -276,11 +333,16 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
 
     annotationsFields.put("value", representation.getMimetype());
 
-    methodAnnotations.add(createAnnotation(MICRONAUT_PRODUCES, annotationsFields));
+    if (this.restApiExtension.getGenerationMode() == GenerationMode.CLIENT) {
+      methodAnnotations.add(createAnnotation(MICRONAUT_CONSUMES, annotationsFields));
+    } else {
+      methodAnnotations.add(createAnnotation(MICRONAUT_PRODUCES, annotationsFields));
+    }
 
     List<String> responseStatusRequired =
         Arrays.asList("createEntity", "deleteEntity", "deleteCollection");
 
+    String methodName = methodContext.getMethodName();
     if (responseStatusRequired.contains(methodName)) {
 
       String v;
@@ -292,9 +354,11 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
         throw new IllegalArgumentException("Unknown method name " + methodName);
       }
 
-      AnnotationSpec.Builder b = AnnotationSpec.builder(MICRONAUT_STATUS.getClassName());
-      b.addMember("value", v, MICRONAUT_HTTP_STATUS.getClassName());
-      methodAnnotations.add(b.build());
+      if (!this.restApiExtension.getGenerationMode().isClientCodeGenerationRequired()) {
+        AnnotationSpec.Builder b = AnnotationSpec.builder(MICRONAUT_STATUS.getClassName());
+        b.addMember("value", v, MICRONAUT_HTTP_STATUS.getClassName());
+        methodAnnotations.add(b.build());
+      }
     }
 
     return methodAnnotations;
@@ -312,7 +376,7 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
 
   @Override
   public boolean supportsInterfaces() {
-    return false;
+    return false || this.restApiExtension.getGenerationMode() == GenerationMode.CLIENT;
   }
 
   @Override

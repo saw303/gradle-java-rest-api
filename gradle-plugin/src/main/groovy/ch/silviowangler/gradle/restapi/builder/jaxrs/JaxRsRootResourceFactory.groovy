@@ -27,6 +27,7 @@ import ch.silviowangler.gradle.restapi.GeneratorUtil
 import ch.silviowangler.gradle.restapi.PluginTypes
 import ch.silviowangler.gradle.restapi.builder.AbstractResourceBuilder
 import ch.silviowangler.gradle.restapi.builder.ArtifactType
+import ch.silviowangler.gradle.restapi.builder.MethodContext
 import ch.silviowangler.rest.contract.model.v1.Header
 import ch.silviowangler.rest.contract.model.v1.Representation
 import ch.silviowangler.rest.contract.model.v1.Verb
@@ -84,6 +85,11 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder {
 	}
 
 	@Override
+	TypeSpec buildClient() {
+		throw new UnsupportedOperationException("Client code generation is not supported with JAX-RS")
+	}
+
+	@Override
 	TypeSpec buildResourceImpl() {
 		reset()
 		setArtifactType(ArtifactType.RESOURCE_IMPL)
@@ -102,16 +108,16 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder {
 	@Override
 	List<AnnotationSpec> getQueryParamAnnotations(VerbParameter paramName) {
 		// TODO handle VerbParameter options like required
-		return Collections.singletonList(createAnnotation(JAX_RS_QUERY_PARAM, ['value': paramName.getName()]))
+		return Collections.singletonList(createAnnotation(JAX_RS_QUERY_PARAM, ['value': paramName.name]))
 	}
 
 	@Override
 	List<AnnotationSpec> getHeaderAnnotations(Header header) {
-		return Collections.singletonList(createAnnotation(JAX_RS_HEADER_PARAM, ['value': header.getName()]))
+		return Collections.singletonList(createAnnotation(JAX_RS_HEADER_PARAM, ['value': header.name]))
 	}
 
 	@Override
-	Iterable<AnnotationSpec> getResourceMethodAnnotations(boolean applyId, Representation representation, String methodName) {
+	Iterable<AnnotationSpec> getResourceMethodAnnotations(MethodContext methodContext) {
 
 		List<AnnotationSpec> specs = []
 
@@ -129,10 +135,11 @@ class JaxRsRootResourceFactory extends AbstractResourceBuilder {
 			specs << createAnnotation(JAX_RS_DELETE_VERB)
 		}
 
+		Representation representation = methodContext.representation
 		specs << createProducesAnnotation(representation)
 
-		if (applyId) {
-			String postfix = representation.isJson() ? '' : ".${representation.name}"
+		if (isIdGenerationRequired(methodContext)) {
+			String postfix = representation.json ? '' : ".${representation.name}"
 			specs << createAnnotation(JAX_RS_PATH, ['value': "{id}${postfix}"])
 		}
 		return specs

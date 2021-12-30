@@ -16,6 +16,13 @@ public class SearchGetResourceModel implements Serializable, ResourceModel, Iden
    */
   private String id;
 
+  public SearchGetResourceModel() {
+  }
+
+  public SearchGetResourceModel(String id) {
+    this.id = id;
+  }
+
   public String getId() {
     return this.id;
   }

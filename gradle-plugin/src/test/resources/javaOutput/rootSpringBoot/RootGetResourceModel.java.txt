@@ -24,6 +24,15 @@ public class RootGetResourceModel implements Serializable, ResourceModel, Identi
 
   private List<InsuranceNeedsGroupType> needGroups = new java.util.ArrayList<>();
 
+  public RootGetResourceModel() {
+  }
+
+  public RootGetResourceModel(String id, String name, List<InsuranceNeedsGroupType> needGroups) {
+    this.id = id;
+    this.name = name;
+    this.needGroups = needGroups;
+  }
+
   public String getId() {
     return this.id;
   }

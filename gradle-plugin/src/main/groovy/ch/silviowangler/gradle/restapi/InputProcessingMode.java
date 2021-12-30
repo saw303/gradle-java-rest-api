@@ -1,7 +1,7 @@
 /*
  * MIT License
  * <p>
- * Copyright (c) 2016 - 2020 Silvio Wangler (silvio.wangler@gmail.com)
+ * Copyright (c) 2016 - 2021 Silvio Wangler (silvio.wangler@gmail.com)
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,27 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package ch.silviowangler.rest.model;
+package ch.silviowangler.gradle.restapi;
 
-/**
- * Implementation model for expanded GETs. Stores a named {@link ResourceModel}.
- *
- * @author Emanuele Mazzotta
- */
-public class EntityExpand extends Expand {
-
-  private ResourceModel data;
-
-  public EntityExpand(String name, ResourceModel data) {
-    super(name);
-    this.data = data;
-  }
-
-  public ResourceModel getData() {
-    return data;
-  }
-
-  public void setData(ResourceModel data) {
-    this.data = data;
-  }
+/** @author Silvio Wangler (silvio.wangler@onstructive.ch) */
+public enum InputProcessingMode {
+  FLATDIR,
+  RECURSIVE
 }

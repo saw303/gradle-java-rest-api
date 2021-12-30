@@ -97,7 +97,13 @@ public interface ResourceBuilder {
 
   TypeSpec buildResource();
 
+  TypeSpec buildClient();
+
   TypeSpec buildResourceImpl();
+
+  default String clientName() {
+    return resourceName() + "Client";
+  }
 
   default String resourceName() {
     return GeneratorUtil.createResourceName(getResourceContractContainer().getSourceFileName());
@@ -181,6 +187,8 @@ public interface ResourceBuilder {
 
   void generateResourceMethods();
 
+  void generateClientMethods();
+
   void generateMethodNotAllowedStatement(MethodSpec.Builder builder);
 
   ClassName getMethodNowAllowedReturnType();
@@ -203,15 +211,15 @@ public interface ResourceBuilder {
     methodBuilder.returns(context.getReturnType());
 
     final ArtifactType artifactType = getArtifactType();
-    final boolean isResourceInterface = ArtifactType.RESOURCE.equals(artifactType);
+    final boolean isResourceInterface =
+        ArtifactType.RESOURCE.equals(artifactType) || ArtifactType.CLIENT.equals(artifactType);
     final boolean isAbstractResourceClass = ArtifactType.ABSTRACT_RESOURCE.equals(artifactType);
     final boolean isDelegateResourceClass = ArtifactType.DELEGATOR_RESOURCE.equals(artifactType);
 
     if (isResourceInterface
         || isDelegateResourceClass
         || (isAbstractResourceClass && !isHandlerMethod(methodName))) {
-      Iterable<AnnotationSpec> annotations =
-          getResourceMethodAnnotations(isIdGenerationRequired(context), representation, methodName);
+      Iterable<AnnotationSpec> annotations = getResourceMethodAnnotations(context);
       methodBuilder.addAnnotations(annotations);
 
     } else if (ArtifactType.RESOURCE_IMPL.equals(artifactType) && inheritsFromResource()) {
@@ -382,6 +390,8 @@ public interface ResourceBuilder {
   }
 
   default boolean isIdGenerationRequired(MethodContext context) {
+    if (context.isDirectEntity()) return false;
+
     List<String> noId =
         Arrays.asList(
             "getOptions",
@@ -392,14 +402,7 @@ public interface ResourceBuilder {
             "headCollection",
             "deleteCollection");
 
-    if (context.isDirectEntity()) return false;
-
-    for (String s : noId) {
-      if (context.getMethodName().startsWith(s)) {
-        return false;
-      }
-    }
-    return true;
+    return noId.stream().noneMatch(s -> context.getMethodName().startsWith(s));
   }
 
   default boolean isDefaultMethodNotAllowed(String methodName) {
@@ -416,8 +419,7 @@ public interface ResourceBuilder {
    */
   List<AnnotationSpec> getHeaderAnnotations(Header header);
 
-  Iterable<AnnotationSpec> getResourceMethodAnnotations(
-      boolean applyId, Representation representation, String methodName);
+  Iterable<AnnotationSpec> getResourceMethodAnnotations(MethodContext methodContext);
 
   PluginTypes getPathVariableAnnotationType();
 

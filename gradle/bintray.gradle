@@ -1,84 +1,64 @@
-apply plugin: 'com.jfrog.bintray'
 apply plugin: 'maven-publish'
 
-bintray {
-    user = project.hasProperty('bintrayUser') ? bintrayUser : System.getenv('BINTRAY_USER')
-    key = project.hasProperty('bintrayKey') ? bintrayKey : System.getenv('BINTRAY_KEY')
-
-    pkg {
-        repo = 'gradle-plugins'
-        name = 'gradle-java-rest-api'
-        userOrg = 'saw303'
-        licenses = ['MIT']
-        vcsUrl = 'https://github.com/saw303/gradle-java-rest-api.git'
-
-        version {
-            name = project.version
-            desc = "Release ${project.version}"
-            released = new Date()
-        }
-    }
-    if (project.name != 'gradle-java-rest-api') {
-      publications = ['MyPublication']
-    }
-    else {
-      publications = ['MyPublication', 'restapiPluginMarkerMaven']
-    }
-}
-
 def pomConfig = {
-    developers {
-        developer {
-            id "saw303"
-            name "Silvio Wangler"
-            email "silvio.wangler@gmail.com"
-        }
+  developers {
+    developer {
+      id "saw303"
+      name "Silvio Wangler"
+      email "silvio.wangler@gmail.com"
     }
+  }
 
-    scm {
-        url "https://github.com/saw303/gradle-java-rest-api.git"
-    }
-}
-
-task sourcesJar(type: Jar) {
-    from sourceSets.main.allJava
-    archiveClassifier = 'sources'
-}
-
-task javadocJar(type: Jar) {
-    from javadoc
-    archiveClassifier = 'javadoc'
+  scm {
+    url "https://github.com/saw303/gradle-java-rest-api.git"
+  }
 }
 
 publishing {
-    publications {
-        MyPublication(MavenPublication) {
-            from components.java
-            artifact sourcesJar
-            artifact javadocJar
-            groupId 'ch.silviowangler.rest'
-            artifactId project.name
-            version project.version
-
-            pom.withXml {
-                def root = asNode()
-                root.appendNode('description', project.pomDescription)
-                root.appendNode('name', 'Silvio Wangler')
-                root.appendNode('url', 'https://github.com/saw303/gradle-java-rest-api')
-
-                def l = root.appendNode('licenses').appendNode('license')
-                l.appendNode('name', 'MIT')
-                l.appendNode('url', 'https://en.wikipedia.org/wiki/MIT_License')
-                l.appendNode('distribution', 'repo')
-
-                root.children().last() + pomConfig
-            }
-        }
+  repositories {
+    maven {
+      name = "GitHubPackages"
+      url = uri("https://maven.pkg.github.com/saw303/gradle-java-rest-api")
+      credentials {
+        username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+        password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+      }
     }
+    maven {
+      name = "Onstructive"
+      url = uri(project.findProperty("artifactory_url"))
+      credentials {
+        username = project.findProperty("artifactory_user") ?: System.getenv("A_USERNAME")
+        password = project.findProperty("artifactory_password") ?: System.getenv("A_TOKEN")
+      }
+    }
+  }
+  publications {
+    pluginMaven(MavenPublication) {
+      from components.java
+      groupId 'ch.silviowangler.rest'
+      artifactId project.name
+      version project.version
+
+      pom.withXml {
+        def root = asNode()
+        root.appendNode('description', project.pomDescription)
+        root.appendNode('name', 'Silvio Wangler')
+        root.appendNode('url', 'https://github.com/saw303/gradle-java-rest-api')
+
+        def l = root.appendNode('licenses').appendNode('license')
+        l.appendNode('name', 'MIT')
+        l.appendNode('url', 'https://en.wikipedia.org/wiki/MIT_License')
+        l.appendNode('distribution', 'repo')
+
+        root.children().last() + pomConfig
+      }
+    }
+  }
 }
 
 javadoc {
-    if(JavaVersion.current().isJava9Compatible()) {
-        options.addBooleanOption('html5', true)
-    }
+  if (JavaVersion.current().isJava9Compatible()) {
+    options.addBooleanOption('html5', true)
+  }
 }

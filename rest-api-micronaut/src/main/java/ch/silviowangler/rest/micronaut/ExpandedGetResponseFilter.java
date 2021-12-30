@@ -23,7 +23,9 @@
  */
 package ch.silviowangler.rest.micronaut;
 
-import static com.google.common.base.CaseFormat.*;
+import static com.google.common.base.CaseFormat.LOWER_CAMEL;
+import static com.google.common.base.CaseFormat.LOWER_HYPHEN;
+import static io.micronaut.core.naming.NameUtils.hyphenate;
 import static io.micronaut.http.HttpHeaders.ACCEPT_LANGUAGE;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -31,9 +33,7 @@ import ch.silviowangler.rest.contract.model.v1.Header;
 import ch.silviowangler.rest.contract.model.v1.ResourceContract;
 import ch.silviowangler.rest.contract.model.v1.SubResource;
 import ch.silviowangler.rest.contract.model.v1.Verb;
-import ch.silviowangler.rest.model.CollectionExpand;
 import ch.silviowangler.rest.model.CollectionModel;
-import ch.silviowangler.rest.model.EntityExpand;
 import ch.silviowangler.rest.model.EntityModel;
 import ch.silviowangler.rest.model.Expand;
 import ch.silviowangler.rest.model.Identifiable;
@@ -41,6 +41,8 @@ import ch.silviowangler.rest.model.ResourceModel;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.ApplicationContext;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.annotation.AnnotationValue;
+import io.micronaut.core.convert.ConversionService;
 import io.micronaut.http.HttpAttributes;
 import io.micronaut.http.HttpMethod;
 import io.micronaut.http.HttpRequest;
@@ -55,7 +57,9 @@ import io.reactivex.Flowable;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -251,24 +255,57 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
         Object bean = applicationContext.getBean(declaringType);
 
         // argument names in the right order
-        String[] argumentNames = executableMethod.getArgumentNames();
         // arguments in the right order
         Object[] argumentList =
-            Stream.of(argumentNames)
+            Stream.of(executableMethod.getArguments())
                 // terrible hack around limitations in REST contracts xRoute naming
-                .map(name -> variables.getOrDefault(name, variables.get("id")))
+                .map(
+                    argument -> {
+                      final Optional<AnnotationValue<io.micronaut.http.annotation.Header>> header =
+                          argument
+                              .getAnnotationMetadata()
+                              .findAnnotation(io.micronaut.http.annotation.Header.class);
+                      if (header.isPresent()) {
+                        final String headerValue =
+                            request
+                                .getHeaders()
+                                .findFirst(hyphenate(argument.getName()))
+                                .orElse(null);
+
+                        if (headerValue != null
+                            && ConversionService.SHARED.canConvert(
+                                headerValue.getClass(), argument.getType())) {
+                          return ConversionService.SHARED
+                              .convert(headerValue, argument.getType())
+                              .get();
+                        }
+                        return headerValue;
+                      } else {
+                        return variables.getOrDefault(argument.getName(), variables.get("id"));
+                      }
+                    })
                 .toArray();
 
         try {
 
           Object result = executableMethod.invoke(bean, argumentList);
 
-          Expand expandedData =
-              result instanceof Collection
-                  ? new CollectionExpand(expand, (Collection<ResourceModel>) result)
-                  : new EntityExpand(expand, (ResourceModel) result);
+          Expand expandedData = new Expand(expand);
 
-          initialBody.getExpands().add(expandedData);
+          if (result instanceof Collection) {
+            expandedData.setData((List<ResourceModel>) result);
+            initialBody.getExpands().add(expandedData);
+          } else if (result instanceof ResourceModel) {
+            expandedData.setData(Collections.singletonList((ResourceModel) result));
+            initialBody.getExpands().add(expandedData);
+          } else if (result != null) {
+            log.error(
+                "Expand {} is neither a collection nor a resource model (class: {})",
+                expand,
+                result.getClass().getCanonicalName());
+          } else {
+            log.error("Expand {} is null", expand);
+          }
         } catch (Exception e) {
           log.error("Exception caught while expanding sub resource " + expand, e);
         }
@@ -319,7 +356,8 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
       return Optional.of(contract);
 
     } catch (IllegalAccessException | NoSuchFieldException | IOException ex) {
-      log.error("Unable to read contract from class '{}'", resourceBean.getClass().getSimpleName());
+      log.error(
+          "Unable to read contract from class '{}'", resourceBean.getClass().getSimpleName(), ex);
       return Optional.empty();
     }
   }
