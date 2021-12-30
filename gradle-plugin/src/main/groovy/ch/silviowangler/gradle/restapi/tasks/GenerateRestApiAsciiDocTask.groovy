@@ -27,6 +27,7 @@ import ch.silviowangler.gradle.restapi.asciidoc.AsciiDocFieldsAssistant
 import ch.silviowangler.gradle.restapi.builder.ResourceContractContainer
 import groovy.text.SimpleTemplateEngine
 import org.apache.commons.lang3.StringUtils
+import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 

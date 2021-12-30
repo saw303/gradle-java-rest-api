@@ -25,6 +25,7 @@ package ch.silviowangler.rest.contract.model.v1;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.StringJoiner;
 
 /** @author Silvio Wangler */
 public class GeneralDetails implements Serializable {
@@ -79,7 +80,15 @@ public class GeneralDetails implements Serializable {
 
   @Override
   public int hashCode() {
-
     return Objects.hash(getName(), getDescription(), getVersion(), getxRoute());
+  }
+
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", GeneralDetails.class.getSimpleName() + "[", "]")
+        .add("name='" + name + "'")
+        .add("version='" + version + "'")
+        .add("xRoute='" + xRoute + "'")
+        .toString();
   }
 }

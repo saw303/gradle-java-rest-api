@@ -28,6 +28,7 @@ import ch.silviowangler.gradle.restapi.RestApiExtension
 import com.squareup.javapoet.JavaFile
 import com.squareup.javapoet.TypeSpec
 import org.gradle.api.GradleException
+import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 

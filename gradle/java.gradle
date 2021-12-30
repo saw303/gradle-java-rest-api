@@ -24,7 +24,13 @@ spotless {
   }
 }
 
-sourceCompatibility = 1.8
+java {
+  toolchain {
+    languageVersion = JavaLanguageVersion.of(8)
+  }
+  withJavadocJar()
+  withSourcesJar()
+}
 
 compileJava {
     options.encoding = 'UTF-8'

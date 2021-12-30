@@ -36,6 +36,18 @@ public class PartnersearchGetResourceModel implements Serializable, ResourceMode
    */
   private String partnerTyp;
 
+  public PartnersearchGetResourceModel() {
+  }
+
+  public PartnersearchGetResourceModel(String id, String name, String vorname, String partnerNummer,
+      String partnerTyp) {
+    this.id = id;
+    this.name = name;
+    this.vorname = vorname;
+    this.partnerNummer = partnerNummer;
+    this.partnerTyp = partnerTyp;
+  }
+
   public String getId() {
     return this.id;
   }

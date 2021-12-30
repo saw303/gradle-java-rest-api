@@ -29,6 +29,16 @@ public class ProductproposalPutResourceModel implements Serializable, ResourceMo
   @NotNull
   private Boolean addAnotherPersonSelected;
 
+  public ProductproposalPutResourceModel() {
+  }
+
+  public ProductproposalPutResourceModel(List<ProposalType> proposal, MonetaryAmount premiumTotal,
+      Boolean addAnotherPersonSelected) {
+    this.proposal = proposal;
+    this.premiumTotal = premiumTotal;
+    this.addAnotherPersonSelected = addAnotherPersonSelected;
+  }
+
   public List<ProposalType> getProposal() {
     return this.proposal;
   }
