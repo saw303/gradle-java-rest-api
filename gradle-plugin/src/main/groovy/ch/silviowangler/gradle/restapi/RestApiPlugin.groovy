@@ -81,11 +81,11 @@ class RestApiPlugin implements Plugin<Project> {
 			t.dependsOn(validate)
 		}
 
-		TaskProvider<PlantUmlTask> generateDiagrams = project.tasks.register('generateDiagrams', PlantUmlTask) { PlantUmlTask t ->
+		project.tasks.register('generateDiagrams', PlantUmlTask) { PlantUmlTask t ->
 			t.group = TASK_GROUP_REST_API
 		}
 
-		TaskProvider<GenerateRestApiAsciiDocTask> generateAsciiDocs = project.tasks.register('generateAsciiDocs', GenerateRestApiAsciiDocTask) { GenerateRestApiAsciiDocTask t ->
+		project.tasks.register('generateAsciiDocs', GenerateRestApiAsciiDocTask) { GenerateRestApiAsciiDocTask t ->
 			t.group = TASK_GROUP_REST_API
 		}
 
