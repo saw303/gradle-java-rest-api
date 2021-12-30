@@ -11,7 +11,7 @@ Use this [link](https://bintray.com/saw303/gradle-plugins/gradle-java-rest-api?s
 
 ## Build & Quality
 
-[![CircleCI](https://circleci.com/gh/saw303/gradle-java-rest-api/tree/master.svg?style=svg)](https://circleci.com/gh/saw303/gradle-java-rest-api/tree/master) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/daaa123d3d2c4023908ff8870bdbc7d2)](https://www.codacy.com/app/saw303/gradle-java-rest-api?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=saw303/gradle-java-rest-api&amp;utm_campaign=Badge_Grade)
+[![CircleCI](https://circleci.com/gh/saw303/gradle-java-rest-api/tree/master.svg?style=svg)](https://circleci.com/gh/saw303/gradle-java-rest-api/tree/master) [![![Codacy Badge](https://app.codacy.com/project/badge/Grade/34e0ef291ad74549ac638eb4d470365d)](https://www.codacy.com/gh/saw303/gradle-java-rest-api/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=saw303/gradle-java-rest-api&amp;utm_campaign=Badge_Grade)
 
 ## Getting started
 
