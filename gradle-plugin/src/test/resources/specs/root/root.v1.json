@@ -91,6 +91,23 @@
       "filterable": false,
       "alias": [],
       "x-comment": "Ob Entwurf oder nicht"
+    },
+    {
+      "name": "deadline",
+      "type": "duration",
+      "options": null,
+      "mandatory": [],
+      "min": null,
+      "max": null,
+      "multiple": false,
+      "defaultValue": true,
+      "protected": [],
+      "visible": true,
+      "sortable": false,
+      "readonly": false,
+      "filterable": false,
+      "alias": [],
+      "x-comment": "Ob Entwurf oder nicht"
     }
   ],
   "subresources": [],

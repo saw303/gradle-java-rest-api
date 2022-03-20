@@ -107,7 +107,7 @@ class RestApiPlugin implements Plugin<Project> {
 		project.configurations.maybeCreate(CONFIGURATION_REST_API)
 
 		final String springVersion = "5.2.4.RELEASE"
-		final String pluginVersion = "3.0.1"
+		final String pluginVersion = "3.0.2"
 		final String libPhoneNumberVersion = "8.11.5"
 
 		final List<String> deps = [

@@ -510,6 +510,7 @@ public interface ResourceBuilder {
       supportedDataTypes.put("money", SupportedDataTypes.MONEY.getClassName());
       supportedDataTypes.put("locale", SupportedDataTypes.LOCALE.getClassName());
       supportedDataTypes.put("phoneNumber", SupportedDataTypes.PHONE_NUMBER.getClassName());
+      supportedDataTypes.put("duration", SupportedDataTypes.JAVA_TIME_DURATION.getClassName());
     }
 
     public static Set<String> getSupportedTypeNames() {

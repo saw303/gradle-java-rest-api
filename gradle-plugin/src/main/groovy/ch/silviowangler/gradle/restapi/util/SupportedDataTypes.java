@@ -25,6 +25,7 @@ package ch.silviowangler.gradle.restapi.util;
 
 import com.squareup.javapoet.ClassName;
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Locale;
@@ -45,6 +46,7 @@ public enum SupportedDataTypes {
   OBJECT(ClassName.get(Object.class)),
   LOCALE(ClassName.get(Locale.class)),
   PHONE_NUMBER(ClassName.get(String.class)),
+  JAVA_TIME_DURATION(ClassName.get(Duration.class)),
   MONEY(ClassName.get("javax.money", "MonetaryAmount"));
 
   private final ClassName className;

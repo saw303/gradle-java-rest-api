@@ -3,6 +3,7 @@ package org.acme.rest.v1;
 import ch.silviowangler.rest.model.Identifiable;
 import ch.silviowangler.rest.model.ResourceModel;
 import java.io.Serializable;
+import java.time.Duration;
 import java.util.Objects;
 import javax.annotation.Generated;
 
@@ -26,13 +27,19 @@ public class RootGetResourceModel implements Serializable, ResourceModel, Identi
    */
   private Boolean draft = Boolean.FALSE;
 
+  /**
+   * Ob Entwurf oder nicht
+   */
+  private Duration deadline = "true";
+
   public RootGetResourceModel() {
   }
 
-  public RootGetResourceModel(String id, String name, Boolean draft) {
+  public RootGetResourceModel(String id, String name, Boolean draft, Duration deadline) {
     this.id = id;
     this.name = name;
     this.draft = draft;
+    this.deadline = deadline;
   }
 
   public String getId() {
@@ -59,16 +66,24 @@ public class RootGetResourceModel implements Serializable, ResourceModel, Identi
     this.draft = draft;
   }
 
+  public Duration getDeadline() {
+    return this.deadline;
+  }
+
+  public void setDeadline(Duration deadline) {
+    this.deadline = deadline;
+  }
+
   @Override
   public boolean equals(Object other) {
     if (this == other) return true;
     if (! (other instanceof RootGetResourceModel)) return false;
     RootGetResourceModel that = (RootGetResourceModel) other;
-    return Objects.equals(getId(), that.getId()) && Objects.equals(getName(), that.getName()) && Objects.equals(getDraft(), that.getDraft());
+    return Objects.equals(getId(), that.getId()) && Objects.equals(getName(), that.getName()) && Objects.equals(getDraft(), that.getDraft()) && Objects.equals(getDeadline(), that.getDeadline());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, draft);
+    return Objects.hash(id, name, draft, deadline);
   }
 }

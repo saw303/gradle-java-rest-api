@@ -703,6 +703,7 @@ Currently the following field types are supported:
 - `enum` => will create a enum type
 - `object` => `java.lang.Object` (I recommend not using this type)
 - `phoneNumber` => `java.lang.String` with validation on POST & PUT requests.
+- `duration` => `java.time.Duration`
 
 ### creating an enum type
 
