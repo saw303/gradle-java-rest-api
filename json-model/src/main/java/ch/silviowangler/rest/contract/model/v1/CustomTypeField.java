@@ -26,7 +26,9 @@ package ch.silviowangler.rest.contract.model.v1;
 import java.io.Serializable;
 import java.util.Objects;
 
-/** @author Silvio Wangler */
+/**
+ * @author Silvio Wangler
+ */
 public class CustomTypeField implements Serializable, FieldType {
 
   private String name;

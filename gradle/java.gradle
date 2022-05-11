@@ -5,7 +5,7 @@ spotless {
   java {
     licenseHeaderFile rootProject.file('LICENSE-SHORT'), "package "
 
-    googleJavaFormat()
+    googleJavaFormat("1.14.0")
 
     removeUnusedImports()
     endWithNewline()
@@ -28,7 +28,6 @@ java {
   toolchain {
     languageVersion = JavaLanguageVersion.of(8)
   }
-  withJavadocJar()
   withSourcesJar()
 }
 

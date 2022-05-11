@@ -27,7 +27,9 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-/** @author Silvio Wangler */
+/**
+ * @author Silvio Wangler
+ */
 public class GeneralDetails implements Serializable {
 
   private String name;

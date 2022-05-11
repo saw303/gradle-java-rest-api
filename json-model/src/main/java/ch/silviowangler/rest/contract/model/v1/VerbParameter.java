@@ -27,7 +27,9 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
-/** @author Silvio Wangler */
+/**
+ * @author Silvio Wangler
+ */
 public class VerbParameter implements Serializable, FieldType {
 
   private String name;

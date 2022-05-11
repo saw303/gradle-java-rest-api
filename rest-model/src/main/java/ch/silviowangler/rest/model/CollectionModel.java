@@ -27,7 +27,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-/** @author Silvio Wangler */
+/**
+ * @author Silvio Wangler
+ */
 public class CollectionModel<R extends ResourceModel> implements Serializable {
 
   private List<EntityModel<R>> data = new ArrayList<>();

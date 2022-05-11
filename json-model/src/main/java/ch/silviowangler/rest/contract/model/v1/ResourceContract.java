@@ -28,7 +28,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-/** @author Silvio Wangler */
+/**
+ * @author Silvio Wangler
+ */
 public class ResourceContract implements Serializable {
 
   private GeneralDetails general;

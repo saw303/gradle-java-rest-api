@@ -28,7 +28,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-/** @author Silvio Wangler */
+/**
+ * @author Silvio Wangler
+ */
 public class Verb implements Serializable {
 
   private String verb;

@@ -30,7 +30,9 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Locale;
 
-/** @author Silvio Wangler */
+/**
+ * @author Silvio Wangler
+ */
 public enum SupportedDataTypes {
   DATE(ClassName.get(LocalDate.class)),
   DATETIME(ClassName.get(Instant.class)),

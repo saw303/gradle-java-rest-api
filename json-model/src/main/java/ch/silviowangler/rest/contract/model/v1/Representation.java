@@ -29,7 +29,9 @@ import java.util.Objects;
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 
-/** @author Silvio Wangler */
+/**
+ * @author Silvio Wangler
+ */
 public class Representation implements Serializable {
 
   private String name;

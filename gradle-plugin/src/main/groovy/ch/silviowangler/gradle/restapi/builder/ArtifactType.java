@@ -23,7 +23,9 @@
  */
 package ch.silviowangler.gradle.restapi.builder;
 
-/** @author Silvio Wangler */
+/**
+ * @author Silvio Wangler
+ */
 public enum ArtifactType {
   RESOURCE,
   ABSTRACT_RESOURCE,

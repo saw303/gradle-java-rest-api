@@ -27,7 +27,9 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
-/** @author Silvio Wangler */
+/**
+ * @author Silvio Wangler
+ */
 public class ResourceTypes implements Serializable {
 
   private String name;

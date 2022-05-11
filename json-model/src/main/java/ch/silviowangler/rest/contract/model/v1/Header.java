@@ -29,7 +29,9 @@ import static com.google.common.base.CaseFormat.UPPER_UNDERSCORE;
 import java.io.Serializable;
 import java.util.Objects;
 
-/** @author Silvio Wangler */
+/**
+ * @author Silvio Wangler
+ */
 public class Header implements Serializable, Typed, Named {
 
   private String name;

@@ -82,7 +82,9 @@ import java.util.Map;
 import java.util.Objects;
 import javax.lang.model.element.Modifier;
 
-/** @author Silvio Wangler */
+/**
+ * @author Silvio Wangler
+ */
 public class MicronautResourceFactory extends AbstractResourceBuilder {
 
   private static final ClassName STRING_CLASS = ClassName.get(String.class);

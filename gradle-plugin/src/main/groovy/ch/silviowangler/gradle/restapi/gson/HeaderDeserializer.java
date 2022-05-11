@@ -31,7 +31,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import java.lang.reflect.Type;
 
-/** @author Silvio Wangler */
+/**
+ * @author Silvio Wangler
+ */
 public class HeaderDeserializer implements JsonDeserializer<Header> {
   @Override
   public Header deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)

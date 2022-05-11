@@ -23,7 +23,9 @@
  */
 package ch.silviowangler.rest;
 
-/** @author Silvio Wangler */
+/**
+ * @author Silvio Wangler
+ */
 public class NotYetImplementedException extends RuntimeException {
 
   public NotYetImplementedException() {
