@@ -37,32 +37,46 @@ import java.util.List;
  */
 public interface Slice<T> extends Iterable<T> {
 
-  /** @return The content. */
+  /**
+   * @return The content.
+   */
   List<T> getContent();
 
-  /** @return The pageable for this slice. */
+  /**
+   * @return The pageable for this slice.
+   */
   Pageable getPageable();
 
-  /** @return The page number */
+  /**
+   * @return The page number
+   */
   default int getPageNumber() {
     return getPageable().getNumber();
   }
-  /** @return The offset. */
+  /**
+   * @return The offset.
+   */
   default long getOffset() {
     return getPageable().getOffset();
   }
 
-  /** @return The size of the slice. */
+  /**
+   * @return The size of the slice.
+   */
   default int getSize() {
     return getPageable().getSize();
   }
 
-  /** @return Whether the slize is empty */
+  /**
+   * @return Whether the slize is empty
+   */
   default boolean isEmpty() {
     return getContent().isEmpty();
   }
 
-  /** @return The number of elements */
+  /**
+   * @return The number of elements
+   */
   default int getNumberOfElements() {
     return getContent().size();
   }

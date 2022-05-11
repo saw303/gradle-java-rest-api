@@ -89,7 +89,9 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-/** @author Silvio Wangler */
+/**
+ * @author Silvio Wangler
+ */
 public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
   private TypeSpec.Builder typeBuilder;

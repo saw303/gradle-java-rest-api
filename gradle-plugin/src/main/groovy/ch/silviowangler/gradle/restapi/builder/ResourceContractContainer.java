@@ -25,7 +25,9 @@ package ch.silviowangler.gradle.restapi.builder;
 
 import ch.silviowangler.rest.contract.model.v1.ResourceContract;
 
-/** @author Silvio Wangler */
+/**
+ * @author Silvio Wangler
+ */
 public class ResourceContractContainer {
 
   private final ResourceContract resourceContract;

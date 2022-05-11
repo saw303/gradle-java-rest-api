@@ -28,7 +28,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-/** @author Silvio Wangler */
+/**
+ * @author Silvio Wangler
+ */
 public class GeneratedSpecContainer {
 
   private String packageName;

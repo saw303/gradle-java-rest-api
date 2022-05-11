@@ -23,7 +23,9 @@
  */
 package ch.silviowangler.rest.micronaut;
 
-/** @author Silvio Wangler */
+/**
+ * @author Silvio Wangler
+ */
 public class FilterOrder {
 
   public static final int HATEOAS_MODEL_CREATION = 100;

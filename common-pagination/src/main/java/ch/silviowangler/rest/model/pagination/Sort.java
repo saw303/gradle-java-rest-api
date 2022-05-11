@@ -37,7 +37,9 @@ public interface Sort {
 
   Sort UNSORTED = new DefaultSort();
 
-  /** @return Is sorting applied */
+  /**
+   * @return Is sorting applied
+   */
   boolean isSorted();
 
   /**
@@ -65,10 +67,14 @@ public interface Sort {
    */
   Sort order(String propertyName, Sort.Order.Direction direction);
 
-  /** @return The order definitions for this sort. */
+  /**
+   * @return The order definitions for this sort.
+   */
   List<Order> getOrderBy();
 
-  /** @return Default unsorted sort instance. */
+  /**
+   * @return Default unsorted sort instance.
+   */
   static Sort unsorted() {
     return UNSORTED;
   }
@@ -128,17 +134,23 @@ public interface Sort {
       this.ignoreCase = ignoreCase;
     }
 
-    /** @return Whether to ignore case when sorting */
+    /**
+     * @return Whether to ignore case when sorting
+     */
     public boolean isIgnoreCase() {
       return ignoreCase;
     }
 
-    /** @return The direction order by */
+    /**
+     * @return The direction order by
+     */
     public Direction getDirection() {
       return direction;
     }
 
-    /** @return The property name to order by */
+    /**
+     * @return The property name to order by
+     */
     public String getProperty() {
       return property;
     }
@@ -185,7 +197,9 @@ public interface Sort {
       return new Order(property, Direction.ASC, ignoreCase);
     }
 
-    /** @return Is the order ascending */
+    /**
+     * @return Is the order ascending
+     */
     public boolean isAscending() {
       return getDirection() == Direction.ASC;
     }

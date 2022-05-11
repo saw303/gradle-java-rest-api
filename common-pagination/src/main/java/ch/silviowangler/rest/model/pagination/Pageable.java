@@ -31,7 +31,9 @@ package ch.silviowangler.rest.model.pagination;
  */
 public interface Pageable extends Sort {
 
-  /** @return Current page number. */
+  /**
+   * @return Current page number.
+   */
   int getNumber();
 
   /**
@@ -43,7 +45,9 @@ public interface Pageable extends Sort {
     return (long) getNumber() * (long) getSize();
   }
 
-  /** @return the current size */
+  /**
+   * @return the current size
+   */
   int getSize();
 
   static Pageable from(int page) {

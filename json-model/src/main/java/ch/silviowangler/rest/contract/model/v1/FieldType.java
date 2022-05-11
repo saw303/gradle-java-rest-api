@@ -23,7 +23,9 @@
  */
 package ch.silviowangler.rest.contract.model.v1;
 
-/** @author Silvio Wangler */
+/**
+ * @author Silvio Wangler
+ */
 public interface FieldType extends Typed, Named {
 
   /**

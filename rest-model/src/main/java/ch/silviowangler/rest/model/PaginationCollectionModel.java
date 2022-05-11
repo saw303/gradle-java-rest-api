@@ -26,7 +26,9 @@ package ch.silviowangler.rest.model;
 import ch.silviowangler.rest.model.pagination.Page;
 import ch.silviowangler.rest.model.pagination.Slice;
 
-/** @author Silvio Wangler */
+/**
+ * @author Silvio Wangler
+ */
 public class PaginationCollectionModel<R extends ResourceModel> extends CollectionModel<R> {
 
   private PaginationModel pagination;

@@ -54,7 +54,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/** @author Silvio Wangler */
+/**
+ * @author Silvio Wangler
+ */
 public class SpecGenerator {
 
   private final Set<ClassName> resourceTypeCache;

@@ -23,7 +23,9 @@
  */
 package ch.silviowangler.gradle.restapi;
 
-/** @author Silvio Wangler (silvio.wangler@onstructive.ch) */
+/**
+ * @author Silvio Wangler (silvio.wangler@onstructive.ch)
+ */
 public enum InputProcessingMode {
   FLATDIR,
   RECURSIVE

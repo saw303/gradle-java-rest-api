@@ -32,7 +32,9 @@ import com.google.gson.JsonParseException;
 import java.lang.reflect.Type;
 import java.util.Objects;
 
-/** @author Silvio Wangler */
+/**
+ * @author Silvio Wangler
+ */
 public class CustomTypeFieldDeserializer extends DeserializerBase
     implements JsonDeserializer<CustomTypeField> {
 

@@ -35,10 +35,14 @@ package ch.silviowangler.rest.model.pagination;
  */
 public interface Page<T> extends Slice<T> {
 
-  /** @return The total size of the all records. */
+  /**
+   * @return The total size of the all records.
+   */
   long getTotalSize();
 
-  /** @return The total number of pages. */
+  /**
+   * @return The total number of pages.
+   */
   default int getTotalPages() {
     int size = getSize();
     return size == 0 ? 1 : (int) Math.ceil((double) getTotalSize() / (double) size);

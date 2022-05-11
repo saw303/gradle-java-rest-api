@@ -23,7 +23,9 @@
  */
 package ch.silviowangler.gradle.restapi;
 
-/** @author Silvio Wangler */
+/**
+ * @author Silvio Wangler
+ */
 public enum TargetFramework {
   JAX_RS,
   SPRING_BOOT,

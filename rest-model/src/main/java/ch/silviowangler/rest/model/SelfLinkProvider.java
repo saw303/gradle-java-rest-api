@@ -25,7 +25,9 @@ package ch.silviowangler.rest.model;
 
 import java.util.Optional;
 
-/** @author Silvio Wangler */
+/**
+ * @author Silvio Wangler
+ */
 public interface SelfLinkProvider {
 
   Optional<ResourceLink> selfLink();
