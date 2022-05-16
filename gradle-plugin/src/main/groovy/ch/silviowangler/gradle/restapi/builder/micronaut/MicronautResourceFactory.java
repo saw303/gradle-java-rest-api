@@ -37,6 +37,7 @@ import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_CONTROLLER;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_DATE_FORMAT;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_DATE_TIME_FORMAT;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_DELETE;
+import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_EXECUTE_ON;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_GET;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_HEAD;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_HEADER;
@@ -81,6 +82,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import javax.lang.model.element.Modifier;
+import org.apache.groovy.util.Maps;
 
 /**
  * @author Silvio Wangler
@@ -97,9 +99,7 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
 
   @Override
   protected void createOptionsMethod() {
-    Verb verb = new Verb();
-    verb.setVerb("OPTIONS");
-
+    Verb verb = new Verb("OPTIONS");
     setCurrentVerb(verb);
     MethodSpec.Builder optionsMethod = createMethod("getOptions", STRING_CLASS);
 
@@ -133,10 +133,11 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
             .addParameter(delegatorClass, DELEGATE_VAR_NAME)
             .addStatement("this.$N = $N", DELEGATE_VAR_NAME, DELEGATE_VAR_NAME);
 
-    if (this.restApiExtension.getTargetFramework() == TargetFramework.MICRONAUT_3) {
-      methodBuilder = methodBuilder.addAnnotation(createAnnotation(JAKARTA_INJECT));
+    TargetFramework targetFramework = this.restApiExtension.getTargetFramework();
+    if (targetFramework == TargetFramework.MICRONAUT_3) {
+      methodBuilder.addAnnotation(createAnnotation(JAKARTA_INJECT));
     } else {
-      methodBuilder = methodBuilder.addAnnotation(createAnnotation(JAVAX_INJECT));
+      methodBuilder.addAnnotation(createAnnotation(JAVAX_INJECT));
     }
 
     MethodSpec constructor = methodBuilder.build();
@@ -305,6 +306,13 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
         if (!representation.isJson()) {
           annotationsFields.put("uri", String.format("/.%s", representation.getName()));
         }
+      }
+
+      TargetFramework targetFramework = this.restApiExtension.getTargetFramework();
+      if (targetFramework == TargetFramework.MICRONAUT_3
+          || targetFramework == TargetFramework.MICRONAUT_24) {
+
+        methodAnnotations.add(createAnnotation(MICRONAUT_EXECUTE_ON, Maps.of("value", "io")));
       }
     }
 

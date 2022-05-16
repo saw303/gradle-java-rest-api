@@ -4,8 +4,9 @@ import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.Options;
 import io.micronaut.http.annotation.Produces;
+import io.micronaut.scheduling.annotation.ExecuteOn;
+import jakarta.inject.Inject;
 import javax.annotation.Generated;
-import javax.inject.Inject;
 
 /**
  * Das ist die Root Resource der Version 1.0.0
@@ -25,12 +26,14 @@ public class RootResource {
     this.delegate = delegate;
   }
 
+  @ExecuteOn("io")
   @Options
   @Produces("application/json; charset=UTF-8")
   public String getOptions() {
     return OPTIONS_CONTENT;
   }
 
+  @ExecuteOn("io")
   @Get
   @Produces("application/json; charset=UTF-8")
   public RootGetResourceModel getEntity() {

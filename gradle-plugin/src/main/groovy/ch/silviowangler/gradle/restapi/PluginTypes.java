@@ -116,6 +116,7 @@ public enum PluginTypes {
   MICRONAUT_INTROSPECTED(ClassName.get("io.micronaut.core.annotation", "Introspected")),
   MICRONAUT_DATE_TIME_FORMAT(
       ClassName.get("ch.silviowangler.rest.micronaut.binding", "DateTimeFormat")),
+  MICRONAUT_EXECUTE_ON(ClassName.get("io.micronaut.scheduling.annotation", "ExecuteOn")),
   VALIDATION_PHONE_NUMBER(ClassName.get(PhoneNumber.class)),
   COLLECTION_MODEL(ClassName.get(CollectionModel.class)),
   ENTITY_MODEL(ClassName.get(EntityModel.class));

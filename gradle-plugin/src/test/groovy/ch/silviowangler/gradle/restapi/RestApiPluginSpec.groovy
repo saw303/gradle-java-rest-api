@@ -42,6 +42,8 @@ import java.nio.charset.Charset
 
 import static ch.silviowangler.gradle.restapi.Consts.TASK_GROUP_REST_API
 import static ch.silviowangler.gradle.restapi.TargetFramework.MICRONAUT
+import static ch.silviowangler.gradle.restapi.TargetFramework.MICRONAUT_24
+import static ch.silviowangler.gradle.restapi.TargetFramework.MICRONAUT_3
 import static ch.silviowangler.gradle.restapi.TargetFramework.SPRING_BOOT
 
 class RestApiPluginSpec extends Specification {
@@ -927,7 +929,7 @@ class RestApiPluginSpec extends Specification {
     project.restApi.packageName = 'org.acme.rest'
     project.restApi.generateDateAttribute = false
     project.restApi.objectResourceModelMapping = customFieldModelMapping
-    project.restApi.targetFramework = MICRONAUT
+    project.restApi.targetFramework = MICRONAUT_3
     project.restApi.responseEncoding = Charset.forName('UTF-8')
 
     and:
