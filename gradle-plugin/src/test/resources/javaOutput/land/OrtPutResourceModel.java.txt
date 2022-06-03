@@ -11,7 +11,7 @@ import org.acme.rest.v1.CoordinatesType;
 
 @Generated(
     comments = "Specification filename: land.ort.v1.json",
-    value = "ch.silviowangler.restapi"
+    value = "io.github.saw303.restapi"
 )
 public class OrtPutResourceModel implements Serializable, ResourceModel, Identifiable<String> {
   /**

@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  */
 @Generated(
     comments = "Specification filename: productproposal.v1.json",
-    value = "ch.silviowangler.restapi"
+    value = "io.github.saw303.restapi"
 )
 @RequestMapping("v1/session/insurableperson/insuranceneeds/productproposal")
 public abstract class ProductproposalResource {

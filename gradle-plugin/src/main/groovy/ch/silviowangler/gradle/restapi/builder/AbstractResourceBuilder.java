@@ -275,6 +275,8 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
         TypeName returnType;
         if (DELETE_COLLECTION.equals(verb.getVerb())
             || DELETE_ENTITY.equals(verb.getVerb())
+            || POST_ENTITY.equals(verb.getVerb())
+            || POST_COLLECTION.equals(verb.getVerb())
             || PUT_ENTITY.equals(verb.getVerb())
             || PUT_COLLECTION.equals(verb.getVerb())) {
           returnType = resourceMethodReturnType(verb, representation);

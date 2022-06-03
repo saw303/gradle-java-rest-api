@@ -6,7 +6,7 @@ import javax.annotation.Generated;
 
 @Generated(
     comments = "Specification filename: root.v1.json",
-    value = "ch.silviowangler.restapi"
+    value = "io.github.saw303.restapi"
 )
 public class InsuranceNeedsGroupType implements Serializable {
   private String id;

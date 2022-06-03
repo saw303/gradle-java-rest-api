@@ -686,6 +686,61 @@ class RestApiPluginSpec extends Specification {
     javaFiles.isEmpty()
   }
 
+  void "Generate Micronaut Client for Membership Fees"() {
+
+    given:
+    project.restApi.generatorOutput = tempDir
+    project.restApi.generatorImplOutput = tempDir
+    project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/membershipfees")
+    project.restApi.packageName = 'org.acme.rest'
+    project.restApi.generateDateAttribute = false
+    project.restApi.targetFramework = MICRONAUT_3
+    project.restApi.generationMode = GenerationMode.CLIENT
+
+    and:
+    GenerateRestApiTask task = project.tasks.generateRestArtifacts as GenerateRestApiTask
+
+    when:
+    task.exec()
+
+    and:
+    def javaFiles = []
+    tempDir.eachFileRecurse(FileType.FILES, {
+      if (it.name.endsWith('.java')) javaFiles << it
+    })
+
+    then:
+    new File(tempDir, 'org/acme/rest').exists()
+
+    and:
+    assertGeneratedFiles javaFiles, 3
+
+    and:
+    javaFiles.collect {
+      it.parent == new File(tempDir, 'org/acme/rest')
+    }.size() == javaFiles.size()
+
+    and: 'validate resources'
+    assertJavaFile('org.acme.rest.api.v1.admin.seasons.membershipfees', 'MembershipfeesPostResourceModel', 'membershipfees')
+    assertJavaFile('org.acme.rest.api.v1.admin.seasons.membershipfees', 'MembershipfeesGetResourceModel', 'membershipfees')
+    assertJavaFile('org.acme.rest.api.v1.admin.seasons.membershipfees', 'MembershipfeesResourceClient', 'membershipfees')
+
+    when:
+    CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask
+
+    and:
+    cleanTask.cleanUp()
+
+    and:
+    javaFiles.clear()
+    tempDir.eachFileRecurse(FileType.FILES, {
+      if (it.name.endsWith('.java')) javaFiles << it
+    })
+
+    then:
+    javaFiles.isEmpty()
+  }
+
   void "Das Plugin generiert auch read only Ressourcen mit nur einem CSV GET (Micronaut)"() {
 
     given:

@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  */
 @Generated(
     comments = "Specification filename: land.v1.json",
-    value = "ch.silviowangler.restapi"
+    value = "io.github.saw303.restapi"
 )
 @RequestMapping("/v1/laender")
 public abstract class LandResource {

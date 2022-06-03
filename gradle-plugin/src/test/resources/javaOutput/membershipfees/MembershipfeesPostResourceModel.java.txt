@@ -1,0 +1,50 @@
+package org.acme.rest.api.v1.admin.seasons.membershipfees;
+
+import ch.silviowangler.rest.model.Identifiable;
+import ch.silviowangler.rest.model.ResourceModel;
+import io.micronaut.core.annotation.Introspected;
+import java.io.Serializable;
+import java.util.Objects;
+import javax.annotation.Generated;
+import javax.validation.constraints.NotNull;
+
+@Generated(
+    comments = "Specification filename: membershipfees.v1.json",
+    value = "io.github.saw303.restapi"
+)
+@Introspected
+public class MembershipfeesPostResourceModel implements Serializable, ResourceModel, Identifiable<String> {
+  /**
+   * the id of the member
+   */
+  @NotNull
+  private String id;
+
+  public MembershipfeesPostResourceModel() {
+  }
+
+  public MembershipfeesPostResourceModel(String id) {
+    this.id = id;
+  }
+
+  public String getId() {
+    return this.id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    if (! (other instanceof MembershipfeesPostResourceModel)) return false;
+    MembershipfeesPostResourceModel that = (MembershipfeesPostResourceModel) other;
+    return Objects.equals(getId(), that.getId());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id);
+  }
+}

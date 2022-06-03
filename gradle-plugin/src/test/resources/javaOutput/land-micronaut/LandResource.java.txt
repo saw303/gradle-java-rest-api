@@ -26,7 +26,7 @@ import javax.validation.Valid;
  */
 @Generated(
     comments = "Specification filename: land.v1.json",
-    value = "ch.silviowangler.restapi"
+    value = "io.github.saw303.restapi"
 )
 @Controller("/v1/laender")
 public class LandResource {

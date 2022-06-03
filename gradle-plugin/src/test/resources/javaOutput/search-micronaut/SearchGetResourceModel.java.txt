@@ -8,7 +8,7 @@ import javax.annotation.Generated;
 
 @Generated(
     comments = "Specification filename: search.v1.json",
-    value = "ch.silviowangler.restapi"
+    value = "io.github.saw303.restapi"
 )
 public class SearchGetResourceModel implements Serializable, ResourceModel, Identifiable<String> {
   /**

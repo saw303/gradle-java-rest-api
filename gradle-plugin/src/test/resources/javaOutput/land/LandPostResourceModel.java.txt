@@ -14,7 +14,7 @@ import org.acme.rest.v1.CoordinatesType;
 
 @Generated(
     comments = "Specification filename: land.v1.json",
-    value = "ch.silviowangler.restapi"
+    value = "io.github.saw303.restapi"
 )
 public class LandPostResourceModel implements Serializable, ResourceModel, Identifiable<String> {
   /**

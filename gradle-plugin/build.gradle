@@ -1,41 +1,39 @@
 plugins {
 	id 'java-gradle-plugin'
+	id 'com.gradle.plugin-publish'
 	id 'maven-publish'
 }
 
+group = 'io.github.saw303.restapi'
+
 gradlePlugin {
 	plugins {
-		restapi {
-			id = 'ch.silviowangler.restapi'
+		restApiPlugin {
+			id = 'io.github.saw303.restapi'
 			implementationClass = 'ch.silviowangler.gradle.restapi.RestApiPlugin'
 		}
 	}
 }
 
-publishing {
-	repositories {
-		maven {
-			name = "GitHubPackages"
-			url = uri("https://maven.pkg.github.com/saw303/gradle-java-rest-api")
-			credentials {
-				username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
-				password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
-			}
-		}
-		maven {
-			name = "Onstructive"
-			url = uri(project.findProperty("artifactory_url"))
-			credentials {
-				username = project.findProperty("artifactory_user") ?: System.getenv("A_USERNAME")
-				password = project.findProperty("artifactory_password") ?: System.getenv("A_TOKEN")
-			}
+pluginBundle {
+	website = 'https://github.com/saw303/gradle-java-rest-api'
+	vcsUrl = 'https://github.com/saw303/gradle-java-rest-api'
+
+	description = 'Contract first driven REST resource generator for Micronaut, Spring & JAX-RS'
+
+	plugins {
+		restApiPlugin {
+			// id is captured from java-gradle-plugin configuration
+			displayName = 'Contract first REST API Generator'
+			tags = [
+				'rest',
+				'codegeneration',
+				'micronaut',
+				'spring'
+			]
 		}
 	}
 }
-
-group = 'ch.silviowangler.rest'
-
-ext { pomDescription = 'Gradle plugin to generate REST APIs for JAX-RS or Spring-Boot projects' }
 
 dependencies {
 

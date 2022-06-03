@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 
 @Generated(
     comments = "Specification filename: productproposal.v1.json",
-    value = "ch.silviowangler.restapi"
+    value = "io.github.saw303.restapi"
 )
 public class ProductproposalPostResourceModel implements Serializable, ResourceModel {
   /**

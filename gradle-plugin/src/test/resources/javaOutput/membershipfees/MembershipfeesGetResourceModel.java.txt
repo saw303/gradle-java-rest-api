@@ -1,0 +1,152 @@
+package org.acme.rest.api.v1.admin.seasons.membershipfees;
+
+import ch.silviowangler.rest.model.Identifiable;
+import ch.silviowangler.rest.model.ResourceModel;
+import java.io.Serializable;
+import java.util.Objects;
+import javax.annotation.Generated;
+import javax.money.MonetaryAmount;
+import javax.validation.constraints.Size;
+
+@Generated(
+    comments = "Specification filename: membershipfees.v1.json",
+    value = "io.github.saw303.restapi"
+)
+public class MembershipfeesGetResourceModel implements Serializable, ResourceModel, Identifiable<String> {
+  /**
+   * the id of the member
+   */
+  private String id;
+
+  /**
+   * full name of the member
+   */
+  @Size(
+      min = 0,
+      max = 50
+  )
+  private String memberName;
+
+  /**
+   * street
+   */
+  private String street;
+
+  /**
+   * house number
+   */
+  private String houseNumber;
+
+  /**
+   * postal code
+   */
+  private String postalCode;
+
+  /**
+   * city
+   */
+  private String city;
+
+  /**
+   * total amount of memberships
+   */
+  private Integer amountOfMemberships;
+
+  /**
+   * membership fee
+   */
+  private MonetaryAmount membershipFee;
+
+  public MembershipfeesGetResourceModel() {
+  }
+
+  public MembershipfeesGetResourceModel(String id, String memberName, String street,
+      String houseNumber, String postalCode, String city, Integer amountOfMemberships,
+      MonetaryAmount membershipFee) {
+    this.id = id;
+    this.memberName = memberName;
+    this.street = street;
+    this.houseNumber = houseNumber;
+    this.postalCode = postalCode;
+    this.city = city;
+    this.amountOfMemberships = amountOfMemberships;
+    this.membershipFee = membershipFee;
+  }
+
+  public String getId() {
+    return this.id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public String getMemberName() {
+    return this.memberName;
+  }
+
+  public void setMemberName(String memberName) {
+    this.memberName = memberName;
+  }
+
+  public String getStreet() {
+    return this.street;
+  }
+
+  public void setStreet(String street) {
+    this.street = street;
+  }
+
+  public String getHouseNumber() {
+    return this.houseNumber;
+  }
+
+  public void setHouseNumber(String houseNumber) {
+    this.houseNumber = houseNumber;
+  }
+
+  public String getPostalCode() {
+    return this.postalCode;
+  }
+
+  public void setPostalCode(String postalCode) {
+    this.postalCode = postalCode;
+  }
+
+  public String getCity() {
+    return this.city;
+  }
+
+  public void setCity(String city) {
+    this.city = city;
+  }
+
+  public Integer getAmountOfMemberships() {
+    return this.amountOfMemberships;
+  }
+
+  public void setAmountOfMemberships(Integer amountOfMemberships) {
+    this.amountOfMemberships = amountOfMemberships;
+  }
+
+  public MonetaryAmount getMembershipFee() {
+    return this.membershipFee;
+  }
+
+  public void setMembershipFee(MonetaryAmount membershipFee) {
+    this.membershipFee = membershipFee;
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    if (! (other instanceof MembershipfeesGetResourceModel)) return false;
+    MembershipfeesGetResourceModel that = (MembershipfeesGetResourceModel) other;
+    return Objects.equals(getId(), that.getId()) && Objects.equals(getMemberName(), that.getMemberName()) && Objects.equals(getStreet(), that.getStreet()) && Objects.equals(getHouseNumber(), that.getHouseNumber()) && Objects.equals(getPostalCode(), that.getPostalCode()) && Objects.equals(getCity(), that.getCity()) && Objects.equals(getAmountOfMemberships(), that.getAmountOfMemberships()) && Objects.equals(getMembershipFee(), that.getMembershipFee());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, memberName, street, houseNumber, postalCode, city, amountOfMemberships, membershipFee);
+  }
+}
