@@ -5,7 +5,7 @@ import javax.annotation.Generated;
 
 @Generated(
     comments = "Specification filename: root.v1.json",
-    value = "ch.silviowangler.restapi"
+    value = "io.github.saw303.restapi"
 )
 public class DummyType implements Serializable {
   private DummyType.ColorType color;
@@ -20,7 +20,7 @@ public class DummyType implements Serializable {
 
   @Generated(
       comments = "Specification filename: root.v1.json",
-      value = "ch.silviowangler.restapi"
+      value = "io.github.saw303.restapi"
   )
   public enum ColorType {
     BLACK,

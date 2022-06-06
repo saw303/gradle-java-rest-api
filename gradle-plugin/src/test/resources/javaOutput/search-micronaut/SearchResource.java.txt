@@ -23,7 +23,7 @@ import javax.validation.constraints.NotEmpty;
  */
 @Generated(
     comments = "Specification filename: search.v1.json",
-    value = "ch.silviowangler.restapi"
+    value = "io.github.saw303.restapi"
 )
 @Controller("v1/search")
 public class SearchResource {

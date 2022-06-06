@@ -1,0 +1,206 @@
+{
+  "general": {
+    "name": "membershipfee",
+    "description": "The membership fee resource",
+    "version": "1.0.0",
+    "x-route": "/api/v1/admin/seasons/:season/membershipfees/:entity",
+    "lifecycle": {
+      "deprecated": false,
+      "info": "This version is still valid"
+    }
+  },
+  "verbs": [
+    {
+      "verb": "GET_COLLECTION",
+      "rel": "collection",
+      "responseStates": [
+        {
+          "code": 200,
+          "message": "200 Ok",
+          "comment": "content in response body"
+        },
+        {
+          "code": 503,
+          "message": "503 Service Unavailable",
+          "comment": "Backend server not reachable or too slow"
+        }
+      ],
+      "representations": [
+        {
+          "name": "json",
+          "comment": "",
+          "responseExample": "{...}",
+          "isDefault": true,
+          "mimetype": "application/json"
+        },
+        {
+          "name": "pdf",
+          "comment": "",
+          "responseExample": "{...}",
+          "isDefault": true,
+          "mimetype": "application/pdf"
+        },
+        {
+          "name": "xlsx",
+          "comment": "",
+          "responseExample": "{...}",
+          "isDefault": true,
+          "mimetype": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        }
+      ],
+      "parameters": [],
+      "permissions": [],
+      "headers": []
+    },
+    {
+      "verb": "POST_COLLECTION",
+      "rel": "create",
+      "responseStates": [
+        {
+          "code": 200,
+          "message": "200 Ok",
+          "comment": "content in response body"
+        },
+        {
+          "code": 503,
+          "message": "503 Service Unavailable",
+          "comment": "Backend server not reachable or too slow"
+        }
+      ],
+      "representations": [
+        {
+          "name": "json",
+          "comment": "",
+          "responseExample": "{...}",
+          "isDefault": true,
+          "mimetype": "application/json"
+        }
+      ],
+      "parameters": [],
+      "permissions": [],
+      "headers": []
+    }
+  ],
+  "fields": [
+    {
+      "name": "id",
+      "type": "uuid",
+      "options": null,
+      "mandatory": ["POST_COLLECTION"],
+      "min": null,
+      "max": null,
+      "multiple": false,
+      "protected": [],
+      "visible": true,
+      "sortable": false,
+      "readonly": false,
+      "filterable": false,
+      "alias": [],
+      "x-comment": "the id of the member"
+    },
+    {
+      "name": "memberName",
+      "type": "string",
+      "options": null,
+      "mandatory": [],
+      "min": 0,
+      "max": 50,
+      "multiple": false,
+      "protected": [],
+      "visible": true,
+      "sortable": false,
+      "readonly": true,
+      "filterable": false,
+      "alias": [],
+      "x-comment": "full name of the member"
+    },
+    {
+      "name": "street",
+      "type": "string",
+      "options": null,
+      "mandatory": [],
+      "multiple": false,
+      "protected": [],
+      "visible": true,
+      "sortable": false,
+      "readonly": true,
+      "filterable": false,
+      "alias": [],
+      "x-comment": "street"
+    },
+    {
+      "name": "houseNumber",
+      "type": "string",
+      "options": null,
+      "mandatory": [],
+      "multiple": false,
+      "protected": [],
+      "visible": true,
+      "sortable": false,
+      "readonly": true,
+      "filterable": false,
+      "alias": [],
+      "x-comment": "house number"
+    },
+    {
+      "name": "postalCode",
+      "type": "string",
+      "options": null,
+      "mandatory": [],
+      "multiple": false,
+      "protected": [],
+      "visible": true,
+      "sortable": false,
+      "readonly": true,
+      "filterable": false,
+      "alias": [],
+      "x-comment": "postal code"
+    },
+    {
+      "name": "city",
+      "type": "string",
+      "options": null,
+      "mandatory": [],
+      "multiple": false,
+      "protected": [],
+      "visible": true,
+      "sortable": false,
+      "readonly": true,
+      "filterable": false,
+      "alias": [],
+      "x-comment": "city"
+    },
+    {
+      "name": "amountOfMemberships",
+      "type": "int",
+      "options": null,
+      "mandatory": [],
+      "multiple": false,
+      "protected": [],
+      "visible": true,
+      "sortable": false,
+      "readonly": true,
+      "filterable": false,
+      "alias": [],
+      "x-comment": "total amount of memberships"
+    },
+    {
+      "name": "membershipFee",
+      "type": "money",
+      "options": null,
+      "mandatory": [],
+      "multiple": false,
+      "protected": [],
+      "visible": true,
+      "sortable": false,
+      "readonly": true,
+      "filterable": false,
+      "alias": [],
+      "x-comment": "membership fee"
+    }
+  ],
+  "subresources": [],
+  "pipes": [],
+  "types": [],
+  "validators": []
+}

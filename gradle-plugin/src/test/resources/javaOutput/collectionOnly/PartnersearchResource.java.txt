@@ -18,7 +18,7 @@ import javax.ws.rs.core.Response;
  */
 @Generated(
     comments = "Specification filename: partnersearch.v1.json",
-    value = "ch.silviowangler.restapi"
+    value = "io.github.saw303.restapi"
 )
 @Path("/v1/partner")
 public interface PartnersearchResource {

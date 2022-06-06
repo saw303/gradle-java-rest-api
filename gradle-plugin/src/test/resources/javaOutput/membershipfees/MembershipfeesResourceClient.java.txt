@@ -1,0 +1,61 @@
+package org.acme.rest.api.v1.admin.seasons.membershipfees;
+
+import ch.silviowangler.rest.model.CollectionModel;
+import io.micronaut.http.HttpResponse;
+import io.micronaut.http.annotation.Body;
+import io.micronaut.http.annotation.Consumes;
+import io.micronaut.http.annotation.Get;
+import io.micronaut.http.annotation.Post;
+import io.micronaut.http.client.annotation.Client;
+import io.micronaut.validation.Validated;
+import java.util.Collection;
+import javax.annotation.Generated;
+import javax.validation.Valid;
+
+/**
+ * The membership fee resource
+ */
+@Generated(
+    comments = "Specification filename: membershipfees.v1.json",
+    value = "io.github.saw303.restapi"
+)
+@Client(
+    id = "osl"
+)
+@Validated
+public interface MembershipfeesResourceClient {
+  @Get("/api/v1/admin/seasons/{season}/membershipfees")
+  @Consumes("application/json")
+  Iterable<MembershipfeesGetResourceModel> getCollection(String season);
+
+  @Get("/api/v1/admin/seasons/{season}/membershipfees")
+  @Consumes("application/pdf")
+  HttpResponse getCollectionPdf(String season);
+
+  @Get("/api/v1/admin/seasons/{season}/membershipfees")
+  @Consumes("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+  HttpResponse getCollectionXlsx(String season);
+
+  @Post("/api/v1/admin/seasons/{season}/membershipfees")
+  @Consumes("application/json")
+  HttpResponse createCollection(@Valid @Body Collection<MembershipfeesPostResourceModel> model,
+      String season);
+
+  @Get("/api/v1/admin/seasons/{season}/membershipfees")
+  @Consumes("application/json")
+  CollectionModel<MembershipfeesGetResourceModel> getCollectionHateoas(String season);
+
+  @Get("/api/v1/admin/seasons/{season}/membershipfees")
+  @Consumes("application/json")
+  HttpResponse<CollectionModel<MembershipfeesGetResourceModel>> getCollectionRaw(String season);
+
+  @Post("/api/v1/admin/seasons/{season}/membershipfees")
+  @Consumes("application/json")
+  HttpResponse createCollectionHateoas(
+      @Valid @Body Collection<MembershipfeesPostResourceModel> model, String season);
+
+  @Post("/api/v1/admin/seasons/{season}/membershipfees")
+  @Consumes("application/json")
+  HttpResponse createCollectionRaw(@Valid @Body Collection<MembershipfeesPostResourceModel> model,
+      String season);
+}

@@ -46,7 +46,7 @@ import static ch.silviowangler.gradle.restapi.TargetFramework.SPRING_BOOT
  */
 class RestApiPlugin implements Plugin<Project> {
 
-	public static final String PLUGIN_ID = 'ch.silviowangler.restapi'
+	public static final String PLUGIN_ID = 'io.github.saw303.restapi'
 
 
 	void apply(Project project) {
@@ -107,7 +107,7 @@ class RestApiPlugin implements Plugin<Project> {
 		project.configurations.maybeCreate(CONFIGURATION_REST_API)
 
 		final String springVersion = "5.2.4.RELEASE"
-		final String pluginVersion = "3.0.4"
+		final String pluginVersion = "3.0.5"
 		final String libPhoneNumberVersion = "8.11.5"
 
 		final List<String> deps = [

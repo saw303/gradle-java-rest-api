@@ -1,18 +1,19 @@
 plugins {
   id "com.github.hierynomus.license" version "0.16.1" apply false
   id "com.github.ben-manes.versions" version "0.42.0" apply false
-  id "com.diffplug.gradle.spotless" version "6.6.0" apply false
+  id "com.diffplug.gradle.spotless" version "6.7.0" apply false
+  id "com.gradle.plugin-publish" version "0.21.0" apply false
 }
 
 subprojects { subproject ->
 
-  version = "3.0.4"
+  version = "3.0.5"
 
   apply from: "${rootDir}/gradle/java.gradle"
   apply from: "${rootDir}/gradle/groovy.gradle"
 
   if (subproject.name != 'gradle-java-rest-api') {
-    apply from: "${rootDir}/gradle/bintray.gradle"
+    apply from: "${rootDir}/gradle/publication.gradle"
   }
 
   apply plugin: 'com.github.ben-manes.versions'

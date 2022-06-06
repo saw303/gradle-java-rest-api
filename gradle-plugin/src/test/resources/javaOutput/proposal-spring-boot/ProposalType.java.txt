@@ -6,7 +6,7 @@ import javax.money.MonetaryAmount;
 
 @Generated(
     comments = "Specification filename: productproposal.v1.json",
-    value = "ch.silviowangler.restapi"
+    value = "io.github.saw303.restapi"
 )
 public class ProposalType implements Serializable {
   private String label;

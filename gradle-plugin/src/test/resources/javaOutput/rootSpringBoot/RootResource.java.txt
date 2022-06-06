@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @Generated(
     comments = "Specification filename: root.v1.json",
-    value = "ch.silviowangler.restapi"
+    value = "io.github.saw303.restapi"
 )
 @RequestMapping("/api/v1")
 public abstract class RootResource {
