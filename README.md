@@ -16,35 +16,14 @@ Use this [link](https://bintray.com/saw303/gradle-plugins/gradle-java-rest-api?s
 
 ## Getting started
 
-The Gradle plugin is hosted at the following Bintray repository https://dl.bintray.com/saw303/gradle-plugins. In order to get this running with Gradle you need to declare that repository and apply the plugin.
+The Gradle plugin is hosted at the official Gradle plugin repository https://plugins.gradle.org/plugin/io.github.saw303.restapi. In order to get this running with Gradle you need to declare that repository and apply the plugin.
 If you feel uncomfortable on relying on a private repository feel free to create a mirror for it.
 
 
-```
-buildscript {
-    repositories {
-        maven { url "https://dl.bintray.com/saw303/gradle-plugins" }
-    }
-}
-
+```groovy
 plugins {
-  id 'ch.silviowangler.restapi' version '2.2.12'
+  id 'io.github.saw303.restapi' version '3.0.5'
 }
-```
-
-or with the old way:
-
-```
-buildscript {
-    repositories {
-        maven { url "https://dl.bintray.com/saw303/gradle-plugins" }
-    }
-    dependencies {
-        classpath 'ch.silviowangler.rest:gradle-java-rest-api:1.5.0'
-    }
-}
-
-apply plugin: 'ch.silviowangler.restapi'
 ```
 
 The Gradle plugin will introduce a new build category named `rest api` to your Gradle build. This category groups the following tasks:
@@ -65,21 +44,8 @@ The Spring Boot repo is located at `./demo-app-springboot`. The Micronaut app is
 To setup your Gradle build you need to apply the REST Generator plugin.
 
 ```groovy
-
-// register the plugin
-buildscript {
-    repositories {
-        jcenter()
-        maven { url "https://dl.bintray.com/saw303/gradle-plugins" }
-    }
-    ext {
-        restApiPluginVersion = '2.2.12'
-    }
-}
-
-// apply it to your build
 plugins {
-  id 'ch.silviowangler.restapi' version "${restApiPluginVersion}"
+  id 'io.github.saw303.restapi' version '3.0.5'
 }
 
 // configure it
@@ -89,7 +55,7 @@ restApi {
     packageName = 'my.package.name'
     
     // I would like to use Micronaut
-    targetFramework = TargetFramework.MICRONAUT
+    targetFramework = TargetFramework.MICRONAUT_3
     
     // the specification file are located at 
     optionsSource = file('src/main/specs')
