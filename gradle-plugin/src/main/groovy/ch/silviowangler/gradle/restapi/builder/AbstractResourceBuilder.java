@@ -322,6 +322,28 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
                 pathParams,
                 parser);
 
+        TypeName hateoasReturnType;
+        if (returnType == TypeName.VOID) {
+          hateoasReturnType = MICRONAUT_HTTP_RESPONSE.getTypeName();
+        } else if (returnType == MICRONAUT_HTTP_RESPONSE.getTypeName()) {
+          hateoasReturnType = returnType;
+        } else {
+          hateoasReturnType =
+              ParameterizedTypeName.get(
+                  MICRONAUT_HTTP_RESPONSE.getClassName(),
+                  ParameterizedTypeName.get(ENTITY_MODEL.getClassName(), returnType));
+        }
+
+        MethodContext contextHateoas =
+            new MethodContext(
+                hateoasReturnType,
+                verb.getParameters(),
+                verb.getHeaders(),
+                paramClasses,
+                representation,
+                pathParams,
+                parser);
+
         if (GET_COLLECTION.equals(verb.getVerb())) {
 
           if (directEntity) {
@@ -370,8 +392,8 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
           if (POST.equals(verb.getVerb()) || POST_ENTITY.equals(verb.getVerb())) {
 
             paramClasses.put("model", model);
-            context.setMethodName("createEntityHateoas");
-            this.typeBuilder.addMethod(createMethod(context).build());
+            contextHateoas.setMethodName("createEntityHateoas");
+            this.typeBuilder.addMethod(createMethod(contextHateoas).build());
 
             contextRaw.setMethodName("createEntityRaw");
             this.typeBuilder.addMethod(createMethod(contextRaw).build());
@@ -387,8 +409,8 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
           } else if (PUT.equals(verb.getVerb()) || PUT_ENTITY.equals(verb.getVerb())) {
             paramClasses.put("model", model);
-            context.setMethodName("updateEntityHateoas");
-            this.typeBuilder.addMethod(createMethod(context).build());
+            contextHateoas.setMethodName("updateEntityHateoas");
+            this.typeBuilder.addMethod(createMethod(contextHateoas).build());
 
             contextRaw.setMethodName("updateEntityRaw");
             this.typeBuilder.addMethod(createMethod(contextRaw).build());
