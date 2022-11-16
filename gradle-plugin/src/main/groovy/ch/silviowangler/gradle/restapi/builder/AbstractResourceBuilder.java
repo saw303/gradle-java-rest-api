@@ -330,8 +330,12 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
         } else {
           hateoasReturnType =
               ParameterizedTypeName.get(
-                  MICRONAUT_HTTP_RESPONSE.getClassName(),
-                  ParameterizedTypeName.get(ENTITY_MODEL.getClassName(), returnType));
+                  GET_COLLECTION.equals(verb.getVerb())
+                      ? COLLECTION_MODEL.getClassName()
+                      : ENTITY_MODEL.getClassName(),
+                  resourceMethodReturnType(
+                      GET_COLLECTION.equals(verb.getVerb()) ? new Verb(GET_ENTITY) : verb,
+                      representation));
         }
 
         MethodContext contextHateoas =
