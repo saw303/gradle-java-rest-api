@@ -47,7 +47,7 @@ dependencies {
 	implementation "com.google.guava:guava:${guavaVersion}"
 	implementation "com.google.code.gson:gson:${gsonVersion}"
 
-	implementation 'net.sourceforge.plantuml:plantuml:1.2023.8'
+	implementation 'net.sourceforge.plantuml:plantuml:1.2023.9'
 	implementation 'org.apache.commons:commons-lang3:3.11'
 }
 
