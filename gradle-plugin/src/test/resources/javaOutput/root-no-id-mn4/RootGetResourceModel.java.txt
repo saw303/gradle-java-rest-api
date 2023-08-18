@@ -1,0 +1,61 @@
+package org.acme.rest.v1;
+
+import ch.silviowangler.rest.model.ResourceModel;
+import io.micronaut.serde.annotation.Serdeable;
+import jakarta.annotation.Generated;
+import java.io.Serializable;
+import java.util.Objects;
+
+@Generated(
+    comments = "Specification filename: root.v1.json",
+    value = "io.github.saw303.restapi"
+)
+@Serdeable
+public class RootGetResourceModel implements Serializable, ResourceModel {
+  /**
+   * Name des Landes
+   */
+  private String name;
+
+  /**
+   * Ob Entwurf oder nicht
+   */
+  private Boolean draft = Boolean.FALSE;
+
+  public RootGetResourceModel() {
+  }
+
+  public RootGetResourceModel(String name, Boolean draft) {
+    this.name = name;
+    this.draft = draft;
+  }
+
+  public String getName() {
+    return this.name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public Boolean getDraft() {
+    return this.draft;
+  }
+
+  public void setDraft(Boolean draft) {
+    this.draft = draft;
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    if (! (other instanceof RootGetResourceModel)) return false;
+    RootGetResourceModel that = (RootGetResourceModel) other;
+    return Objects.equals(getName(), that.getName()) && Objects.equals(getDraft(), that.getDraft());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(name, draft);
+  }
+}

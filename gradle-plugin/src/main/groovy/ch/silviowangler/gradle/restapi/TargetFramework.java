@@ -33,10 +33,13 @@ public enum TargetFramework {
 
   /** Micronaut 2.4.x and above. */
   MICRONAUT_24,
-  /** Micronaut 3.0.x and above. Using Jakarta EE annotations. */
-  MICRONAUT_3;
+  /** Micronaut 3.0.x and above. Partially using Jakarta EE annotations. */
+  MICRONAUT_3,
+
+  /** Micronaut 3.0.x and above. Only using Jakarta EE annotations. */
+  MICRONAUT_4;
 
   public boolean isMicronaut() {
-    return this == MICRONAUT || this == MICRONAUT_24 || this == MICRONAUT_3;
+    return this == MICRONAUT || this == MICRONAUT_24 || this == MICRONAUT_3 || this == MICRONAUT_4;
   }
 }

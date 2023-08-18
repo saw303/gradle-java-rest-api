@@ -140,13 +140,11 @@ class PlantUmlTask extends SpecificationBaseTask {
 				}
 			}
 			return match
-
 		} else if (results.size() == 1) {
 			return results[0]
 		} else {
 			return null
 		}
-
 	}
 
 	Set<Dependency> buildDependencyList(Knot<ResourceContractContainer> tree) {

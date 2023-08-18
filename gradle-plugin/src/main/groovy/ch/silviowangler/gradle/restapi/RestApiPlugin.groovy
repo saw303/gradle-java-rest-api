@@ -107,14 +107,12 @@ class RestApiPlugin implements Plugin<Project> {
 		project.configurations.maybeCreate(CONFIGURATION_REST_API)
 
 		final String springVersion = "5.2.4.RELEASE"
-		final String pluginVersion = "3.0.7"
+		final String pluginVersion = "3.0.8"
 		final String libPhoneNumberVersion = "8.11.5"
 
 		final List<String> deps = [
-			"javax.annotation:javax.annotation-api:1.3.2",
 			"ch.silviowangler.rest:rest-model:${pluginVersion}",
-			"javax.money:money-api:1.0.3",
-			"javax.validation:validation-api:2.0.1.Final"
+			"javax.money:money-api:1.1",
 		]
 
 		NamedDomainObjectProvider<Configuration> api = project.configurations.named("api")

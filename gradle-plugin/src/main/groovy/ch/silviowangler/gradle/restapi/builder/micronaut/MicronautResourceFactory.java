@@ -23,7 +23,9 @@
  */
 package ch.silviowangler.gradle.restapi.builder.micronaut;
 
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAKARTA_GENERATED;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAKARTA_INJECT;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAKARTA_NULLABLE;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAKARTA_SINGLETON;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_INJECT;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_NULLABLE;
@@ -51,6 +53,7 @@ import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_PRODUCES;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_PUT;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_QUERY_VALUE;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_REQUEST_BODY;
+import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_SERDEABLE;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_STATUS;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_VALIDATED;
 import static ch.silviowangler.gradle.restapi.PluginTypes.RESTAPI_RESPONSE_CREATOR;
@@ -110,6 +113,16 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
   }
 
   @Override
+  public AnnotationSpec createGeneratedAnnotation(boolean printTimestamp) {
+    TargetFramework targetFramework = this.restApiExtension.getTargetFramework();
+    if (targetFramework == TargetFramework.MICRONAUT_4) {
+      return super.createGeneratedAnnotation(printTimestamp, JAKARTA_GENERATED);
+    } else {
+      return super.createGeneratedAnnotation(printTimestamp);
+    }
+  }
+
+  @Override
   public TypeSpec buildResource() {
     reset();
     setArtifactType(DELEGATOR_RESOURCE);
@@ -134,7 +147,8 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
             .addStatement("this.$N = $N", DELEGATE_VAR_NAME, DELEGATE_VAR_NAME);
 
     TargetFramework targetFramework = this.restApiExtension.getTargetFramework();
-    if (targetFramework == TargetFramework.MICRONAUT_3) {
+    if (targetFramework == TargetFramework.MICRONAUT_3
+        || targetFramework == TargetFramework.MICRONAUT_4) {
       methodBuilder.addAnnotation(createAnnotation(JAKARTA_INJECT));
     } else {
       methodBuilder.addAnnotation(createAnnotation(JAVAX_INJECT));
@@ -176,7 +190,8 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
             GeneratorUtil.createResourceDelegateName(
                 getResourceContractContainer().getSourceFileName()));
 
-    if (this.restApiExtension.getTargetFramework() == TargetFramework.MICRONAUT_3) {
+    if (this.restApiExtension.getTargetFramework() == TargetFramework.MICRONAUT_3
+        || this.restApiExtension.getTargetFramework() == TargetFramework.MICRONAUT_4) {
       builder.addAnnotation(createAnnotation(JAKARTA_SINGLETON));
     } else {
       builder.addAnnotation(createAnnotation(JAVAX_SINGLETON));
@@ -220,7 +235,12 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
             AnnotationSpec.builder(JAVAX_VALIDATION_NOT_NULL.getClassName()).build());
       }
     } else {
-      annotationSpecs.add(AnnotationSpec.builder(JAVAX_NULLABLE.getClassName()).build());
+      TargetFramework targetFramework = this.restApiExtension.getTargetFramework();
+      if (targetFramework == TargetFramework.MICRONAUT_4) {
+        annotationSpecs.add(AnnotationSpec.builder(JAKARTA_NULLABLE.getClassName()).build());
+      } else {
+        annotationSpecs.add(AnnotationSpec.builder(JAVAX_NULLABLE.getClassName()).build());
+      }
     }
 
     if (param.hasMinMaxConstraints() && !param.isMultiple()) {
@@ -313,6 +333,8 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
           || targetFramework == TargetFramework.MICRONAUT_24) {
 
         methodAnnotations.add(createAnnotation(MICRONAUT_EXECUTE_ON, Maps.of("value", "io")));
+      } else if (targetFramework == TargetFramework.MICRONAUT_4) {
+        methodAnnotations.add(createAnnotation(MICRONAUT_EXECUTE_ON, Maps.of("value", "blocked")));
       }
     }
 
@@ -386,7 +408,7 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
 
   @Override
   public boolean supportsInterfaces() {
-    return false || this.restApiExtension.getGenerationMode() == GenerationMode.CLIENT;
+    return this.restApiExtension.getGenerationMode() == GenerationMode.CLIENT;
   }
 
   @Override
@@ -441,7 +463,11 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
   @Override
   protected void enhanceResourceModelBaseInstance(Verb verb, TypeSpec.Builder builder) {
 
-    if (POST_METHODS.contains(verb.getVerb()) || PUT_METHODS.contains(verb.getVerb())) {
+    TargetFramework targetFramework = this.restApiExtension.getTargetFramework();
+
+    if (targetFramework == TargetFramework.MICRONAUT_4) {
+      builder.addAnnotation(createAnnotation(MICRONAUT_SERDEABLE));
+    } else if (POST_METHODS.contains(verb.getVerb()) || PUT_METHODS.contains(verb.getVerb())) {
       builder.addAnnotation(createAnnotation(MICRONAUT_INTROSPECTED));
     }
   }

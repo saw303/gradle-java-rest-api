@@ -151,6 +151,10 @@ public interface ResourceBuilder {
   }
 
   default AnnotationSpec createGeneratedAnnotation(boolean printTimestamp) {
+    return createGeneratedAnnotation(printTimestamp, JAVAX_GENERATED);
+  }
+
+  default AnnotationSpec createGeneratedAnnotation(boolean printTimestamp, PluginTypes annotation) {
 
     Map<String, Object> map = new HashMap<>();
 
@@ -162,8 +166,7 @@ public interface ResourceBuilder {
     if (printTimestamp) {
       map.put("date", ZonedDateTime.now(ZoneOffset.UTC).toString());
     }
-
-    return createAnnotation(JAVAX_GENERATED, map);
+    return createAnnotation(annotation, map);
   }
 
   default AnnotationSpec createAnnotation(PluginTypes className) {

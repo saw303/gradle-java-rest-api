@@ -44,6 +44,7 @@ import static ch.silviowangler.gradle.restapi.Consts.TASK_GROUP_REST_API
 import static ch.silviowangler.gradle.restapi.TargetFramework.MICRONAUT
 import static ch.silviowangler.gradle.restapi.TargetFramework.MICRONAUT_24
 import static ch.silviowangler.gradle.restapi.TargetFramework.MICRONAUT_3
+import static ch.silviowangler.gradle.restapi.TargetFramework.MICRONAUT_4
 import static ch.silviowangler.gradle.restapi.TargetFramework.SPRING_BOOT
 
 class RestApiPluginSpec extends Specification {
@@ -975,7 +976,7 @@ class RestApiPluginSpec extends Specification {
     true       || 'resources-overview-fields.puml'
   }
 
-  void "No id field is present in a resource"() {
+  void "No id field is present in a resource (Micronaut 3)"() {
 
     given:
     project.restApi.generatorOutput = tempDir
@@ -1014,6 +1015,62 @@ class RestApiPluginSpec extends Specification {
     assertJavaFile('org.acme.rest.v1', 'RootGetResourceModel', 'root-no-id')
     assertJavaFile('org.acme.rest.v1', 'RootResource', 'root-no-id')
     assertJavaFile('org.acme.rest.v1', 'RootResourceDelegate', 'root-no-id')
+
+    when:
+    CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask
+
+    and:
+    cleanTask.cleanUp()
+
+    and:
+    javaFiles.clear()
+    tempDir.eachFileRecurse(FileType.FILES, {
+      if (it.name.endsWith('.java')) javaFiles << it
+    })
+
+    then:
+    javaFiles.isEmpty()
+  }
+
+  void "No id field is present in a resource (Micronaut 4)"() {
+
+    given:
+    project.restApi.generatorOutput = tempDir
+    project.restApi.generatorImplOutput = tempDir
+    project.restApi.optionsSource = new File("${new File('').absolutePath}/src/test/resources/specs/root-no-id")
+    project.restApi.packageName = 'org.acme.rest'
+    project.restApi.generateDateAttribute = false
+    project.restApi.objectResourceModelMapping = customFieldModelMapping
+    project.restApi.targetFramework = MICRONAUT_4
+    project.restApi.responseEncoding = Charset.forName('UTF-8')
+
+    and:
+    GenerateRestApiTask task = project.tasks.generateRestArtifacts as GenerateRestApiTask
+
+    when:
+    task.exec()
+
+    and:
+    List<File> javaFiles = []
+    tempDir.eachFileRecurse(FileType.FILES, {
+      if (it.name.endsWith('.java')) javaFiles << it
+    })
+
+    then:
+    new File(tempDir, 'org/acme/rest').exists()
+
+    and:
+    assertGeneratedFiles javaFiles, 3
+
+    and:
+    javaFiles.collect {
+      it.parent == new File(tempDir, 'org/acme/rest')
+    }.size() == javaFiles.size()
+
+    and: 'validate resources'
+    assertJavaFile('org.acme.rest.v1', 'RootGetResourceModel', 'root-no-id-mn4')
+    assertJavaFile('org.acme.rest.v1', 'RootResource', 'root-no-id-mn4')
+    assertJavaFile('org.acme.rest.v1', 'RootResourceDelegate', 'root-no-id-mn4')
 
     when:
     CleanRestApiTask cleanTask = project.tasks.cleanRestArtifacts as CleanRestApiTask

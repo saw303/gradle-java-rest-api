@@ -67,7 +67,9 @@ public enum PluginTypes {
   JAVAX_VALIDATION_EMAIL(ClassName.get("javax.validation.constraints", "Email")),
   JAVAX_VALIDATION_VALID(ClassName.get("javax.validation", "Valid")),
   JAVAX_GENERATED(ClassName.get("javax.annotation", "Generated")),
+  JAKARTA_GENERATED(ClassName.get("jakarta.annotation", "Generated")),
   JAVAX_NULLABLE(ClassName.get("javax.annotation", "Nullable")),
+  JAKARTA_NULLABLE(ClassName.get("jakarta.annotation", "Nullable")),
   JAVA_OVERRIDE(ClassName.get(Override.class)),
   PLUGIN_NOT_YET_IMPLEMENTED_EXCEPTION(
       ClassName.get("ch.silviowangler.rest", "NotYetImplementedException")),
@@ -114,6 +116,7 @@ public enum PluginTypes {
   MICRONAUT_FORMAT(ClassName.get("io.micronaut.core.convert.format", "Format")),
   MICRONAUT_DATE_FORMAT(ClassName.get("ch.silviowangler.rest.micronaut.binding", "DateFormat")),
   MICRONAUT_INTROSPECTED(ClassName.get("io.micronaut.core.annotation", "Introspected")),
+  MICRONAUT_SERDEABLE(ClassName.get("io.micronaut.serde.annotation", "Serdeable")),
   MICRONAUT_DATE_TIME_FORMAT(
       ClassName.get("ch.silviowangler.rest.micronaut.binding", "DateTimeFormat")),
   MICRONAUT_EXECUTE_ON(ClassName.get("io.micronaut.scheduling.annotation", "ExecuteOn")),
