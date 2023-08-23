@@ -334,7 +334,7 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
 
         methodAnnotations.add(createAnnotation(MICRONAUT_EXECUTE_ON, Maps.of("value", "io")));
       } else if (targetFramework == TargetFramework.MICRONAUT_4) {
-        methodAnnotations.add(createAnnotation(MICRONAUT_EXECUTE_ON, Maps.of("value", "blocked")));
+        methodAnnotations.add(createAnnotation(MICRONAUT_EXECUTE_ON, Maps.of("value", "blocking")));
       }
     }
 
