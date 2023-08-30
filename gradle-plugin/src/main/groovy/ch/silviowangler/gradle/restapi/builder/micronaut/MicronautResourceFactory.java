@@ -84,7 +84,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import jakarta.lang.model.element.Modifier;
+import javax.lang.model.element.Modifier;
 import org.apache.groovy.util.Maps;
 
 /**

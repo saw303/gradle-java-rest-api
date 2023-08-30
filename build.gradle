@@ -9,7 +9,7 @@ plugins {
 
 subprojects { subproject ->
 
-  version = "3.0.10"
+  version = "3.0.11"
 
   apply plugin: 'com.github.ben-manes.versions'
 
