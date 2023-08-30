@@ -27,8 +27,8 @@ import ch.silviowangler.rest.contract.model.v1.Representation;
 import com.google.gson.*;
 import java.lang.reflect.Type;
 import java.util.Optional;
-import javax.activation.MimeType;
-import javax.activation.MimeTypeParseException;
+import jakarta.activation.MimeType;
+import jakarta.activation.MimeTypeParseException;
 
 public class RepresentationDeserializer implements JsonDeserializer<Representation> {
   @Override

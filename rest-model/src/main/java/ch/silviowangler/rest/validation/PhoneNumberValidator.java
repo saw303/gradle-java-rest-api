@@ -26,15 +26,15 @@ package ch.silviowangler.rest.validation;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 /**
  * Validates international phone numbers using Google's phone library {@link PhoneNumberUtil}.
  *
  * <p>The validator will respond with a positive answer when validating a null value. If you want to
- * enforce non nullable values you need add the constaint {@link
- * javax.validation.constraints.NotNull}.
+ * enforce non nullables values you need add the constraint {@link
+ * jakarta.validation.constraints.NotNull}.
  *
  * @author Silvio Wangler
  * @since 2.0.11

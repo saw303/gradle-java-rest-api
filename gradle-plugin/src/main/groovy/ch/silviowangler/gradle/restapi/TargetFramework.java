@@ -27,8 +27,6 @@ package ch.silviowangler.gradle.restapi;
  * @author Silvio Wangler
  */
 public enum TargetFramework {
-  JAX_RS,
-  SPRING_BOOT,
   MICRONAUT,
 
   /** Micronaut 2.4.x and above. */
@@ -40,6 +38,6 @@ public enum TargetFramework {
   MICRONAUT_4;
 
   public boolean isMicronaut() {
-    return this == MICRONAUT || this == MICRONAUT_24 || this == MICRONAUT_3 || this == MICRONAUT_4;
+    return true;
   }
 }

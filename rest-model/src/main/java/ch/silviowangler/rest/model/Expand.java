@@ -23,6 +23,7 @@
  */
 package ch.silviowangler.rest.model;
 
+import io.micronaut.serde.annotation.Serdeable;
 import java.util.Collection;
 import java.util.List;
 
@@ -32,6 +33,7 @@ import java.util.List;
  * @author Silvio Wangler
  * @since 3.0.0
  */
+@Serdeable
 public class Expand {
 
   private String name;

@@ -3,7 +3,7 @@ package org.acme.rest.v1.laender.orte;
 import ch.silviowangler.rest.NotYetImplementedException;
 import ch.silviowangler.rest.types.IdType;
 import java.util.Collection;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 public class OrtResourceImpl implements OrtResource {
   @Override

@@ -5,8 +5,8 @@ import ch.silviowangler.rest.model.ResourceModel;
 import io.micronaut.core.annotation.Introspected;
 import java.io.Serializable;
 import java.util.Objects;
-import javax.annotation.Generated;
-import javax.validation.constraints.NotNull;
+import jakarta.annotation.Generated;
+import jakarta.validation.constraints.NotNull;
 
 @Generated(
     comments = "Specification filename: membershipfees.v1.json",

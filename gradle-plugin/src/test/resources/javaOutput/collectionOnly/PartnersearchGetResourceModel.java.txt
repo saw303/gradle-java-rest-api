@@ -2,14 +2,16 @@ package org.acme.rest.v1.partner;
 
 import ch.silviowangler.rest.model.Identifiable;
 import ch.silviowangler.rest.model.ResourceModel;
+import io.micronaut.serde.annotation.Serdeable;
+import jakarta.annotation.Generated;
 import java.io.Serializable;
 import java.util.Objects;
-import javax.annotation.Generated;
 
 @Generated(
     comments = "Specification filename: partnersearch.v1.json",
     value = "io.github.saw303.restapi"
 )
+@Serdeable
 public class PartnersearchGetResourceModel implements Serializable, ResourceModel, Identifiable<String> {
   /**
    * Eindeutige ID des Partners

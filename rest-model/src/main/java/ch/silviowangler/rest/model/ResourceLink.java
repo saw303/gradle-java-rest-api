@@ -23,6 +23,7 @@
  */
 package ch.silviowangler.rest.model;
 
+import io.micronaut.serde.annotation.Serdeable;
 import java.io.Serializable;
 import java.net.URI;
 import java.util.Collections;
@@ -35,6 +36,7 @@ import java.util.StringJoiner;
  *
  * @author Silvio Wangler
  */
+@Serdeable
 public class ResourceLink implements Serializable {
 
   private String rel;

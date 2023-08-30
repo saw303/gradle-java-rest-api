@@ -1,6 +1,6 @@
 package org.acme.rest.v1.partner;
 
-import javax.annotation.Generated;
+import jakarta.annotation.Generated;
 
 @Generated(
     comments = "Specification filename: partner.v1.json",

@@ -39,7 +39,6 @@ import org.gradle.api.tasks.compile.JavaCompile
 
 import static ch.silviowangler.gradle.restapi.Consts.CONFIGURATION_REST_API
 import static ch.silviowangler.gradle.restapi.Consts.TASK_GROUP_REST_API
-import static ch.silviowangler.gradle.restapi.TargetFramework.SPRING_BOOT
 
 /**
  * This is the main plugin file. Put a description of your plugin here.
@@ -106,8 +105,7 @@ class RestApiPlugin implements Plugin<Project> {
 
 		project.configurations.maybeCreate(CONFIGURATION_REST_API)
 
-		final String springVersion = "5.2.4.RELEASE"
-		final String pluginVersion = "3.0.9"
+		final String pluginVersion = "3.0.10"
 		final String libPhoneNumberVersion = "8.11.5"
 
 		final List<String> deps = [
@@ -117,7 +115,6 @@ class RestApiPlugin implements Plugin<Project> {
 
 		NamedDomainObjectProvider<Configuration> api = project.configurations.named("api")
 		NamedDomainObjectProvider<Configuration> implementation = project.configurations.named("implementation")
-		NamedDomainObjectProvider<Configuration> compileOnly = project.configurations.named("compileOnly")
 
 		api.configure { a ->
 			a.withDependencies {
@@ -137,20 +134,7 @@ class RestApiPlugin implements Plugin<Project> {
 				it.add(project.dependencies.create("com.googlecode.libphonenumber:libphonenumber:${libPhoneNumberVersion}"))
 
 				if (generationMode.get() != GenerationMode.API) {
-					if (tf.get() == SPRING_BOOT) {
-						it.add(project.dependencies.create("ch.silviowangler.rest:rest-api-spring:${pluginVersion}"))
-					} else if (tf.get().isMicronaut()) {
-						it.add(project.dependencies.create("ch.silviowangler.rest:rest-api-micronaut:${pluginVersion}"))
-					}
-				}
-			}
-		}
-
-		compileOnly.configure { cO ->
-			cO.withDependencies {
-				if (tf.get() == SPRING_BOOT) {
-					it.add(project.dependencies.create("org.springframework:spring-web:${springVersion}"))
-					it.add(project.dependencies.create("org.springframework:spring-webmvc:${springVersion}"))
+					it.add(project.dependencies.create("ch.silviowangler.rest:rest-api-micronaut:${pluginVersion}"))
 				}
 			}
 		}

@@ -6,7 +6,7 @@ import io.micronaut.http.annotation.Options;
 import io.micronaut.http.annotation.Produces;
 import io.micronaut.scheduling.annotation.ExecuteOn;
 import jakarta.inject.Inject;
-import javax.annotation.Generated;
+import jakarta.annotation.Generated;
 
 /**
  * Das ist die Root Resource der Version 1.0.0

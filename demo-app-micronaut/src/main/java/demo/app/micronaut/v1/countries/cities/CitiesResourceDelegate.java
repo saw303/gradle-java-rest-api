@@ -5,7 +5,7 @@ import ch.silviowangler.rest.types.IdType;
 import demo.app.micronaut.v1.CoordinatesType;
 import io.micronaut.http.HttpResponse;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;

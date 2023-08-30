@@ -5,24 +5,16 @@ repositories {
 }
 
 dependencies {
-
+	annotationProcessor("io.micronaut.validation:micronaut-validation-processor")
 	api project(':rest-model')
 	implementation project(':json-model')
-
-	annotationProcessor "io.micronaut:micronaut-inject-java:${micronautVersion}"
-	annotationProcessor "io.micronaut:micronaut-validation:${micronautVersion}"
-
-	compileOnly "io.micronaut:micronaut-runtime:${micronautVersion}"
-	compileOnly "io.micronaut:micronaut-http:${micronautVersion}"
-	compileOnly "io.micronaut:micronaut-router:${micronautVersion}"
-	compileOnly "io.micronaut:micronaut-validation:${micronautVersion}"
-	compileOnly "io.reactivex.rxjava2:rxjava:2.2.12"
-	compileOnly "com.fasterxml.jackson.core:jackson-databind:2.10.0"
-	compileOnly 'io.micronaut.data:micronaut-data-model:1.0.2'
-
-	testImplementation "io.micronaut:micronaut-core:${micronautVersion}"
-	testImplementation "io.micronaut:micronaut-router:${micronautVersion}"
-	testImplementation "io.reactivex.rxjava2:rxjava:2.2.12"
-
 	implementation "com.google.guava:guava:${guavaVersion}"
+	implementation("io.micronaut.validation:micronaut-validation")
+	implementation("jakarta.validation:jakarta.validation-api")
+
+  compileOnly "io.micronaut:micronaut-router"
+  compileOnly("io.micronaut.rxjava2:micronaut-rxjava2")
+
+  testImplementation "io.micronaut:micronaut-router"
+  testImplementation("io.micronaut.rxjava2:micronaut-rxjava2")
 }

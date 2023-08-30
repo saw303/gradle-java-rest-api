@@ -5,7 +5,7 @@ import ch.silviowangler.rest.types.IdType;
 import demo.app.micronaut.v1.countries.CountriesGetResourceModel;
 import io.micronaut.http.HttpResponse;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;

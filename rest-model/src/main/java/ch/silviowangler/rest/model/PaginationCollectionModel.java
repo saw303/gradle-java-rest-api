@@ -25,10 +25,12 @@ package ch.silviowangler.rest.model;
 
 import ch.silviowangler.rest.model.pagination.Page;
 import ch.silviowangler.rest.model.pagination.Slice;
+import io.micronaut.serde.annotation.Serdeable;
 
 /**
  * @author Silvio Wangler
  */
+@Serdeable
 public class PaginationCollectionModel<R extends ResourceModel> extends CollectionModel<R> {
 
   private PaginationModel pagination;

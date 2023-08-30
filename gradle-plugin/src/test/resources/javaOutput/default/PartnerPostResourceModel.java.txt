@@ -9,12 +9,12 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Locale;
 import java.util.Objects;
-import javax.annotation.Generated;
-import javax.money.MonetaryAmount;
-import javax.validation.constraints.DecimalMax;
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
+import jakarta.annotation.Generated;
+import jakarta.money.MonetaryAmount;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
 
 @Generated(
     comments = "Specification filename: partner.v1.json",

@@ -3,8 +3,6 @@
 This Gradle plugin helps you to design REST API for Java backends in a unique way. The plugin currently supports
 
 - **Micronaut** - a shiny new star at the Java landscape (Supported versions are 1.2.6 at greater)
-- **JAX RS** - well, the specification dude!
-- **Spring Boot**, the way who Spring does it.
 
 
 Use this [link](https://bintray.com/saw303/gradle-plugins/gradle-java-rest-api?source=watch) to watch latest releases. 
@@ -45,7 +43,7 @@ To setup your Gradle build you need to apply the REST Generator plugin.
 
 ```groovy
 plugins {
-  id 'io.github.saw303.restapi' version '3.0.5'
+  id 'io.github.saw303.restapi' version '3.0.9'
 }
 
 // configure it
@@ -55,7 +53,7 @@ restApi {
     packageName = 'my.package.name'
     
     // I would like to use Micronaut
-    targetFramework = TargetFramework.MICRONAUT_3
+    targetFramework = TargetFramework.MICRONAUT_4
     
     // the specification file are located at 
     optionsSource = file('src/main/specs')

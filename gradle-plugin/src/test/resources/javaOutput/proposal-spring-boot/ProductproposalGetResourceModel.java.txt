@@ -4,8 +4,8 @@ import ch.silviowangler.rest.model.ResourceModel;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
-import javax.annotation.Generated;
-import javax.money.MonetaryAmount;
+import jakarta.annotation.Generated;
+import jakarta.money.MonetaryAmount;
 
 @Generated(
     comments = "Specification filename: productproposal.v1.json",

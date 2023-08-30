@@ -8,8 +8,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-import javax.annotation.Generated;
-import javax.money.MonetaryAmount;
+import jakarta.annotation.Generated;
+import jakarta.money.MonetaryAmount;
 
 @Generated(
     comments = "Specification filename: partner.v1.json",

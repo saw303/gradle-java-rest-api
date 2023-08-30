@@ -1,6 +1,6 @@
 package org.acme.rest.v1;
 
-import javax.annotation.Generated;
+import jakarta.annotation.Generated;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;

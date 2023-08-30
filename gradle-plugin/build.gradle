@@ -6,6 +6,11 @@ plugins {
 
 group = 'io.github.saw303.restapi'
 
+java {
+  sourceCompatibility = JavaVersion.toVersion("17")
+  targetCompatibility = JavaVersion.toVersion("17")
+}
+
 gradlePlugin {
 	plugins {
 		restApiPlugin {

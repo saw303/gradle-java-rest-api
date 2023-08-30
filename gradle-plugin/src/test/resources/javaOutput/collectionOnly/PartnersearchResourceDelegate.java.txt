@@ -1,0 +1,16 @@
+package org.acme.rest.v1.partner;
+
+import ch.silviowangler.rest.NotYetImplementedException;
+import io.micronaut.http.HttpResponse;
+import jakarta.inject.Singleton;
+
+@Singleton
+public class PartnersearchResourceDelegate {
+  public Iterable<PartnersearchGetResourceModel> getCollection(String q) {
+    throw new NotYetImplementedException();
+  }
+
+  public HttpResponse getEntityXml(String id) {
+    throw new NotYetImplementedException();
+  }
+}

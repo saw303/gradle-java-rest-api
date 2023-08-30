@@ -25,10 +25,10 @@ package ch.silviowangler.rest.micronaut.binding;
 
 import io.micronaut.core.convert.ConversionContext;
 import io.micronaut.core.convert.format.FormattingTypeConverter;
+import jakarta.inject.Singleton;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.util.Optional;
-import javax.inject.Singleton;
 
 /**
  * Converts an ISO 8601 UTC {@link CharSequence} such as 2007-12-24T18:21:00Z to a {@link Instant}.

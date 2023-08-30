@@ -1,7 +1,0 @@
-apply plugin: 'groovy'
-
-compileGroovy.options.compilerArgs << '-Xlint:unchecked'
-
-dependencies {
-    implementation localGroovy()
-}

@@ -127,7 +127,10 @@ public class HateoasResponseFilter implements HttpServerFilter {
               if (potUriRouteMatch.isPresent()) {
                 UriRouteMatch uriRouteMatch = potUriRouteMatch.get();
 
-                if (uriRouteMatch.getProduces().contains(MediaType.APPLICATION_JSON_TYPE)) {
+                if (uriRouteMatch
+                    .getRouteInfo()
+                    .getProduces()
+                    .contains(MediaType.APPLICATION_JSON_TYPE)) {
 
                   if (response.body() instanceof ResourceModel) {
 

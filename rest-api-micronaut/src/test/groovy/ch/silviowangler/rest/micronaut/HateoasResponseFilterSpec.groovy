@@ -11,6 +11,8 @@ import io.micronaut.http.HttpResponseFactory
 import io.micronaut.http.MediaType
 import io.micronaut.http.MutableHttpResponse
 import io.micronaut.http.filter.ServerFilterChain
+import io.micronaut.web.router.RouteInfo
+import io.micronaut.web.router.UriRouteInfo
 import io.micronaut.web.router.UriRouteMatch
 import io.reactivex.Flowable
 import spock.lang.Specification
@@ -32,8 +34,10 @@ class HateoasResponseFilterSpec extends Specification {
     MutableHttpResponse<?> response = HttpResponseFactory.INSTANCE.ok()
     Slice model = new DefaultPage([], new DefaultPageable(0, 10), 10)
     UriRouteMatch uriRouteMatch = Mock()
+    UriRouteInfo routeInfo = Mock()
     _ * uriRouteMatch.getUri() >> "/endpoint"
-    _ * uriRouteMatch.getProduces() >> [MediaType.APPLICATION_JSON_TYPE]
+    _ * uriRouteMatch.getRouteInfo() >> routeInfo
+    _ * routeInfo.getProduces() >> [MediaType.APPLICATION_JSON_TYPE]
     response.attributes.put(HttpAttributes.ROUTE_MATCH.toString(), uriRouteMatch)
     response.body(model)
 
@@ -63,8 +67,11 @@ class HateoasResponseFilterSpec extends Specification {
     MutableHttpResponse<?> response = HttpResponseFactory.INSTANCE.ok()
     Slice model = new DefaultPage([], new DefaultPageable(0, 10), 10)
     UriRouteMatch uriRouteMatch = Mock()
+    UriRouteInfo routeInfo = Mock()
+
     _ * uriRouteMatch.getUri() >> "/endpoint"
-    _ * uriRouteMatch.getProduces() >> [MediaType.APPLICATION_JSON_TYPE]
+    _ * uriRouteMatch.getRouteInfo() >> routeInfo
+    _ * routeInfo.getProduces() >> [MediaType.APPLICATION_JSON_TYPE]
     response.attributes.put(HttpAttributes.ROUTE_MATCH.toString(), uriRouteMatch)
     response.body(model)
 
@@ -95,8 +102,10 @@ class HateoasResponseFilterSpec extends Specification {
     MutableHttpResponse<?> response = HttpResponseFactory.INSTANCE.ok()
     Slice model = new DefaultPage([], new DefaultPageable(0, 10), 10)
     UriRouteMatch uriRouteMatch = Mock()
+    UriRouteInfo routeInfo = Mock()
     _ * uriRouteMatch.getUri() >> "/endpoint"
-    _ * uriRouteMatch.getProduces() >> [MediaType.APPLICATION_JSON_TYPE]
+    _ * uriRouteMatch.getRouteInfo() >> routeInfo
+    _ * routeInfo.getProduces() >> [MediaType.APPLICATION_JSON_TYPE]
     response.attributes.put(HttpAttributes.ROUTE_MATCH.toString(), uriRouteMatch)
     response.body(model)
 

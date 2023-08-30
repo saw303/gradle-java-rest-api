@@ -23,6 +23,7 @@
  */
 package ch.silviowangler.rest.model;
 
+import io.micronaut.serde.annotation.Serdeable;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,11 @@ import java.util.List;
  *
  * @author Silvio Wangler
  */
+
+/**
+ * @author Silvio Wangler
+ */
+@Serdeable
 public class EntityModel<R extends ResourceModel> implements Serializable {
 
   private R data;

@@ -2,8 +2,8 @@ package org.acme.rest.v1.laender.orte;
 
 import ch.silviowangler.rest.types.IdType;
 import java.util.Collection;
-import javax.annotation.Generated;
-import javax.validation.Valid;
+import jakarta.annotation.Generated;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;

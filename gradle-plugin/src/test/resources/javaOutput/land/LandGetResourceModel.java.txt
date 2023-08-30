@@ -5,7 +5,7 @@ import ch.silviowangler.rest.model.ResourceModel;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
-import javax.annotation.Generated;
+import jakarta.annotation.Generated;
 import org.acme.rest.v1.CoordinatesType;
 
 @Generated(

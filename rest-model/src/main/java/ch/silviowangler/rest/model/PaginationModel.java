@@ -25,6 +25,7 @@ package ch.silviowangler.rest.model;
 
 import ch.silviowangler.rest.model.pagination.Page;
 import ch.silviowangler.rest.model.pagination.Slice;
+import io.micronaut.serde.annotation.Serdeable;
 import java.io.Serializable;
 
 /**
@@ -32,6 +33,7 @@ import java.io.Serializable;
  *
  * @author Silvio Wangler (silvio.wangler@gmail.com)
  */
+@Serdeable
 public class PaginationModel implements Serializable {
 
   private int size;

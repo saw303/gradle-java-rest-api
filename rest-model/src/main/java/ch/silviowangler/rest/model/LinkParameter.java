@@ -23,10 +23,16 @@
  */
 package ch.silviowangler.rest.model;
 
+import io.micronaut.serde.annotation.Serdeable;
 import java.io.Serializable;
 import java.util.Objects;
 
-/** Represents a URL query parameter in a {@link ResourceLink} */
+/**
+ * Represents a URL query parameter in a {@link ResourceLink}
+ *
+ * @author Silvio Wangler
+ */
+@Serdeable
 public class LinkParameter implements Serializable {
   private String name;
   private String type;

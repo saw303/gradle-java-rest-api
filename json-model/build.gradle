@@ -1,6 +1,6 @@
 ext { pomDescription = 'Java model for Gradle plugin' }
 
 dependencies {
-	api 'javax.activation:activation:1.1.1'
+  api 'jakarta.activation:jakarta.activation-api:2.1.2'
 	implementation "com.google.guava:guava:${guavaVersion}"
 }

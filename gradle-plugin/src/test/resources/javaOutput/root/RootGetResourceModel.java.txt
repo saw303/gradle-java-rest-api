@@ -5,7 +5,7 @@ import ch.silviowangler.rest.model.ResourceModel;
 import java.io.Serializable;
 import java.time.Duration;
 import java.util.Objects;
-import javax.annotation.Generated;
+import jakarta.annotation.Generated;
 
 @Generated(
     comments = "Specification filename: root.v1.json",

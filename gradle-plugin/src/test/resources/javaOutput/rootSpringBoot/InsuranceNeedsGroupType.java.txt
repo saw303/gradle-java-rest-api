@@ -2,7 +2,7 @@ package org.acme.rest.v1.api.v1;
 
 import java.io.Serializable;
 import java.util.List;
-import javax.annotation.Generated;
+import jakarta.annotation.Generated;
 
 @Generated(
     comments = "Specification filename: root.v1.json",

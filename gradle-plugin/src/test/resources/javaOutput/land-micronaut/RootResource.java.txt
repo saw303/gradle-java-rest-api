@@ -4,8 +4,8 @@ import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.Options;
 import io.micronaut.http.annotation.Produces;
-import javax.annotation.Generated;
-import javax.inject.Inject;
+import jakarta.annotation.Generated;
+import jakarta.inject.Inject;
 
 /**
  * Das ist die Root Resource der Version 1.0.0

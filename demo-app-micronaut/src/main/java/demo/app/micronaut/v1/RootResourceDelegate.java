@@ -1,7 +1,7 @@
 package demo.app.micronaut.v1;
 
 import ch.silviowangler.rest.NotYetImplementedException;
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 
 @Singleton
 public class RootResourceDelegate {

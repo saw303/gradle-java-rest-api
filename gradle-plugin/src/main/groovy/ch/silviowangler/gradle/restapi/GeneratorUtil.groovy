@@ -31,7 +31,6 @@ import com.squareup.javapoet.ParameterizedTypeName
 import com.squareup.javapoet.TypeName
 import org.gradle.api.Project
 
-import static ch.silviowangler.gradle.restapi.TargetFramework.JAX_RS
 import static ch.silviowangler.gradle.restapi.TargetFramework.MICRONAUT
 import static ch.silviowangler.gradle.restapi.TargetFramework.MICRONAUT_24
 
@@ -103,26 +102,6 @@ class GeneratorUtil {
 		return getReturnType(fileName, verb, collection, packageName, MICRONAUT)
 	}
 
-	static TypeName getSpringBootReturnType(String fileName, String verb, boolean collection = false, String packageName, Representation representation) {
-
-		if (representation.name != "json") {
-			return PluginTypes.SPRING_RESPONSE_ENTITY.className
-		}
-
-		return getReturnType(fileName, verb, collection, packageName, TargetFramework.SPRING_BOOT)
-	}
-
-	static TypeName getJaxRsReturnType(String fileName,
-			String verb,
-			boolean collection = false,
-			String packageName,
-			Representation representation) {
-
-		if (representation.name != "json") {
-			return PluginTypes.JAX_RS_RESPONSE.className
-		}
-		return getReturnType(fileName, verb, collection, packageName, JAX_RS)
-	}
 
 	private static TypeName getReturnType(String fileName,
 			String verb,
@@ -139,10 +118,6 @@ class GeneratorUtil {
 			}
 		} else if (verb == 'Head') {
 			switch (targetFramework) {
-				case JAX_RS:
-					return PluginTypes.JAX_RS_RESPONSE.typeName
-				case TargetFramework.SPRING_BOOT:
-					return PluginTypes.SPRING_RESPONSE_ENTITY.typeName
 				case MICRONAUT:
 				case MICRONAUT_24:
 					return PluginTypes.MICRONAUT_HTTP_RESPONSE.typeName
@@ -152,10 +127,6 @@ class GeneratorUtil {
 		} else if (verb == 'Put' || verb == 'Post') {
 			if (collection) {
 				switch (targetFramework) {
-					case JAX_RS:
-						return PluginTypes.JAX_RS_RESPONSE.typeName
-					case TargetFramework.SPRING_BOOT:
-						return PluginTypes.SPRING_RESPONSE_ENTITY.typeName
 					case MICRONAUT:
 					case MICRONAUT_24:
 						return PluginTypes.MICRONAUT_HTTP_RESPONSE.typeName
@@ -168,10 +139,6 @@ class GeneratorUtil {
 		} else if (verb == 'Delete') {
 
 			switch (targetFramework) {
-				case JAX_RS:
-					return PluginTypes.JAX_RS_RESPONSE.typeName
-				case TargetFramework.SPRING_BOOT:
-					return PluginTypes.SPRING_RESPONSE_ENTITY.typeName
 				case MICRONAUT:
 				case MICRONAUT_24:
 					return TypeName.VOID

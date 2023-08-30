@@ -4,7 +4,7 @@ import spock.lang.Specification
 import spock.lang.Subject
 import spock.lang.Unroll
 
-import javax.validation.ConstraintValidatorContext
+import jakarta.validation.ConstraintValidatorContext
 
 /**
  * @author Silvio Wangler

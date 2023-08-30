@@ -23,11 +23,11 @@
  */
 package ch.silviowangler.rest.contract.model.v1;
 
+import jakarta.activation.MimeType;
+import jakarta.activation.MimeTypeParseException;
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.Objects;
-import javax.activation.MimeType;
-import javax.activation.MimeTypeParseException;
 
 /**
  * @author Silvio Wangler

@@ -23,12 +23,14 @@
  */
 package ch.silviowangler.rest.model;
 
+import io.micronaut.serde.annotation.Serdeable;
 import java.io.Serializable;
 
 /**
  * @author Silvio Wangler
  * @since 1.0.22
  */
+@Serdeable
 public class FieldError implements Serializable {
 
   private String name;

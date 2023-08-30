@@ -1,29 +1,20 @@
 plugins {
   id "com.github.hierynomus.license" version "0.16.1" apply false
   id "com.github.ben-manes.versions" version "0.47.0" apply false
-  id "com.diffplug.gradle.spotless" version "6.19.0" apply false
+  id "com.diffplug.gradle.spotless" version "6.20.0" apply false
   id "com.gradle.plugin-publish" version "0.21.0" apply false
+  id("io.micronaut.library") version "${micronautGradlePluginVersion}" apply false
+  id("io.micronaut.aot") version "${micronautGradlePluginVersion}" apply false
 }
 
 subprojects { subproject ->
 
-  version = "3.0.9"
-
-  apply from: "${rootDir}/gradle/java.gradle"
-  apply from: "${rootDir}/gradle/groovy.gradle"
-
-  if (subproject.name != 'gradle-java-rest-api') {
-    apply from: "${rootDir}/gradle/publication.gradle"
-  }
+  version = "3.0.10"
 
   apply plugin: 'com.github.ben-manes.versions'
 
-  dependencies {
-    testImplementation platform("org.spockframework:spock-bom:${spockVersion}")
-    testImplementation "org.spockframework:spock-core"
-  }
-
-  test {
-    useJUnitPlatform()
+  if (subproject.name != 'gradle-java-rest-api') {
+    apply from: "${rootDir}/gradle/micronaut.gradle"
+    apply from: "${rootDir}/gradle/publication.gradle"
   }
 }

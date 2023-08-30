@@ -1,6 +1,6 @@
 package demo.app.micronaut.v1.countries.cities.lakes;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;

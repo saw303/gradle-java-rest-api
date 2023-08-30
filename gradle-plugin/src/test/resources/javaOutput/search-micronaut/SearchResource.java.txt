@@ -13,10 +13,10 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import javax.annotation.Generated;
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.validation.constraints.NotEmpty;
+import jakarta.annotation.Generated;
+import jakarta.annotation.Nullable;
+import jakarta.inject.Inject;
+import jakarta.validation.constraints.NotEmpty;
 
 /**
  * This resource generates the search endpoint

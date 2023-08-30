@@ -6,7 +6,7 @@ import io.micronaut.http.HttpResponse;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 
 @Singleton
 public class DistrictsResourceDelegate {

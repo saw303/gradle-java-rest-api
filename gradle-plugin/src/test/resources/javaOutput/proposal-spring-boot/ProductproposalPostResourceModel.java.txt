@@ -4,9 +4,9 @@ import ch.silviowangler.rest.model.ResourceModel;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
-import javax.annotation.Generated;
-import javax.money.MonetaryAmount;
-import javax.validation.constraints.NotNull;
+import jakarta.annotation.Generated;
+import jakarta.money.MonetaryAmount;
+import jakarta.validation.constraints.NotNull;
 
 @Generated(
     comments = "Specification filename: productproposal.v1.json",

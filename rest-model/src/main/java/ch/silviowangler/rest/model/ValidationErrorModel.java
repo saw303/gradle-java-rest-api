@@ -23,6 +23,7 @@
  */
 package ch.silviowangler.rest.model;
 
+import io.micronaut.serde.annotation.Serdeable;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,7 @@ import java.util.List;
  * @author Silvio Wangler
  * @since 1.0.22
  */
+@Serdeable
 public class ValidationErrorModel implements Serializable {
 
   private List<FieldError> fieldErrors;
