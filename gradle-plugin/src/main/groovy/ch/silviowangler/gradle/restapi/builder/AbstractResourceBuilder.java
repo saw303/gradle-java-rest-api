@@ -71,6 +71,7 @@ import static ch.silviowangler.gradle.restapi.PluginTypes.JAKARTA_VALIDATION_DEC
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAKARTA_VALIDATION_EMAIL;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAKARTA_VALIDATION_MAX;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAKARTA_VALIDATION_MIN;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAKARTA_VALIDATION_NOT_NULL;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAKARTA_VALIDATION_SIZE;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_DECIMAL_MAX;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_DECIMAL_MIN;
@@ -800,14 +801,14 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
         if (field.getxComment() != null) {
           fieldBuilder.addJavadoc(String.format("%s\n", field.getxComment()));
         }
+        TargetFramework targetFramework = this.restApiExtension.getTargetFramework();
 
         if (field.getMandatory().stream().anyMatch(v -> v.equalsIgnoreCase(verb.getVerb()))) {
-          fieldBuilder.addAnnotation(createAnnotation(JAVAX_VALIDATION_NOT_NULL));
+          fieldBuilder.addAnnotation(createAnnotation(targetFramework.isJakarta() ? JAKARTA_VALIDATION_NOT_NULL : JAVAX_VALIDATION_NOT_NULL));
         }
 
         boolean isEntityGet = hasGetEntityVerb() && verb.equals(verbGet);
 
-        TargetFramework targetFramework = this.restApiExtension.getTargetFramework();
 
         if (!isEntityGet && "email".equalsIgnoreCase(field.getType())) {
           fieldBuilder.addAnnotation(
