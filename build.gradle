@@ -8,7 +8,7 @@ plugins {
 
 subprojects { subproject ->
 
-  version = "3.0.16"
+  version = "3.0.17"
 
   apply plugin: 'com.github.ben-manes.versions'
 
