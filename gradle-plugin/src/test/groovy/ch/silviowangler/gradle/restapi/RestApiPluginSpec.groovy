@@ -103,7 +103,7 @@ class RestApiPluginSpec extends Specification {
     project.extensions.restApi != null
   }
 
-  void "The plugin generates valid Java 8 code for Micronaut and the Land-Ort specs"() {
+  void "The plugin generates valid Java code for Micronaut 4 and the Land-Ort specs"() {
 
     given:
     project.restApi.generatorOutput = tempDir
@@ -112,10 +112,10 @@ class RestApiPluginSpec extends Specification {
     project.restApi.packageName = 'org.acme.rest'
     project.restApi.generateDateAttribute = false
     project.restApi.objectResourceModelMapping = customFieldModelMapping
-    project.restApi.targetFramework = MICRONAUT
+    project.restApi.targetFramework = MICRONAUT_4
     project.restApi.responseEncoding = Charset.forName('UTF-8')
 
-    String testName = 'land-micronaut'
+    String testName = 'land'
 
     and:
     GenerateRestApiTask task = project.tasks.generateRestArtifacts as GenerateRestApiTask
@@ -141,19 +141,19 @@ class RestApiPluginSpec extends Specification {
     }.size() == javaFiles.size()
 
     and: 'validate resources'
-    assertJavaFile('org.acme.rest.v1', 'CoordinatesType', 'land')
-    assertJavaFile('org.acme.rest.v1', 'DummyType', 'land')
-    assertJavaFile('org.acme.rest.v1.laender', 'LandGetResourceModel', 'land')
+    assertJavaFile('org.acme.rest.v1', 'CoordinatesType', testName)
+    assertJavaFile('org.acme.rest.v1', 'DummyType', testName)
+    assertJavaFile('org.acme.rest.v1.laender', 'LandGetResourceModel', testName)
     assertJavaFile('org.acme.rest.v1.laender', 'LandPostResourceModel', testName)
     assertJavaFile('org.acme.rest.v1.laender', 'LandPutResourceModel', testName)
     assertJavaFile('org.acme.rest.v1.laender', 'LandResource', testName)
     assertJavaFile('org.acme.rest.v1.laender', 'LandResourceDelegate', testName)
-    assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtGetResourceModel', 'land')
+    assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtGetResourceModel', testName)
     assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtPostResourceModel', testName)
     assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtPutResourceModel', testName)
     assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtResource', testName)
     assertJavaFile('org.acme.rest.v1.laender.orte', 'OrtResourceDelegate', testName)
-    assertJavaFile('org.acme.rest.v1', 'RootGetResourceModel', 'land')
+    assertJavaFile('org.acme.rest.v1', 'RootGetResourceModel', testName)
     assertJavaFile('org.acme.rest.v1', 'RootResource', testName)
     assertJavaFile('org.acme.rest.v1', 'RootResourceDelegate', testName)
 

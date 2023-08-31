@@ -2,16 +2,18 @@ package org.acme.rest.v1.laender;
 
 import ch.silviowangler.rest.model.Identifiable;
 import ch.silviowangler.rest.model.ResourceModel;
+import io.micronaut.serde.annotation.Serdeable;
+import jakarta.annotation.Generated;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
-import javax.annotation.Generated;
 import org.acme.rest.v1.CoordinatesType;
 
 @Generated(
     comments = "Specification filename: land.v1.json",
     value = "io.github.saw303.restapi"
 )
+@Serdeable
 public class LandGetResourceModel implements Serializable, ResourceModel, Identifiable<String> {
   /**
    * VOKey

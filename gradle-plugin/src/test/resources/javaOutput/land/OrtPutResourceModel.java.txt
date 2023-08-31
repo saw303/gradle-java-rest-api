@@ -2,17 +2,19 @@ package org.acme.rest.v1.laender.orte;
 
 import ch.silviowangler.rest.model.Identifiable;
 import ch.silviowangler.rest.model.ResourceModel;
-import java.io.Serializable;
-import java.util.Objects;
+import io.micronaut.serde.annotation.Serdeable;
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import java.io.Serializable;
+import java.util.Objects;
 import org.acme.rest.v1.CoordinatesType;
 
 @Generated(
     comments = "Specification filename: land.ort.v1.json",
     value = "io.github.saw303.restapi"
 )
+@Serdeable
 public class OrtPutResourceModel implements Serializable, ResourceModel, Identifiable<String> {
   /**
    * VOKey

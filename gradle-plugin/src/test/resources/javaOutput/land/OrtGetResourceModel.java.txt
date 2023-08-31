@@ -2,15 +2,17 @@ package org.acme.rest.v1.laender.orte;
 
 import ch.silviowangler.rest.model.Identifiable;
 import ch.silviowangler.rest.model.ResourceModel;
+import io.micronaut.serde.annotation.Serdeable;
+import jakarta.annotation.Generated;
 import java.io.Serializable;
 import java.util.Objects;
-import javax.annotation.Generated;
 import org.acme.rest.v1.CoordinatesType;
 
 @Generated(
     comments = "Specification filename: land.ort.v1.json",
     value = "io.github.saw303.restapi"
 )
+@Serdeable
 public class OrtGetResourceModel implements Serializable, ResourceModel, Identifiable<String> {
   /**
    * VOKey

@@ -1,12 +1,14 @@
 package org.acme.rest.v1;
 
+import io.micronaut.serde.annotation.Serdeable;
+import jakarta.annotation.Generated;
 import java.io.Serializable;
-import javax.annotation.Generated;
 
 @Generated(
     comments = "Specification filename: root.v1.json",
     value = "io.github.saw303.restapi"
 )
+@Serdeable
 public class DummyType implements Serializable {
   private DummyType.ColorType color;
 

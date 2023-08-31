@@ -465,7 +465,7 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
 
     TargetFramework targetFramework = this.restApiExtension.getTargetFramework();
 
-    if (targetFramework == TargetFramework.MICRONAUT_4) {
+    if (targetFramework.isJakarta()) {
       builder.addAnnotation(createAnnotation(MICRONAUT_SERDEABLE));
     } else if (POST_METHODS.contains(verb.getVerb()) || PUT_METHODS.contains(verb.getVerb())) {
       builder.addAnnotation(createAnnotation(MICRONAUT_INTROSPECTED));

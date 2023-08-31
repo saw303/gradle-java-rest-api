@@ -43,7 +43,7 @@ pluginBundle {
 
 dependencies {
 
-  implementation project(':json-model')
+  implementation project(":json-model")
 
   compileOnly gradleApi()
 
@@ -51,8 +51,8 @@ dependencies {
   implementation "com.google.guava:guava:${guavaVersion}"
   implementation "com.google.code.gson:gson:${gsonVersion}"
 
-  implementation 'net.sourceforge.plantuml:plantuml:1.2023.9'
-  implementation 'org.apache.commons:commons-lang3:3.11'
+  implementation "net.sourceforge.plantuml:plantuml:1.2023.10"
+  implementation "org.apache.commons:commons-lang3:3.11"
 
   testImplementation gradleTestKit()
   testImplementation platform("org.spockframework:spock-bom:2.3-groovy-3.0")

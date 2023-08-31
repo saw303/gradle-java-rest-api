@@ -81,6 +81,7 @@ import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_MIN;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_NOT_NULL;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_SIZE;
 import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_HTTP_RESPONSE;
+import static ch.silviowangler.gradle.restapi.PluginTypes.MICRONAUT_SERDEABLE;
 import static ch.silviowangler.gradle.restapi.PluginTypes.RESTAPI_IDENTIFIABLE;
 import static ch.silviowangler.gradle.restapi.PluginTypes.RESTAPI_RESOURCE_MODEL;
 import static ch.silviowangler.gradle.restapi.PluginTypes.VALIDATION_PHONE_NUMBER;
@@ -652,6 +653,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
       TypeSpec.Builder builder = resourceTypeBaseInstance(type.getName());
 
       builder.addAnnotation(createGeneratedAnnotation(this.printTimestamp));
+      builder.addAnnotation(createAnnotation(MICRONAUT_SERDEABLE));
 
       for (CustomTypeField field : type.getFields()) {
 
