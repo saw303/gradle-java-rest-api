@@ -1,4 +1,5 @@
 apply plugin: 'java-library'
+apply from: "${rootDir}/gradle/publication.gradle"
 
 ext { pomDescription = 'Java model for Gradle plugin' }
 
