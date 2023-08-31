@@ -27,8 +27,6 @@ import ch.silviowangler.rest.contract.model.v1.Representation;
 import com.google.gson.*;
 import java.lang.reflect.Type;
 import java.util.Optional;
-import jakarta.activation.MimeType;
-import jakarta.activation.MimeTypeParseException;
 
 public class RepresentationDeserializer implements JsonDeserializer<Representation> {
   @Override
@@ -45,16 +43,10 @@ public class RepresentationDeserializer implements JsonDeserializer<Representati
     representation.setRaw(readBool(jsonObject.get("raw")).orElse(false));
     String mimeType = jsonObject.get("mimetype").getAsString();
 
-    try {
-
-      if ("json".equals(representation.getName())) {
-        representation.setMimetype(new MimeType("application", "json"));
-      } else {
-        representation.setMimetype(new MimeType(mimeType));
-      }
-
-    } catch (MimeTypeParseException e) {
-      throw new JsonParseException("Cannot parse mime type " + mimeType, e);
+    if ("json".equals(representation.getName())) {
+      representation.setMimetype("application/json");
+    } else {
+      representation.setMimetype(mimeType);
     }
 
     return representation;

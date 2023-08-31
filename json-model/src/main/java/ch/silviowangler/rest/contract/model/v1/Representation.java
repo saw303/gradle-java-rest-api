@@ -23,8 +23,6 @@
  */
 package ch.silviowangler.rest.contract.model.v1;
 
-import jakarta.activation.MimeType;
-import jakarta.activation.MimeTypeParseException;
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.Objects;
@@ -38,21 +36,16 @@ public class Representation implements Serializable {
   private String comment;
   private String responseExample;
   private boolean standard;
-  private MimeType mimetype;
+  private String mimetype;
   private boolean raw = false;
 
   public static Representation json(Charset charset) {
     Representation representation = new Representation();
-    try {
-      MimeType mimetype = new MimeType("application", "json");
-
-      if (charset != null) {
-        mimetype.setParameter("charset", charset.toString());
-      }
-
-      representation.setMimetype(mimetype);
-    } catch (MimeTypeParseException e) {
-      throw new UnsupportedOperationException("Unable to create JSON mime type", e);
+    if (charset != null) {
+      representation.setMimetype("application/json; charset=" + charset);
+    }
+    else {
+      representation.setMimetype("application/json");
     }
     representation.setName("json");
     return representation;
@@ -90,11 +83,11 @@ public class Representation implements Serializable {
     this.standard = standard;
   }
 
-  public MimeType getMimetype() {
+  public String getMimetype() {
     return mimetype;
   }
 
-  public void setMimetype(MimeType mimetype) {
+  public void setMimetype(String mimetype) {
     this.mimetype = mimetype;
   }
 

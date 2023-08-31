@@ -150,10 +150,10 @@ public class SpecGenerator {
       if (encoding != null) {
         resourceContract.getVerbs().stream()
             .flatMap(verb -> verb.getRepresentations().stream())
-            .filter(representation -> "json".equals(representation.getMimetype().getSubType()))
+            .filter(representation -> representation.getMimetype().contains("/json"))
             .forEach(
                 representation ->
-                    representation.getMimetype().setParameter("charset", encoding.toString()));
+                    representation.setMimetype(representation.getMimetype() + "; charset=" + encoding));
       }
 
       String plainText = new String(Files.readAllBytes(file.toPath()), UTF_8);
