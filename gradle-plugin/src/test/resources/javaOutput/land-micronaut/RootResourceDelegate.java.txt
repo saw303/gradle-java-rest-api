@@ -1,7 +1,7 @@
 package org.acme.rest.v1;
 
 import ch.silviowangler.rest.NotYetImplementedException;
-import jakarta.inject.Singleton;
+import javax.inject.Singleton;
 
 @Singleton
 public class RootResourceDelegate {

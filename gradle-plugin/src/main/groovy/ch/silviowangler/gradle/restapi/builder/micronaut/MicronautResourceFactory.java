@@ -23,10 +23,40 @@
  */
 package ch.silviowangler.gradle.restapi.builder.micronaut;
 
+import ch.silviowangler.gradle.restapi.GenerationMode;
+import ch.silviowangler.gradle.restapi.GeneratorUtil;
+import ch.silviowangler.gradle.restapi.PluginTypes;
+import ch.silviowangler.gradle.restapi.RestApiExtension;
+import ch.silviowangler.gradle.restapi.TargetFramework;
+import ch.silviowangler.gradle.restapi.builder.AbstractResourceBuilder;
+import ch.silviowangler.gradle.restapi.builder.ArtifactType;
+import ch.silviowangler.gradle.restapi.builder.MethodContext;
+import ch.silviowangler.rest.contract.model.v1.Header;
+import ch.silviowangler.rest.contract.model.v1.Representation;
+import ch.silviowangler.rest.contract.model.v1.Verb;
+import ch.silviowangler.rest.contract.model.v1.VerbParameter;
+import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.FieldSpec;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;
+import org.apache.groovy.util.Maps;
+
+import javax.lang.model.element.Modifier;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAKARTA_GENERATED;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAKARTA_INJECT;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAKARTA_NULLABLE;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAKARTA_SINGLETON;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAKARTA_VALIDATION_NOT_EMPTY;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAKARTA_VALIDATION_NOT_NULL;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_INJECT;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_NULLABLE;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_SINGLETON;
@@ -60,33 +90,6 @@ import static ch.silviowangler.gradle.restapi.PluginTypes.RESTAPI_RESPONSE_CREAT
 import static ch.silviowangler.gradle.restapi.builder.ArtifactType.CLIENT;
 import static ch.silviowangler.gradle.restapi.builder.ArtifactType.DELEGATOR_RESOURCE;
 
-import ch.silviowangler.gradle.restapi.GenerationMode;
-import ch.silviowangler.gradle.restapi.GeneratorUtil;
-import ch.silviowangler.gradle.restapi.PluginTypes;
-import ch.silviowangler.gradle.restapi.RestApiExtension;
-import ch.silviowangler.gradle.restapi.TargetFramework;
-import ch.silviowangler.gradle.restapi.builder.AbstractResourceBuilder;
-import ch.silviowangler.gradle.restapi.builder.ArtifactType;
-import ch.silviowangler.gradle.restapi.builder.MethodContext;
-import ch.silviowangler.rest.contract.model.v1.Header;
-import ch.silviowangler.rest.contract.model.v1.Representation;
-import ch.silviowangler.rest.contract.model.v1.Verb;
-import ch.silviowangler.rest.contract.model.v1.VerbParameter;
-import com.squareup.javapoet.AnnotationSpec;
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.FieldSpec;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import javax.lang.model.element.Modifier;
-import org.apache.groovy.util.Maps;
-
 /**
  * @author Silvio Wangler
  */
@@ -97,6 +100,7 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
   private final RestApiExtension restApiExtension;
 
   public MicronautResourceFactory(RestApiExtension restApiExtension) {
+    super(restApiExtension);
     this.restApiExtension = restApiExtension;
   }
 
@@ -115,7 +119,7 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
   @Override
   public AnnotationSpec createGeneratedAnnotation(boolean printTimestamp) {
     TargetFramework targetFramework = this.restApiExtension.getTargetFramework();
-    if (targetFramework == TargetFramework.MICRONAUT_4) {
+    if (targetFramework.isJakarta()) {
       return super.createGeneratedAnnotation(printTimestamp, JAKARTA_GENERATED);
     } else {
       return super.createGeneratedAnnotation(printTimestamp);
@@ -225,22 +229,18 @@ public class MicronautResourceFactory extends AbstractResourceBuilder {
   @Override
   public List<AnnotationSpec> getQueryParamAnnotations(VerbParameter param) {
     List<AnnotationSpec> annotationSpecs = new ArrayList<>();
+    TargetFramework targetFramework = this.restApiExtension.getTargetFramework();
 
     if (param.getMandatory()) {
       if (param.isMultiple()) {
         annotationSpecs.add(
-            AnnotationSpec.builder(JAVAX_VALIDATION_NOT_EMPTY.getClassName()).build());
+            AnnotationSpec.builder(targetFramework.isJakarta() ? JAKARTA_VALIDATION_NOT_EMPTY.getClassName() : JAVAX_VALIDATION_NOT_EMPTY.getClassName()).build());
       } else {
         annotationSpecs.add(
-            AnnotationSpec.builder(JAVAX_VALIDATION_NOT_NULL.getClassName()).build());
+            AnnotationSpec.builder(targetFramework.isJakarta() ? JAKARTA_VALIDATION_NOT_NULL.getClassName() : JAVAX_VALIDATION_NOT_NULL.getClassName()).build());
       }
     } else {
-      TargetFramework targetFramework = this.restApiExtension.getTargetFramework();
-      if (targetFramework == TargetFramework.MICRONAUT_4) {
-        annotationSpecs.add(AnnotationSpec.builder(JAKARTA_NULLABLE.getClassName()).build());
-      } else {
-        annotationSpecs.add(AnnotationSpec.builder(JAVAX_NULLABLE.getClassName()).build());
-      }
+      annotationSpecs.add(AnnotationSpec.builder(targetFramework.isJakarta() ? JAKARTA_NULLABLE.getClassName() : JAVAX_NULLABLE.getClassName()).build());
     }
 
     if (param.hasMinMaxConstraints() && !param.isMultiple()) {

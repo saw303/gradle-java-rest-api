@@ -23,6 +23,7 @@
  */
 package ch.silviowangler.gradle.restapi.builder;
 
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAKARTA_VALIDATION_VALID;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_GENERATED;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_VALID;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVA_OVERRIDE;
@@ -333,7 +334,7 @@ public interface ResourceBuilder {
                   isResourceInterface || isAbstractResourceClass || isDelegateResourceClass;
 
               if ("model".equals(name) && !isHandleMethod && isResource) {
-                builder.addAnnotation(createAnnotation(JAVAX_VALIDATION_VALID)).build();
+                builder.addAnnotation(createAnnotation(context.getTargetFramework().isJakarta() ? JAKARTA_VALIDATION_VALID : JAVAX_VALIDATION_VALID)).build();
 
                 if (providesRequestBodyAnnotation()) {
                   builder.addAnnotation(buildRequestBodyAnnotation());

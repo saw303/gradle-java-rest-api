@@ -9,8 +9,8 @@ import io.micronaut.http.annotation.Post;
 import io.micronaut.http.client.annotation.Client;
 import io.micronaut.validation.Validated;
 import java.util.Collection;
-import jakarta.annotation.Generated;
-import jakarta.validation.Valid;
+import javax.annotation.Generated;
+import javax.validation.Valid;
 
 /**
  * The membership fee resource

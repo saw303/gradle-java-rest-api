@@ -16,10 +16,10 @@ import io.micronaut.http.annotation.Put;
 import io.micronaut.http.annotation.QueryValue;
 import io.micronaut.http.annotation.Status;
 import java.util.Collection;
-import jakarta.annotation.Generated;
-import jakarta.annotation.Nullable;
-import jakarta.inject.Inject;
-import jakarta.validation.Valid;
+import javax.annotation.Generated;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.validation.Valid;
 
 /**
  * Land

@@ -24,6 +24,7 @@
 package ch.silviowangler.gradle.restapi.builder
 
 import ch.silviowangler.gradle.restapi.LinkParser
+import ch.silviowangler.gradle.restapi.TargetFramework
 import ch.silviowangler.rest.contract.model.v1.Header
 import ch.silviowangler.rest.contract.model.v1.Representation
 import ch.silviowangler.rest.contract.model.v1.VerbParameter
@@ -47,14 +48,16 @@ class MethodContext {
 	boolean directEntity
 	LinkParser linkParser
 	boolean expandable = false
+  TargetFramework targetFramework
 
-	MethodContext(String methodName, TypeName returnType, Representation representation) {
+	MethodContext(String methodName, TypeName returnType, Representation representation, TargetFramework targetFramework) {
 		this.methodName = methodName
 		this.returnType = returnType
 		this.representation = representation
+    this.targetFramework = targetFramework
 	}
 
-	MethodContext(TypeName returnType, List<VerbParameter> params, List<Header> headers, Map<String, TypeName> paramClasses, Representation representation, List<ParameterSpec> pathParams, LinkParser linkParser) {
+	MethodContext(TypeName returnType, List<VerbParameter> params, List<Header> headers, Map<String, TypeName> paramClasses, Representation representation, List<ParameterSpec> pathParams, LinkParser linkParser, TargetFramework targetFramework) {
 		this.returnType = returnType
 		this.params = params
 		this.representation = representation
@@ -63,5 +66,6 @@ class MethodContext {
 		this.paramClasses = paramClasses
 		this.headers = headers
 		this.linkParser = linkParser
+    this.targetFramework = targetFramework
 	}
 }

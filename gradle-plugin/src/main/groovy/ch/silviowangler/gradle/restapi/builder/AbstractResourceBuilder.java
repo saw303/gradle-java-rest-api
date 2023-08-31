@@ -23,8 +23,55 @@
  */
 package ch.silviowangler.gradle.restapi.builder;
 
+import ch.silviowangler.gradle.restapi.LinkParser;
+import ch.silviowangler.gradle.restapi.RestApiExtension;
+import ch.silviowangler.gradle.restapi.TargetFramework;
+import ch.silviowangler.gradle.restapi.UnsupportedDataTypeException;
+import ch.silviowangler.rest.contract.model.v1.CustomTypeField;
+import ch.silviowangler.rest.contract.model.v1.FieldType;
+import ch.silviowangler.rest.contract.model.v1.GeneralDetails;
+import ch.silviowangler.rest.contract.model.v1.Representation;
+import ch.silviowangler.rest.contract.model.v1.ResourceContract;
+import ch.silviowangler.rest.contract.model.v1.ResourceField;
+import ch.silviowangler.rest.contract.model.v1.ResourceTypes;
+import ch.silviowangler.rest.contract.model.v1.SubResource;
+import ch.silviowangler.rest.contract.model.v1.Verb;
+import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.FieldSpec;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
+import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;
+import io.github.getify.minify.Minify;
+
+import java.io.Serializable;
+import java.nio.charset.Charset;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import static ch.silviowangler.gradle.restapi.PluginTypes.COLLECTION_MODEL;
 import static ch.silviowangler.gradle.restapi.PluginTypes.ENTITY_MODEL;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAKARTA_VALIDATION_DECIMAL_MAX;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAKARTA_VALIDATION_DECIMAL_MIN;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAKARTA_VALIDATION_EMAIL;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAKARTA_VALIDATION_MAX;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAKARTA_VALIDATION_MIN;
+import static ch.silviowangler.gradle.restapi.PluginTypes.JAKARTA_VALIDATION_SIZE;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_DECIMAL_MAX;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_DECIMAL_MIN;
 import static ch.silviowangler.gradle.restapi.PluginTypes.JAVAX_VALIDATION_EMAIL;
@@ -51,44 +98,6 @@ import static javax.lang.model.element.Modifier.PRIVATE;
 import static javax.lang.model.element.Modifier.PUBLIC;
 import static javax.lang.model.element.Modifier.STATIC;
 
-import ch.silviowangler.gradle.restapi.LinkParser;
-import ch.silviowangler.gradle.restapi.UnsupportedDataTypeException;
-import ch.silviowangler.rest.contract.model.v1.CustomTypeField;
-import ch.silviowangler.rest.contract.model.v1.FieldType;
-import ch.silviowangler.rest.contract.model.v1.GeneralDetails;
-import ch.silviowangler.rest.contract.model.v1.Representation;
-import ch.silviowangler.rest.contract.model.v1.ResourceContract;
-import ch.silviowangler.rest.contract.model.v1.ResourceField;
-import ch.silviowangler.rest.contract.model.v1.ResourceTypes;
-import ch.silviowangler.rest.contract.model.v1.SubResource;
-import ch.silviowangler.rest.contract.model.v1.Verb;
-import com.squareup.javapoet.AnnotationSpec;
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.FieldSpec;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.ParameterSpec;
-import com.squareup.javapoet.ParameterizedTypeName;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
-import io.github.getify.minify.Minify;
-import java.io.Serializable;
-import java.nio.charset.Charset;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 /**
  * @author Silvio Wangler
  */
@@ -101,6 +110,12 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
   private boolean printTimestamp = true;
   private ArtifactType artifactType;
   private Charset responseEncoding;
+  private final RestApiExtension restApiExtension;
+
+  protected AbstractResourceBuilder(RestApiExtension restApiExtension) {
+    this.restApiExtension = restApiExtension;
+  }
+
 
   private Verb getCurrentVerb() {
     return currentVerb;
@@ -157,7 +172,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
     Representation representation = Representation.json(this.responseEncoding);
 
     MethodContext context =
-        new MethodContext(methodName, getMethodNowAllowedReturnType(), representation);
+        new MethodContext(methodName, getMethodNowAllowedReturnType(), representation, this.restApiExtension.getTargetFramework());
     MethodSpec.Builder builder = createMethod(context);
     generateMethodNotAllowedStatement(builder);
 
@@ -168,7 +183,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
   public MethodSpec.Builder createMethod(String methodName, TypeName returnType) {
     Representation representation = Representation.json(this.responseEncoding);
 
-    MethodContext context = new MethodContext(methodName, returnType, representation);
+    MethodContext context = new MethodContext(methodName, returnType, representation, this.restApiExtension.getTargetFramework());
     return createMethod(context);
   }
 
@@ -299,7 +314,8 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
                 paramClasses,
                 representation,
                 pathParams,
-                parser);
+                parser,
+                this.restApiExtension.getTargetFramework());
 
         TypeName rawReturnType;
 
@@ -320,7 +336,8 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
                 paramClasses,
                 representation,
                 pathParams,
-                parser);
+                parser,
+                this.restApiExtension.getTargetFramework());
 
         TypeName hateoasReturnType;
         if (returnType == TypeName.VOID) {
@@ -346,7 +363,8 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
                 paramClasses,
                 representation,
                 pathParams,
-                parser);
+                parser,
+                this.restApiExtension.getTargetFramework());
 
         if (GET_COLLECTION.equals(verb.getVerb())) {
 
@@ -511,7 +529,8 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
                 paramClasses,
                 representation,
                 pathParams,
-                parser);
+                parser,
+                this.restApiExtension.getTargetFramework());
 
         if (GET_COLLECTION.equals(verb.getVerb())) {
 
@@ -788,15 +807,18 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
         boolean isEntityGet = hasGetEntityVerb() && verb.equals(verbGet);
 
+        TargetFramework targetFramework = this.restApiExtension.getTargetFramework();
+
         if (!isEntityGet && "email".equalsIgnoreCase(field.getType())) {
           fieldBuilder.addAnnotation(
-              AnnotationSpec.builder(JAVAX_VALIDATION_EMAIL.getClassName()).build());
+              AnnotationSpec.builder(targetFramework.isJakarta() ? JAKARTA_VALIDATION_EMAIL.getClassName() : JAVAX_VALIDATION_EMAIL.getClassName()).build());
         }
 
         if (!isEntityGet && "phoneNumber".equalsIgnoreCase(field.getType())) {
           fieldBuilder.addAnnotation(
               AnnotationSpec.builder(VALIDATION_PHONE_NUMBER.getClassName()).build());
         }
+
 
         if (!isEntityGet && (field.getMin() != null || field.getMax() != null)) {
 
@@ -806,7 +828,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
           if ("string".equalsIgnoreCase(field.getType())) {
 
             AnnotationSpec.Builder annoBuilder =
-                AnnotationSpec.builder(JAVAX_VALIDATION_SIZE.getClassName());
+                AnnotationSpec.builder(targetFramework.isJakarta() ? JAKARTA_VALIDATION_SIZE.getClassName() : JAVAX_VALIDATION_SIZE.getClassName());
 
             if (field.getMin() != null) {
               annoBuilder.addMember("min", "$L", min.intValue());
@@ -819,20 +841,20 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
           } else if ("decimal".equalsIgnoreCase(field.getType())) {
             fieldBuilder.addAnnotation(
-                AnnotationSpec.builder(JAVAX_VALIDATION_DECIMAL_MIN.getClassName())
+                AnnotationSpec.builder(targetFramework.isJakarta() ? JAKARTA_VALIDATION_DECIMAL_MIN.getClassName() : JAVAX_VALIDATION_DECIMAL_MIN.getClassName())
                     .addMember("value", "$S", min.doubleValue())
                     .build());
             fieldBuilder.addAnnotation(
-                AnnotationSpec.builder(JAVAX_VALIDATION_DECIMAL_MAX.getClassName())
+                AnnotationSpec.builder(targetFramework.isJakarta() ? JAKARTA_VALIDATION_DECIMAL_MAX.getClassName() : JAVAX_VALIDATION_DECIMAL_MAX.getClassName())
                     .addMember("value", "$S", max.doubleValue())
                     .build());
           } else if ("int".equalsIgnoreCase(field.getType())) {
             fieldBuilder.addAnnotation(
-                AnnotationSpec.builder(JAVAX_VALIDATION_MIN.getClassName())
+                AnnotationSpec.builder(targetFramework.isJakarta() ? JAKARTA_VALIDATION_MIN.getClassName() : JAVAX_VALIDATION_MIN.getClassName())
                     .addMember("value", "$L", min.intValue())
                     .build());
             fieldBuilder.addAnnotation(
-                AnnotationSpec.builder(JAVAX_VALIDATION_MAX.getClassName())
+                AnnotationSpec.builder(targetFramework.isJakarta() ? JAKARTA_VALIDATION_MAX.getClassName() : JAVAX_VALIDATION_MAX.getClassName())
                     .addMember("value", "$L", max.intValue())
                     .build());
           }
@@ -910,12 +932,12 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
 
         code =
             "$T.hash("
-                + String.join(
-                    ", ",
-                    fieldNamesApplied.stream()
-                        .map(ResourceField::getName)
-                        .collect(Collectors.toList()))
-                + ")";
+            + String.join(
+                ", ",
+                fieldNamesApplied.stream()
+                    .map(ResourceField::getName)
+                    .collect(Collectors.toList()))
+            + ")";
 
         hashCodeBuilder.addStatement("return " + code, Objects.class);
 
@@ -984,11 +1006,11 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
                 .filter(
                     t ->
                         t.packageName().equals(this.currentPackageName)
-                            && t.simpleName()
-                                .equals(
-                                    String.format(
-                                        "%sType",
-                                        LOWER_CAMEL.to(UPPER_CAMEL, resourceField.getName()))));
+                        && t.simpleName()
+                            .equals(
+                                String.format(
+                                    "%sType",
+                                    LOWER_CAMEL.to(UPPER_CAMEL, resourceField.getName()))));
       } else {
         typeStream =
             types.stream()
@@ -1148,7 +1170,7 @@ public abstract class AbstractResourceBuilder implements ResourceBuilder {
    * Can be used to add additional annotations or method to a resource model class by overwriting
    * this method. The base implementation is NO-OP.
    *
-   * @param verb the verb (e.g. GET_ENTITY, POST, PUT)
+   * @param verb    the verb (e.g. GET_ENTITY, POST, PUT)
    * @param builder the initial resource model builder that can be enhanced.
    * @since 2.0.23
    */

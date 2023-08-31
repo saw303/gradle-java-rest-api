@@ -4,9 +4,9 @@ import ch.silviowangler.rest.model.Identifiable;
 import ch.silviowangler.rest.model.ResourceModel;
 import java.io.Serializable;
 import java.util.Objects;
-import jakarta.annotation.Generated;
-import jakarta.money.MonetaryAmount;
-import jakarta.validation.constraints.Size;
+import javax.annotation.Generated;
+import javax.money.MonetaryAmount;
+import javax.validation.constraints.Size;
 
 @Generated(
     comments = "Specification filename: membershipfees.v1.json",

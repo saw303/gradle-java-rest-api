@@ -1,8 +1,8 @@
 plugins {
+  id 'java-gradle-plugin'
+  id 'com.gradle.plugin-publish'
+  id 'maven-publish'
   id 'groovy'
-	id 'java-gradle-plugin'
-	id 'com.gradle.plugin-publish'
-	id 'maven-publish'
 }
 
 group = 'io.github.saw303.restapi'
@@ -13,57 +13,66 @@ java {
 }
 
 gradlePlugin {
-	plugins {
-		restApiPlugin {
-			id = 'io.github.saw303.restapi'
-			implementationClass = 'ch.silviowangler.gradle.restapi.RestApiPlugin'
-		}
-	}
+  plugins {
+    restApiPlugin {
+      id = 'io.github.saw303.restapi'
+      implementationClass = 'ch.silviowangler.gradle.restapi.RestApiPlugin'
+    }
+  }
 }
 
 pluginBundle {
-	website = 'https://github.com/saw303/gradle-java-rest-api'
-	vcsUrl = 'https://github.com/saw303/gradle-java-rest-api'
+  website = 'https://github.com/saw303/gradle-java-rest-api'
+  vcsUrl = 'https://github.com/saw303/gradle-java-rest-api'
 
-	description = 'Contract first driven REST resource generator for Micronaut, Spring & JAX-RS'
+  description = 'Contract first driven REST resource generator for Micronaut, Spring & JAX-RS'
 
-	plugins {
-		restApiPlugin {
-			// id is captured from java-gradle-plugin configuration
-			displayName = 'Contract first REST API Generator'
-			tags = [
-				'rest',
-				'codegeneration',
-				'micronaut',
-				'spring'
-			]
-		}
-	}
+  plugins {
+    restApiPlugin {
+      // id is captured from java-gradle-plugin configuration
+      displayName = 'Contract first REST API Generator'
+      tags = [
+          'rest',
+          'codegeneration',
+          'micronaut',
+          'spring'
+      ]
+    }
+  }
 }
 
 dependencies {
 
-	implementation project(':json-model')
-	implementation project(':rest-model')
+  implementation project(':json-model')
 
-	compileOnly gradleApi()
-	testImplementation gradleTestKit()
+  compileOnly gradleApi()
 
-	implementation "com.squareup:javapoet:${javaPoetVersion}"
-	implementation "com.google.guava:guava:${guavaVersion}"
-	implementation "com.google.code.gson:gson:${gsonVersion}"
+  implementation "com.squareup:javapoet:${javaPoetVersion}"
+  implementation "com.google.guava:guava:${guavaVersion}"
+  implementation "com.google.code.gson:gson:${gsonVersion}"
 
-	implementation 'net.sourceforge.plantuml:plantuml:1.2023.9'
-	implementation 'org.apache.commons:commons-lang3:3.11'
+  implementation 'net.sourceforge.plantuml:plantuml:1.2023.9'
+  implementation 'org.apache.commons:commons-lang3:3.11'
+
+  testImplementation gradleTestKit()
+  testImplementation platform("org.spockframework:spock-bom:2.3-groovy-3.0")
+  testImplementation "org.spockframework:spock-core"
+}
+
+test {
+  useJUnitPlatform()
+  testLogging {
+    events "passed", "skipped", "failed"
+  }
 }
 
 task checkVersion(type: Test) {
-	File file = file("${projectDir}/src/main/groovy/ch/silviowangler/gradle/restapi/RestApiPlugin.groovy")
-	String content = file.text
+  File file = file("${projectDir}/src/main/groovy/ch/silviowangler/gradle/restapi/RestApiPlugin.groovy")
+  String content = file.text
 
-	String msg = "Wrong version in ${file.absolutePath}"
+  String msg = "Wrong version in ${file.absolutePath}"
 
-	if (!content.contains("final String pluginVersion = \"${project.version}\"")) {
-		throw new RuntimeException(msg)
-	}
+  if (!content.contains("final String pluginVersion = \"${project.version}\"")) {
+    throw new RuntimeException(msg)
+  }
 }

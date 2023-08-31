@@ -23,14 +23,13 @@
  */
 package ch.silviowangler.gradle.restapi;
 
-import ch.silviowangler.rest.model.CollectionModel;
-import ch.silviowangler.rest.model.EntityModel;
-import ch.silviowangler.rest.validation.PhoneNumber;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 
-/** Created by Silvio Wangler on 26/01/16. */
+/**
+ * Created by Silvio Wangler on 26/01/16.
+ */
 public enum PluginTypes {
   RESTAPI_IDTYPE(ClassName.get("ch.silviowangler.rest.types", "IdType")),
   RESTAPI_FILTERMODEL(ClassName.get("ch.silviowangler.rest.model", "FilterModel")),
@@ -58,14 +57,23 @@ public enum PluginTypes {
   JAX_RS_HEADER_PARAM(ClassName.get("javax.ws.rs", "HeaderParam")),
   JAX_RS_CONTEXT(ClassName.get("javax.ws.rs.core", "Context")),
   JAVAX_VALIDATION_SIZE(ClassName.get("javax.validation.constraints", "Size")),
+  JAKARTA_VALIDATION_SIZE(ClassName.get("jakarta.validation.constraints", "Size")),
   JAVAX_VALIDATION_DECIMAL_MIN(ClassName.get("javax.validation.constraints", "DecimalMin")),
+  JAKARTA_VALIDATION_DECIMAL_MIN(ClassName.get("jakarta.validation.constraints", "DecimalMin")),
   JAVAX_VALIDATION_DECIMAL_MAX(ClassName.get("javax.validation.constraints", "DecimalMax")),
+  JAKARTA_VALIDATION_DECIMAL_MAX(ClassName.get("jakarta.validation.constraints", "DecimalMax")),
   JAVAX_VALIDATION_MIN(ClassName.get("javax.validation.constraints", "Min")),
+  JAKARTA_VALIDATION_MIN(ClassName.get("jakarta.validation.constraints", "Min")),
   JAVAX_VALIDATION_MAX(ClassName.get("javax.validation.constraints", "Max")),
+  JAKARTA_VALIDATION_MAX(ClassName.get("jakarta.validation.constraints", "Max")),
   JAVAX_VALIDATION_NOT_NULL(ClassName.get("javax.validation.constraints", "NotNull")),
+  JAKARTA_VALIDATION_NOT_NULL(ClassName.get("jakarta.validation.constraints", "NotNull")),
   JAVAX_VALIDATION_NOT_EMPTY(ClassName.get("javax.validation.constraints", "NotEmpty")),
+  JAKARTA_VALIDATION_NOT_EMPTY(ClassName.get("jakarta.validation.constraints", "NotEmpty")),
   JAVAX_VALIDATION_EMAIL(ClassName.get("javax.validation.constraints", "Email")),
+  JAKARTA_VALIDATION_EMAIL(ClassName.get("jakarta.validation.constraints", "Email")),
   JAVAX_VALIDATION_VALID(ClassName.get("javax.validation", "Valid")),
+  JAKARTA_VALIDATION_VALID(ClassName.get("jakarta.validation", "Valid")),
   JAVAX_GENERATED(ClassName.get("javax.annotation", "Generated")),
   JAKARTA_GENERATED(ClassName.get("jakarta.annotation", "Generated")),
   JAVAX_NULLABLE(ClassName.get("javax.annotation", "Nullable")),
@@ -90,9 +98,13 @@ public enum PluginTypes {
       ClassName.get("org.springframework.web.bind.annotation", "ResponseStatus")),
   JAVAX_SINGLETON(ClassName.get("javax.inject", "Singleton")),
   JAVAX_INJECT(ClassName.get("javax.inject", "Inject")),
-  /** Introduced with Micronaut 2.4. Will be default in Micronaut 3.0 and greater. */
+  /**
+   * Introduced with Micronaut 2.4. Will be default in Micronaut 3.0 and greater.
+   */
   JAKARTA_SINGLETON(ClassName.get(Constants.PACKAGE_JAKARTA_INJECT, "Singleton")),
-  /** Introduced with Micronaut 2.4. Will be default in Micronaut 3.0 and greater. */
+  /**
+   * Introduced with Micronaut 2.4. Will be default in Micronaut 3.0 and greater.
+   */
   JAKARTA_INJECT(ClassName.get(Constants.PACKAGE_JAKARTA_INJECT, "Inject")),
   MICRONAUT_CLIENT(ClassName.get(Constants.PACKAGE_IO_MICRONAUT_HTTP_CLIENT_ANNOTATION, "Client")),
   MICRONAUT_CONTROLLER(ClassName.get(Constants.PACKAGE_IO_MICRONAUT_HTTP_ANNOTATION, "Controller")),
@@ -120,9 +132,9 @@ public enum PluginTypes {
   MICRONAUT_DATE_TIME_FORMAT(
       ClassName.get("ch.silviowangler.rest.micronaut.binding", "DateTimeFormat")),
   MICRONAUT_EXECUTE_ON(ClassName.get("io.micronaut.scheduling.annotation", "ExecuteOn")),
-  VALIDATION_PHONE_NUMBER(ClassName.get(PhoneNumber.class)),
-  COLLECTION_MODEL(ClassName.get(CollectionModel.class)),
-  ENTITY_MODEL(ClassName.get(EntityModel.class));
+  VALIDATION_PHONE_NUMBER(ClassName.get("ch.silviowangler.rest.model", "PhoneNumber")),
+  COLLECTION_MODEL(ClassName.get("ch.silviowangler.rest.model", "CollectionModel")),
+  ENTITY_MODEL(ClassName.get("ch.silviowangler.rest.model", "EntityModel"));
 
   private final TypeName typeName;
 

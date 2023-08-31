@@ -3,7 +3,7 @@ package org.acme.rest.v1.laender.orte;
 import ch.silviowangler.rest.NotYetImplementedException;
 import ch.silviowangler.rest.types.IdType;
 import io.micronaut.http.HttpResponse;
-import jakarta.inject.Singleton;
+import javax.inject.Singleton;
 
 @Singleton
 public class OrtResourceDelegate {

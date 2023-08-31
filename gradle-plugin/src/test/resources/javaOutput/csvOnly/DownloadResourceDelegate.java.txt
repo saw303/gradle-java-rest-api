@@ -2,7 +2,7 @@ package org.acme.rest.v1.download;
 
 import ch.silviowangler.rest.NotYetImplementedException;
 import io.micronaut.http.HttpResponse;
-import jakarta.inject.Singleton;
+import javax.inject.Singleton;
 
 @Singleton
 public class DownloadResourceDelegate {

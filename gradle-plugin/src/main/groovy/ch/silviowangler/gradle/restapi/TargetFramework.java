@@ -27,17 +27,27 @@ package ch.silviowangler.gradle.restapi;
  * @author Silvio Wangler
  */
 public enum TargetFramework {
-  MICRONAUT,
+  MICRONAUT(false),
 
   /** Micronaut 2.4.x and above. */
-  MICRONAUT_24,
+  MICRONAUT_24(false),
   /** Micronaut 3.0.x and above. Partially using Jakarta EE annotations. */
-  MICRONAUT_3,
+  MICRONAUT_3(false),
 
   /** Micronaut 3.0.x and above. Only using Jakarta EE annotations. */
-  MICRONAUT_4;
+  MICRONAUT_4(true);
+
+  private final boolean jakarta;
+
+  TargetFramework(boolean jakarta) {
+    this.jakarta = jakarta;
+  }
 
   public boolean isMicronaut() {
     return true;
+  }
+
+  public boolean isJakarta() {
+    return this.jakarta;
   }
 }

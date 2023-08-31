@@ -15,9 +15,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import jakarta.annotation.Generated;
-import jakarta.annotation.Nullable;
-import jakarta.validation.constraints.NotEmpty;
+import javax.annotation.Generated;
+import javax.annotation.Nullable;
+import javax.validation.constraints.NotEmpty;
 
 /**
  * This resource generates the search endpoint

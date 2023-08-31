@@ -1,7 +1,6 @@
 apply plugin: 'groovy'
 apply plugin: 'com.diffplug.spotless'
-apply plugin: 'io.micronaut.library'
-apply plugin: 'io.micronaut.aot'
+apply plugin: 'io.micronaut.minimal.library'
 
 micronaut {
   runtime("netty")
@@ -9,17 +8,6 @@ micronaut {
   processing {
     incremental(true)
     annotations("com.example.*")
-  }
-  aot {
-    // Please review carefully the optimizations enabled below
-    // Check https://micronaut-projects.github.io/micronaut-aot/latest/guide/ for more details
-    optimizeServiceLoading = false
-    convertYamlToJava = false
-    precomputeOperations = true
-    cacheEnvironment = true
-    optimizeClassLoading = true
-    deduceEnvironment = true
-    optimizeNetty = true
   }
 }
 
@@ -29,8 +17,6 @@ dependencies {
   runtimeOnly("ch.qos.logback:logback-classic")
   testImplementation("io.micronaut:micronaut-http-client")
 }
-
-
 
 spotless {
   java {

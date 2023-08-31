@@ -12,9 +12,9 @@ import io.micronaut.http.annotation.Post;
 import io.micronaut.http.annotation.Produces;
 import io.micronaut.http.annotation.Put;
 import io.micronaut.http.annotation.Status;
-import jakarta.annotation.Generated;
-import jakarta.inject.Inject;
-import jakarta.validation.Valid;
+import javax.annotation.Generated;
+import javax.inject.Inject;
+import javax.validation.Valid;
 
 /**
  * Ort

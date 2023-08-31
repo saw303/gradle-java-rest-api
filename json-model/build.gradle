@@ -1,3 +1,5 @@
+apply plugin: 'java-library'
+
 ext { pomDescription = 'Java model for Gradle plugin' }
 
 dependencies {

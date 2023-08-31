@@ -4,7 +4,7 @@ import ch.silviowangler.rest.NotYetImplementedException;
 import ch.silviowangler.rest.types.IdType;
 import io.micronaut.http.HttpResponse;
 import java.util.Collection;
-import jakarta.inject.Singleton;
+import javax.inject.Singleton;
 
 @Singleton
 public class LandResourceDelegate {
