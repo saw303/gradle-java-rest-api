@@ -23,6 +23,7 @@
  */
 package ch.silviowangler.rest.model.pagination;
 
+import io.micronaut.serde.annotation.Serdeable;
 import java.util.List;
 
 /**
@@ -31,6 +32,7 @@ import java.util.List;
  * @author Silvio Wangler
  * @since 2.2.0
  */
+@Serdeable
 public class DefaultPageable implements Pageable {
 
   private final int number;

@@ -23,6 +23,7 @@
  */
 package ch.silviowangler.rest.model.pagination;
 
+import io.micronaut.serde.annotation.Serdeable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -32,6 +33,7 @@ import java.util.List;
  *
  * @author Silvio Wangler (silvio.wangler@gmail.com)
  */
+@Serdeable
 public class DefaultSort implements Sort {
 
   private List<Order> order = new ArrayList<>();
@@ -44,7 +46,7 @@ public class DefaultSort implements Sort {
 
   @Override
   public boolean isSorted() {
-    return this.order.size() > 0;
+    return !this.order.isEmpty();
   }
 
   @Override
