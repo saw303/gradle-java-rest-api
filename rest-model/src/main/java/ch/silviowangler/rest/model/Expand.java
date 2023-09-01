@@ -41,6 +41,15 @@ public class Expand {
 
   public Expand() {}
 
+  public Expand(String name) {
+    this.name = name;
+  }
+
+  public Expand(String name, List<ResourceModel> data) {
+    this.name = name;
+    this.data = data;
+  }
+
   public String getName() {
     return name;
   }
