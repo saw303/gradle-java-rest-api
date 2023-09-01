@@ -23,6 +23,8 @@
  */
 package ch.silviowangler.rest.model;
 
+import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.CLASS;
+
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
@@ -30,5 +32,5 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  *
  * @author Silvio Wangler
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
+@JsonTypeInfo(use = CLASS)
 public interface ResourceModel {}

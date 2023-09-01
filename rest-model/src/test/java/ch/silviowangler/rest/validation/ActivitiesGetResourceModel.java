@@ -1,7 +1,7 @@
 /*
  * MIT License
  * <p>
- * Copyright (c) 2016 - 2021 Silvio Wangler (silvio.wangler@gmail.com)
+ * Copyright (c) 2016 - 2023 Silvio Wangler (silvio.wangler@gmail.com)
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,47 +21,48 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package ch.silviowangler.rest.model;
+package ch.silviowangler.rest.validation;
 
+import ch.silviowangler.rest.model.ResourceModel;
 import io.micronaut.serde.annotation.Serdeable;
-import java.util.List;
+import java.time.LocalDate;
 
-/**
- * Model for expanded GETs. Stores a name.
- *
- * @author Silvio Wangler
- * @since 3.0.0
- */
 @Serdeable
-public class Expand {
+public class ActivitiesGetResourceModel implements ResourceModel {
+  private String key;
+  private String id;
+  private Integer number;
+  private LocalDate dob;
 
-  private String name;
-  private List<? extends ResourceModel> data;
-
-  public Expand() {}
-
-  public Expand(String name) {
-    this.name = name;
+  public String getKey() {
+    return key;
   }
 
-  public Expand(String name, List<? extends ResourceModel> data) {
-    this.name = name;
-    this.data = data;
+  public void setKey(String key) {
+    this.key = key;
   }
 
-  public String getName() {
-    return name;
+  public String getId() {
+    return id;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setId(String id) {
+    this.id = id;
   }
 
-  public List<? extends ResourceModel> getData() {
-    return data;
+  public Integer getNumber() {
+    return number;
   }
 
-  public void setData(List<? extends ResourceModel> data) {
-    this.data = data;
+  public void setNumber(Integer number) {
+    this.number = number;
+  }
+
+  public LocalDate getDob() {
+    return dob;
+  }
+
+  public void setDob(LocalDate dob) {
+    this.dob = dob;
   }
 }
