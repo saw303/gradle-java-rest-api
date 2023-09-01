@@ -23,7 +23,6 @@
  */
 package ch.silviowangler.gradle.restapi
 
-
 import ch.silviowangler.gradle.restapi.tasks.CleanRestApiTask
 import ch.silviowangler.gradle.restapi.tasks.ExtractRestApiSpecsTask
 import ch.silviowangler.gradle.restapi.tasks.GenerateRestApiTask
@@ -42,10 +41,8 @@ import java.nio.charset.Charset
 
 import static ch.silviowangler.gradle.restapi.Consts.TASK_GROUP_REST_API
 import static ch.silviowangler.gradle.restapi.TargetFramework.MICRONAUT
-import static ch.silviowangler.gradle.restapi.TargetFramework.MICRONAUT_24
 import static ch.silviowangler.gradle.restapi.TargetFramework.MICRONAUT_3
 import static ch.silviowangler.gradle.restapi.TargetFramework.MICRONAUT_4
-import static ch.silviowangler.gradle.restapi.TargetFramework.SPRING_BOOT
 
 class RestApiPluginSpec extends Specification {
 

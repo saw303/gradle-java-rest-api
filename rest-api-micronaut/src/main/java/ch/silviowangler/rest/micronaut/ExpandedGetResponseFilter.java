@@ -23,8 +23,6 @@
  */
 package ch.silviowangler.rest.micronaut;
 
-import static com.google.common.base.CaseFormat.LOWER_CAMEL;
-import static com.google.common.base.CaseFormat.LOWER_HYPHEN;
 import static io.micronaut.core.naming.NameUtils.hyphenate;
 import static io.micronaut.http.HttpHeaders.ACCEPT_LANGUAGE;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -42,6 +40,7 @@ import io.micronaut.context.ApplicationContext;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.AnnotationValue;
 import io.micronaut.core.convert.ConversionService;
+import io.micronaut.core.naming.conventions.StringConvention;
 import io.micronaut.http.HttpAttributes;
 import io.micronaut.http.HttpMethod;
 import io.micronaut.http.HttpRequest;
@@ -235,7 +234,9 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
         if (getCollectionVerb.isPresent()) {
           for (Header header : getCollectionVerb.get().getHeaders()) {
             if (variables.get(header.getName()) == null) {
-              String variableName = LOWER_HYPHEN.to(LOWER_CAMEL, header.getName().toLowerCase());
+              String variableName =
+                  StringConvention.format(
+                      StringConvention.CAMEL_CASE, header.getName().toLowerCase());
               Object extractedHeader = extractHeader(request, header);
 
               if (extractedHeader != null) {

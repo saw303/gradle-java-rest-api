@@ -8,7 +8,6 @@ dependencies {
 	annotationProcessor("io.micronaut.validation:micronaut-validation-processor")
 	api project(':rest-model')
 	implementation project(':json-model')
-	implementation "com.google.guava:guava:${guavaVersion}"
 	implementation("io.micronaut.validation:micronaut-validation")
 	implementation("jakarta.validation:jakarta.validation-api")
 
