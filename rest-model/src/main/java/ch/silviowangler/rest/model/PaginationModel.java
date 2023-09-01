@@ -42,16 +42,24 @@ public class PaginationModel implements Serializable {
   private int totalPages;
 
   public PaginationModel(Slice slice) {
-    this.size = slice.getSize();
-    this.page = slice.getPageNumber();
+
+    if (slice == null) {
+      this.size = 0;
+      this.page = 0;
+    } else {
+      this.size = slice.getSize();
+      this.page = slice.getPageNumber();
+    }
     this.totalPages = -1;
     this.totalSize = -1;
   }
 
   public PaginationModel(Page page) {
     this((Slice) page);
-    this.totalPages = page.getTotalPages();
-    this.totalSize = page.getTotalSize();
+    if (page != null) {
+      this.totalPages = page.getTotalPages();
+      this.totalSize = page.getTotalSize();
+    }
   }
 
   // Used for Jackson deserialization
