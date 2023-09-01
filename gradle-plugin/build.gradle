@@ -55,7 +55,7 @@ dependencies {
   implementation "org.apache.commons:commons-lang3:3.11"
 
   testImplementation gradleTestKit()
-  testImplementation platform("org.spockframework:spock-bom:2.3-groovy-3.0")
+  testImplementation platform("org.spockframework:spock-bom:2.3-groovy-4.0")
   testImplementation "org.spockframework:spock-core"
 }
 
