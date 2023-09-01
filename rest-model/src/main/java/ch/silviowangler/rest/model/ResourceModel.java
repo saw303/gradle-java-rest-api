@@ -23,9 +23,12 @@
  */
 package ch.silviowangler.rest.model;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 /**
  * A simple marker interface for resource models.
  *
  * @author Silvio Wangler
  */
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
 public interface ResourceModel {}
