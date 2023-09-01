@@ -190,16 +190,18 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
       HttpRequest<?> request,
       EntityModel initialBody,
       boolean mustAddEntityId) {
-    for (String expand : expands.trim().split(",")) {
+    for (String expandName : expands.trim().split(",")) {
 
       Optional<SubResource> potSubResource =
           contract.getSubresources().stream()
-              .filter(subResource -> expand.equals(subResource.getName()))
+              .filter(subResource -> Objects.equals(expandName, subResource.getName()))
               .findAny();
 
-      if (!potSubResource.isPresent()) {
+      if (potSubResource.isEmpty()) {
         log.warn(
-            "Expand '{}' is not a sub resource of '{}'", expand, contract.getGeneral().getName());
+            "Expand '{}' is not a sub resource of '{}'",
+            expandName,
+            contract.getGeneral().getName());
         continue;
       }
 
@@ -213,7 +215,7 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
       Map<String, Object> variables = new HashMap<>(routeMatchCurrentResource.getVariableValues());
 
       if (mustAddEntityId) {
-        variables.put("id", ((Identifiable) initialBody.getData()).getId());
+        variables.put("id", ((Identifiable<?>) initialBody.getData()).getId());
       }
 
       String targetUri =
@@ -224,7 +226,7 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
       if (routeMatch.isPresent()) {
         UriRouteMatch<Object, Object> routeMatchSubResource = routeMatch.get();
         ExecutableMethod<Object, Object> executableMethod =
-            (ExecutableMethod<Object, Object>) routeMatchSubResource.getExecutableMethod();
+            routeMatchSubResource.getExecutableMethod();
 
         Optional<Verb> getCollectionVerb =
             contract.getVerbs().stream()
@@ -251,7 +253,7 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
           }
         }
 
-        Class declaringType = executableMethod.getDeclaringType();
+        Class<Object> declaringType = executableMethod.getDeclaringType();
 
         Object bean = applicationContext.getBean(declaringType);
 
@@ -291,7 +293,8 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
 
           Object result = executableMethod.invoke(bean, argumentList);
 
-          Expand expandedData = new Expand(expand);
+          Expand expandedData = new Expand();
+          expandedData.setName(expandName);
 
           if (result instanceof Collection) {
             expandedData.setData((List<ResourceModel>) result);
@@ -302,13 +305,13 @@ public class ExpandedGetResponseFilter implements HttpServerFilter {
           } else if (result != null) {
             log.error(
                 "Expand {} is neither a collection nor a resource model (class: {})",
-                expand,
+                expandName,
                 result.getClass().getCanonicalName());
           } else {
-            log.error("Expand {} is null", expand);
+            log.error("Expand {} is null", expandName);
           }
         } catch (Exception e) {
-          log.error("Exception caught while expanding sub resource " + expand, e);
+          log.error("Exception caught while expanding sub resource " + expandName, e);
         }
       }
     }
