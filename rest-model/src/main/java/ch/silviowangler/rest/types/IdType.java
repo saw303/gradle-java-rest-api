@@ -27,6 +27,7 @@ import ch.silviowangler.rest.model.Identifiable;
 import ch.silviowangler.rest.model.ResourceLink;
 import ch.silviowangler.rest.model.ResourceModel;
 import ch.silviowangler.rest.model.SelfLinkProvider;
+import io.micronaut.serde.annotation.Serdeable;
 import java.io.Serializable;
 import java.util.Optional;
 
@@ -35,6 +36,7 @@ import java.util.Optional;
  *
  * @author Silvio Wangler
  */
+@Serdeable
 public class IdType implements ResourceModel, Identifiable<String>, SelfLinkProvider, Serializable {
 
   private String id;
